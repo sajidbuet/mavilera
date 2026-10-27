@@ -1,0 +1,777 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (book-derived; Apache-2.0).",
+ "_generated": "tools/export_examples.py; do not edit by hand",
+ "book_commit": "a5ad0e0fb96f7f1faee043de7540eddf8055789d",
+ "examples": [
+  {
+   "id": "basics-array",
+   "file": "basics-array.s",
+   "title": "Sum of a four-word array and the address of its largest element, without branches",
+   "profile": "iss",
+   "topic": "basics",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "3",
+   "section": "WE3.6",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter03/array.s",
+   "sha256": "b655b7d33c9926636dd9a780a052327af6dac9a27e9f5a83631c30d074ccfa5b"
+  },
+  {
+   "id": "basics-bitfield",
+   "file": "basics-bitfield.s",
+   "title": "Read the field in bits 11:8 of a register value, and write 9 into the field in bits 7:4",
+   "profile": "iss",
+   "topic": "basics",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "3",
+   "section": "WE3.8",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter03/bitfield.s",
+   "sha256": "51e99e019df594b503bed8f46b00da74f5e3b8a124f9fce2d8028b8b88ee230f"
+  },
+  {
+   "id": "basics-const",
+   "file": "basics-const.s",
+   "title": "Building 0x12345FFF from lui and addi",
+   "profile": "iss",
+   "topic": "basics",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "3",
+   "section": "WE3.3",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter03/const.s",
+   "sha256": "45668010c2904e76bd5a5de9db5ba66a23c6b996e5e3f0e913c6db7e417f2961"
+  },
+  {
+   "id": "basics-divshift",
+   "file": "basics-divshift.s",
+   "title": "-7 / 2 by div and by an arithmetic shift, and the results the M extension defines for division by zero and overflow",
+   "profile": "iss",
+   "topic": "basics",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "3",
+   "section": "WE3.4",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter03/divshift.s",
+   "sha256": "a7e61ea0845bad42c4ea922db98eef13f8531f93931f32de7ef7c0bbfea4edc9"
+  },
+  {
+   "id": "basics-expr",
+   "file": "basics-expr.s",
+   "title": "y = (a - b) + (c ^ d) - e with a..e in a0..a4",
+   "profile": "iss",
+   "topic": "basics",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "3",
+   "section": "WE3.2",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter03/expr.s",
+   "sha256": "c4762b4fe7ddeaf8d651a91588e1ed391f9ade839e67a506c9856a0f7b3cc8cb"
+  },
+  {
+   "id": "basics-loads",
+   "file": "basics-loads.s",
+   "title": "Five loads of different widths from the same eight bytes",
+   "profile": "iss",
+   "topic": "basics",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "3",
+   "section": "WE3.5",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter03/loads.s",
+   "sha256": "00a26ca6ad6da829e27c68393b0e13ebe2bbb2817113695d657052785ebdff8e"
+  },
+  {
+   "id": "basics-trace",
+   "file": "basics-trace.s",
+   "title": "A 12-instruction program to trace by hand and check with the simulator's trace",
+   "profile": "iss",
+   "topic": "basics",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "3",
+   "section": "WE3.7",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter03/trace.s",
+   "sha256": "e944f3e89ca81ccdfec4abb3df936066e9135c8a09d6a6b36b60cff234323687"
+  },
+  {
+   "id": "control-branch",
+   "file": "control-branch.s",
+   "title": "The same if-else with a signed and with an unsigned comparison",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.1",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/branch.s",
+   "sha256": "8262a900e1449fdf4e1a40149d31a4f2a3fcaeabf79000786a2a7b4e4ec35ce8"
+  },
+  {
+   "id": "control-compound",
+   "file": "control-compound.s",
+   "title": "if (x > 0 and x < 100) count = count + 1, with short-circuit evaluation",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.2",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/compound.s",
+   "sha256": "90d8cba0e680fdec3a170f9bd4fce46d88423a19b949bea17cd2911c49db9dae"
+  },
+  {
+   "id": "control-fact",
+   "file": "control-fact.s",
+   "title": "Recursive factorial",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.6",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/fact.s",
+   "sha256": "407e796e6e8030d33da6bacb480c943dc481fcf471b8dccb37141a624e58bd74"
+  },
+  {
+   "id": "control-max",
+   "file": "control-max.s",
+   "title": "A leaf procedure and its caller",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.4",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/max.s",
+   "sha256": "1a4d8b5c80d65a22c3313173e0d080abc77ae69cec017f66d70418a37024fe08"
+  },
+  {
+   "id": "control-max3",
+   "file": "control-max3.s",
+   "title": "A non-leaf procedure that calls max twice",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.5",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/max3.s",
+   "sha256": "22b188d43f3c8e1393dc5ff39e367804fd364578cfcf353792e7ced63da39371"
+  },
+  {
+   "id": "control-paths",
+   "file": "control-paths.s",
+   "title": "The number of monotone paths across an m x n grid of blocks, paths(m, n) = paths(m - 1, n) + paths(m, n - 1), with paths(0, n) = paths(m, 0) = 1",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.7",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/paths.s",
+   "sha256": "94c894f6a4b7cdf4365b68dba5a11491c14ab3014452c889d96f8a8e012126b2"
+  },
+  {
+   "id": "control-sum_index",
+   "file": "control-sum_index.s",
+   "title": "Sum of an array of n words by index",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.3",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/sum_index.s",
+   "sha256": "41a61fa1a69cd0c0c0ae624d218fb0a1b27a83a94f501c959de738a9f15d1d94"
+  },
+  {
+   "id": "control-sum_pointer",
+   "file": "control-sum_pointer.s",
+   "title": "The same sum with a pointer and the test at the bottom of the loop (n > 0 assumed)",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.3",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/sum_pointer.s",
+   "sha256": "43131b079c383b2da230e17c7567c4091d8dc6d82449895dc9cd283a1839224d"
+  },
+  {
+   "id": "control-sumsq",
+   "file": "control-sumsq.s",
+   "title": "A procedure with a loop and a call",
+   "profile": "iss",
+   "topic": "control",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "4",
+   "section": "WE4.8",
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter04/sumsq.s",
+   "sha256": "b2b81b57dacdb80b089c5f5e766381831c5aeb762a1867c8d845f681a8309b18"
+  },
+  {
+   "id": "tests-abi_bad",
+   "file": "tests-abi_bad.s",
+   "title": "Deliberate calling-convention faults, as the ABI check reports them",
+   "profile": "iss",
+   "topic": "tests",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": null,
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/sim/tests/asm/abi_bad.s",
+   "sha256": "74df0e9c193008add988434789d19961a73c08729764bb0e81c9415e92a4dbad"
+  },
+  {
+   "id": "tests-arraysum",
+   "file": "tests-arraysum.s",
+   "title": "Sum of a word array",
+   "profile": "iss",
+   "topic": "tests",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": null,
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/sim/tests/asm/arraysum.s",
+   "sha256": "b0297109095d7f59c7833afe1f793821de5a7079d8a7752705568ec7bbbbaa95"
+  },
+  {
+   "id": "tests-bytes",
+   "file": "tests-bytes.s",
+   "title": "Byte and half-word loads and stores, sign and zero extension, little-endian layout, and a string length",
+   "profile": "iss",
+   "topic": "tests",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": null,
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/sim/tests/asm/bytes.s",
+   "sha256": "cbc97c3ab892942dca7c08d108f82c44a38cace57ce150d9edfa1d2b64b76faa"
+  },
+  {
+   "id": "tests-divcases",
+   "file": "tests-divcases.s",
+   "title": "Division by zero and signed overflow in the M extension",
+   "profile": "iss",
+   "topic": "tests",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": null,
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/sim/tests/asm/divcases.s",
+   "sha256": "8345c8f86b78a9f4174b2e5417866d597b6894962af180787845dc4bc67f033a"
+  },
+  {
+   "id": "tests-fact",
+   "file": "tests-fact.s",
+   "title": "Recursive factorial with the standard calling convention and the stack",
+   "profile": "iss",
+   "topic": "tests",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": null,
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/sim/tests/asm/fact.s",
+   "sha256": "2e93116fe52403f6a29ca39e37416476c92be28b0c9d3118383378a62b70a67e"
+  },
+  {
+   "id": "tests-isa_all",
+   "file": "tests-isa_all.s",
+   "title": "Every RV32I and M instruction at least once, for the listing (it does not run to a halt)",
+   "profile": "iss",
+   "topic": "tests",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": null,
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": false,
+   "source": "code/sim/tests/asm/isa_all.s",
+   "sha256": "cfafa4c9d3d39267a72d67d80f543136e8224476cc73a215ea17c4580d22681f"
+  },
+  {
+   "id": "ch06-branch",
+   "file": "ch06-branch.s",
+   "title": "R-type, immediate ALU, lw, sw, beq, bne, lui and jal",
+   "profile": "ch06",
+   "topic": "single",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "6",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter06/programs/branch/prog.s",
+   "sha256": "e543b7926ffcacdd07ed50072a3a8d6c37f9616ee6bb192769f315d7ea5b1d39"
+  },
+  {
+   "id": "ch06-ext",
+   "file": "ch06-ext.s",
+   "title": "xori and lbu (the lbu extension of the processor)",
+   "profile": "ch06",
+   "topic": "single",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "6",
+   "section": null,
+   "subset": "ext",
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter06/programs/ext/prog.s",
+   "sha256": "83f0188b1f99336fd016354fa4f642a41db101006dc8253ba72a68e43d79e448"
+  },
+  {
+   "id": "ch06-full",
+   "file": "ch06-full.s",
+   "title": "Every instruction of the processor, with the further branches, jalr and auipc",
+   "profile": "ch06",
+   "topic": "single",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "6",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter06/programs/full/prog.s",
+   "sha256": "06f8fe9ea075d1f032f8fec90e55b6ac49e84ee2bdd45ace2c598deb39ac1310"
+  },
+  {
+   "id": "ch06-lwwave",
+   "file": "ch06-lwwave.s",
+   "title": "Store a word, then load it back with a negative offset",
+   "profile": "ch06",
+   "topic": "single",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "6",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter06/programs/lwwave/prog.s",
+   "sha256": "e6e6b038f364c4f2263777d8acf40b1d69a8455b8e57eb3973de5628d338fb79"
+  },
+  {
+   "id": "ch06-mem",
+   "file": "ch06-mem.s",
+   "title": "lw and sw with positive and negative offsets",
+   "profile": "ch06",
+   "topic": "single",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "6",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter06/programs/mem/prog.s",
+   "sha256": "3a3488f030a4338bf456c6f96b2def265c948d2de90598c0e599b0e0f35f2eb1"
+  },
+  {
+   "id": "ch06-rtype",
+   "file": "ch06-rtype.s",
+   "title": "Register-register and register-immediate ALU instructions",
+   "profile": "ch06",
+   "topic": "single",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "6",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter06/programs/rtype/prog.s",
+   "sha256": "15e9814666888bda7a878cb4ba6551dd2c5965ea861bd2a13eb6b262b46aa5f3"
+  },
+  {
+   "id": "ch07-branch",
+   "file": "ch07-branch.s",
+   "title": "R-type, immediate ALU, lw, sw, beq, bne, lui and jal",
+   "profile": "ch07",
+   "topic": "multi",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "7",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter07/programs/branch/prog.s",
+   "sha256": "9f05d8cf8a6be2500c657787d7b76d65f066460807b455f19af4b6e56b88669e"
+  },
+  {
+   "id": "ch07-full",
+   "file": "ch07-full.s",
+   "title": "Every instruction of the processor, with jalr, lui, auipc and all six branches",
+   "profile": "ch07",
+   "topic": "multi",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "7",
+   "section": null,
+   "subset": null,
+   "jalr": true,
+   "halts": true,
+   "source": "code/chapter07/programs/full/prog.s",
+   "sha256": "174c91f4f23743f895a3a1bd65ebd2d723e44598f990f15a97560eeec92471c5"
+  },
+  {
+   "id": "ch07-mem",
+   "file": "ch07-mem.s",
+   "title": "lw and sw with positive and negative offsets",
+   "profile": "ch07",
+   "topic": "multi",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "7",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter07/programs/mem/prog.s",
+   "sha256": "0ca8d07c6a35b794f494127810191e8619aefbf69321843f7b5d320cc8205b39"
+  },
+  {
+   "id": "ch07-lw-steps",
+   "file": "ch07-lw-steps.s",
+   "title": "One load, lw x5, 8(x6), step by step",
+   "profile": "ch07",
+   "topic": "multi",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "7",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter07/programs/we71/prog.s",
+   "sha256": "ee6b0d55aab490d0075e43b526f379c28f7d7860bf04e234c6d66c7d690f9cc3"
+  },
+  {
+   "id": "ch08-dep",
+   "file": "ch08-dep.s",
+   "title": "Dependent arithmetic: forwarding from MEM and WB",
+   "profile": "ch08",
+   "topic": "pipe",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "8",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter08/programs/dep/prog.s",
+   "sha256": "aa3e29c30082e746a47501260a5ac13b1ab2f6a8a66758593ed29cfd75ba0c03"
+  },
+  {
+   "id": "ch08-loaduse",
+   "file": "ch08-loaduse.s",
+   "title": "Load-use chains: stalls",
+   "profile": "ch08",
+   "topic": "pipe",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "8",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter08/programs/loaduse/prog.s",
+   "sha256": "6e0f70d3c7082106f3e626a0411cb372894d4f086b9aad5cc0287651f9205de0"
+  },
+  {
+   "id": "ch08-loop",
+   "file": "ch08-loop.s",
+   "title": "A loop with a backward branch, a call and a return",
+   "profile": "ch08",
+   "topic": "pipe",
+   "lang": "asm",
+   "gcc": false,
+   "chapter": "8",
+   "section": null,
+   "subset": null,
+   "jalr": false,
+   "halts": true,
+   "source": "code/chapter08/programs/loop/prog.s",
+   "sha256": "98955779352928cbd569f35d83ebf43b89e2c69f553051499d0b13d852ecc272"
+  }
+ ],
+ "skipped": [
+  {
+   "source": "code/chapter03/cep/price.c",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/cep/rec_aligned.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/cep/rec_packed.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/ex_bswap.s",
+   "why": "an exercise, challenge or CEP, or its solution (C5)"
+  },
+  {
+   "source": "code/chapter03/ex_scale.s",
+   "why": "an exercise, challenge or CEP, or its solution (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/harness1.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/harness2.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/harness3.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/harness4.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/harness5.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/misaligned.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/ref/task1.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/ref/task2.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/ref/task3.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/ref/task4.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/lab/ref/task5.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter03/we31-O2.s",
+   "why": "GCC output of a function without main: not a complete program"
+  },
+  {
+   "source": "code/chapter03/we31.c",
+   "why": "a function without main: compiler input, not a complete program"
+  },
+  {
+   "source": "code/chapter04/cep/app_raw.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/cep/app_wrapped.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/cep/chain32.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/cep/grid4x8.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/cep/vendor.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/cep/wrap.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/cep/zones_iter.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/cep/zones_rec.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/ex_countneg.s",
+   "why": "an exercise, challenge or CEP, or its solution (C5)"
+  },
+  {
+   "source": "code/chapter04/ex_strcmp.s",
+   "why": "an exercise, challenge or CEP, or its solution (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/harness0.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/harness1.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/harness2.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/harness3.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/harness3b.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/harness4.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/harness5.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/max3_bad.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/max3_good.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/ref/ex_reverse.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/ref/task1.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/ref/task2.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/ref/task3.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/ref/task3b.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/ref/task4.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/chapter04/lab/ref/task5.s",
+   "why": "instructor or laboratory folder (C5)"
+  },
+  {
+   "source": "code/sim/tests/asm/multi_bad.s",
+   "why": "one of a two-file test with a deliberate duplicate symbol"
+  },
+  {
+   "source": "code/sim/tests/asm/multi_lib.s",
+   "why": "one of a two-file test (needs multi_main.s)"
+  },
+  {
+   "source": "code/sim/tests/asm/multi_main.s",
+   "why": "one of a two-file test (needs multi_lib.s)"
+  },
+  {
+   "source": "code/sim/tests/asm/priv_all.s",
+   "why": "needs the privileged profile (milestone M7)"
+  },
+  {
+   "source": "code/sim/tests/asm/trap_bad.s",
+   "why": "needs the privileged profile (milestone M7)"
+  },
+  {
+   "source": "code/sim/tests/asm/trap_exc.s",
+   "why": "needs the privileged profile (milestone M7)"
+  },
+  {
+   "source": "code/sim/tests/asm/trap_irq.s",
+   "why": "needs the privileged profile and an interrupt stimulus (milestone M7)"
+  },
+  {
+   "source": "code/sim/tests/asm/trap_user.s",
+   "why": "needs the privileged profile (milestone M7)"
+  }
+ ]
+}

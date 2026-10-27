@@ -1,0 +1,108 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "title": "Binary to Gray code",
+ "task": "Write the procedure gray: return in a0 the Gray code of the unsigned number in a0, in which consecutive numbers differ in exactly one bit: gray(n) = n XOR (n shifted right by one).",
+ "lang": "asm",
+ "starter": "# gray -- practice exercise (RISC-VISTA)\n# Return in a0 the Gray code of a0.\n# Hint: two instructions are enough.\n        .text\ngray:\n        # a0 = n\n        li   a0, 0              # replace with your code\n        ret\n",
+ "entry": "gray",
+ "tests": [
+  {
+   "name": "gray(0)",
+   "registers": {
+    "a0": 0
+   },
+   "expect": {
+    "registers": {
+     "a0": 0
+    },
+    "abi": true
+   }
+  },
+  {
+   "name": "gray(1)",
+   "registers": {
+    "a0": 1
+   },
+   "expect": {
+    "registers": {
+     "a0": 1
+    },
+    "abi": true
+   }
+  },
+  {
+   "name": "gray(2)",
+   "registers": {
+    "a0": 2
+   },
+   "expect": {
+    "registers": {
+     "a0": 3
+    },
+    "abi": true
+   }
+  },
+  {
+   "name": "gray(3)",
+   "registers": {
+    "a0": 3
+   },
+   "expect": {
+    "registers": {
+     "a0": 2
+    },
+    "abi": true
+   }
+  },
+  {
+   "name": "gray(7)",
+   "registers": {
+    "a0": 7
+   },
+   "expect": {
+    "registers": {
+     "a0": 4
+    },
+    "abi": true
+   }
+  },
+  {
+   "name": "gray(8)",
+   "registers": {
+    "a0": 8
+   },
+   "expect": {
+    "registers": {
+     "a0": 12
+    },
+    "abi": true
+   }
+  },
+  {
+   "name": "gray(2147483648)",
+   "registers": {
+    "a0": -2147483648
+   },
+   "expect": {
+    "registers": {
+     "a0": -1073741824
+    },
+    "abi": true
+   }
+  },
+  {
+   "name": "gray(4294967295)",
+   "registers": {
+    "a0": -1
+   },
+   "expect": {
+    "registers": {
+     "a0": -2147483648
+    },
+    "abi": true
+   }
+  }
+ ]
+}

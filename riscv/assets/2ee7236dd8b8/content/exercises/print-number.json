@@ -1,0 +1,86 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "title": "Print a number in decimal",
+ "task": "Write a program that prints the unsigned number stored at the label value in decimal, followed by a newline, with the write system call (a7 = 64), and then exits with code 0 (a7 = 93). The tests change the number at value.",
+ "lang": "asm",
+ "starter": "# print-number -- practice exercise (RISC-VISTA)\n# Print the unsigned word at value in decimal, then a newline; exit with 0.\n# Hint: build the digits from the right into a buffer with remu/divu, then write them in one call.\n        .data\nvalue:  .word 1234\nbuf:    .space 12\n        .text\nmain:   # your code\n        li   a0, 0\n        li   a7, 93\n        ecall\n",
+ "tests": [
+  {
+   "name": "value = 1234",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      1234
+     ]
+    }
+   ],
+   "expect": {
+    "output": "1234\n",
+    "exit": 0
+   }
+  },
+  {
+   "name": "value = 0",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "output": "0\n",
+    "exit": 0
+   }
+  },
+  {
+   "name": "value = 7",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      7
+     ]
+    }
+   ],
+   "expect": {
+    "output": "7\n",
+    "exit": 0
+   }
+  },
+  {
+   "name": "value = 1000000",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      1000000
+     ]
+    }
+   ],
+   "expect": {
+    "output": "1000000\n",
+    "exit": 0
+   }
+  },
+  {
+   "name": "value = 4294967295",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      -1
+     ]
+    }
+   ],
+   "expect": {
+    "output": "4294967295\n",
+    "exit": 0
+   }
+  }
+ ]
+}

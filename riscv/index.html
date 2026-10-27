@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+  index.html -- application shell of MAVILERA RISC-V Laboratory.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA: RISC-V Laboratory</title>
+  <meta name="description" content="MAVILERA RISC-V Laboratory: an interactive, browser-based environment for RISC-V assembly programming, processor simulation, debugging, and microarchitecture visualization.">
+  <meta name="application-name" content="MAVILERA RISC-V Laboratory">
+  <meta name="risc-vista-edition" content="release">
+  <meta name="risc-vista-version" content="1.0.0">
+  <meta name="theme-color" content="#145e56">
+  <link rel="icon" sizes="16x16 32x32 48x48" href="assets/2ee7236dd8b8/content/branding/mavilera/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="assets/2ee7236dd8b8/content/branding/mavilera/mavilera-icon-small.svg">
+  <link rel="apple-touch-icon" href="assets/2ee7236dd8b8/content/branding/mavilera/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="assets/2ee7236dd8b8/src/ui/theme.css">
+  <script type="module" src="assets/2ee7236dd8b8/src/main.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <!-- Logo slot: the MAVILERA logo (content/branding/mavilera/) is inlined here by main.js; the name below stays for screen readers. -->
+    <span class="app-logo" aria-hidden="true"></span>
+    <h1 class="app-title" data-string="appName">MAVILERA</h1>
+  </header>
+  <main id="app" class="app-main">
+    <p data-string="status">Under development.</p>
+  </main>
+  <noscript>This simulator needs JavaScript; it runs entirely in your browser.</noscript>
+  <script>if ('serviceWorker' in navigator && isSecureContext) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
+</body>
+</html>
