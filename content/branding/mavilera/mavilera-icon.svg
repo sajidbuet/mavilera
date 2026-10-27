@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-labelledby="mv-title">
+  <!-- Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+     Rights class: content (Apache-2.0). Written by tools/make-mavilera-brand.mjs; edit that script, not this file.
+     The name MAVILERA is a provisional project name, not licensed as a trademark (TRADEMARKS.md). -->
+  <title id="mv-title">MAVILERA</title>
+  <style>.tf { fill: var(--rv-teal, #145e56); } .af { fill: var(--rv-amber, #a85a00); } .xs { stroke: var(--ui-text, #18343b); } @media (prefers-color-scheme: dark) { .tf { fill: var(--rv-teal, #5fb3a8); } .af { fill: var(--rv-amber, #e3a453); } .xs { stroke: var(--ui-text, #dde7e9); } }</style>
+  <defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="#fff"/>
+      <path fill="none" stroke="#000" stroke-width="4" d="M11 31V13H19V30H29V13H37V31"/></mask></defs>
+    <rect class="tf" x="2" y="2" width="44" height="44" rx="9" mask="url(#m)"/><circle class="af" cx="37" cy="38" r="3.4"/>
+</svg>

@@ -1,0 +1,537 @@
+<!doctype html>
+<!--
+  content/help/docs/index.html -- the detailed documentation of the MAVILERA RISC-V Laboratory, published at
+  /mavilera/riscv/docs/ beside the application (/mavilera/riscv/) by tools/release.mjs.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: content. Apache-2.0.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA RISC-V Laboratory documentation</title>
+  <meta name="description" content="Documentation of MAVILERA: the workspace, RISC-V assembly and the C subset, running and debugging, the single-cycle, multicycle and pipelined processor views, files, exports and offline use.">
+  <meta name="theme-color" content="#145e56">
+  <!-- in a release, tools/release.mjs places the icons at the site root, two levels up -->
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../../icon.svg">
+  <style>
+    :root {
+      --primary: #145e56; --primary-soft: #e7f4f1; --insight: #1f4e79; --amber: #a85a00;
+      --bg: #f3f6f7; --surface: #ffffff; --border: #dce4e5; --text: #18343b; --text-2: #5f727a; --code-bg: #f6f8f8;
+      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #46a799; --primary-soft: #16302d; --insight: #8fb4dc; --amber: #e3a453;
+        --bg: #0e1214; --surface: #151b1e; --border: #2b363b; --text: #dde7e9; --text-2: #96a7ae; --code-bg: #1a2125;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--primary); text-underline-offset: 2px; }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
+    code, kbd, pre { font-family: var(--font-code); font-size: 0.9em; }
+    code { background: var(--code-bg); padding: 0 0.25em; border-radius: 3px; }
+    kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: var(--surface); white-space: nowrap; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.45; }
+    pre code { background: none; padding: 0; }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+    header.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+    header.top .in { max-width: 1180px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .word { font-weight: 800; font-size: 20px; letter-spacing: 0.01em; color: var(--insight); text-decoration: none; }
+    .word span { color: var(--primary); }
+    .word .h { color: var(--amber); }
+    header.top nav { margin-left: auto; display: flex; gap: 16px; }
+    .layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 230px 1fr; gap: 36px; }
+    .toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 24px 0; font-size: 14px; }
+    .toc ol { list-style: none; margin: 0; padding: 0; }
+    .toc li { margin: 2px 0; }
+    .toc a { color: var(--text); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+    .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+    main { min-width: 0; padding: 24px 0 64px; }
+    h1 { font-size: 30px; margin: 8px 0 6px; line-height: 1.2; }
+    h2 { font-size: 24px; margin: 48px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.25; }
+    h3 { font-size: 18px; margin: 26px 0 6px; }
+    .lead { font-size: 18px; color: var(--text-2); margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 15px; background: var(--surface); }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); }
+    .wrap-table { overflow-x: auto; }
+    .note { border-left: 4px solid var(--primary); background: var(--surface); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+    dl.terms dt { font-weight: 700; margin-top: 10px; }
+    dl.terms dd { margin: 2px 0 0 0; }
+    footer { color: var(--text-2); font-size: 14px; border-top: 1px solid var(--border); margin-top: 48px; padding-top: 16px; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; gap: 0; }
+      .toc { position: static; max-height: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="in">
+      <a class="word" href="../../">MAVILERA<span> RISC-V Laboratory</span></a>
+      <nav aria-label="Site">
+        <a href="../">Open the application</a>
+        <a href="../../">MAVILERA Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#workspace">The workspace</a></li>
+        <li><a href="#assembly">Assembly language</a></li>
+        <li><a href="#c">The C subset</a></li>
+        <li><a href="#debug">Running and debugging</a></li>
+        <li><a href="#processors">Processor views</a></li>
+        <li><a href="#single">Single-cycle processor</a></li>
+        <li><a href="#multi">Multicycle processor</a></li>
+        <li><a href="#pipe">Pipelined processor</a></li>
+        <li><a href="#compare">Comparison</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#files">Files, sharing and examples</a></li>
+        <li><a href="#exports">Exports</a></li>
+        <li><a href="#offline">Offline use and privacy</a></li>
+        <li><a href="#access">Accessibility</a></li>
+        <li><a href="#keys">Keyboard reference</a></li>
+        <li><a href="#limits">Limits of the models</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+        <li><a href="#rights">Licence</a></li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <h1>MAVILERA RISC-V Laboratory: documentation</h1>
+      <p class="lead">Interactive Microprocessor Architecture Laboratory: Visualize. Execute. Understand.</p>
+
+      <h2 id="overview">Overview</h2>
+      <p>The RISC-V Laboratory, the first module of MAVILERA, is an assembler, simulator and teaching compiler for the RISC-V base integer instruction set
+        (RV32I) with the multiply and divide extension (M), together with three processors that you can watch execute
+        a program clock cycle by clock cycle: a single-cycle, a multicycle and a five-stage pipelined processor.</p>
+      <p>It is a static web page. Every computation runs in your browser; there is no account, no server-side
+        processing, no telemetry, and nothing you write is uploaded.</p>
+
+      <h2 id="start">Getting started</h2>
+      <ol>
+        <li>Open the application. The editor holds a short example program; <strong>Templates</strong> in the toolbar
+          offers others, each showing one idea, with a note at the top on what to try.</li>
+        <li>Press <strong>Assemble</strong> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>). The listing shows each instruction
+          with its address and machine word; errors are underlined in the editor and explained in the console with a hint.</li>
+        <li>Press <strong>Step</strong> (<kbd>F10</kbd>) a few times. The current instruction is marked in the editor and the
+          listing; the register it wrote is marked ◆.</li>
+        <li>Press <strong>Step back</strong> (<kbd>Shift</kbd>+<kbd>F10</kbd>) to undo a step, or <strong>Run</strong>
+          (<kbd>F5</kbd>) to run to the end or to a breakpoint.</li>
+        <li>Choose <strong>Pipelined</strong> at the top. The same program now runs on the pipelined processor: each
+          step is one clock cycle, and the drawing shows which paths each instruction uses.</li>
+      </ol>
+      <p>A program that should end cleanly finishes with the exit system call or with <code>halt</code>:</p>
+<pre><code>        .data
+nums:   .word 3, -1, 4, 1
+        .text
+main:   la    t0, nums        # address of the array
+        lw    a0, 0(t0)
+        lw    t1, 4(t0)
+        add   a0, a0, t1      # a0 = 3 + (-1)
+        li    a7, 93          # exit, with the code in a0
+        ecall</code></pre>
+
+      <h2 id="workspace">The workspace</h2>
+      <p>The page is a workspace of panes, as in a code editor.</p>
+      <ul>
+        <li><strong>Header</strong>: the views (ISA, Single-cycle, Multicycle, Pipelined, Compare); the
+          <em>View</em> menu (show or hide panes, reset the layout); the theme (system, dark, light); projector mode;
+          full screen; the keyboard summary; Help.</li>
+        <li><strong>Toolbar</strong>: Assemble (Compile for C), Run/Pause, Step back, Step, Step over, Step out, Run to
+          cursor, Reset, the speed, the profile and the <em>File</em> menu. Each control has a tooltip with its name and
+          shortcut.</li>
+        <li><strong>Editor</strong>: line numbers with a breakpoint gutter, error marks, completion of mnemonics and
+          registers, and help when you point at an instruction. The status line shows the cursor position, the profile
+          and whether the text is newer than the assembled program.</li>
+        <li><strong>Listing</strong>: address, machine word (hexadecimal, and binary grouped by field on request),
+          instruction and source line. Further tabs show the data, the symbols and, for C, the assembly generated.</li>
+        <li><strong>Instruction inspector</strong>: the selected word split into its fields, named and shaded by role,
+          the immediate as gathered and sign-extended, and the operation in register-transfer notation. At its top,
+          <em>Encode or decode</em> turns one instruction into its word, or a word into its instruction.</li>
+        <li><strong>Registers</strong>: the PC and x0–x31 with their ABI names, in hexadecimal, signed, unsigned or
+          binary, and in decimal; select one to see every format.</li>
+        <li><strong>Call stack</strong>, <strong>Counters</strong> (instructions by class, deepest stack use; cycles and
+          CPI in the processor views), <strong>Memory</strong> (words or bytes, go to an address, a label or where a
+          register points) and <strong>Console</strong> (program output and messages).</li>
+      </ul>
+      <h3>Layout</h3>
+      <p>Every boundary between panes is a divider: drag it, or focus it with <kbd>Tab</kbd> and use the arrow keys
+        (<kbd>Shift</kbd> for larger steps); <kbd>Enter</kbd> or a double click restores it. Panes fold with the chevron in
+        their heading. Sizes are kept in the browser for each view; <em>View ▸ Reset layout</em> forgets them. Below
+        900 px the panes stack and the page scrolls.</p>
+      <p><strong>Projector mode</strong> uses larger type and lines and keeps the editor, the main view and the registers
+        open, with the other panes folded but reachable.</p>
+
+      <h2 id="assembly">Assembly language</h2>
+      <h3>Profiles and memory</h3>
+      <p>The <em>profile</em> decides which instructions are accepted and how memory is laid out.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Profile</th><th>Instructions</th><th>Memory</th></tr></thead>
+        <tbody>
+          <tr><td>ISA (RV32I + M)</td><td>RV32I and M, <code>ecall</code>, <code>ebreak</code>, <code>fence</code></td>
+            <td>One byte-addressed memory: code from <code>0x00000000</code>, data from <code>0x00010000</code>; sp starts at <code>0x00100000</code></td></tr>
+          <tr><td>Single-cycle processor</td><td rowspan="3">The processor subset: <code>add sub sll slt sltu xor srl sra or and</code>,
+            <code>addi slti sltiu xori ori andi slli srli srai</code>, <code>lw sw</code>,
+            <code>beq bne blt bge bltu bgeu</code>, <code>jal jalr lui auipc</code></td>
+            <td>Separate instruction and data memories of 256 words each</td></tr>
+          <tr><td>Multicycle processor</td><td>One memory of 256 words: code from 0, data from <code>0x200</code></td></tr>
+          <tr><td>Pipelined processor</td><td>Separate instruction and data memories of 256 words each</td></tr>
+        </tbody>
+      </table></div>
+      <p>The single-cycle view also offers a smaller instruction set and an extension with <code>lbu</code>, chosen
+        beside the profile.</p>
+      <h3>Registers</h3>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Register</th><th>ABI name</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td>x0</td><td>zero</td><td>always 0</td></tr>
+          <tr><td>x1</td><td>ra</td><td>return address</td></tr>
+          <tr><td>x2</td><td>sp</td><td>stack pointer</td></tr>
+          <tr><td>x3, x4</td><td>gp, tp</td><td>global and thread pointer</td></tr>
+          <tr><td>x5–x7, x28–x31</td><td>t0–t6</td><td>temporaries (caller-saved)</td></tr>
+          <tr><td>x8, x9, x18–x27</td><td>s0–s11 (s0 = fp)</td><td>saved (callee-saved)</td></tr>
+          <tr><td>x10–x17</td><td>a0–a7</td><td>arguments and results</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Directives</h3>
+      <p><code>.text .data .rodata .bss</code> choose the section; <code>.word .half .byte</code> place values;
+        <code>.ascii .asciz .string</code> place text; <code>.space</code> reserves bytes; <code>.align .balign</code>
+        align; <code>.equ .set</code> name a constant. Expressions may use numbers (decimal, <code>0x…</code>,
+        <code>0b…</code>), labels, <code>+</code>, <code>-</code>, parentheses, <code>%hi()</code> and <code>%lo()</code>.</p>
+      <h3>Pseudo-instructions</h3>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Write</th><th>Means</th><th>Assembled as</th></tr></thead>
+        <tbody>
+          <tr><td><code>nop</code></td><td>no operation</td><td><code>addi x0, x0, 0</code></td></tr>
+          <tr><td><code>li rd, value</code></td><td>load a constant</td><td><code>addi</code>, or <code>lui</code> and <code>addi</code> outside ±2048</td></tr>
+          <tr><td><code>la rd, label</code></td><td>load an address</td><td><code>lui</code> and <code>addi</code></td></tr>
+          <tr><td><code>mv rd, rs</code> · <code>not</code> · <code>neg</code></td><td>copy, invert, negate</td><td><code>addi rd, rs, 0</code> · <code>xori rd, rs, -1</code> · <code>sub rd, x0, rs</code></td></tr>
+          <tr><td><code>seqz snez sltz sgtz</code></td><td>set if zero, non-zero, negative, positive</td><td><code>sltiu</code>, <code>sltu</code>, <code>slt</code></td></tr>
+          <tr><td><code>beqz bnez bltz bgez blez bgtz</code></td><td>compare with zero and branch</td><td>a branch against x0</td></tr>
+          <tr><td><code>bgt ble bgtu bleu</code></td><td>branch on &gt; or ≤</td><td><code>blt</code>, <code>bge</code>, <code>bltu</code>, <code>bgeu</code> with the operands swapped</td></tr>
+          <tr><td><code>j label</code> · <code>jr rs</code> · <code>ret</code></td><td>jump, jump to a register, return</td><td><code>jal x0, label</code> · <code>jalr x0, 0(rs)</code> · <code>jalr x0, 0(ra)</code></td></tr>
+          <tr><td><code>call label</code> · <code>tail label</code></td><td>call, and a call that does not return here</td><td><code>jal ra, label</code> · <code>jal x0, label</code></td></tr>
+          <tr><td><code>halt</code></td><td>stop the program</td><td><code>jal x0, 0</code>, a jump to itself</td></tr>
+        </tbody>
+      </table></div>
+      <h3>System calls (ISA profile)</h3>
+      <div class="wrap-table"><table>
+        <thead><tr><th>a7</th><th>Call</th><th>Arguments</th></tr></thead>
+        <tbody>
+          <tr><td>93</td><td>exit</td><td>a0 = exit code</td></tr>
+          <tr><td>64</td><td>write</td><td>a0 = 1 (output) or 2 (errors), a1 = address of the bytes, a2 = their number</td></tr>
+        </tbody>
+      </table></div>
+      <p>Several source files can be assembled together; labels are shared between them. GCC output made with
+        <code>gcc -S -march=rv32im -mabi=ilp32</code> (or <code>rv32i</code>) can be opened directly: it is adapted for
+        the simulator, start-up code is added, and every change is listed in the console.</p>
+
+      <h2 id="c">The C subset</h2>
+      <p>Choose <em>C</em> under <em>Language</em> in the editor heading; <strong>Compile</strong> replaces Assemble. The
+        compiler translates one statement at a time so that each line of C can be followed into its assembly: point at
+        a line on either side to mark its counterpart.</p>
+      <ul>
+        <li><strong>Types</strong>: <code>int</code>, <code>unsigned</code>, <code>char</code>, <code>short</code>,
+          <code>_Bool</code> and the <code>&lt;stdint.h&gt;</code> types up to 32 bits; one-dimensional arrays; pointers.</li>
+        <li><strong>Statements</strong>: <code>if</code>/<code>else</code>, <code>while</code>, <code>do</code>–<code>while</code>,
+          <code>for</code>, <code>switch</code>, <code>break</code>, <code>continue</code>, <code>return</code>; expressions with
+          C's operators and precedence.</li>
+        <li><strong>Functions</strong> with up to eight arguments, following the standard calling convention;
+          <code>putchar</code> and <code>exit</code> are built in.</li>
+        <li><strong>Preprocessor</strong>: comments, <code>#include &lt;stdint.h&gt;</code>, object-like <code>#define</code>,
+          <code>#undef</code>, <code>#if</code>/<code>#ifdef</code>/<code>#ifndef</code>/<code>#elif</code>/<code>#else</code>/<code>#endif</code>,
+          <code>#error</code>.</li>
+        <li><strong>Outside the subset</strong>: structures, floating point, 64-bit types, <code>goto</code>, function-like
+          macros and the standard library. The compiler names such a construct when it meets one.</li>
+      </ul>
+      <p><em>Translation</em>: <strong>Plain</strong> keeps every variable in the stack frame, as an unoptimised compiler
+        does; <strong>Register</strong> keeps scalar locals and parameters in s1–s11. <em>ISA</em>: on RV32I, which has no
+        multiply or divide instructions, the program calls software routines for them. A real compiler such as GCC
+        produces different code.</p>
+
+      <h2 id="debug">Running and debugging</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Control</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Run / Pause</td><td>Runs until the program halts, an error, a breakpoint or a watchpoint. <em>Speed</em> chooses full speed or an animated run.</td></tr>
+          <tr><td>Step / Step back</td><td>One instruction (one clock cycle in a processor view), forwards or backwards. Step back reaches the start of the run; in a very long run the oldest steps are dropped, with a message.</td></tr>
+          <tr><td>Step over</td><td>Runs a call to its return.</td></tr>
+          <tr><td>Step out</td><td>Runs to the return of the current procedure.</td></tr>
+          <tr><td>Run to cursor</td><td>Runs to the instruction of the editor's line.</td></tr>
+          <tr><td>Reset</td><td>Registers, memory and counters back to their initial values.</td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li><strong>Breakpoints</strong>: click a line number in the editor, or an address in the listing (<kbd>B</kbd> on a row).</li>
+        <li><strong>Watchpoints</strong>: tick a register's eye to stop when it is written; double-click a memory word,
+          or type an address or label and press <em>Watch</em>, to stop when that word is written.</li>
+        <li><strong>Call stack</strong>: each call in progress with its call site, return address and the argument
+          registers a0–a7 as they were at the call.</li>
+        <li><strong>Calling-convention check</strong>: faults such as a procedure returning with a register changed that it
+          must keep are reported in the console as they happen.</li>
+        <li><strong>Uninitialised values</strong>: a register read before anything wrote it since reset (other than
+          <code>zero</code> and <code>sp</code>), or a stack word loaded before anything stored it, is reported in the console with
+          a link to its line. This is the simulator's own check, with no reference model behind it; saving <code>ra</code> or
+          <code>s0</code>–<code>s11</code> on the stack in a prologue is not reported, since that is how a procedure keeps them.</li>
+        <li><strong>Endless loops</strong>: a run that does not halt stops after a large number of instructions and names
+          the addresses it is looping between.</li>
+        <li><strong>Errors</strong> at run time (a misaligned access, an unknown system call, a jump into data) stop the
+          run with a message and, where it helps, a hint.</li>
+      </ul>
+
+      <h2 id="processors">Processor views</h2>
+      <p>The three processor views share one layout: the datapath drawing, a row of details tabs below it, and the
+        editor and registers beside it. One step is one clock cycle.</p>
+      <ul>
+        <li>The connections and elements that the current instruction (or state, or stage) uses are highlighted; the rest
+          of the datapath stays visible, muted. Point at a connection or a control line for its value.</li>
+        <li><em>Display</em>: the signal flow after each clock edge (off, slow, normal, fast), moving arrows, all values on
+          the drawing, decimal values, and export of the drawing as SVG or PNG.</li>
+        <li><em>Preset</em> highlights predefined sets of paths on the datapath.</li>
+        <li><em>Enlarge</em> gives the drawing the whole window; <kbd>Esc</kbd> restores it.</li>
+        <li><strong>Waveforms</strong> (a details tab): chosen signals over the clock cycles run so far, as a timing diagram —
+          one-bit signals as a level, wider ones as a bus with its value. Choose the signals with <em>Signals…</em>; select a
+          cycle, or use the cycle buttons, to go to it. The values are the same records as the VCD export; the axis orders
+          cycles and is not hardware timing.</li>
+        <li>Select an element of the drawing (or press <kbd>Enter</kbd> on it) to open its details. The
+          <em>Signals</em> or <em>Cycle</em> tab lists every signal of the cycle as text, the same information as the
+          drawing.</li>
+      </ul>
+
+      <h2 id="single">Single-cycle processor</h2>
+      <p>Every instruction completes in one clock cycle. The tabs are:</p>
+      <ul>
+        <li><strong>Cycle</strong>: what happens in this cycle, in words, and every signal with its value.</li>
+        <li><strong>Control</strong>: the main decoder, the ALU decoder and the branch condition, with the column or row in
+          use marked.</li>
+        <li><strong>Timing</strong>: the critical path of each instruction class, the one that sets the clock period, and
+          the delay table. Change a delay to see the critical paths and the clock period move; <em>Critical path</em> in
+          Display draws the path of the current instruction. The delays are illustrative teaching values, not
+          measurements of any technology.</li>
+        <li><strong>Data memory</strong>.</li>
+      </ul>
+
+      <h2 id="multi">Multicycle processor</h2>
+      <p>Each instruction takes several shorter clock cycles, steered by a state machine (a Moore machine: every
+        output depends on the state alone).</p>
+      <ul>
+        <li>The drawing area shows the <em>Datapath</em> or the <em>State diagram</em>; the current state is filled and
+          the transition taken into it is drawn heavy.</li>
+        <li><strong>Instruction ▶</strong> (<kbd>F11</kbd>) runs the cycles of one instruction, up to the next FETCH;
+          <strong>◀ Instruction</strong> steps back to the FETCH of this instruction or the one before.</li>
+        <li><strong>Controller</strong>: the state-output table with the current state marked, and the decoders outside
+          the state machine.</li>
+        <li><strong>Registers between steps</strong>: the non-architectural registers, what each holds, whether it is
+          written at the next edge and why it is needed; and the architectural state written at the next edge.</li>
+        <li><strong>States over time</strong>: one row per instruction, one column per clock cycle; select a cell to go to
+          that cycle.</li>
+        <li><strong>Step timing</strong>: the critical path of each step and the clock period they set.</li>
+      </ul>
+      <p>Code and data share one memory, with data from <code>0x200</code>. The multicycle processor of this edition has
+        no state for <code>jalr</code>: a program that uses it stops at the <code>jalr</code> with a message.</p>
+
+      <h2 id="pipe">Pipelined processor</h2>
+      <p>A five-stage pipeline (IF, ID, EX, MEM, WB) with pipeline registers IF/ID, ID/EX, EX/MEM and MEM/WB. The
+        drawing shows the instruction in each stage; forwarding multiplexers are part of the datapath.</p>
+      <h3>Settings above the drawing</h3>
+      <ul>
+        <li><strong>Hazards</strong>: how far the hazard unit is built, from none to complete: <em>Stub: none</em> (no
+          forwarding, no stall, no flush), forwarding from MEM only, forwarding from MEM and WB, forwarding with the
+          load-use stall, and <em>Complete</em> (forwarding, load-use stall and flush). With an incomplete unit, stale
+          values and instructions executed on the wrong path are shown and counted.</li>
+        <li><strong>Resolve in</strong>: branches and jumps resolved in EX (the reference design) or, as an extension,
+          in ID, which costs one cycle per redirect instead of two.</li>
+        <li><strong>Predictor</strong>: none (every branch predicted not taken), a 1-bit or a 2-bit branch-history table
+          with a chosen number of entries. While a predictor is selected, its fetch-stage hardware is added to the drawing.</li>
+        <li><strong>Stop on</strong>: a run stops at a stall, a flush or a misprediction, as ticked.</li>
+      </ul>
+      <h3>Details tabs</h3>
+      <ul>
+        <li><strong>Pipeline diagram</strong>: cycles left to right, instructions top to bottom; stalls (‖), flushes (✕),
+          bubbles (○) and wrong-path instructions (!) are marked. Repeated loop iterations can be folded.</li>
+        <li><strong>Hazards</strong>: the outputs of the hazard unit in this cycle and, in words, why.</li>
+        <li><strong>Run summary</strong>: the cycles lost so far, by cause and by place in the program.</li>
+        <li><strong>Pipeline registers</strong>: the contents of each register in this cycle, and whether it is held or cleared.</li>
+        <li><strong>Predictor</strong>: the branch-history table, the lookup in IF and the update at the edge.</li>
+        <li><strong>CPI</strong>: cycles, instructions, stalls and redirects; the CPI from the pipeline model
+          <code>CPI = 1 + f_lu + f_br × m × p + f_j × p</code> beside the measured CPI, and the CPI by component.</li>
+        <li><strong>Signals</strong>: every signal of the cycle, by stage.</li>
+      </ul>
+      <div class="note">This is a five-stage teaching pipeline. Production cores divide the work differently: the
+        Hazard3 cores of the RP2350, for example, have three stages.</div>
+
+      <h2 id="compare">Comparison</h2>
+      <p>The <em>Compare</em> view runs the program of the editor to its halt on the three processors and tabulates the
+        instructions N, the clock cycles, CPI, the clock period T<sub>c</sub>, the time per instruction, the execution time
+        <code>N × CPI × T_c</code> and the speed-up over the single-cycle processor, and whether the registers and data at
+        the halt agree with the single-cycle run. The pipelined count includes four cycles of pipeline fill. The delays
+        are illustrative, not hardware timing.</p>
+
+      <h2 id="exercises">Exercises</h2>
+      <p><em>File ▸ Exercise…</em> lists 14 practice exercises written for MAVILERA — bit counting, Gray code, clamping,
+        greatest common divisor, digit sums, Collatz steps, integer square root, reversing an array, palindromes, polynomials,
+        printing a number, and three in C — each with a starter program and tests; no solutions are included.</p>
+      <p>A teacher can also give a task with tests in a file. Open it with <em>File ▸ Open</em> (or <em>File ▸ Exercise…</em>):
+        the task is shown, <em>Run the tests</em> runs them on the program in the editor, and each test lists what it
+        checks, the expected value and your program's. The file is read in the browser and kept there until you close the
+        exercise; nothing is uploaded, and MAVILERA itself contains no exercises or answers.</p>
+      <h3>The file format, for teachers</h3>
+      <p>A JSON file with <code>"format": "risc-vista-exercise"</code> and <code>"version": 1</code>:</p>
+<pre><code>{
+  "format": "risc-vista-exercise", "version": 1,
+  "title": "Sum of an array",
+  "task": "Write a procedure sum that returns in a0 the sum of the a1 words at the address in a0.",
+  "lang": "asm",                       // or "c"
+  "starter": "...",                    // optional: a program to start from
+  "entry": "sum",                      // optional: call this label as a procedure in each test
+  "tests": [
+    { "name": "four numbers",
+      "registers": { "a0": "arr", "a1": 4 },          // numbers, or labels of the program
+      "memory": [{ "at": "arr", "words": [1, 2, 3, 4] }],
+      "expect": { "registers": { "a0": 10 }, "abi": true },
+      "limit": 100000 }
+  ]
+}</code></pre>
+      <p>Expectations may check <code>registers</code>, <code>memory</code> (<code>words</code>, <code>halves</code> or
+        <code>bytes</code> at a label or address), the console <code>output</code>, the <code>exit</code> code, and
+        <code>"abi": true</code> (the calling convention is kept). With <code>entry</code>, each test calls that procedure
+        with the test's registers and stops at its return; without it, the program runs from its start to its exit. Tests
+        run in the ISA profile; a C program is compiled with the editor's translation settings.</p>
+
+      <h2 id="files">Files, sharing and examples</h2>
+      <ul>
+        <li>Your work is kept in this browser. After a refresh or a closed tab the program comes back with its file
+          name, the cursor and scroll position, breakpoints, watchpoints, data loaded with <em>Data in and out…</em>
+          and the step or clock cycle you had reached (replayed from reset; a run of more than two million steps
+          starts again from reset).</li>
+        <li><strong>Templates</strong> (toolbar): short programs grouped by view (instruction level, C, single-cycle,
+          multicycle, pipelined, comparison), each opening in its view with its settings: a loop, procedures and the
+          stack, recursion, a calling-convention fault, bit fields, endianness, overflow, a watchpoint, the two C
+          translations, the critical path, CPI by class, forwarding, the load-use stall, the hazard unit part by part,
+          branch prediction and its limits, the cost of jumps, and the speed-up of the three processors.</li>
+        <li><em>File ▸ Open…</em> reads <code>.s</code>, <code>.c</code> and settings files (<code>.json</code>).
+          <em>Save .s</em> writes the source.</li>
+        <li><em>File ▸ Copy share link</em> puts the program, the view and its settings into a link, after the
+          <code>#</code>, the part a browser never sends to a server. A program too long for a link is shared with
+          <em>Save program and settings…</em>, a <code>.json</code> file. Opening a link or file keeps your previous text;
+          <em>Restore text before the link</em> brings it back.</li>
+        <li><em>File ▸ Examples…</em> (or <em>More examples…</em> at the end of Templates) opens the templates and further
+          example programs, grouped by topic and processor; each opens in the view of its processor.</li>
+        <li><em>File ▸ Data in and out…</em> loads a CSV, text or binary file into a data array of the program before a
+          run, and saves a memory range as CSV or <code>.bin</code>.</li>
+        <li><em>Import .hex/.bin…</em> runs a memory image without source.</li>
+      </ul>
+
+      <h2 id="exports">Exports</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Export</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td>.hex, .bin</td><td>The program image, for <code>$readmemh</code> or as raw bytes.</td></tr>
+          <tr><td>Listing</td><td>Addresses, machine words and source.</td></tr>
+          <tr><td>Trace (JSON lines, CSV)</td><td>One record per instruction from reset to the halt: the PC, the instruction word, the register written and its value, the memory written (address, size, value); the CSV adds the disassembly.</td></tr>
+          <tr><td>Golden dump</td><td>The state at the halt in a processor view, one word per line, as a testbench compares it.</td></tr>
+          <tr><td>Waveform (VCD)</td><td>The signals of a processor view, cycle by cycle, under the names of the processor's modules. One cycle is 10 ns on the time axis; this is not hardware timing.</td></tr>
+          <tr><td>SVG, PNG</td><td>The datapath drawing of the current cycle, from <em>Display</em>.</td></tr>
+        </tbody>
+      </table></div>
+      <p>The run exports replay the program from reset to its halt; the session you are in is not changed.</p>
+
+      <h2 id="offline">Offline use and privacy</h2>
+      <ul>
+        <li>After a first visit, the hosted application opens without a network connection: the browser keeps its files
+          and checks for a new version when it can.</li>
+        <li>The single-file version, offered on the home page, is one <code>.html</code> file that opens from the local
+          disk and makes no network request.</li>
+        <li>Browsers that support it can install the application as an app from their menu.</li>
+        <li>No account, no tracking, no upload: programs, data files and exports never leave the browser.</li>
+      </ul>
+
+      <h2 id="access">Accessibility</h2>
+      <ul>
+        <li>Every control works from the keyboard, with a visible focus.</li>
+        <li>Every clock cycle of a processor view is also described in text (the Cycle or Signals tab), and every
+          drawing has a title and a description.</li>
+        <li>Control signals are drawn dashed, so they are told apart from data by more than colour. Text contrast in both
+          themes is part of the automated scan. The signal flow is off when the system asks for reduced motion.</li>
+        <li>The interface aims at WCAG 2.2 level AA outside the drawings. Each release is checked with an automated
+          accessibility scan in the tested browsers, recorded in its validation record; no broader conformance is claimed.</li>
+      </ul>
+
+      <h2 id="keys">Keyboard reference</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Keys</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Assemble or compile</td></tr>
+          <tr><td><kbd>F5</kbd></td><td>Run or pause</td></tr>
+          <tr><td><kbd>F10</kbd> / <kbd>Shift</kbd>+<kbd>F10</kbd></td><td>Step / step back (one clock cycle in a processor view)</td></tr>
+          <tr><td><kbd>F11</kbd> / <kbd>Shift</kbd>+<kbd>F11</kbd></td><td>Step over / step out (one instruction in the multicycle view)</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F10</kbd></td><td>Run to the editor's line</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find in the editor</td></tr>
+          <tr><td><kbd>Esc</kbd>, then <kbd>Tab</kbd></td><td>Leave the editor (inside it, <kbd>Tab</kbd> indents)</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>Enter</kbd>, <kbd>B</kbd></td><td>In the listing: move, show the fields, set or clear a breakpoint</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>W</kbd></td><td>In the registers: move, watch</td></tr>
+          <tr><td>Arrow keys on a divider</td><td>Resize panes (<kbd>Shift</kbd> for larger steps; <kbd>Enter</kbd> restores)</td></tr>
+          <tr><td><kbd>Enter</kbd> on a drawn element</td><td>Open its details</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Leave the enlarged drawing</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="limits">Limits of the models</h2>
+      <ul>
+        <li>The processors are teaching models of their datapaths and control. A simulation shows what the model does;
+          it is not evidence of how any hardware implementation behaves.</li>
+        <li>Delays, clock periods and execution times are computed from illustrative delay values.</li>
+        <li>The processor views have small memories and implement a subset of RV32I; the ISA view runs the full RV32I
+          and M instruction sets.</li>
+        <li>The privileged architecture (CSRs, traps, interrupts) is not simulated in this version.</li>
+        <li>What each release was checked against is listed in its validation record, linked from the home page.</li>
+      </ul>
+
+      <h2 id="glossary">Glossary</h2>
+      <dl class="terms">
+        <dt>ABI</dt><dd>The calling convention: which registers carry arguments and results, and which a procedure must keep.</dd>
+        <dt>Bubble</dt><dd>An empty slot in a pipeline stage, inserted by a stall or left by a flush.</dd>
+        <dt>Clock period, T<sub>c</sub></dt><dd>The time of one clock cycle, set by the slowest path that must finish within it.</dd>
+        <dt>Control signal</dt><dd>An output of the control unit that sets a multiplexer, enables a write or selects an ALU operation.</dd>
+        <dt>CPI</dt><dd>Cycles per instruction: clock cycles divided by instructions completed.</dd>
+        <dt>Critical path</dt><dd>The slowest path through the logic between two clock edges.</dd>
+        <dt>Datapath</dt><dd>The registers, memories, ALU, adders and multiplexers that hold and move data.</dd>
+        <dt>Flush</dt><dd>Discarding instructions fetched on the wrong path after a jump or a mispredicted branch.</dd>
+        <dt>Forwarding</dt><dd>Passing a result to a later instruction before it is written to the register file.</dd>
+        <dt>Hazard</dt><dd>A case in which the next instruction in a pipeline cannot proceed as normal: a data dependence or a change of control flow.</dd>
+        <dt>Immediate</dt><dd>A constant encoded in the instruction word.</dd>
+        <dt>Load-use hazard</dt><dd>An instruction that needs the value of the load just before it; forwarding alone cannot supply it in time, so the pipeline stalls for one cycle.</dd>
+        <dt>Pipeline register</dt><dd>The register between two pipeline stages that carries an instruction's values to the next stage.</dd>
+        <dt>Pseudo-instruction</dt><dd>A convenient form that the assembler turns into one or more real instructions.</dd>
+        <dt>Stall</dt><dd>Holding an instruction in its stage for a cycle.</dd>
+      </dl>
+
+      <h2 id="rights">Licence</h2>
+      <p>© 2026 Sajid Muhaimin Choudhury. MAVILERA, its content (processor
+        drawings, tables, help texts, this documentation, example programs) and its logo artwork are licensed under the
+        Apache License, Version 2.0. The names and the logo are not licensed as trademarks. MAVILERA is not affiliated with or endorsed
+        by RISC-V International.</p>
+
+      <footer>
+        <p>MAVILERA RISC-V Laboratory documentation · <a href="../../">MAVILERA Home</a> · <a href="../">Open the application</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

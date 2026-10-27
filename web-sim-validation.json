@@ -1,0 +1,2331 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
+ "record": "web-sim-validation.json (spec WS-V-040)",
+ "tool": "tools/verify.mjs",
+ "date": "2026-10-27T13:10:27.854Z",
+ "version": "1.0.0",
+ "pass": true,
+ "summary": {
+  "checks": 372,
+  "passed": 372,
+  "failed": 0,
+  "skipped": 0,
+  "seconds": 477,
+  "smoke": "pass"
+ },
+ "environment": {
+  "platform": "win32 x64",
+  "node": "v23.9.0",
+  "python": "Python 3.12.7",
+  "iverilog": "Icarus Verilog version 12.0 (devel) (s20150603-1539-g2693dd32b)\r",
+  "gcc": "riscv32-pico-elf-gcc (ga690b2cf8) 16.1.0\r"
+ },
+ "simulator": {
+  "repository": "pips-riscv-lab",
+  "commit": "b7cec1f48a607eb46295025a6fbb1358b35f3d0a",
+  "uncommitted": 265,
+  "sources": {
+   "sha256": "4d6edcc71c9bbe08540e46dd6807227f319b3200f17ae555657cb6d42644b1f6",
+   "files": {
+    "index.html": "d64899fd1dbd3a84745e7c7316ba5575d646cfb3d64a8c32283ad1852b03d6eb",
+    "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
+    "src/asm/assembler.js": "b340c1b8c8c85d2c26ccc0bf792852ec4848be56e891c4a04da64dcca573ca86",
+    "src/asm/disassembler.js": "4b17f19293018bc3fb65b2e08f66ba53f4690dd771efc7bd67633ea63005a22c",
+    "src/asm/gcc-import.js": "a809e3b567a2fe52e00e8e364f67e03d5b4eff5506ff0390434511cc908ab391",
+    "src/asm/scratch.js": "bc9bbce7e475032d52578838d884e36b516d6947a3661d6488f217ed86b0d514",
+    "src/cc/check.js": "36f2f13adc2f7bfcf0c8b958f7281fc79e8747b63edf55a26db724840c60b26d",
+    "src/cc/codegen.js": "8e8e5f5af8e8d622f3c9447e0c0de764743a5c5825d576de3da5a5c8501f33d6",
+    "src/cc/compiler.js": "a96777336293c61cbe324d4b3183dbf5e0d91b231e9eedc7c1ea56f58ffa2949",
+    "src/cc/lexer.js": "291b219a4deb24a9a5653a5ed293a6dcedfba5f3af62f4e3cdcd9aaf5e7e1ced",
+    "src/cc/parser.js": "9adb7f30c24838560a98b608d7f6751c43347a244feecd4444156026a6eec8ae",
+    "src/cc/preprocess.js": "611260b45b8a2efd92bbbf797fbba19c6b699343d047fa25f3aa271650f1bed9",
+    "src/cc/runtime.js": "3dc1a3bbf2de871f8dd129948dbe43d393941d153306e5518913407be932fe28",
+    "src/cc/types.js": "a5aab3e43f9119e080c00cd14878b68889732be95e62b599e8da5d2a5ee8425e",
+    "src/core/callstack.js": "12b4e3a029fc888fc13a3cbd9335bc11daf7af9a0057732cae0ab063d14819e2",
+    "src/core/data-io.js": "0960ab9d7be794c29cc7bc82603d60434e3413593af43aeca043026583be843d",
+    "src/core/exercise.js": "72e7f436a8bb36a84c6c23f7acb9f983b2ed56672bb0874f7afdd8ea88e4da2b",
+    "src/core/exports.js": "9ca7e53abc6504577f89fba126bc805af1a59de44691a789cf3379f2cb57981a",
+    "src/core/history.js": "cf0207e77549746fd0c70c3bf4c4f884a5d11bcc773baede52f83f29d29fae55",
+    "src/core/iss.js": "f28da6839ff86c127cbd89a0a608cf451b76ba605c3cc31b63d393f16752bac1",
+    "src/core/memory.js": "6c8d6aaa0972bc716f3c010ce4b51ed11ec4629bf20d36d27265f578ec887ced",
+    "src/core/profiles.js": "aa777bdd4635ed3763b43f7f019fcde9074d864ea5f2a7da6114078ae4919d5e",
+    "src/core/session.js": "4ec2605fcf5da6c6770269b62ca711bec3d963e581581016496be6b855450e78",
+    "src/core/share.js": "f9b8f8bcc12674b7901c01825dc07e31b7e7f633b15d1b49a2cc7163378f19cb",
+    "src/isa/encoding.js": "0a7879d66eb571565f54875da43f961a2ddbfa016518be77f49d3ce0d230bb60",
+    "src/main.js": "5a76e90b439675bb39cead6e896f5b70ef26d991f1b5910666c2ad5c6d1bf30d",
+    "src/uarch/ch07-jalr.js": "752fc9a893e2e29c8452ac6ae43d899ee089438495173d86f2ee69dd9e71949b",
+    "src/uarch/compare.js": "282c6f5f7d5804b38b72c4b1337f46f35eae836e91bc64727f290ffa667cb2b5",
+    "src/uarch/multi-paths.js": "e426ae7596043586ea44e03ac18e2cd6c1c000001c2cc3605bdd696bc7c3fef2",
+    "src/uarch/multi.js": "0f88a5916f2c72bbfaf84be230a78ba9dc10f182ee099f35a596e71a08f8a7b6",
+    "src/uarch/pipe-paths.js": "7a2da7061ca4d6e8961b02d329d1252b1d849f2dc1330852e863442a595ca969",
+    "src/uarch/pipe-summary.js": "e8bae18ebd531cfcebcf53537cec817d5bf2119201ba1dfafbc2f97ad0ff56d3",
+    "src/uarch/pipe.js": "5c457129dd47fe709c5c1ab9ba61348851c253681a60826624b580c4fcd63087",
+    "src/uarch/signals.js": "f858b4e01be333f4406a5237bb8cfc5062221fe7958efdd7b3cff68b7bd5fe56",
+    "src/uarch/single-paths.js": "f564511d62573058ac72aa076174fb5e633a2703301788c0c0898f59a3cb23c8",
+    "src/uarch/single.js": "84ecf759bd0899c60419ae4fac5c41f84ceb3e394eec9a25cf4bd48b16bfa3fd",
+    "src/uarch/timing.js": "8289df5cf5ba5cf1389c0cfa623b5a81950b8534fb111e8c0a85c016918c1393",
+    "src/ui/assist.js": "fb8a823ad54f1b8b702f2c57b2ba6ef9710f646685f7a7ac1b286f4c44ad838b",
+    "src/ui/compare-view.js": "cde3655577bb641b8c7bf8c534d324fb3ccf6d72609fdfcea0802189f8aa6861",
+    "src/ui/data-dialog.js": "bbcb3a9e283d3509ed3000cd725eeaed65cf899f595c3ff613ecfdeab8c2a61a",
+    "src/ui/datapath.js": "d5044d67933b81625af2587e3335e0793be5da35d349de9ee7f8ec102476ae69",
+    "src/ui/dom.js": "394497f874723f382f288c472b7434721cb0a2db7bb0fb0a99f28b4bf6b3ab82",
+    "src/ui/editor.js": "aa23a16368894005a0e6c7d0e2b8fc1cf097450264f6a72d0f2698b6d5fcee69",
+    "src/ui/examples-dialog.js": "74e79761d7d0b33e8d8683ba4fdfb0583b1eec25e3576b4ac0b4c0567de6b7fa",
+    "src/ui/exercise-dialog.js": "de3a647833768e51ef6cbc3d7cffa164daa5de6c12f560077c1a112195e1c3d9",
+    "src/ui/fsm.js": "3530fc81cacdb578e112c4dc651a09ad30ad7c72793b137447d51a2070dd4fb4",
+    "src/ui/help-dialog.js": "9e24debf01940e74cf2f1520fed907926940e9add81f4b94c25a6f8132d711d7",
+    "src/ui/icons.js": "ffabe954272a383c31f90cdd4174abd04f6f1f6379dff65946d9e8a382a3fdf4",
+    "src/ui/listing.js": "4b9653583efa4df4ccb179a4f8eb174c5e888fd4fdb82b8cb004ecf8e5c11ffd",
+    "src/ui/multi-view.js": "360699fac85e6255e5f20cb9e907afb2b51a307440077bc651facf14ca035cfb",
+    "src/ui/pipe-view.js": "bbdb1a90b46934103a1bb8d8232082bcd15566fb29ca6e7c6f3c9c9f93920747",
+    "src/ui/single-view.js": "4ac0a062d4af01ce89f90906087fd321963f9734a0819d734690327c0b1900cd",
+    "src/ui/split-math.js": "e0edce05f827d405f27fc4a13f225652b7b44ca3773a4d47c4162cf86f99054a",
+    "src/ui/split.js": "0bd29b38c1e05852a7a7840270e37146ecf70c42f85c3cd4c6dbe52c5fb1a56d",
+    "src/ui/state-panels.js": "d61bd7f0033486e0f4e07eaca63ad50db82121933c1957f5a2858bdb1139071d",
+    "src/ui/strings.js": "0060fe57c5af33a4e555e34f638e64960055f6c758637466c62b9a67bf0933b7",
+    "src/ui/theme.css": "48f781ae84790e2ac8bd019f4d18f2865bfc8098dc37c55aa1e6580cdfafa64f",
+    "src/ui/waveform.js": "fe4a2910f3b4944d707d449b93a95d1d9ee6aa4c2d2bf4f665553c1b662474f0",
+    "src/ui/wire-colours.js": "8b9e402a48835295370b5c888b2da6135bd6122c19452dfbea55122ddf05bac4",
+    "src/worker/run.js": "c2e072deb02799e9ce36bba4424b15c062076c716ba352f502a2e9347abf39cf",
+    "content/branding/mavilera/apple-touch-icon.png": "18b334dfaf83c7f55a79ae2a74819de0443ee6f6bac0e72247e7888ac424f32e",
+    "content/branding/mavilera/favicon.ico": "c2ccecc964ac8cb0e72eac25960583ecb25b59f11b053671f113ab2f872b466e",
+    "content/branding/mavilera/icon-16.png": "6a8d3ebe8679b4fc5bd77c74e580d95210405747d71551890a3d9a5d89de4026",
+    "content/branding/mavilera/icon-192.png": "60bd095670c0fab4b15621c0d267bd8f60270f0d21b0b2c78e71aa1154888b59",
+    "content/branding/mavilera/icon-32.png": "0fe95c772ff6f797f11e0081f13d126b3bf47d1a8e72caaf1f4ba101a3082ddd",
+    "content/branding/mavilera/icon-48.png": "c21ef44bedf7886e64b241b26c35005009da09794251f9faa6bcca079306c909",
+    "content/branding/mavilera/icon-512.png": "bfd27154017878621bfc0c5295b74ca889d1902b846e832b6f2fc538013d633f",
+    "content/branding/mavilera/icon-maskable-512.png": "8f4b835f0d491f9082f7e443f572e75d9d726f44712a369bf3c2c20ca1cdea23",
+    "content/branding/mavilera/mavilera-dark.svg": "0cc57db890eafef460d67399dcf4de8f3cecdfb52b4b13544adbd63f651c0f8f",
+    "content/branding/mavilera/mavilera-icon-small.svg": "81bc4807e2101b79963b5bedc4b0deb0c4cc28c16ebfc5ca3064779ba91ce21f",
+    "content/branding/mavilera/mavilera-icon.svg": "29928ec1f600bb35cc2f3c838138d19db9c90962fbb3db8c8fbbdbb29fdc432f",
+    "content/branding/mavilera/mavilera-light.svg": "7cc6663a82f4dc00fc366acc20323d139a3a0eedae815fb97b3a3a868bed451a",
+    "content/branding/mavilera/mavilera-logo.svg": "38e8557b50d954423307bfa3f7a4b2e8dee49b24a4a7c3f37b07747c19e18685",
+    "content/branding/mavilera/mavilera-mono.svg": "d4a5f39de094a0e59e7a5e5bdfd32f662c4472a062798f1e5aafc967eca66118",
+    "content/branding/mavilera/social-preview.png": "f9b9a32475470f5f02b2a670f3a6e7ed7664ecc7d4928a9b78d15d7f5ea726b8",
+    "content/data/ch06-delays.json": "373f9daf6eb638a9c15c553aa1a7d2f04e834c0ba954dc82b82bc2c028c0f053",
+    "content/data/ch06-tables.json": "eb6eb84d017a2a7a4121e304289bee1b48e38742ab182e040a8fc05d2d255c98",
+    "content/data/ch07-jalr.json": "21895cf89209750eaa59227833f919c8f9c2b3632f42e3333a603321ac9d5fae",
+    "content/data/ch07-tables.json": "d239927afa5e77e6650b2d4c111d516917d40315a2464c22b85849ceb87ba5ae",
+    "content/data/ch08-timing.json": "8d25a7ad7ea35138610cc0fdf4097023e14f5606c70e8fa8003d508d96abb953",
+    "content/examples/basics-array.s": "d92f4cf701d0752873899c9e581d9b63d09708baba56ad8c86b1fb8ac9d295d0",
+    "content/examples/basics-bitfield.s": "f6c399bc0211d8569bd5ef302fdb46fbb69cc5b279f61b1b09abb2d801589ca7",
+    "content/examples/basics-const.s": "e28337ff65f51beb5d3271ba65b3989cc9b237729b6fe57a03266860bded19db",
+    "content/examples/basics-divshift.s": "59bb4904c6130a26317b0ead5f5a3ec21331a12755ad0eafca499f9d0a3a4ad4",
+    "content/examples/basics-expr.s": "2e167788997d9af4180aba584db7b3b432b1b31322bede4b69d8f24fde05e2f8",
+    "content/examples/basics-loads.s": "e20c3b4c555f6e9a4c2e499e448bf515d2c826b99ffb51efd908c04883816c3b",
+    "content/examples/basics-trace.s": "9ae326edb5f86a22850bc8203b7c6ef6cdbbd7252e06334cb2e146ee58542850",
+    "content/examples/ch06-branch.s": "d41917046d33b14ea0c1b45fcfca2a6746a7bbced2348be6bf28e742eddf8bf9",
+    "content/examples/ch06-ext.s": "20469c9679a8c7f00be9de9216ae7cdb1d90a5d8453229be593244972039f6ba",
+    "content/examples/ch06-full.s": "7ffc35e2aa10dede0328d74818a2e086c0ba9d99e13149ff2dea9a5a645c2d7b",
+    "content/examples/ch06-lwwave.s": "f8d76d0d9b821f7247d06d65e491fb8dbe1de759b8125ec97b8ad711f79f363b",
+    "content/examples/ch06-mem.s": "ff11b87bed008a57ea399e064396e681a6cb343c10e93cda3f72b3ca6a754243",
+    "content/examples/ch06-rtype.s": "48473f373c53f2cac2ab22dc8fa701c6a1342ed07665c036e071b7d92a3a5572",
+    "content/examples/ch07-branch.s": "f4a09c4129fb0b80dda48b39ec5611745ef8c990d63be0e90f7f8415488dfdd5",
+    "content/examples/ch07-full.s": "241ab0ca701ef81552966abe1848a1c3061c4b514e228fc7be4801f100b08111",
+    "content/examples/ch07-lw-steps.s": "3eb71c838e7473c6c07edada4cbcfeaa7ba0a8568436bb78d7c2a5eb53f9a94c",
+    "content/examples/ch07-mem.s": "28cdf1fa11f66b29aaf5f27a979c38e128ad5491f07da396c6113ad9a4f5f180",
+    "content/examples/ch08-dep.s": "d8e8805897a0c807878d69dfb9b3b5bbc2d22e520148f3895bd567db4de5e6cb",
+    "content/examples/ch08-loaduse.s": "06b0c8c4fefeb65cffe82aaf52bb74d835fa2c6a59b7a572c304f94b6fdbe487",
+    "content/examples/ch08-loop.s": "15252c6b8869ce20bd1f7443bf345cad9267dc1be75c4e0b6c388e772d5391c8",
+    "content/examples/control-branch.s": "afb6ed3a1700a13e53599391f15219e7ccac92b43205f2ef8f97083fd549d527",
+    "content/examples/control-compound.s": "b914f46bf1dd02b36c69da0af4caa12f7ed35a46a58c9700e4783a7a473eb06b",
+    "content/examples/control-fact.s": "40f9c6fb85c1ee02b9177e62bbbbd7a0ff8d3c2935db5330067ddf414342f548",
+    "content/examples/control-max.s": "d07cec6035ed2d07329157ec01e92ff01f73565bea10695bcb32f0d92e24ca4b",
+    "content/examples/control-max3.s": "1f3c2763ee9400205d772456b32f02782a473065b8eccec8ad9b6304670a9da9",
+    "content/examples/control-paths.s": "12eec84baf74a33550a17dccc3f10a2c1df43db53ef7c001a73f6ce7b90cfe3d",
+    "content/examples/control-sum_index.s": "a0befada61df4cef81aea23adf5ce5566de81c447ca77ae6d483ec4bc1541ef3",
+    "content/examples/control-sum_pointer.s": "6ec9f29ae24d846864a9bb3495a8eac3b1a60d37d49b8abac7b4cc3df46da469",
+    "content/examples/control-sumsq.s": "7668264bd10aef4f64cec843e6ee9a11788a1c4efb201b285462db6fce4d9bad",
+    "content/examples/index.json": "75fff4af6d83c3ab731eb033d2e45073f3b360f4b4e5c207709ce570d159515e",
+    "content/examples/tests-abi_bad.s": "c882fed4e0a585885f0e203535b35266451509fe347579daf1733e0104250950",
+    "content/examples/tests-arraysum.s": "1f50ee4674b97d216ec933adef9f0c38ba04a813af36e2b5fa2dcee7cd616ba8",
+    "content/examples/tests-bytes.s": "a5e4402a8349d8c68e07c56d1e397a4d6f4230cc574905d7ebbec435795f453d",
+    "content/examples/tests-divcases.s": "9f62a99db9ffa219e97b287b8a134c822bc4191a4fc2ff2efed11544427395ec",
+    "content/examples/tests-fact.s": "b8007fbaa06bfef6988984410d786f9e8cc3c536955fcadc0e4e4f4a76392778",
+    "content/examples/tests-isa_all.s": "c90127a3c669d8acbef13263e4d6a2c82a9c04188b7e6b544de9d1e5704727c3",
+    "content/exercises/c-find.json": "a4e8845f7e02fdf15ed51f2e38aa518eadd9671390b17af073feafdc0e4d6236",
+    "content/exercises/c-longest-run.json": "5278e6b41de00454bc7444241204f5f14913b07e9e0d5e308162188846a1d836",
+    "content/exercises/c-primes.json": "bb2a23cd878591eaeb4ea0ede5330a23d6c566934e9c69eb49f95edfd5aad4f1",
+    "content/exercises/clamp.json": "4a1b04cfa0f46e0a885c4a0b218ec319d43c28877aadbfa697ef3667391a2fc9",
+    "content/exercises/collatz.json": "d1b356a7ee861e0d71bebb0a33c8690411964ac3767275cfc0567a419fd03be8",
+    "content/exercises/digit-sum.json": "0abe933370aa0fbc83e6c68494e8113002b044fb7d006fc9d6172f8da30d6199",
+    "content/exercises/gcd.json": "5d2e7e4481da5d0ab1cbb97c4bc45c1d2476c8f16131b7d0202a88e847eded0b",
+    "content/exercises/gray.json": "723144effd8a0026af457b0b2815a29b845f7f129eeae38e2b4b31bb38c73626",
+    "content/exercises/horner.json": "c34fdc9f282058265dd2ebfa691dcdf2230532a38989b8bd8fb513816ae1606e",
+    "content/exercises/index.json": "a27c81c6abdf7755d9f716b77ebd4df07c100a793fe3f5e5a0c8777f2795cc90",
+    "content/exercises/isqrt.json": "84968d3556159c9833b00304ef02b5ffc30dd07473c233e220d03868e7fbe849",
+    "content/exercises/palindrome.json": "4b7e5edb88de96f0371c5d3b27fc8b2a44667a5aab12d7523b492f6b8a5aaf1b",
+    "content/exercises/popcount.json": "a01b8776f4df946555ff738858e63df4c70d273240e0550f7bc051e49b503ff9",
+    "content/exercises/print-number.json": "ac13f65e1b8866c6c51bdb373f2eba573c5628b732b3b85e7aa313d4beab54a9",
+    "content/exercises/reverse.json": "498c4676831682e547bb39d90a0ff69f8b0647fb9b6b6ba7da4010ac1ccd7479",
+    "content/geometry/ch06.json": "3e0ee6940559825b7fb6cac4b2f309efa37d3a93361f9cd2eb052ed6ec171169",
+    "content/geometry/ch07.json": "cef435e4b17fe914d52b7ec190a2cb3468c8c23bcc96a12e8c09250d16d22109",
+    "content/geometry/ch08.json": "8222c264af93f3aafaa30c04c91334d42a35d8644c50aba7fceff7718f23d9fe",
+    "content/help/docs/index.html": "64eddaf50c6b4991d7753272d5ba0c435041348ed4d892a9988a9570a85888d4",
+    "content/help/help.json": "b67626899dd0457f111f9cda7a69f8de8d2f5c8bf0370ab40949c823d4bca69a",
+    "content/help/narrative-ch06.json": "612026b34976e25ec309b125a1a2de5d116598fa77cceaa5dcd86805733bad6a",
+    "content/help/narrative-ch07.json": "9006e11087d7edae8e4c4714a373b7e52d6da745e8f00bc82d537fb77491a933",
+    "content/templates/abi-fault.s": "03bfa9ff3dc96560a501bbc61431a898b97296b2cb4b5023e37ad4f9a1dbb876",
+    "content/templates/bit-fields.s": "d7340448b58df4f77c30202985cc694636707c18ac215c3856870add0f95b532",
+    "content/templates/branch-loop.s": "be6e5ce07548b25e7f56a42c8a0f63f59e1b1fad316441466ddc28d9a8f013c2",
+    "content/templates/class-tour.s": "58d1508a86c8dd30abc756609b34617ef0400a1b8edf6b3a91ee8e7c5d001a45",
+    "content/templates/cpi-mix.s": "e342bc4a2d61b740cbdb3418b19b47f0fe818fcd4e8eefcad8770b84784239d9",
+    "content/templates/endianness.s": "988d95e11a067c94580f9501a2b6b4316186d12898bc6fa0b7cf18f030cb1312",
+    "content/templates/forwarding.s": "e0541a94cdaed6ae1cd708517535698694dc2ae0631907fffb4fcee1558f7d94",
+    "content/templates/hazard-unit-steps.s": "af7206fd48461708fedec5b862c823f39f583fe1e4455d993472c1f58922b4c8",
+    "content/templates/hello.s": "31195e602a43470a33bd0967b300d780c2a91871bdc698a4656113ddbca73b7f",
+    "content/templates/index.json": "9ecba416800eec8b517fc279d152baa78bc2b6323d1b07950b503d367b7fdae7",
+    "content/templates/jumps.s": "c95fcced197df11b545c6cd14a387b43020fcda489a082ac0859cbf293d9187e",
+    "content/templates/load-use.s": "3f42560f210e163f149caf4c381bd0ff402142aa5a2568397eb3ccd1b9dd1a22",
+    "content/templates/mispredict-pattern.s": "3415e72ee3dba5f0a152c08a01ddefbf27b09a3b5829475a1f88faa664e4d7bd",
+    "content/templates/overflow.s": "470127288aae07f46e607ae964a65c0bd05f527064a1aa0c35e57b6a7c9f76cd",
+    "content/templates/plain-vs-register.c": "30e21675ba32fcfabafa3abb14d4f527842100c3a0cab514e14ef4b91dd396a2",
+    "content/templates/pointers.c": "f2fdcee046fa24061ab6e839fac557872d47ba86695b59606a3dd5c60d18456d",
+    "content/templates/predictor-aliasing.s": "6571d13f67b7ae443afaa9f51d75c05389517c92f81f5f6134efc3f50cf8e7d2",
+    "content/templates/procedures.s": "665719f57e245bf6237abfb2527d877d6247fd89d6ec296899d7122585a84b5d",
+    "content/templates/recursion.s": "ca753082a2c63974daaddb17dcd5166dc6a90003f43f138e02e01fe828a21c7e",
+    "content/templates/speedup.s": "a35d78384ad7c9cd83fa20b0bd8f146867ad48a248de04ef2d6dc23860311b5e",
+    "content/templates/sum-loop.s": "b7e4bebc96208baf45b3aa5838f60f22ae67aad223984d29431fdd2920696456",
+    "content/templates/watch-overrun.s": "809af4dce59852c1fbe715e81b0c5ebceb2723c5135d108d637c9526800f9b4d"
+   }
+  },
+  "corpus": {
+   "sha256": "da197b2ab3b13a78064928ad15eb75fcfc9f8ed88118d55398313c275f3a1c1d",
+   "files": {
+    "test/a11y.test.mjs": "f93184c8f7a80eae5ce1d35383618e98cd1ddf02b8e2f2c26c14da8626ec34a4",
+    "test/assist.test.mjs": "9be03b57f0f8a23daaa92c37d8357563e15739ab2ee7fcfbb47138c4f1a3e40b",
+    "test/branding.test.mjs": "d3761714767339bad70c823e78e3df2e2754655104cb39506e5b3c3c56307fbb",
+    "test/callstack.test.mjs": "01c15bbc006ca53f10430a9976d7ba39eb44e4be1564e7dc5078bd5a8c335500",
+    "test/cc.test.mjs": "de3777dd752660b4faf4688c903f86b2f191fd1fb92c011db59c7c30f66acf73",
+    "test/ch07-content.mjs": "17bd83ee475efd32d55748506eb848b28ea85727c51aaa6f83e517dcfaa29487",
+    "test/data-io.test.mjs": "a54bd4289b2d8dcbad8364d4609081f176874bf111a4beddf2618303b4701e2e",
+    "test/diagnostics.test.mjs": "05ffdd1a56ba760afed070654432e6d786d0498e29476114d96ce2ccef18a6ec",
+    "test/examples.test.mjs": "99fc38ca3f760c3d5b8993674ff4a1c56dc3bde0b39d7600d310e663b89d27a6",
+    "test/exercise.test.mjs": "a5d8324226b32f1d5712e339518cbabe6a16bc2ac7b5b73504a151f3939822bd",
+    "test/exports.test.mjs": "ed16579a3249e06ea7c3cc08cb6494732bd8ec09b05474ebc66702a6ed4eca39",
+    "test/fields.test.mjs": "4d32b67179fac477df33d95869d4d75ebbc6e806ea907bafaee30eb1aafedf63",
+    "test/fixtures/exercise/sum.json": "086fa0c5dc7322ce10c2c1f4c53d6919dfbd74c2cb9422a0a7c1a954b51eb363",
+    "test/fixtures/gcc/README.md": "aa0fd9f856c08c2c00acc7eb94ce17b3ee3eb6cd706e6989b4bddc9ec833c1a9",
+    "test/fixtures/gcc/calls-O0-rv32im.s": "257f36a55bda91f13961bbeb612e352f4247404f86c81dbf4d97a247cd243277",
+    "test/fixtures/gcc/calls-O1g-rv32i.s": "121879a09d3b69dd93ef4cca5bb36804de2cff557e129aa94c205803aee999a4",
+    "test/fixtures/gcc/calls.c": "3ca0bde08616b6a7768c6e53fe0104d85efb743e6376063282e4122dd6592b1a",
+    "test/fixtures/gcc/sum-O0-rv32im.s": "73d64432566372a713ec001c8ae989adc886244ee47a5a6809f485bf7afb4216",
+    "test/fixtures/gcc/sum-O1-rv32i.s": "35a682b940713c0023532707abcb41243e1c31e2f625684df251c1ff3b0a2c64",
+    "test/fixtures/gcc/sum-O2-rv32im.s": "21e33ff7fb6fc17bf0b022d416ad40e9b9b384fe796e3ec49870e9a2339cb0b1",
+    "test/fixtures/gcc/sum.c": "ec33232dda504bc4bd2093a9176f2cab2fd41aebd58e62254eeff59c046b92d9",
+    "test/gcc-import.test.mjs": "d174834d4d140132f7f26446412da021086dd5ec54e341ad3075ec1d5dadfead",
+    "test/history.test.mjs": "b0e55fa95c9e632b9003a00f89198e65bad5c6d3f8f3e0e0a9e28e483ae4e4be",
+    "test/layout.test.mjs": "ed13e30a4af564e795047935bb1d3f4b57771bc760e1f48583c32e9ff7ca1740",
+    "test/mavilera-brand.test.mjs": "1d84988a3248f01e28b63305020808d30f45b1461efd018cf51bf929b7b9fe53",
+    "test/multi-paths.test.mjs": "721cd0eb19583a1e0a3637529cad71a742256adcd0e1a257f7b5d59fb2525cb7",
+    "test/multi.test.mjs": "ee176bd4b4f4b7ea70910ba483f76d2f2c2d040d878aa2967fa6f08d063d3a39",
+    "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
+    "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
+    "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
+    "test/platform.test.mjs": "6fff4f048bf7bce8aaf58a8a2956a8beff6ffd44c3cdd6f5c6a024e29497334b",
+    "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
+    "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
+    "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
+    "test/random.test.mjs": "2c3f27c2a76ac3cb9bbda309ea3d0f42fed3ae3c9f4d3e4a01e8dd6152c6514e",
+    "test/release.test.mjs": "70b4cb04c679c547f84272e4158311e1e82e0075d6af389abfc8a89da9131842",
+    "test/scratch.test.mjs": "123bc357f09f04cb5d84c9091a400d4a921bae9fcadc78ea37488e153e04e7f7",
+    "test/session.test.mjs": "04431e64dddb0ba9b9526cdf2c2d747482b365d0d053a34b7475d60c7c9e1ef5",
+    "test/share.test.mjs": "0abf528ecfd9e11be3c9211cf498983d05958ca76e9067be275fb8bfba3ccf4d",
+    "test/single-paths.test.mjs": "24664755d1c04dac1707ac7f301fb93572195afeb67d6175dc4f7bb7c416f66c",
+    "test/single.test.mjs": "5e814551e3fe2fa48e252181f93333d9655219e2a6f57f2153c67792d43f8a02",
+    "test/split.test.mjs": "4079cd71f88df0d391da1d4ca0353dd5813025ffdebba9657940f7c9de251633",
+    "test/templates.test.mjs": "f476d1193a3fdf92706f46dbac07d27ea27b6a6cebcf0b1d378dee7e55fe03e1",
+    "test/timing.test.mjs": "2f2707cda7d36d16df28ba8bcab6c1f106777b0bcda7e1174b51ca8bcdc743b9",
+    "test/uninit.test.mjs": "7703a40cd13f36bbcb96384d60a633b7c713cb962a00ae2bb5210b6e179bc234",
+    "test/wire-colours.test.mjs": "ab8c01ea4d3a9bb40e8c800203ba4b19b80354411b0bc6bfabbf1251d959e673",
+    "(not published: tests that need the private book repository or hold exercise solutions)": "19 files, sha256 f27670c2112da37ae53a50fbe12393dd3a22eb89688efe3ff3d265b5da49abee"
+   }
+  },
+  "tools": {
+   "sha256": "9eadf942a4203053de001fc13bc12ef0cfb56fac86985b6466946d45def90c31",
+   "files": {
+    "tools/README.md": "cf7a095a7423b69cae6fa3e58c5105ba4da9343d9fb7d6e9162b97942467bed3",
+    "tools/browser-smoke.mjs": "505b0902283181a4bc7ef343b980169a705895241140d801201afe24a484d1e8",
+    "tools/browser.mjs": "672549033ce915d8be132524030ccbd4f1e374ad9ba8f65c31a3ec3064e7d135",
+    "tools/make-exercises.mjs": "e2e010a60d2ea3011ab11a121f80dcd67eb93dc399d9e645eb03ca28328a8b36",
+    "tools/make-mavilera-brand.mjs": "ee536fbc712df02d955e924c837964340a3c7507c8c005c4ff7e87a1a971a8a6",
+    "tools/offline.mjs": "f38e5316a728436c258a36145692c986b6d9bba8644d90fd2b234b885d940d65",
+    "tools/release.mjs": "0a08051380f1f2661f34e44ee40da8e0dc6305fa989bafdd3162d1d25a3397ec",
+    "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
+    "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
+    "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
+    "tools/site-files.mjs": "a976ed7cdbe89388a7c19b17d76a75187cc4285b633b81248de5640fa4cce8a7",
+    "(not published: scripts that read the private book repository, and the publication scripts)": "13 files, sha256 ee9f039a065f1e69b6ee240f9e068770f38916af1cf0a4e37856a02110108f13"
+   }
+  }
+ },
+ "reference": {
+  "repository": "book repository (private; paths not listed)",
+  "commit": "449bbb3932cb8a4a405aca0e8b955e4b12880d91",
+  "uncommitted": 0,
+  "groups": {
+   "chapter 6 reference RTL and model": {
+    "files": 17,
+    "sha256": "71bba4b6fa4bfd56aacc17c3c09e8944c40572342a862ecba04731bc4d9d6184"
+   },
+   "chapter 7 reference RTL and cycle table": {
+    "files": 7,
+    "sha256": "d4e477c4b6cc36dec192b8868671fe0a3132eef594d5c615d499e4ab54e46746"
+   },
+   "chapter 8 reference RTL, stages and model": {
+    "files": 10,
+    "sha256": "ceae6c507496d1becbe976307d849a2630a39c64a560c7e6f2a47c86b6712d65"
+   },
+   "example sources of chapters 3 and 4": {
+    "files": 68,
+    "sha256": "c076391c9a2d708381a1464058b938cc15f379252d77071b811c187ca2b8d4f6"
+   },
+   "figure generators and palette": {
+    "files": 4,
+    "sha256": "fc6f75141b86fe36afb3f1f8dcde084769ba9ea82000d7785912e69ec66ac7d2"
+   },
+   "chapter sources of the tables and delays": {
+    "files": 12,
+    "sha256": "4d8dc92e759d89a7ed6ff70ee6e656f91c4eb3d6353907a1fe5007852a43aff4"
+   },
+   "ISA reference model, its tests and the student-facing programs": {
+    "files": 85,
+    "sha256": "e0feff091ff12917543579e4b7466c36abb5c30fbdca26024a7210ff02cb8743"
+   }
+  }
+ },
+ "checks": [
+  {
+   "file": "test/a11y.test.mjs",
+   "name": "every part drawn without text has an accessible name (WS-U-031)",
+   "ok": true
+  },
+  {
+   "file": "test/a11y.test.mjs",
+   "name": "projector mode enlarges type and the drawing's lines (WS-U-012)",
+   "ok": true
+  },
+  {
+   "file": "test/assist.test.mjs",
+   "name": "WS-U-021: candidates carry their operand syntax or register number",
+   "ok": true
+  },
+  {
+   "file": "test/assist.test.mjs",
+   "name": "WS-U-021: completion context",
+   "ok": true
+  },
+  {
+   "file": "test/assist.test.mjs",
+   "name": "WS-U-021: hover help for every instruction, pseudo-instruction and register",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "every colour of the logo is a value of the interface tokens (theme.css)",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "mavilera-dark.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "mavilera-icon-small.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "mavilera-icon.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "mavilera-light.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "mavilera-logo.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "mavilera-mono.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "the earlier name is not the application's identity any more",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "the interface names no book: chapters, sections, figures, tables, exercises or laboratories",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "the name, the module name and the tagline",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "the page: title, description, SVG favicon that exists",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "the web-app manifest and the raster icons it and the page name",
+   "ok": true
+  },
+  {
+   "file": "test/callstack.test.mjs",
+   "name": "textNamer: the label at or before an address, with an offset",
+   "ok": true
+  },
+  {
+   "file": "test/callstack.test.mjs",
+   "name": "WS-F-103: the frames survive a Worker round trip",
+   "ok": true
+  },
+  {
+   "file": "test/callstack.test.mjs",
+   "name": "WS-F-103/143: frames, names and a0-a7 at each call",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "programs.c 6 uses 64-bit types and is reported as outside the subset",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "putchar writes to the console and exit ends with its code (ISA profile)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "the chapter processors' memories: a compiled program too large for them is reported",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-081: plain mode keeps variables in the frame; register mode keeps them in s registers",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-082: every assembly line maps to a C line; each statement has its comment and code",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: byte and halfword access, putchar and the M extension on the chapter processors",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: compiled for the ch06 processor (plain), main's result is in a0 at the halt, as on the ISS",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: compiled for the ch06 processor (register), main's result is in a0 at the halt, as on the ISS",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: compiled for the ch07 processor (plain), main's result is in a0 at the halt, as on the ISS",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: compiled for the ch07 processor (register), main's result is in a0 at the halt, as on the ISS",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: compiled for the ch08 processor (plain), main's result is in a0 at the halt, as on the ISS",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: compiled for the ch08 processor (register), main's result is in a0 at the halt, as on the ISS",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-083: on Chapter 7, a program without calls runs without the JALR option; returns need it",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: #if without a matching #endif (line 1)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: 08 is not a valid integer constant (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: an integer given where the pointer int \\* is neede (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: at most 8, all in registers a0–a7 (line 1)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: break outside a loop or a switch (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: case 1 appears twice (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: comma operator is not in the simulator's C subset (line 4)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: expected ; after the declaration, found return (line 4)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: f takes 1 argument, not 2 (line 4)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: floating point: not in the simulator's C subset (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: k is const (line 4)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: long \\(and 64-bit types\\): not in the simulator's  (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: macros with parameters are not in the simulator's  (line 1)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: more than one dimension (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: needs a function main (line 1)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: only #include <stdint.h>; putchar and exit are bui (line 1)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: structures: not in the simulator's C subset (line 1)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: uint32_t needs #include <stdint.h> (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: write 3000000000u for an unsigned constant (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-F-084: y is not declared (line 3)",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-V-030: 32 generated subset programs give the exit code of GCC -O0, in rvsim.py, ABI check clean",
+   "ok": true
+  },
+  {
+   "file": "test/cc.test.mjs",
+   "name": "WS-V-030: programs.c 1-5 (in the subset) give the exit code of GCC -O0, in rvsim.py, ABI check clean",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: asm/abi_bad.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: asm/arraysum.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: asm/bytes.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: asm/divcases.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: asm/fact.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: asm/multi_main.s + asm/multi_lib.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: branch/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: branch/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: dep/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: ext/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: full/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: full/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: loaduse/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: loop/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: lwwave/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: mem/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: mem/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: rtype/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-010/011/012/013: we71/prog.s against rvasm.py, rvdis.py and rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-012: isa_all.s encodes to the recorded GNU as words",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-012: priv_all.s encodes to the recorded GNU as words",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-013: isa_all.s disassembles as the recorded objdump -M no-aliases",
+   "ok": true
+  },
+  {
+   "file": "test/conformance.test.mjs",
+   "name": "WS-V-013: priv_all.s disassembles as the recorded objdump -M no-aliases",
+   "ok": true
+  },
+  {
+   "file": "test/data-io.test.mjs",
+   "name": "WS-F-145: a load reaches the run, survives a new assembly, and must fit",
+   "ok": true
+  },
+  {
+   "file": "test/data-io.test.mjs",
+   "name": "WS-F-145: a range saved as CSV reads back; .bin is little-endian",
+   "ok": true
+  },
+  {
+   "file": "test/data-io.test.mjs",
+   "name": "WS-F-145: an array has room up to the next data label",
+   "ok": true
+  },
+  {
+   "file": "test/data-io.test.mjs",
+   "name": "WS-F-145: numbers from CSV and text",
+   "ok": true
+  },
+  {
+   "file": "test/diagnostics.test.mjs",
+   "name": "stated difference from rvasm.py: extra or missing operands of system instructions are errors",
+   "ok": true
+  },
+  {
+   "file": "test/diagnostics.test.mjs",
+   "name": "WS-F-001/WS-F-003: instructions outside the profile are reported, not syntax errors",
+   "ok": true
+  },
+  {
+   "file": "test/diagnostics.test.mjs",
+   "name": "WS-F-011: an error in the second file names that file and its line",
+   "ok": true
+  },
+  {
+   "file": "test/diagnostics.test.mjs",
+   "name": "WS-F-012: diagnostics carry suggestions, the expected form and the faulty token",
+   "ok": true
+  },
+  {
+   "file": "test/diagnostics.test.mjs",
+   "name": "WS-F-013: a pseudo-instruction lists the real instructions it became",
+   "ok": true
+  },
+  {
+   "file": "test/diagnostics.test.mjs",
+   "name": "WS-V-014: diagnostics corpus",
+   "ok": true
+  },
+  {
+   "file": "test/diagnostics.test.mjs",
+   "name": "WS-V-014: messages equal rvasm.py where it reports the same fault",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: basics-array assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: basics-bitfield assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: basics-const assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: basics-divshift assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: basics-expr assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: basics-loads assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: basics-trace assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch06-branch assembles in ch06",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch06-ext assembles in ch06 (ext)",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch06-full assembles in ch06",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch06-lwwave assembles in ch06",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch06-mem assembles in ch06",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch06-rtype assembles in ch06",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch07-branch assembles in ch07",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch07-full assembles in ch07",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch07-lw-steps assembles in ch07",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch07-mem assembles in ch07",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch08-dep assembles in ch08",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch08-loaduse assembles in ch08",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: ch08-loop assembles in ch08",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: content/examples equals a fresh export from the book repository",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-branch assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-compound assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-fact assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-max assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-max3 assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-paths assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-sum_index assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-sum_pointer assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: control-sumsq assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: tests-abi_bad assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: tests-arraysum assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: tests-bytes assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: tests-divcases assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: tests-fact assembles in iss and runs to its halt",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: tests-isa_all assembles in iss",
+   "ok": true
+  },
+  {
+   "file": "test/examples.test.mjs",
+   "name": "WS-F-123: the index tags every example and names only student-facing sources (C5)",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "C5: no test fixture or model solution is published with the site (the practice exercises of W-D24 are)",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "register names: x0-x31, ABI names, fp",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "WS-F-148: a C program, compiled as the student would, is tested the same way",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "WS-F-148: a correct procedure passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "WS-F-148: a procedure that breaks the calling convention fails the test that asks for it",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "WS-F-148: a wrong procedure fails, with expected against actual",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "WS-F-148: the file is checked and its problems named",
+   "ok": true
+  },
+  {
+   "file": "test/exercise.test.mjs",
+   "name": "WS-F-148: whole programs: output, exit code and memory; a missing label and a program that does not halt",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-060: clock periods are the chapters' 900 ps, 410 ps and 370 ps (tab:mc-compare, tab:pipe-compare)",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-060: comparison of chapter06/branch: cycle counts equal the chapters' golden dumps",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-060: comparison of chapter06/full: cycle counts equal the chapters' golden dumps",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-060: comparison of chapter06/mem: cycle counts equal the chapters' golden dumps",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-060: comparison of chapter06/rtype: cycle counts equal the chapters' golden dumps",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-060: without the JALR option the multicycle column reports the stop; profile errors are named",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter06/branch is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter06/ext is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter06/full is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter06/lwwave is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter06/mem is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter06/rtype is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter07/branch is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter07/full is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter07/lwwave is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter07/mem is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter07/rtype is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter07/we71 is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/c6branch is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/c6full is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/c6full_bp is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/c6mem is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/c6rtype is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/dep is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/loaduse is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/loop is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-124: golden-dump export of chapter08/loop_bp is byte-identical to golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-125: VCD of chapter06/branch on rv32i_pipe reads back to the model's signal values",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-125: VCD of chapter06/full on rv32i_single reads back to the model's signal values",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-125: VCD of chapter07/full on rv32i_multi reads back to the model's signal values",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-126: trace export of sim/tests/asm/arraysum.s equals rvsim.py's JSON-lines trace",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-126: trace export of sim/tests/asm/bytes.s equals rvsim.py's JSON-lines trace",
+   "ok": true
+  },
+  {
+   "file": "test/exports.test.mjs",
+   "name": "WS-F-126: trace export of sim/tests/asm/fact.s equals rvsim.py's JSON-lines trace",
+   "ok": true
+  },
+  {
+   "file": "test/fields.test.mjs",
+   "name": "WS-F-022: the step-by-step immediate equals the decoded immediate",
+   "ok": true
+  },
+  {
+   "file": "test/gcc-import.test.mjs",
+   "name": "WS-F-085: a call to a routine the import does not supply is listed as missing",
+   "ok": true
+  },
+  {
+   "file": "test/gcc-import.test.mjs",
+   "name": "WS-F-085: calls-O0-rv32im.s imports and runs as GCC + rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/gcc-import.test.mjs",
+   "name": "WS-F-085: calls-O1g-rv32i.s imports and runs as GCC + rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/gcc-import.test.mjs",
+   "name": "WS-F-085: sum-O0-rv32im.s imports and runs as GCC + rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/gcc-import.test.mjs",
+   "name": "WS-F-085: sum-O1-rv32i.s imports and runs as GCC + rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/gcc-import.test.mjs",
+   "name": "WS-F-085: sum-O2-rv32im.s imports and runs as GCC + rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/gcc-import.test.mjs",
+   "name": "WS-F-085: the report lists what was filtered and added",
+   "ok": true
+  },
+  {
+   "file": "test/history.test.mjs",
+   "name": "a history exported and appended (Worker round trip) steps back the same way",
+   "ok": true
+  },
+  {
+   "file": "test/history.test.mjs",
+   "name": "history memory is 20 bytes per step",
+   "ok": true
+  },
+  {
+   "file": "test/history.test.mjs",
+   "name": "WS-F-090: stepping back to the start restores every earlier state exactly",
+   "ok": true
+  },
+  {
+   "file": "test/history.test.mjs",
+   "name": "WS-F-090: the history drops the oldest steps at its limit",
+   "ok": true
+  },
+  {
+   "file": "test/layout.test.mjs",
+   "name": "every code and content file carries the copyright line and its rights class",
+   "ok": true
+  },
+  {
+   "file": "test/layout.test.mjs",
+   "name": "LICENSE is the Apache License 2.0; NOTICE and TRADEMARKS.md exist (W-D25)",
+   "ok": true
+  },
+  {
+   "file": "test/layout.test.mjs",
+   "name": "no server-side code (WS-N-008)",
+   "ok": true
+  },
+  {
+   "file": "test/layout.test.mjs",
+   "name": "Pip artwork only in content/pip/, listed and marked",
+   "ok": true
+  },
+  {
+   "file": "test/layout.test.mjs",
+   "name": "shipped site makes no third-party network references (WS-N-005)",
+   "ok": true
+  },
+  {
+   "file": "test/mavilera-brand.test.mjs",
+   "name": "every SVG is self-contained, licensed and uses only theme colours (or black/white)",
+   "ok": true
+  },
+  {
+   "file": "test/mavilera-brand.test.mjs",
+   "name": "raster icons exist; the favicon holds 16, 32 and 48 px PNGs; the social image is 1200 x 630",
+   "ok": true
+  },
+  {
+   "file": "test/multi-paths.test.mjs",
+   "name": "W-D20: without content/data/ch07-jalr.json (a release) nothing of the JALR answer remains, and the diagram matches the rules",
+   "ok": true
+  },
+  {
+   "file": "test/multi-paths.test.mjs",
+   "name": "WS-F-040: every state path, drawn or derived, agrees with the state-output table",
+   "ok": true
+  },
+  {
+   "file": "test/multi-paths.test.mjs",
+   "name": "WS-F-040: the drawn states take the chapter's sets; FIG-0068 and FIG-0069 are their unions",
+   "ok": true
+  },
+  {
+   "file": "test/multi-paths.test.mjs",
+   "name": "WS-F-041: the state diagram has an arc for every next-state rule, and no other",
+   "ok": true
+  },
+  {
+   "file": "test/multi-paths.test.mjs",
+   "name": "WS-F-072: every connection and control stub of the Chapter 7 drawing names a dictionary signal",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "an unimplemented instruction stops in DECODE; a misaligned lw stops in ADDR",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "chapter07/branch: back-stepping returns every cycle's state, to the start",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "chapter07/full: back-stepping returns every cycle's state, to the start",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "chapter07/lwwave: back-stepping returns every cycle's state, to the start",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "chapter07/mem: back-stepping returns every cycle's state, to the start",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "chapter07/rtype: back-stepping returns every cycle's state, to the start",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "chapter07/we71: back-stepping returns every cycle's state, to the start",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "controller: state outputs of the chapter table, don't-cares 0, next states of FIG-0072",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "without the JALR option, jalr stops in DECODE naming the option",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-020: chapter07/branch gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-020: chapter07/full gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-020: chapter07/lwwave gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-020: chapter07/mem gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-020: chapter07/rtype gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-020: chapter07/we71 gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-023: chapter07/branch, cycles of every instruction equal mc_cpi.json for its class",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-023: chapter07/full, cycles of every instruction equal mc_cpi.json for its class",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-023: chapter07/lwwave, cycles of every instruction equal mc_cpi.json for its class",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-023: chapter07/mem, cycles of every instruction equal mc_cpi.json for its class",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-023: chapter07/rtype, cycles of every instruction equal mc_cpi.json for its class",
+   "ok": true
+  },
+  {
+   "file": "test/multi.test.mjs",
+   "name": "WS-V-023: chapter07/we71, cycles of every instruction equal mc_cpi.json for its class",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-paths.test.mjs",
+   "name": "WS-F-050/052: the stage paths name connections of the drawing; bubbles use nothing; feeds follow the selects",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-paths.test.mjs",
+   "name": "WS-F-072: every connection and control stub of the Chapter 8 drawing names a dictionary signal",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-summary.test.mjs",
+   "name": "WS-F-091: the stop events of each cycle agree with the counters",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-summary.test.mjs",
+   "name": "WS-F-140: hazard summary of a loop names the load and its user, the branch and the jump",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-summary.test.mjs",
+   "name": "WS-F-140: the lost cycles of the summary add up to the cycle identity",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-summary.test.mjs",
+   "name": "WS-F-140: without the flush a redirect loses no cycle and is marked",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-summary.test.mjs",
+   "name": "WS-F-141: folding keeps the first, last and differing iterations; the folded cycles become a gap",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-summary.test.mjs",
+   "name": "WS-F-141: iterations are cut at the loop-closing branch, not at calls",
+   "ok": true
+  },
+  {
+   "file": "test/pipe-summary.test.mjs",
+   "name": "WS-F-142: prediction statistics and CPI components of the textbook model",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "back-stepping returns every state, and the diagram record survives it",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "back-stepping returns every state, and the diagram record survives it (early resolution)",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "complete hazard unit: architectural results equal the ISA engine; no stale operand",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "cycle counts and golden dumps equal the chapter's cycle model (pipe_model.py) on generated programs",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "predictors: 1-bit and 2-bit tables, reset values and saturation",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "the laboratory stages: earlier stages read stale values or run the wrong path, and say so",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "the signal dictionary of Chapter 8 has unique names and every signal is evaluated",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-F-057 extension: early branch resolution equals its cycle model (tools/ref_cycles_ch08.py --early) and the ISA engine",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-F-057: early resolution needs the complete hazard unit",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/c6branch gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/c6full gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/c6full_bp gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/c6mem gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/c6rtype gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/dep gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/loaduse gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/loop gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/pipe.test.mjs",
+   "name": "WS-V-020: chapter08/loop_bp gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/platform.test.mjs",
+   "name": "landing page: the required wording, the card slot, no claims for planned modules, no old name",
+   "ok": true
+  },
+  {
+   "file": "test/platform.test.mjs",
+   "name": "paths stay relative: no root-absolute asset or link in the pages, the manifest or the service worker source",
+   "ok": true
+  },
+  {
+   "file": "test/platform.test.mjs",
+   "name": "registry: unique ids and paths, a known status, nothing but the RISC-V module available",
+   "ok": true
+  },
+  {
+   "file": "test/platform.test.mjs",
+   "name": "the app links to MAVILERA Home only in a release, and the logo files it reads exist",
+   "ok": true
+  },
+  {
+   "file": "test/platform.test.mjs",
+   "name": "the earlier product name appears nowhere user-facing: pages, strings, manifest, documentation",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "C5: no model solution is published; the published exercises hold tests, not programs that pass them",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise c-find: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise c-longest-run: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise c-primes: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise clamp: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise collatz: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise digit-sum: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise gcd: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise gray: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise horner: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise isqrt: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise palindrome: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise popcount: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise print-number: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise reverse: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "the exercise files are those tools/make-exercises.mjs writes",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "W-D24: no practice exercise takes the title of a textbook exercise or laboratory task",
+   "ok": true
+  },
+  {
+   "file": "test/random.test.mjs",
+   "name": "WS-V-011: random instruction streams in lock-step with rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "W-D20: a release publishes the application without the JALR answer and without the site documentation",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "W-D20: the in-app help has sections of known block kinds, and the documentation no unfilled fields",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "W-D20: the multicycle files, the JALR file included, are what tools/export_ch07.py writes from the book",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "WS-N-002: every module of the offline build exports what Node.js reads from it",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "WS-N-002: the offline page holds the release content, marked as the release edition",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "WS-N-002: the offline rewriting refuses what it does not understand",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-multi.test.mjs",
+   "name": "WS-V-021: chapter07/branch, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-multi.test.mjs",
+   "name": "WS-V-021: chapter07/full, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-multi.test.mjs",
+   "name": "WS-V-021: chapter07/lwwave, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-multi.test.mjs",
+   "name": "WS-V-021: chapter07/mem, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-multi.test.mjs",
+   "name": "WS-V-021: chapter07/rtype, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-multi.test.mjs",
+   "name": "WS-V-021: chapter07/we71, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/c6branch, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/c6full_bp with BP_ENTRIES 2 and 16",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/c6full_bp, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/c6full, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/c6mem, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/c6rtype, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/dep, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/loaduse, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/loop_bp with BP_ENTRIES 2 and 16",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/loop_bp, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021: chapter08/loop, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-021/022: generated programs, complete unit with each predictor and the laboratory stages",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-022: chapter08/dep under each laboratory stage of the hazard unit equals the RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-022: chapter08/loaduse under each laboratory stage of the hazard unit equals the RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-pipe.test.mjs",
+   "name": "WS-V-022: chapter08/loop under each laboratory stage of the hazard unit equals the RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl.test.mjs",
+   "name": "WS-V-021: chapter06/branch, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl.test.mjs",
+   "name": "WS-V-021: chapter06/ext, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl.test.mjs",
+   "name": "WS-V-021: chapter06/full, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl.test.mjs",
+   "name": "WS-V-021: chapter06/lwwave, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl.test.mjs",
+   "name": "WS-V-021: chapter06/mem, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl.test.mjs",
+   "name": "WS-V-021: chapter06/rtype, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/scratch.test.mjs",
+   "name": "WS-F-024: a word decodes to its instruction",
+   "ok": true
+  },
+  {
+   "file": "test/scratch.test.mjs",
+   "name": "WS-F-024: an instruction encodes to its word",
+   "ok": true
+  },
+  {
+   "file": "test/scratch.test.mjs",
+   "name": "WS-F-024: decode then encode gives the word back for every instruction of the table",
+   "ok": true
+  },
+  {
+   "file": "test/scratch.test.mjs",
+   "name": "WS-F-024: errors and refusals",
+   "ok": true
+  },
+  {
+   "file": "test/session.test.mjs",
+   "name": "a program with instructions outside the profile is not runnable (WS-F-001)",
+   "ok": true
+  },
+  {
+   "file": "test/session.test.mjs",
+   "name": "back-stepping after a run returns to the start state",
+   "ok": true
+  },
+  {
+   "file": "test/session.test.mjs",
+   "name": "breakpoints and register watchpoints stop a run",
+   "ok": true
+  },
+  {
+   "file": "test/session.test.mjs",
+   "name": "step out returns to the caller of the innermost call",
+   "ok": true
+  },
+  {
+   "file": "test/session.test.mjs",
+   "name": "step over a recursive call stops after it returns, with the result",
+   "ok": true
+  },
+  {
+   "file": "test/session.test.mjs",
+   "name": "the run budget stops a runaway loop and names its address range",
+   "ok": true
+  },
+  {
+   "file": "test/share.test.mjs",
+   "name": "WS-F-122/144: a state goes through a link unchanged, compressed or not",
+   "ok": true
+  },
+  {
+   "file": "test/share.test.mjs",
+   "name": "WS-F-144: another version or format is refused with a message",
+   "ok": true
+  },
+  {
+   "file": "test/share.test.mjs",
+   "name": "WS-F-144: the settings file carries format and version, and reads back",
+   "ok": true
+  },
+  {
+   "file": "test/share.test.mjs",
+   "name": "WS-N-013: a long program fits a link once compressed; unknown keys are dropped",
+   "ok": true
+  },
+  {
+   "file": "test/single-paths.test.mjs",
+   "name": "WS-F-030: active elements are elements of the drawing; every class keeps the fetch path",
+   "ok": true
+  },
+  {
+   "file": "test/single-paths.test.mjs",
+   "name": "WS-F-030: the branch path is the highlight of FIG-0006",
+   "ok": true
+  },
+  {
+   "file": "test/single-paths.test.mjs",
+   "name": "WS-F-030: the lw path is the highlight of FIG-0004",
+   "ok": true
+  },
+  {
+   "file": "test/single-paths.test.mjs",
+   "name": "WS-F-030: the R path is the highlight of FIG-0003",
+   "ok": true
+  },
+  {
+   "file": "test/single-paths.test.mjs",
+   "name": "WS-F-030: the sw path is the highlight of FIG-0005",
+   "ok": true
+  },
+  {
+   "file": "test/single-paths.test.mjs",
+   "name": "WS-F-072: the drawing and the signal dictionary name the same signals",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "chapter06/branch: lock-step with the ISA engine (ch06 profile), and back to the start",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "chapter06/ext: lock-step with the ISA engine (ch06 profile), and back to the start",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "chapter06/full: lock-step with the ISA engine (ch06 profile), and back to the start",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "chapter06/lwwave: lock-step with the ISA engine (ch06 profile), and back to the start",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "chapter06/mem: lock-step with the ISA engine (ch06 profile), and back to the start",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "chapter06/rtype: lock-step with the ISA engine (ch06 profile), and back to the start",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "every decoder value of the chapter tables decodes, and control widths agree",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "unknown opcode decodes to all zeros and stops the model; misaligned lw stops it",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "WS-V-020: chapter06/branch gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "WS-V-020: chapter06/ext gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "WS-V-020: chapter06/full gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "WS-V-020: chapter06/lwwave gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "WS-V-020: chapter06/mem gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/single.test.mjs",
+   "name": "WS-V-020: chapter06/rtype gives golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/split.test.mjs",
+   "name": "dragPair: only the two neighbours change, their sum is kept, minimum sizes hold",
+   "ok": true
+  },
+  {
+   "file": "test/split.test.mjs",
+   "name": "normalise: fractions sum to 1; unusable input gives equal shares",
+   "ok": true
+  },
+  {
+   "file": "test/split.test.mjs",
+   "name": "readLayout: versioned, checked against the structure, robust to damage",
+   "ok": true
+  },
+  {
+   "file": "test/split.test.mjs",
+   "name": "resetPair: a double click restores the default proportion within the share the pair has now",
+   "ok": true
+  },
+  {
+   "file": "test/split.test.mjs",
+   "name": "the workspace stylesheet styles dividers, folded panes and both themes; the layout strings exist",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "every template file is in the index, every entry has a file, a group, a view and a check",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template abi-fault: Breaking the calling convention",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template bit-fields: Bit fields: shifts and masks",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template branch-loop: A taken branch costs two cycles; a predictor learns",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template class-tour: One instruction of each class, and the critical path",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cpi-mix: Cycles per instruction: ALU loop and load loop",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template endianness: Bytes, half-words and words: little-endian memory",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template forwarding: Data dependences and forwarding",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template hazard-unit-steps: The hazard unit, part by part",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template hello: Hello, RISC-V: the write system call",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template jumps: Calls and returns: the cost of a jump",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template load-use: The load-use stall, and scheduling around it",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template mispredict-pattern: Nested loops: 1-bit and 2-bit prediction",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template overflow: Signed and unsigned, overflow, division by zero",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template plain-vs-register: One function, plain and register translations",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template pointers: Array index and pointer walk",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template predictor-aliasing: Two branches sharing a predictor entry",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template procedures: Calls, returns and a stack frame",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template recursion: Recursion: factorial and the call stack",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template speedup: One program on three processors: the speed-up",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template sum-loop: A counted loop over an array",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template watch-overrun: A watchpoint catches a write past an array",
+   "ok": true
+  },
+  {
+   "file": "test/timing.test.mjs",
+   "name": "critical paths equal verify_chapter06.paths() for random delay tables",
+   "ok": true
+  },
+  {
+   "file": "test/timing.test.mjs",
+   "name": "WS-V-024: every class gives the delay of tab:sc-paths; the largest sets T_c",
+   "ok": true
+  },
+  {
+   "file": "test/timing.test.mjs",
+   "name": "WS-V-024: the lw path runs along the connections and arrival times of FIG-0012",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147 planted fault: a byte of a half-word never stored",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147 planted fault: a stack word loaded before it is stored",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147 planted fault: an argument the caller did not set",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147 planted fault: exit code never set",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147 planted fault: ra used by a return that no call set",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147 planted fault: registers read before any write",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147: a prologue that saves ra and s0-s11 it never wrote, then restores them, is not a fault",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147: off by default in the engine (the conformance runs and the exports are unchanged)",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147: step back withdraws the warnings of the undone steps; stepping again gives them once",
+   "ok": true
+  },
+  {
+   "file": "test/uninit.test.mjs",
+   "name": "WS-F-147: the ISA templates and the compiled C templates give no warning",
+   "ok": true
+  },
+  {
+   "file": "test/wire-colours.test.mjs",
+   "name": "colourWires on the Chapter 8 drawing: close nets of different signals never share a colour",
+   "ok": true
+  },
+  {
+   "file": "test/wire-colours.test.mjs",
+   "name": "colourWires: a lone wire keeps colour 0; neighbours differ; one net shares a colour",
+   "ok": true
+  },
+  {
+   "file": "test/wire-colours.test.mjs",
+   "name": "runClose: parallel within the gap over a long enough stretch; crossings and far lines are not close",
+   "ok": true
+  }
+ ],
+ "smoke": {
+  "axeCore": "4.14.0",
+  "exitStatus": 0,
+  "browsers": [
+   {
+    "name": "chrome",
+    "version": "Chrome/155.0.8059.85",
+    "installed": true,
+    "results": [
+     {
+      "name": "loads without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+      "ok": true
+     },
+     {
+      "name": "assemble, step three times, step back once (WS-F-090)",
+      "ok": true
+     },
+     {
+      "name": "trace export equals the headless runner (WS-F-126, WS-F-127)",
+      "ok": true
+     },
+     {
+      "name": "golden dump of the pipelined view equals the headless runner (WS-F-124)",
+      "ok": true
+     },
+     {
+      "name": "share link round trip: program and view (WS-F-122)",
+      "ok": true
+     },
+     {
+      "name": "every tab stop of the ISA view shows a visible focus (WS-U-030)",
+      "ok": true
+     },
+     {
+      "name": "every tab stop of the pipelined view shows a visible focus (WS-U-030)",
+      "ok": true
+     },
+     {
+      "name": "projector mode: every view keeps the editor, its main pane and the registers open, and every pane reachable (WS-U-012)",
+      "ok": true
+     },
+     {
+      "name": "release edition: the multicycle and comparison views offer no JALR state (W-D20)",
+      "ok": true
+     },
+     {
+      "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+      "ok": true
+     },
+     {
+      "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+      "ok": true
+     },
+     {
+      "name": "help: the dialog opens with its topics, each topic shows, and it passes the axe-core scan (W-D20, WS-U-034)",
+      "ok": true
+     },
+     {
+      "name": "templates: the toolbar menu opens a pipelined template in its view with its settings, without errors",
+      "ok": true
+     },
+     {
+      "name": "a reload keeps the program, the step reached, breakpoints and watchpoints",
+      "ok": true
+     },
+     {
+      "name": "M8: waveforms of the pipelined view, a cycle chosen on them; the panel passes the axe-core scan (WS-F-146)",
+      "ok": true
+     },
+     {
+      "name": "M8: an exercise file opened from the disk runs its tests on the program; the dialog passes the axe-core scan (WS-F-148)",
+      "ok": true
+     },
+     {
+      "name": "M8: an uninitialised register read is reported in the console (WS-F-147)",
+      "ok": true
+     },
+     {
+      "name": "release site: the landing page and the documentation load and pass the axe-core scan in both themes (WS-U-034)",
+      "ok": true
+     },
+     {
+      "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 32 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "name": "edge",
+    "version": "Edg/151.0.4129.78",
+    "installed": true,
+    "results": [
+     {
+      "name": "loads without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+      "ok": true
+     },
+     {
+      "name": "assemble, step three times, step back once (WS-F-090)",
+      "ok": true
+     },
+     {
+      "name": "trace export equals the headless runner (WS-F-126, WS-F-127)",
+      "ok": true
+     },
+     {
+      "name": "golden dump of the pipelined view equals the headless runner (WS-F-124)",
+      "ok": true
+     },
+     {
+      "name": "share link round trip: program and view (WS-F-122)",
+      "ok": true
+     },
+     {
+      "name": "every tab stop of the ISA view shows a visible focus (WS-U-030)",
+      "ok": true
+     },
+     {
+      "name": "every tab stop of the pipelined view shows a visible focus (WS-U-030)",
+      "ok": true
+     },
+     {
+      "name": "projector mode: every view keeps the editor, its main pane and the registers open, and every pane reachable (WS-U-012)",
+      "ok": true
+     },
+     {
+      "name": "release edition: the multicycle and comparison views offer no JALR state (W-D20)",
+      "ok": true
+     },
+     {
+      "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+      "ok": true
+     },
+     {
+      "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+      "ok": true
+     },
+     {
+      "name": "help: the dialog opens with its topics, each topic shows, and it passes the axe-core scan (W-D20, WS-U-034)",
+      "ok": true
+     },
+     {
+      "name": "templates: the toolbar menu opens a pipelined template in its view with its settings, without errors",
+      "ok": true
+     },
+     {
+      "name": "a reload keeps the program, the step reached, breakpoints and watchpoints",
+      "ok": true
+     },
+     {
+      "name": "M8: waveforms of the pipelined view, a cycle chosen on them; the panel passes the axe-core scan (WS-F-146)",
+      "ok": true
+     },
+     {
+      "name": "M8: an exercise file opened from the disk runs its tests on the program; the dialog passes the axe-core scan (WS-F-148)",
+      "ok": true
+     },
+     {
+      "name": "M8: an uninitialised register read is reported in the console (WS-F-147)",
+      "ok": true
+     },
+     {
+      "name": "release site: the landing page and the documentation load and pass the axe-core scan in both themes (WS-U-034)",
+      "ok": true
+     },
+     {
+      "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 32 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+      "ok": true
+     }
+    ]
+   }
+  ]
+ }
+}

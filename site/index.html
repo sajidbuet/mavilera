@@ -1,0 +1,210 @@
+<!doctype html>
+<!--
+  site/index.html -- the MAVILERA landing page, published at /mavilera/ (spec W-D25). tools/release.mjs
+  fills the {{...}} fields and builds the architecture cards from site/architectures.json; it refuses to
+  build while any field is unfilled. Paths are relative, so the page works under any base path.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA: Interactive Microprocessor Architecture Laboratory</title>
+  <meta name="description" content="MAVILERA is an open-source educational platform for exploring microprocessor architecture through interactive simulation, visualization, and instruction execution.">
+  <meta name="theme-color" content="#145e56">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MAVILERA: Interactive Microprocessor Architecture Laboratory">
+  <meta property="og:description" content="Visualize. Execute. Understand. An open-source educational platform for exploring microprocessor architecture.">
+  <meta property="og:url" content="{{SITE_URL}}">
+  <meta property="og:image" content="{{SITE_URL}}brand/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" sizes="16x16 32x32 48x48" href="brand/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="brand/mavilera-icon-small.svg">
+  <link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
+  <style>
+    /* tokens: the values of src/ui/theme.css, light and dark */
+    :root {
+      --primary: #145e56; --primary-hover: #0f766e; --primary-on: #ffffff; --primary-soft: #e7f4f1;
+      --insight: #1f4e79; --amber: #a85a00;
+      --bg: #f3f6f7; --surface: #ffffff; --surface-2: #f7fafa; --border: #dce4e5;
+      --text: #18343b; --text-2: #5f727a;
+      --shadow: 0 8px 24px rgba(16, 40, 45, 0.14);
+      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #46a799; --primary-hover: #4fb3a6; --primary-on: #06201d; --primary-soft: #16302d;
+        --insight: #8fb4dc; --amber: #e3a453;
+        --bg: #0e1214; --surface: #151b1e; --surface-2: #1a2125; --border: #2b363b;
+        --text: #dde7e9; --text-2: #96a7ae;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--primary); text-underline-offset: 2px; }
+    a:hover { color: var(--primary-hover); }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+    img { max-width: 100%; height: auto; display: block; }
+    code { font-family: var(--font-code); font-size: 0.92em; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+
+    /* header */
+    .top { border-bottom: 1px solid var(--border); background: var(--surface); }
+    .top .wrap { display: flex; align-items: center; gap: 16px; min-height: 60px; flex-wrap: wrap; }
+    .top .brand img { height: 34px; width: auto; }
+    .top nav { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+    .top nav a { color: var(--text); text-decoration: none; font-size: 15px; }
+    .top nav a:hover { color: var(--primary); text-decoration: underline; }
+
+    /* buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-weight: 600;
+           text-decoration: none; border: 1px solid transparent; font-size: 16px; }
+    .btn-primary { background: var(--primary); color: var(--primary-on); }
+    .btn-primary:hover { background: var(--primary-hover); color: var(--primary-on); }
+    .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+    .top nav a.btn { padding: 7px 14px; font-size: 15px; color: var(--primary-on); text-decoration: none; }
+
+    /* hero */
+    .hero { padding-top: 56px; padding-bottom: 40px; }
+    @media (max-width: 600px) { .top nav a:not(.btn) { display: none; } }
+    .hero h1 { margin: 0; }
+    .hero h1 img { width: min(520px, 100%); }
+    .tagline { margin: 18px 0 6px; font-size: 20px; font-weight: 600; color: var(--insight); letter-spacing: 0.02em; }
+    .lead { font-size: 18px; max-width: 46em; margin: 0 0 24px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .note { color: var(--text-2); font-size: 14px; margin: 0; }
+    .shot { margin: 40px 0 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
+            background: var(--surface); }
+    figcaption { padding: 8px 14px; font-size: 14px; color: var(--text-2); border-top: 1px solid var(--border); }
+
+    /* sections */
+    section { padding: 48px 0; border-top: 1px solid var(--border); }
+    h2 { font-size: 26px; margin: 0 0 20px; line-height: 1.25; }
+    h3 { font-size: 18px; margin: 0 0 6px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+    .card p { margin: 0; color: var(--text); }
+    .card h3::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 10px; border-radius: 2px;
+                       background: var(--primary); vertical-align: 1px; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    @media (max-width: 760px) { .two { grid-template-columns: 1fr; } .hero { padding-top: 32px; } }
+    dl.facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+    dl.facts dt { font-weight: 600; }
+    dl.facts dd { margin: 0; }
+    ul.plain { margin: 0; padding-left: 20px; }
+    ul.plain li + li { margin-top: 4px; }
+
+    .status { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-2); margin-left: 8px; vertical-align: 2px; }
+    .status.ok { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+    .arch { display: flex; flex-direction: column; gap: 10px; }
+    .arch.planned { background: var(--surface-2); }
+    .arch.planned h3::before { background: var(--text-2); }
+    .arch .actions { margin: 6px 0 0; }
+    .btn-disabled { background: transparent; color: var(--text-2); border: 1px dashed var(--border); cursor: not-allowed; }
+    .path { margin: 0; color: var(--text-2); font-size: 14px; }
+    .hero-title { display: flex; align-items: center; gap: 18px; margin: 0; }
+    .hero-title img { width: 72px; height: 72px; }
+    .hero-title span { font-size: clamp(34px, 7vw, 56px); font-weight: 800; letter-spacing: 0.06em; line-height: 1.1; }
+    .descriptor { margin: 10px 0 0; font-size: 22px; color: var(--text); }
+    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
+    footer p { margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="./" aria-label="MAVILERA home"><img src="brand/mavilera-logo.svg" alt="" width="262" height="48"></a>
+      <nav aria-label="Page">
+        <a href="#architectures">Architectures</a>
+        <a href="#learning">Learning</a>
+        <a href="#about">About</a>
+        <a href="riscv/docs/">Documentation</a>
+        <a href="{{REPO_URL}}">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap hero">
+      <h1 class="hero-title"><img src="brand/mavilera-icon.svg" alt="" width="72" height="72"><span>MAVILERA</span></h1>
+      <p class="descriptor">Interactive Microprocessor Architecture Laboratory</p>
+      <p class="tagline">Visualize. Execute. Understand.</p>
+      <p class="lead">MAVILERA is an open-source educational platform for exploring microprocessor architecture through
+        interactive simulation, visualization, and instruction execution.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a>
+        <a class="btn btn-secondary" href="#architectures">Explore Architectures</a>
+      </div>
+      <p class="note">Runs entirely in your browser: no account, no installation, and no program or data is uploaded.</p>
+
+      <figure class="shot">
+        <picture>
+          <source srcset="screens/workspace-dark.jpg" media="(prefers-color-scheme: dark)">
+          <img src="screens/workspace-light.jpg" width="1568" height="737"
+               alt="The MAVILERA RISC-V Laboratory in the instruction-level view: an assembly program in the editor, the listing with addresses and machine words, the instruction inspector, the registers, call stack, counters, memory and console.">
+        </picture>
+        <figcaption>The RISC-V Laboratory, the first MAVILERA module.</figcaption>
+      </figure>
+    </div>
+
+    <section id="architectures" aria-labelledby="h-arch">
+      <div class="wrap">
+        <h2 id="h-arch">Architectures</h2>
+        <p class="note" style="margin-bottom:16px">Each architecture is a separate simulator with its own address. Only the available one can be launched.</p>
+        <div class="grid">
+{{CARDS}}
+        </div>
+      </div>
+    </section>
+
+    <section id="learning" aria-labelledby="h-learning">
+      <div class="wrap">
+        <h2 id="h-learning">Learning by observing</h2>
+        <p>These are the activities the RISC-V Laboratory supports today:</p>
+        <div class="grid">
+          <div class="card"><h3>Interactive execution</h3><p>Assemble a program, then step forwards and backwards, run to a breakpoint or a watchpoint, and see each instruction's effect.</p></div>
+          <div class="card"><h3>Datapath observation</h3><p>Single-cycle, multicycle and five-stage pipelined processors, animated signal by signal on their datapath drawings.</p></div>
+          <div class="card"><h3>Processor-state inspection</h3><p>Registers, memory, call stack, counters and the console, updated as the program runs.</p></div>
+          <div class="card"><h3>Control-flow visualization</h3><p>The controller's state diagram, the pipeline diagram, forwarding, stalls, flushes and branch prediction.</p></div>
+          <div class="card"><h3>Experiments with instructions</h3><p>Short teaching programs and practice exercises, each opening in the view that shows its idea; a comparison of one program on the three processors.</p></div>
+        </div>
+        <p class="note" style="margin-top:16px">A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.
+          Tested browsers for this release of the RISC-V Laboratory: {{BROWSERS}}. Only the browsers listed were tested.</p>
+        <p style="margin-top:12px"><a href="riscv/{{OFFLINE_FILE}}" download>Download the single-file offline version of the RISC-V Laboratory ({{OFFLINE_SIZE}})</a> ·
+          <a href="riscv/web-sim-validation.json">validation record</a></p>
+      </div>
+    </section>
+
+    <section id="about" aria-labelledby="h-about">
+      <div class="wrap">
+        <h2 id="h-about">About</h2>
+        <p>MAVILERA stands for <strong>M</strong>icroprocessor <strong>A</strong>rchitecture <strong>V</strong>isualization,
+          <strong>I</strong>nteractive <strong>L</strong>earning, <strong>E</strong>xecution, and <strong>R</strong>untime
+          <strong>A</strong>nalysis. It is written by Sajid Muhaimin Choudhury. The simulators are independent of one another:
+          each has its own execution engine, tests and build, and is deployed at its own address. MAVILERA needs no textbook,
+          course or account.</p>
+        <p>MAVILERA is a provisional project name, pending legal clearance.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>MAVILERA</strong> · Interactive Microprocessor Architecture Laboratory · RISC-V Laboratory {{VERSION}}, {{DATE}}</p>
+      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="riscv/docs/">Documentation</a> · <a href="{{REPO_URL}}">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
+      <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
+    </div>
+  </footer>
+</body>
+</html>

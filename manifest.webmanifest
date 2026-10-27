@@ -1,0 +1,18 @@
+{
+  "name": "MAVILERA: RISC-V Laboratory",
+  "short_name": "MAVILERA",
+  "description": "An interactive, browser-based environment for RISC-V assembly programming, processor simulation, debugging, and microarchitecture visualization.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f7",
+  "theme_color": "#145e56",
+  "categories": ["education", "developer"],
+  "icons": [
+    { "src": "content/branding/mavilera/mavilera-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "content/branding/mavilera/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "content/branding/mavilera/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "content/branding/mavilera/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

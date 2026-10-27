@@ -1,0 +1,19 @@
+{
+  "format": "risc-vista-exercise",
+  "version": 1,
+  "title": "Sum of an array (sample exercise for the tests)",
+  "task": "Write a procedure sum that returns in a0 the sum of the a1 words at the address in a0. Keep the calling convention.",
+  "lang": "asm",
+  "starter": "        .data\narr:    .space 64\n        .text\nsum:    # your code\n        ret\n",
+  "entry": "sum",
+  "tests": [
+    { "name": "four numbers", "registers": { "a0": "arr", "a1": 4 },
+      "memory": [{ "at": "arr", "words": [1, 2, 3, 4] }],
+      "expect": { "registers": { "a0": 10 }, "abi": true } },
+    { "name": "negative numbers", "registers": { "a0": "arr", "a1": 3 },
+      "memory": [{ "at": "arr", "words": [-5, 2, -1] }],
+      "expect": { "registers": { "a0": -4 }, "abi": true } },
+    { "name": "no numbers", "registers": { "a0": "arr", "a1": 0 },
+      "expect": { "registers": { "a0": 0 } } }
+  ]
+}
