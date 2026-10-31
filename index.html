@@ -12,7 +12,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MAVILERA: Interactive Microprocessor Architecture Laboratory</title>
   <meta name="description" content="MAVILERA is an open-source educational platform for exploring microprocessor architecture through interactive simulation, visualization, and instruction execution.">
-  <meta name="theme-color" content="#145e56">
+  <meta name="theme-color" content="#0b2a55">
   <meta property="og:type" content="website">
   <meta property="og:title" content="MAVILERA: Interactive Microprocessor Architecture Laboratory">
   <meta property="og:description" content="Visualize. Execute. Understand. An open-source educational platform for exploring microprocessor architecture.">
@@ -20,26 +20,26 @@
   <meta property="og:image" content="https://sajidlab.org/mavilera/brand/social-preview.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" sizes="16x16 32x32 48x48" href="brand/favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="brand/mavilera-icon-small.svg">
+  <link rel="icon" type="image/svg+xml" href="brand/mavilera-icon.svg">
   <link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
   <style>
     /* tokens: the values of src/ui/theme.css, light and dark */
     :root {
-      --primary: #145e56; --primary-hover: #0f766e; --primary-on: #ffffff; --primary-soft: #e7f4f1;
+      --primary: #1a4f8b; --primary-hover: #2263a8; --primary-on: #ffffff; --primary-soft: #e6f0fa;
       --insight: #1f4e79; --amber: #a85a00;
-      --bg: #f3f6f7; --surface: #ffffff; --surface-2: #f7fafa; --border: #dce4e5;
-      --text: #18343b; --text-2: #5f727a;
-      --shadow: 0 8px 24px rgba(16, 40, 45, 0.14);
+      --bg: #f2f5fa; --surface: #ffffff; --surface-2: #f7f9fc; --border: #d8e0eb;
+      --text: #0b2a55; --text-2: #5a6b82;
+      --shadow: 0 8px 24px rgba(11, 42, 85, 0.14);
       --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
       color-scheme: light;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --primary: #46a799; --primary-hover: #4fb3a6; --primary-on: #06201d; --primary-soft: #16302d;
+        --primary: #5b9bd5; --primary-hover: #74acdf; --primary-on: #071a33; --primary-soft: #132a45;
         --insight: #8fb4dc; --amber: #e3a453;
-        --bg: #0e1214; --surface: #151b1e; --surface-2: #1a2125; --border: #2b363b;
-        --text: #dde7e9; --text-2: #96a7ae;
+        --bg: #0a1120; --surface: #101a2b; --surface-2: #142034; --border: #24344d;
+        --text: #e3eaf4; --text-2: #94a5bd;
         --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
         color-scheme: dark;
       }
@@ -60,7 +60,7 @@
     /* header */
     .top { border-bottom: 1px solid var(--border); background: var(--surface); }
     .top .wrap { display: flex; align-items: center; gap: 16px; min-height: 60px; flex-wrap: wrap; }
-    .top .brand img { height: 34px; width: auto; }
+    .top .brand img { height: 26px; width: auto; }
     .top nav { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
     .top nav a { color: var(--text); text-decoration: none; font-size: 15px; }
     .top nav a:hover { color: var(--primary); text-decoration: underline; }
@@ -78,8 +78,7 @@
     .hero { padding-top: 56px; padding-bottom: 40px; }
     @media (max-width: 600px) { .top nav a:not(.btn) { display: none; } }
     .hero h1 { margin: 0; }
-    .hero h1 img { width: min(520px, 100%); }
-    .tagline { margin: 18px 0 6px; font-size: 20px; font-weight: 600; color: var(--insight); letter-spacing: 0.02em; }
+   .tagline { margin: 18px 0 6px; font-size: 20px; font-weight: 600; color: var(--insight); letter-spacing: 0.02em; }
     .lead { font-size: 18px; max-width: 46em; margin: 0 0 24px; }
     .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
     .note { color: var(--text-2); font-size: 14px; margin: 0; }
@@ -91,6 +90,7 @@
     section { padding: 48px 0; border-top: 1px solid var(--border); }
     h2 { font-size: 26px; margin: 0 0 20px; line-height: 1.25; }
     h3 { font-size: 18px; margin: 0 0 6px; }
+.module-head { margin: 20px 0 10px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
     .card p { margin: 0; color: var(--text); }
@@ -112,9 +112,12 @@
     .arch .actions { margin: 6px 0 0; }
     .btn-disabled { background: transparent; color: var(--text-2); border: 1px dashed var(--border); cursor: not-allowed; }
     .path { margin: 0; color: var(--text-2); font-size: 14px; }
-    .hero-title { display: flex; align-items: center; gap: 18px; margin: 0; }
-    .hero-title img { width: 72px; height: 72px; }
-    .hero-title span { font-size: clamp(34px, 7vw, 56px); font-weight: 800; letter-spacing: 0.06em; line-height: 1.1; }
+    .hero-logo { margin: 0; }
+    .hero-logo img { width: min(820px, 100%); height: auto; }
+    /* on narrow screens the logo drops its subtitle, which is then set as text */
+    .hero-expansion { display: none; margin: 8px 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+                      text-transform: uppercase; color: var(--text-2); }
+    @media (max-width: 600px) { .hero-expansion { display: block; } }
     .descriptor { margin: 10px 0 0; font-size: 22px; color: var(--text); }
     footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
     footer p { margin: 4px 0; }
@@ -124,12 +127,12 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <div class="wrap">
-      <a class="brand" href="./" aria-label="MAVILERA home"><img src="brand/mavilera-logo.svg" alt="" width="262" height="48"></a>
+      <a class="brand" href="./" aria-label="MAVILERA home"><img src="brand/mavilera-wordmark.svg" alt="" width="1590" height="192"></a>
       <nav aria-label="Page">
         <a href="#architectures">Architectures</a>
         <a href="#learning">Learning</a>
         <a href="#about">About</a>
-        <a href="riscv/docs/">Documentation</a>
+        <a href="riscv/docs/">RISC-V documentation</a>
         <a href="https://github.com/sajidbuet/mavilera">GitHub</a>
       </nav>
     </div>
@@ -137,13 +140,17 @@
 
   <main id="main">
     <div class="wrap hero">
-      <h1 class="hero-title"><img src="brand/mavilera-icon.svg" alt="" width="72" height="72"><span>MAVILERA</span></h1>
+      <h1 class="hero-logo"><picture><source media="(max-width: 600px)" srcset="brand/mavilera-lockup.svg" width="1614" height="588"><img src="brand/mavilera-full.svg" width="1615" height="682"
+          alt="MAVILERA: Microprocessor Architecture Visualizer for Interactive Learning, Execution, and Runtime Analysis"></picture></h1>
+      <p class="hero-expansion" aria-hidden="true">Microprocessor Architecture Visualizer for Interactive Learning, Execution, and Runtime Analysis</p>
       <p class="descriptor">Interactive Microprocessor Architecture Laboratory</p>
       <p class="tagline">Visualize. Execute. Understand.</p>
       <p class="lead">MAVILERA is an open-source educational platform for exploring microprocessor architecture through
         interactive simulation, visualization, and instruction execution.</p>
       <div class="actions">
         <a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a>
+        <a class="btn btn-secondary" href="sap-1/">Launch SAP-1 Laboratory</a>
+        <a class="btn btn-secondary" href="sap-2/">Launch SAP-2 Laboratory</a>
         <a class="btn btn-secondary" href="#architectures">Explore Architectures</a>
       </div>
       <p class="note">Runs entirely in your browser: no account, no installation, and no program or data is uploaded.</p>
@@ -161,15 +168,17 @@
     <section id="architectures" aria-labelledby="h-arch">
       <div class="wrap">
         <h2 id="h-arch">Architectures</h2>
-        <p class="note" style="margin-bottom:16px">Each architecture is a separate simulator with its own address. Only the available one can be launched.</p>
+        <p class="note" style="margin-bottom:16px">Each architecture is a separate simulator with its own address. Only the available ones can be launched.</p>
         <div class="grid">
           <article class="card arch available"><h3>RISC-V<span class="status ok">Available</span></h3><p>RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths.</p>
             <p class="path">Address: <code>/mavilera/riscv/</code></p>
             <div class="actions"><a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a><a class="btn btn-secondary" href="riscv/docs/">Documentation</a></div></article>
-          <article class="card arch planned"><h3>SAP-1<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
-            <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>
-          <article class="card arch planned"><h3>SAP-2<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
-            <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>
+          <article class="card arch available"><h3>SAP-1<span class="status ok">Available</span></h3><p>The simple-as-possible computer: five instructions, sixteen bytes of memory, an accumulator and an adder-subtracter on one bus, each instruction stepped through its six timing states on a drawing of the bus and its controller.</p>
+            <p class="path">Address: <code>/mavilera/sap-1/</code></p>
+            <div class="actions"><a class="btn btn-primary" href="sap-1/">Launch SAP-1 Laboratory</a><a class="btn btn-secondary" href="sap-1/docs/">Documentation</a></div></article>
+          <article class="card arch available"><h3>SAP-2<span class="status ok">Available</span></h3><p>The simple-as-possible computer, version 2: 43 instructions, 64K bytes of memory, a flag pair, CALL and RET, and input and output ports with a keys-and-serial panel; each instruction stepped through its timing states on a drawing of the bus and its controller.</p>
+            <p class="path">Address: <code>/mavilera/sap-2/</code></p>
+            <div class="actions"><a class="btn btn-primary" href="sap-2/">Launch SAP-2 Laboratory</a><a class="btn btn-secondary" href="sap-2/docs/">Documentation</a></div></article>
           <article class="card arch planned"><h3>MOS 6502<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
             <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>
           <article class="card arch planned"><h3>Intel 8086<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
@@ -185,7 +194,8 @@
     <section id="learning" aria-labelledby="h-learning">
       <div class="wrap">
         <h2 id="h-learning">Learning by observing</h2>
-        <p>These are the activities the RISC-V Laboratory supports today:</p>
+        <p>These are the activities the laboratories support today.</p>
+        <h3 class="module-head">RISC-V Laboratory</h3>
         <div class="grid">
           <div class="card"><h3>Interactive execution</h3><p>Assemble a program, then step forwards and backwards, run to a breakpoint or a watchpoint, and see each instruction's effect.</p></div>
           <div class="card"><h3>Datapath observation</h3><p>Single-cycle, multicycle and five-stage pipelined processors, animated signal by signal on their datapath drawings.</p></div>
@@ -193,9 +203,25 @@
           <div class="card"><h3>Control-flow visualization</h3><p>The controller's state diagram, the pipeline diagram, forwarding, stalls, flushes and branch prediction.</p></div>
           <div class="card"><h3>Experiments with instructions</h3><p>Short teaching programs and practice exercises, each opening in the view that shows its idea; a comparison of one program on the three processors.</p></div>
         </div>
+        <h3 class="module-head">SAP-1 Laboratory</h3>
+        <div class="grid">
+          <div class="card"><h3>One bus, six timing states</h3><p>Each instruction stepped clock by clock through its fetch and execute states on a drawing of the bus, the registers and the controller, with the control word of every state.</p></div>
+          <div class="card"><h3>Programming the simple-as-possible computer</h3><p>Five instructions in sixteen bytes of memory: assemble, step forwards and backwards, run to a breakpoint or a watched register, and encode or decode a byte.</p></div>
+          <div class="card"><h3>Waveforms and files</h3><p>The control signals, the bus and the registers as waveforms and VCD; memory images, traces, a dump of the output, and data files loaded into a program.</p></div>
+          <div class="card"><h3>Practice exercises</h3><p>Short tasks with tests that run on your program and show expected against actual values.</p></div>
+        </div>
+        <h3 class="module-head">SAP-2 Laboratory</h3>
+        <div class="grid">
+          <div class="card"><h3>Instruction by instruction, state by state</h3><p>Forty-three instructions with their timing states, stepped on a drawing of the bus, the registers and the controller, with the microinstruction and the signals of every state.</p></div>
+          <div class="card"><h3>Programming with ports and subroutines</h3><p>Sixty-four kilobytes of memory with a read-only region, two flags, CALL and RET, and input and output ports: assemble, step forwards and backwards, run to a breakpoint, and encode or decode bytes.</p></div>
+          <div class="card"><h3>Keys, serial ports and files</h3><p>A panel of keys and a serial switch that feed the input ports, with the output ports shown as bytes and bits; waveforms, VCD, memory images, traces and a dump of the port writes and memory.</p></div>
+          <div class="card"><h3>Templates and practice exercises</h3><p>Short programs that open in the view that shows their idea, and tasks with tests that run on your program and show expected against actual values.</p></div>
+        </div>
         <p class="note" style="margin-top:16px">A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.
-          Tested browsers for this release of the RISC-V Laboratory: Chrome 155, Edge 151. Only the browsers listed were tested.</p>
-        <p style="margin-top:12px"><a href="riscv/mavilera-riscv-1.0.0.html" download>Download the single-file offline version of the RISC-V Laboratory (1091 kB)</a> ·
+          Tested browsers for this release: Chrome 156. Only the browsers listed were tested.</p>
+        <p style="margin-top:12px"><a href="riscv/mavilera-riscv-1.0.0.html" download>Download the single-file offline version of the RISC-V Laboratory (1738 kB)</a> ·
+          <a href="sap-1/mavilera-sap-1-1.0.0.html" download>Download the single-file offline version of the SAP-1 Laboratory (704 kB)</a> ·
+          <a href="sap-2/mavilera-sap-2-1.0.0.html" download>Download the single-file offline version of the SAP-2 Laboratory (748 kB)</a> ·
           <a href="riscv/web-sim-validation.json">validation record</a></p>
       </div>
     </section>
@@ -203,8 +229,8 @@
     <section id="about" aria-labelledby="h-about">
       <div class="wrap">
         <h2 id="h-about">About</h2>
-        <p>MAVILERA stands for <strong>M</strong>icroprocessor <strong>A</strong>rchitecture <strong>V</strong>isualization,
-          <strong>I</strong>nteractive <strong>L</strong>earning, <strong>E</strong>xecution, and <strong>R</strong>untime
+        <p>MAVILERA stands for <strong>M</strong>icroprocessor <strong>A</strong>rchitecture <strong>V</strong>isualizer
+          for <strong>I</strong>nteractive <strong>L</strong>earning, <strong>E</strong>xecution, and <strong>R</strong>untime
           <strong>A</strong>nalysis. It is written by Sajid Muhaimin Choudhury. The simulators are independent of one another:
           each has its own execution engine, tests and build, and is deployed at its own address. MAVILERA needs no textbook,
           course or account.</p>
@@ -215,8 +241,8 @@
 
   <footer>
     <div class="wrap">
-      <p><strong>MAVILERA</strong> · Interactive Microprocessor Architecture Laboratory · RISC-V Laboratory 1.0.0, 2026-10-27</p>
-      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="riscv/docs/">Documentation</a> · <a href="https://github.com/sajidbuet/mavilera">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
+      <p><strong>MAVILERA</strong> · Interactive Microprocessor Architecture Laboratory · release 1.0.0, 2026-10-27: RISC-V Laboratory, SAP-1 Laboratory, SAP-2 Laboratory</p>
+      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="riscv/docs/">RISC-V documentation</a> · <a href="https://github.com/sajidbuet/mavilera">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
       <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
     </div>
   </footer>

@@ -1,0 +1,304 @@
+<!doctype html>
+<!--
+  content/sap-2/help/docs/index.html -- the detailed documentation of the MAVILERA SAP-2 Laboratory, published at
+  /mavilera/sap-2/docs/ beside the application (/mavilera/sap-2/) by tools/release.mjs.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: content. Apache-2.0.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA SAP-2 Laboratory documentation</title>
+  <meta name="description" content="Documentation of the MAVILERA SAP-2 Laboratory: the workspace, SAP-2 assembly, the ports, running and debugging, the bus view, files, exports and offline use.">
+  <meta name="theme-color" content="#0b2a55">
+  <!-- in a release, tools/release.mjs places the icons at the site root, two levels up -->
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../../icon.svg">
+  <style>
+    /* the MAVILERA palette (W-D30): the tokens of src/ui/theme.css */
+    :root {
+      --primary: #1a4f8b; --primary-soft: #e8f1fa; --navy: #0b2a55; --blue: #5b9bd5; --amber: #a85a00;
+      --bg: #f4f7fb; --surface: #ffffff; --border: #d8e1ec; --text: #14243a; --text-2: #5a6b80; --code-bg: #f3f6fa;
+      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #5b9bd5; --primary-soft: #132a45; --navy: #f2f5fa; --blue: #5b9bd5; --amber: #e3a453;
+        --bg: #0d1420; --surface: #141d2b; --border: #2a3648; --text: #e3e9f2; --text-2: #9aa9bd; --code-bg: #182233;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--primary); text-underline-offset: 2px; }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
+    code, kbd, pre { font-family: var(--font-code); font-size: 0.9em; }
+    code { background: var(--code-bg); padding: 0 0.25em; border-radius: 3px; }
+    kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: var(--surface); white-space: nowrap; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.45; }
+    pre code { background: none; padding: 0; }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+    header.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+    header.top .in { max-width: 1180px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .word { font-weight: 800; font-size: 20px; letter-spacing: 0.01em; color: var(--navy); text-decoration: none; }
+    .word span { color: var(--blue); }
+    header.top nav { margin-left: auto; display: flex; gap: 16px; }
+    .layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 230px 1fr; gap: 36px; }
+    .toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 24px 0; font-size: 14px; }
+    .toc ol { list-style: none; margin: 0; padding: 0; }
+    .toc li { margin: 2px 0; }
+    .toc a { color: var(--text); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+    .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+    main { min-width: 0; padding: 24px 0 64px; }
+    h1 { font-size: 30px; margin: 8px 0 6px; line-height: 1.2; }
+    h2 { font-size: 24px; margin: 48px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.25; }
+    h3 { font-size: 18px; margin: 26px 0 6px; }
+    .lead { font-size: 18px; color: var(--text-2); margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 15px; background: var(--surface); }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); }
+    .wrap-table { overflow-x: auto; }
+    .note { border-left: 4px solid var(--primary); background: var(--surface); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+    .small { font-size: 14px; color: var(--text-2); }
+    footer { color: var(--text-2); font-size: 14px; border-top: 1px solid var(--border); margin-top: 48px; padding-top: 16px; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; gap: 0; }
+      .toc { position: static; max-height: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="in">
+      <a class="word" href="../../">MAVILERA<span> SAP-2 Laboratory</span></a>
+      <nav aria-label="Site">
+        <a href="../">Open the application</a>
+        <a href="../../">MAVILERA Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#about">About SAP-2</a></li>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#workspace">The workspace</a></li>
+        <li><a href="#assembly">Assembly language</a></li>
+        <li><a href="#ports">Ports and keyboard</a></li>
+        <li><a href="#debug">Running and debugging</a></li>
+        <li><a href="#bus">The Bus view</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#files">Files, sharing and exports</a></li>
+        <li><a href="#offline">Offline use and privacy</a></li>
+        <li><a href="#keys">Keyboard reference</a></li>
+        <li><a href="#limits">Limits of the model</a></li>
+        <li><a href="#rights">Licence and notices</a></li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <h1>MAVILERA SAP-2 Laboratory: documentation</h1>
+      <p class="lead">Interactive Microprocessor Architecture Laboratory: Visualize. Execute. Understand.</p>
+
+      <h2 id="about">About SAP-2</h2>
+      <p>SAP-2 is the second of the simple-as-possible (SAP) computers, teaching designs by Albert Paul Malvino in his textbook Digital Computer Electronics (McGraw-Hill, first edition 1977; third edition with Jerald A. Brown, Glencoe/McGraw-Hill, 1993). The book presents SAP-1, SAP-2 and SAP-3 in turn as computers a student can build from digital components; its preface describes their instruction set as a subset of the Intel 8085's, and SAP-2's mnemonics, such as MVI, LDA, JNZ and CALL, are the 8085's. SAP-2 is a textbook design, not a commercial product.</p>
+      <p>SAP-2 has 64K of memory, the first 2K of it read-only, an accumulator and the registers B and C, the sign and zero flags, conditional jumps, a subroutine call and return, and four ports: a hexadecimal keyboard, a hexadecimal display and serial lines. Its instruction set is the 43 instructions of the book's tables.</p>
+      <p>Why it matters: SAP-2 adds what SAP-1 lacks to be programmed like a real microprocessor: decisions on flags, loops, subroutines and input and output. It bridges SAP-1 and the 8080/8085 family that the book goes on to teach.</p>
+      <p>The detailed description of SAP-2 is chapter 11 of the book. The book has no DOI.</p>
+      <ul>
+        <li><cite>Digital Computer Electronics, third edition</cite> A. P. Malvino, J. A. Brown. Glencoe/McGraw-Hill, 1993. ISBN 0-02-800594-5. Chapter 11: SAP-2.</li>
+      </ul>
+
+      <h2 id="start">Getting started</h2>
+      <ol>
+        <li>Open the application. The editor holds a short example program; <strong>Templates</strong> in the toolbar
+          offers others, each showing one idea, with a note at the top on what to try.</li>
+        <li>Press <strong>Assemble</strong> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>). The listing shows each instruction's bytes
+          with its address; errors are underlined in the editor and explained in the console.</li>
+        <li>Press <strong>Step</strong> (<kbd>F10</kbd>) a few times. The current instruction is marked in the editor and
+          the listing, and the registers, flags and ports change. Each <code>OUT 03H</code> also writes a line in the console.</li>
+        <li>Press <strong>Step back</strong> (<kbd>Shift</kbd>+<kbd>F10</kbd>) to undo a step, or <strong>Run</strong>
+          (<kbd>F5</kbd>) to run to <code>HLT</code> or to a breakpoint.</li>
+        <li>Choose <strong>Bus</strong> at the top. The same program now runs one T state per step on the drawing of the
+          computer.</li>
+      </ol>
+      <p>The example program of a new session:</p>
+<pre><code>        MVI C,05H     ; C &lt;- 5, the count
+loop:   MOV A,C       ; A &lt;- C
+        OUT 03H       ; port 3 &lt;- A: the display, and a console line
+        DCR C         ; C &lt;- C - 1; Z = 1 when it reaches 0
+        JNZ loop      ; again until C is 0
+        HLT           ; stop</code></pre>
+      <p>A run starts at <code>0000H</code>. Memory from <code>0000H</code> to <code>07FFH</code> is read-only: a store
+        there stops the run with a message.</p>
+
+      <h2 id="workspace">The workspace</h2>
+      <p>The page is a workspace of panes, as in a code editor.</p>
+      <ul>
+        <li><strong>Header</strong>: the views (Instructions, Bus); the <em>View</em> menu (show or hide panes, reset the
+          layout); the theme; projector mode; full screen; the keyboard summary; Help.</li>
+        <li><strong>Toolbar</strong>: Assemble, Run/Pause, Step back, Step, Step over, Step out, Run to cursor, Reset, the
+          speed, Templates and the <em>File</em> menu. Each control has a tooltip with its name and key.</li>
+        <li><strong>Editor</strong>: SAP-2 assembly, with completion of mnemonics and registers, help when you point at a
+          word (operands, operation, bytes and T states), find, and breakpoints in the line numbers.</li>
+        <li><strong>Listing</strong>: each instruction with its address and bytes, in hexadecimal and binary; the tabs Data
+          and Symbols show the data and the labels.</li>
+        <li><strong>Instruction inspector</strong>: the fields of the selected instruction (op code, byte or address), and a
+          scratch line that turns one instruction into its bytes or bytes into their instruction without changing the
+          program.</li>
+        <li><strong>Registers, call stack and counters</strong>: A, B, C, PC, the flags S and Z, and the ports; the
+          innermost <code>CALL</code>; the counters of instructions and T states.</li>
+        <li><strong>Memory and console</strong>: the memory, the Ports tab (below), and the console with the assembler's
+          messages and the lines of <code>OUT 03H</code>.</li>
+      </ul>
+      <p>Drag a divider to resize panes; the sizes are kept in this browser for each view.</p>
+
+      <h2 id="assembly">Assembly language</h2>
+      <p>One instruction or directive per line, with an optional label (ending in <code>:</code>) and an optional comment
+        (starting with <code>;</code>). Mnemonics are not case-sensitive. Operands are separated by a comma, as in
+        <code>MVI A,05H</code>.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Form</th><th>What the assembler accepts</th></tr></thead>
+        <tbody>
+          <tr><td>Instructions</td><td>The 43 of SAP-2: <code>ADD ANA ANI CALL CMA DCR HLT IN INR JM JMP JNZ JZ LDA MOV MVI NOP ORA ORI OUT RAL RAR RET STA SUB XRA XRI</code>, with their register forms</td></tr>
+          <tr><td>Registers</td><td><code>A</code>, <code>B</code>, <code>C</code></td></tr>
+          <tr><td><code>IN p</code>, <code>OUT p</code></td><td>Input port 1 or 2; output port 3 or 4. Other ports are refused.</td></tr>
+          <tr><td><code>DB v, …</code></td><td>Bytes, −128 to 255</td></tr>
+          <tr><td><code>DW v, …</code></td><td>Two-byte words, low byte first</td></tr>
+          <tr><td><code>ORG a</code></td><td>The address of what follows</td></tr>
+          <tr><td>Numbers</td><td>Decimal, hexadecimal (<code>0xFF</code>, or <code>0FFH</code> starting with a digit) or binary (<code>0b11111111</code>)</td></tr>
+        </tbody>
+      </table></div>
+      <p>What each instruction does is shown when you point at it in the editor; the full description of the computer is
+        in the book listed under <a href="#about">About SAP-2</a>.</p>
+
+      <h2 id="ports">Ports and keyboard</h2>
+      <p>The <strong>Ports</strong> tab of the memory pane is the computer's front panel.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Port</th><th>On the panel</th></tr></thead>
+        <tbody>
+          <tr><td>Input port 1</td><td>The hexadecimal keyboard: press a key, or type a byte (<code>00</code> to <code>FF</code>, <code>0FFH</code>, <code>0xFF</code>, <code>0b11111111</code>) and press <strong>Enter</strong>, to put it on port 1 and set READY.</td></tr>
+          <tr><td>Input port 2</td><td>READY (bit 0), set when a byte is entered and reset by ACKNOWLEDGE; the SERIAL IN switch (bit 7).</td></tr>
+          <tr><td>Output port 3</td><td>The hexadecimal display.</td></tr>
+          <tr><td>Output port 4</td><td>SERIAL OUT (bit 0) and ACKNOWLEDGE (bit 7): an <code>OUT</code> that sets ACKNOWLEDGE resets READY.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Each input is kept with the instruction it was entered before: stepping back past it withdraws it, and a reload
+        or a long run replays it there. <strong>Reset</strong> clears the inputs.</p>
+
+      <h2 id="debug">Running and debugging</h2>
+      <ul>
+        <li><strong>Breakpoints</strong>: click a line number in the editor or an address in the listing (<kbd>B</kbd> on a row).</li>
+        <li><strong>Watchpoints</strong>: tick a register's eye to stop when it is written; double-click a memory byte, or
+          use <em>Watch</em>, to stop when that byte is written.</li>
+        <li><strong>Step back</strong> undoes one step at a time, back to the start of the run.</li>
+        <li><strong>Step over</strong> (<kbd>F11</kbd>) runs a <code>CALL</code> to its <code>RET</code>; <strong>Step
+          out</strong> (<kbd>Shift</kbd>+<kbd>F11</kbd>) runs to the <code>RET</code> of the present subroutine;
+          <strong>Run to cursor</strong> (<kbd>Ctrl</kbd>+<kbd>F10</kbd>) stops at the editor's line.</li>
+        <li>The <strong>call stack</strong> shows the innermost <code>CALL</code> only: SAP-2 keeps one return address, at
+          <code>FFFEH</code> and <code>FFFFH</code>, and a <code>CALL</code> inside a subroutine overwrites it. The
+          assembler warns when a program places something there.</li>
+        <li>A run that does not halt stops after a large number of instructions, with a message in the console.</li>
+      </ul>
+
+      <h2 id="bus">The Bus view</h2>
+      <p>The drawing shows the W bus and the units on it: controller-sequencer, instruction register, program counter,
+        MAR, memory, MDR, input ports, flags, accumulator A, ALU, TMP, B, C and output ports, with TMP2, a unit the
+        simulator adds. Each step is one clock, one T state.</p>
+      <ul>
+        <li>The unit that drives the bus, the registers that load from it and the asserted control signals are
+          highlighted. The status line names the T state, the instruction and its address.</li>
+        <li><strong>Step instruction</strong> and <strong>Back instruction</strong> go to the first T state of the next
+          instruction, or of this one.</li>
+        <li>Select a control signal, at its unit or in the Microinstruction tab, to trace it. <kbd>Enter</kbd> on a drawn
+          element opens its details.</li>
+        <li>The tabs under the drawing: <strong>Microinstruction</strong> (the control signals of the present T state and
+          what each does), <strong>Sequence</strong> (the T states of the instruction and their transfers),
+          <strong>Waveforms</strong> (chosen signals over the clocks run so far; select a clock to go to it), the listing and
+          the memory.</li>
+      </ul>
+      <p class="note">The microprogram of the Bus view is the simulator's own design. The book gives the units, the fetch
+        states T1 to T3, the number of T states of each instruction and the flag test of a conditional jump; TMP2 and the
+        constants <code>FFFEH</code> and <code>FFFFH</code> are the simulator's additions. An ALU instruction with B or C
+        writes its result in T2 of the next fetch, when the bus is idle.</p>
+
+      <h2 id="exercises">Exercises</h2>
+      <p><em>File ▸ Exercise…</em> lists practice exercises written for MAVILERA, each with a task and a starter program.
+        <em>Run the tests</em> runs your program with each test's memory bytes and inputs and shows expected against actual.
+        No solutions are included. A teacher's exercise file (JSON, with <code>"arch": "sap-2"</code>) opens with
+        <em>File ▸ Open</em>.</p>
+
+      <h2 id="files">Files, sharing and exports</h2>
+      <ul>
+        <li>Your work is kept in this browser: after a refresh or a closed tab, the program, its file name, the cursor,
+          breakpoints, watchpoints and the step you had reached come back.</li>
+        <li><em>File ▸ Copy share link</em> puts the program, the view and its settings into a link. They travel in the
+          part after <code>#</code>, which the browser never sends to a server.</li>
+        <li><em>File ▸ Save program and settings…</em> writes a <code>.json</code> file; <em>File ▸ Open</em> reads it back,
+          and also <code>.asm</code> files.</li>
+        <li><em>File ▸ Data in and out…</em> loads bytes into memory before a run, and saves a memory range.</li>
+      </ul>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Export</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td><code>.hex</code>, <code>.bin</code></td><td>The memory image from <code>0000H</code> to the last byte: one byte per line for <code>$readmemh</code>, or raw bytes. <em>Import .hex/.bin…</em> loads one.</td></tr>
+          <tr><td>Listing</td><td>Addresses, bytes and source lines</td></tr>
+          <tr><td>Trace (JSON lines, CSV)</td><td>One record per instruction from reset to <code>HLT</code></td></tr>
+          <tr><td>Golden dump (Bus view)</td><td>Every write to ports 3 and 4 in order, then each RAM byte stored, in hexadecimal</td></tr>
+          <tr><td>Waveform, VCD (Bus view)</td><td>The signals of the drawing, one clock per T state</td></tr>
+        </tbody>
+      </table></div>
+      <p>The run exports replay the program from reset to its halt; the session you are in is not changed.</p>
+
+      <h2 id="offline">Offline use and privacy</h2>
+      <ul>
+        <li>After a first visit, the hosted application opens without a network connection.</li>
+        <li>The single-file version, offered on the home page, is one <code>.html</code> file that opens from the local
+          disk and makes no network request.</li>
+        <li>No account, no tracking, no upload: programs, data files and exports never leave the browser.</li>
+      </ul>
+
+      <h2 id="keys">Keyboard reference</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Keys</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Assemble</td></tr>
+          <tr><td><kbd>F5</kbd></td><td>Run or pause</td></tr>
+          <tr><td><kbd>F10</kbd> / <kbd>Shift</kbd>+<kbd>F10</kbd></td><td>Step / step back (one T state in the Bus view)</td></tr>
+          <tr><td><kbd>F11</kbd> / <kbd>Shift</kbd>+<kbd>F11</kbd></td><td>Step over / step out</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F10</kbd></td><td>Run to the editor's line</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find in the editor</td></tr>
+          <tr><td><kbd>Esc</kbd>, then <kbd>Tab</kbd></td><td>Leave the editor (inside it, <kbd>Tab</kbd> indents)</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>Enter</kbd>, <kbd>B</kbd></td><td>In the listing: move, show the fields, set or clear a breakpoint</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>W</kbd></td><td>In the registers: move, watch</td></tr>
+          <tr><td>Arrow keys on a divider</td><td>Resize panes (<kbd>Shift</kbd> for larger steps; <kbd>Enter</kbd> restores)</td></tr>
+          <tr><td><kbd>Enter</kbd> on a drawn element</td><td>Open its details</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="limits">Limits of the model</h2>
+      <ul>
+        <li>The Bus view is a teaching model of the computer's bus and controller, on the simulator's own microprogram. A
+          simulation shows what the model does; it is not evidence of how a hardware build behaves.</li>
+        <li>T states are counted, not timed: there are no gate delays and no clock frequency.</li>
+      </ul>
+
+      <h2 id="rights">Licence and notices</h2>
+      <p>© 2026 Sajid Muhaimin Choudhury. MAVILERA and its content (drawings, help texts, this documentation, example programs and exercises) are licensed under the Apache License, Version 2.0. The names and the logo are not licensed as trademarks.</p>
+      <p class="small">SAP-2 is described in Digital Computer Electronics by Albert Paul Malvino and Jerald A. Brown, © 1977, 1983 McGraw-Hill, Inc. and © 1983, 1993 Glencoe/McGraw-Hill. MAVILERA reproduces no text or figure of the book; its simulator, drawings, microprogram, help and programs are its own. It is not affiliated with or endorsed by the authors or the publisher. Intel is a trademark of Intel Corporation or its subsidiaries.</p>
+
+      <footer>
+        <p>MAVILERA SAP-2 Laboratory documentation · <a href="../../">MAVILERA Home</a> · <a href="../">Open the application</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

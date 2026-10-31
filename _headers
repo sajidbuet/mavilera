@@ -4,3 +4,15 @@
   Cache-Control: no-cache
 /riscv/index.html
   Cache-Control: no-cache
+/sap-1/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/sap-1/sw.js
+  Cache-Control: no-cache
+/sap-1/index.html
+  Cache-Control: no-cache
+/sap-2/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/sap-2/sw.js
+  Cache-Control: no-cache
+/sap-2/index.html
+  Cache-Control: no-cache

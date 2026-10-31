@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-10-27T13:10:27.854Z",
+ "date": "2026-10-31T12:54:11.365Z",
  "version": "1.0.0",
  "pass": true,
  "summary": {
-  "checks": 372,
-  "passed": 372,
+  "checks": 824,
+  "passed": 824,
   "failed": 0,
   "skipped": 0,
-  "seconds": 477,
+  "seconds": 658,
   "smoke": "pass"
  },
  "environment": {
@@ -22,14 +22,47 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "b7cec1f48a607eb46295025a6fbb1358b35f3d0a",
-  "uncommitted": 265,
+  "commit": "1d980b868e6871f467414ba00ddd2b01ace0e3b6",
+  "uncommitted": 4,
   "sources": {
-   "sha256": "4d6edcc71c9bbe08540e46dd6807227f319b3200f17ae555657cb6d42644b1f6",
+   "sha256": "1c2f4e33452aaaec9502118ca84c5ad1f120fa22d2ccade3a924f71538a94f46",
    "files": {
-    "index.html": "d64899fd1dbd3a84745e7c7316ba5575d646cfb3d64a8c32283ad1852b03d6eb",
+    "index.html": "32df75d62e0daa89b93c863d9e4272a2bc75a6caf1b738686bd5e5d256555da9",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
-    "src/asm/assembler.js": "b340c1b8c8c85d2c26ccc0bf792852ec4848be56e891c4a04da64dcca573ca86",
+    "src/arch/contract.js": "e69656893212525f3a63d9bd478e2c4b16d8841627192de9e0daed19128b41b4",
+    "src/arch/registry.js": "50289d31fda515a3c27a863b16e989df7e0ca29c5c4cf782dcbab894da7ba5d0",
+    "src/arch/riscv/default-source.js": "8ecff07b0098dd95613081fca760b4cefa3d15f193994391682b75957ff52a4f",
+    "src/arch/riscv/editor.js": "488b716a271edc5fd850a1aecfe6ae7e28415a7da337176495eba9b1805a7b8d",
+    "src/arch/riscv/immediate.js": "2320ca94fd840d43ccd5e6fdee2581dc366a4bcf2739174e5d80d5117e8d5ca6",
+    "src/arch/riscv/index.js": "dd6c5a7afdfb6a4d3f3215df90d1ad5c6839d01d8117fa822a3de4ae40ed5103",
+    "src/arch/riscv/inspector.js": "69c5343a430faa14b83fbb78b6603977aa86e774253e51bbb1bf0bfb5aee5dde",
+    "src/arch/riscv/strings.js": "539523543a7b6fb5bd0e48353a2663dc0f91fce55198007a759fb9e691709f85",
+    "src/arch/riscv/ui/compare-view.js": "80804effa6cfa5dec425a8cd0819f0ce10a9cc76161630b66d05b15fa2e4f75e",
+    "src/arch/riscv/ui/fsm.js": "78d331f56606418d1e382287f429e1a34a1aad06ccdde0d6530eb458b603b9af",
+    "src/arch/riscv/ui/multi-view.js": "8d991b78c6131aa74acb11fb350c8c45fd383a4b9c5cd2bc96a79094a45b7a3e",
+    "src/arch/riscv/ui/pipe-view.js": "6fd8021e9953dbaa0a09bc27bd94bd89de4505c18360ed1bbe37a5cabaac24fe",
+    "src/arch/riscv/ui/single-view.js": "b78f10d6cb36dcca297d27f0a011005b70b4294981dca6be43ba1d352dd13c92",
+    "src/arch/riscv/views.js": "e10f158eb3f79f3de68b85d4ce57535d996ae0c30a3fab2e0131bfa89b64b785",
+    "src/arch/sap-1/bus-model.js": "970bfc2b6e1b8b35488b982a682c4e2a814de2b9a8f1fe74af7d95184cb9bba6",
+    "src/arch/sap-1/engine.js": "72e315b6d2fa6e548fe69a1159fdc97bd13d1cfa0f715fac052d979c20852e2e",
+    "src/arch/sap-1/exercise.js": "e1d726e651aacc641f2cb56b7f341d29bd93ec38b182285ac44dcd2ca931294a",
+    "src/arch/sap-1/exports.js": "15c40d6224277dfa82bc5674da8a101fdea467f051376f714e3bb4d61724f7bf",
+    "src/arch/sap-1/index.js": "85b5ddc59e159b1b6480673f1f77e287a12563e1ed2e8195ca6eb8b5d0f5717f",
+    "src/arch/sap-1/language.js": "5b1184177375f4f9207542ee07901372ae7d10d1e54797715ddb251ddf584e85",
+    "src/arch/sap-1/strings.js": "8f9e9a170b84287a2800aca96b86082a1916b563aea5aad2a62f4f377521e9a4",
+    "src/arch/sap-1/ui/bus-view.js": "e5ddd57ff330127c9bed8a0c0996d9a99d344094750fb7ae861ad1d1a60dc93c",
+    "src/arch/sap-1/ui/layout.js": "ae5c2e9536ff78aedf41b5d4d932be5fa3af2f4fb1a9a6c10bc4e6e9f822fe13",
+    "src/arch/sap-2/bus-model.js": "5cfdf9bc8e5b6a763b2c1cdb091a60aa9ff5035ffff93b605e313d45f01ffb4a",
+    "src/arch/sap-2/engine.js": "ecb7e214eca4378ae6e67127bd8fd8f746e151f287c37fe17f457dca9936ebc1",
+    "src/arch/sap-2/exercise.js": "371dcd40b037a365dc6c092548cd897d295cbb57145638eb07ea6e7b9d179b07",
+    "src/arch/sap-2/exports.js": "0ac7012d8a60db08b182ddff2ec042a9a2448ea9db49e21d3f223655990643c6",
+    "src/arch/sap-2/index.js": "92bc0c44d6c312765995e70868e04f1ec301fcd3633db836817e0c280ae59f47",
+    "src/arch/sap-2/language.js": "044cb7316bf6f6062c684f55d0475431319c86735025efd9ca0a43afe4b6314d",
+    "src/arch/sap-2/strings.js": "dd8cc12e6d4a1a836458f4f13ba0fade9d98cdc6fc19f6989fa8b484b48e863d",
+    "src/arch/sap-2/ui/bus-view.js": "d86b8bd84c6546287c3ef2ba3ecc92959f9e1959591840165689c4e299a62745",
+    "src/arch/sap-2/ui/layout.js": "26d7a313a2715fca3b8c1108c5a9d51f5bd8ceacb433a335e3b3c28a7e72a13c",
+    "src/arch/sap-2/ui/ports-panel.js": "867f4ada59176de028c4c54f15e97431fe949aeadd502417d4ed3752c590ff15",
+    "src/asm/assembler.js": "f5dedf25e12e83d7b013d5e04cf5ab76c3883290e84c058bcfcea776dfa9dff8",
     "src/asm/disassembler.js": "4b17f19293018bc3fb65b2e08f66ba53f4690dd771efc7bd67633ea63005a22c",
     "src/asm/gcc-import.js": "a809e3b567a2fe52e00e8e364f67e03d5b4eff5506ff0390434511cc908ab391",
     "src/asm/scratch.js": "bc9bbce7e475032d52578838d884e36b516d6947a3661d6488f217ed86b0d514",
@@ -42,66 +75,95 @@
     "src/cc/runtime.js": "3dc1a3bbf2de871f8dd129948dbe43d393941d153306e5518913407be932fe28",
     "src/cc/types.js": "a5aab3e43f9119e080c00cd14878b68889732be95e62b599e8da5d2a5ee8425e",
     "src/core/callstack.js": "12b4e3a029fc888fc13a3cbd9335bc11daf7af9a0057732cae0ab063d14819e2",
-    "src/core/data-io.js": "0960ab9d7be794c29cc7bc82603d60434e3413593af43aeca043026583be843d",
-    "src/core/exercise.js": "72e7f436a8bb36a84c6c23f7acb9f983b2ed56672bb0874f7afdd8ea88e4da2b",
-    "src/core/exports.js": "9ca7e53abc6504577f89fba126bc805af1a59de44691a789cf3379f2cb57981a",
-    "src/core/history.js": "cf0207e77549746fd0c70c3bf4c4f884a5d11bcc773baede52f83f29d29fae55",
-    "src/core/iss.js": "f28da6839ff86c127cbd89a0a608cf451b76ba605c3cc31b63d393f16752bac1",
-    "src/core/memory.js": "6c8d6aaa0972bc716f3c010ce4b51ed11ec4629bf20d36d27265f578ec887ced",
-    "src/core/profiles.js": "aa777bdd4635ed3763b43f7f019fcde9074d864ea5f2a7da6114078ae4919d5e",
-    "src/core/session.js": "4ec2605fcf5da6c6770269b62ca711bec3d963e581581016496be6b855450e78",
-    "src/core/share.js": "f9b8f8bcc12674b7901c01825dc07e31b7e7f633b15d1b49a2cc7163378f19cb",
-    "src/isa/encoding.js": "0a7879d66eb571565f54875da43f961a2ddbfa016518be77f49d3ce0d230bb60",
-    "src/main.js": "5a76e90b439675bb39cead6e896f5b70ef26d991f1b5910666c2ad5c6d1bf30d",
+    "src/core/exercise.js": "978bac74a37cf8a701eac2bdbb41982a25513747f6e0e00fcdbff4786adea49b",
+    "src/core/exports.js": "4a09a3886b1ad9e5941eec8727dd89f8054bb82ecdeac020a842bdad66910fd6",
+    "src/core/history.js": "bf6ff9cd2d3836c62ee21c0fb1b524a0ac5a02afec274da00adad3db613f1d15",
+    "src/core/iss.js": "df80e3d03b88b34bea6a4645f6ca138f34e0070fef586513cf8cf6abe85734f1",
+    "src/core/memory.js": "68f9597a4e6e57a7c2301a4c148a6b11147c8590b2f05be0364c28834267af27",
+    "src/core/priv.js": "3ab4cd020d8e00a3173128601319ce86b027ac895769fcf36e751d5be8fd4abb",
+    "src/core/profiles.js": "3c10d9e2fa7a9132ee290cbe570f1fc20f71f8d1f5f8e21b0c244e9b753ac74f",
+    "src/core/session.js": "e21c7cb269eafcc335d89ff1454c2a08a9eb2f33150df0389e2e5fb44fc288e3",
+    "src/isa/encoding.js": "4cabfb9181bfa1898eb7097fd6dd1c7b63ff89d68b1e794c6a4da8e5d2d7dc06",
+    "src/main.js": "fc343ddef83cc627d14db44b50788eab879291610196f8e8f8d2ed21cfcfd893",
+    "src/mem/bus.js": "fd0d6af266303d5b5bc043fac4f117571f663b021b51a15f982dae1d3e3d4edb",
+    "src/mem/cache.js": "a4b8e994fc7ee9a415005b761d0401369c01a076890af3241dfcd649a793aedc",
+    "src/mem/config.js": "4f58325d2625ca445c4c6b5b516b0c26aea920360d3a5b083cbdae69a2448db2",
+    "src/mem/controller.js": "d72ba67c8ad35c6f92a458250adc7cdd215de5c4e1f5a1cc7db8c68feb6c27cb",
+    "src/mem/device.js": "a30969fb77bc7974dba53769238df62d378d2b8af2a55a535de432da3da7dbe9",
+    "src/mem/devices.js": "513b7b70a07e42c70607070bf1055b4ff742d171bbc5287d3b4616f7086f16f3",
+    "src/mem/platform.js": "0f9162587cb9d5334f240661577d827b92178d33d2c2527b94a62b8ecb39b4a1",
+    "src/mem/system.js": "a57ae816261ddd0bc316022fa76e3f592193d27750b7640152d434010ef56b54",
+    "src/mem/timing.js": "cf2fae0a2dc7c2f401e69e3797b460870c3a41c56c0b7c3f6289510b18ba174a",
+    "src/mem/trace-cache.js": "4a3a21f140c904243cd18109a03a76ad5bb0ff1b4c0153636bf5038b38dc0cda",
+    "src/shell/arch-id.js": "9e8b4c7457323f3b81850f98165bb0fde456df0d9f958c493a0ede055f6d6669",
+    "src/shell/capabilities.js": "eb50d55c4e5230acd406832d07a7b9a632062161d0d750d65881f2536dddb047",
+    "src/shell/data-io.js": "6105fac5e31d2a7bd36b2c930922aac8f31dfe0a18128fae93e6a896b874fee1",
+    "src/shell/platform-archs.js": "ba43415d7f9458a906b26340deb9087a5cd502176f31c55ba8068b3bc76cd70e",
+    "src/shell/share-schema.js": "a896a4e6fd9081521435b669552ebfb881c083b1d5d852ed6a0ae31f8a43c6de",
+    "src/shell/share.js": "6e7c0497a57e9135a944116a884b9062a952b23a9e5f7ba5768c32a16d4cff57",
+    "src/shell/vcd.js": "5e93c8e11753b29cd85ebdb40ade4e829ffcd9864de91f00b4525ec1976e4801",
     "src/uarch/ch07-jalr.js": "752fc9a893e2e29c8452ac6ae43d899ee089438495173d86f2ee69dd9e71949b",
-    "src/uarch/compare.js": "282c6f5f7d5804b38b72c4b1337f46f35eae836e91bc64727f290ffa667cb2b5",
+    "src/uarch/compare.js": "bbe493ca5df11665154a5e668e665efd46f4453f0c98292c891c73f17b7f6606",
     "src/uarch/multi-paths.js": "e426ae7596043586ea44e03ac18e2cd6c1c000001c2cc3605bdd696bc7c3fef2",
-    "src/uarch/multi.js": "0f88a5916f2c72bbfaf84be230a78ba9dc10f182ee099f35a596e71a08f8a7b6",
+    "src/uarch/multi.js": "76b27cef0c9c3b9dfa38d1f448320fec81ff51b6d697c17663f3f1ae515cef50",
     "src/uarch/pipe-paths.js": "7a2da7061ca4d6e8961b02d329d1252b1d849f2dc1330852e863442a595ca969",
     "src/uarch/pipe-summary.js": "e8bae18ebd531cfcebcf53537cec817d5bf2119201ba1dfafbc2f97ad0ff56d3",
-    "src/uarch/pipe.js": "5c457129dd47fe709c5c1ab9ba61348851c253681a60826624b580c4fcd63087",
+    "src/uarch/pipe.js": "6a1f6acb50b2f3f99f082475ca0341a267d1e4b1f06ee62d733d793b6d90bce3",
     "src/uarch/signals.js": "f858b4e01be333f4406a5237bb8cfc5062221fe7958efdd7b3cff68b7bd5fe56",
     "src/uarch/single-paths.js": "f564511d62573058ac72aa076174fb5e633a2703301788c0c0898f59a3cb23c8",
-    "src/uarch/single.js": "84ecf759bd0899c60419ae4fac5c41f84ceb3e394eec9a25cf4bd48b16bfa3fd",
+    "src/uarch/single.js": "93c5eedf0d79d13f3a81f00685a60816b3b360d7df166790910bbfbd8d32f7c7",
     "src/uarch/timing.js": "8289df5cf5ba5cf1389c0cfa623b5a81950b8534fb111e8c0a85c016918c1393",
-    "src/ui/assist.js": "fb8a823ad54f1b8b702f2c57b2ba6ef9710f646685f7a7ac1b286f4c44ad838b",
-    "src/ui/compare-view.js": "cde3655577bb641b8c7bf8c534d324fb3ccf6d72609fdfcea0802189f8aa6861",
-    "src/ui/data-dialog.js": "bbcb3a9e283d3509ed3000cd725eeaed65cf899f595c3ff613ecfdeab8c2a61a",
-    "src/ui/datapath.js": "d5044d67933b81625af2587e3335e0793be5da35d349de9ee7f8ec102476ae69",
-    "src/ui/dom.js": "394497f874723f382f288c472b7434721cb0a2db7bb0fb0a99f28b4bf6b3ab82",
-    "src/ui/editor.js": "aa23a16368894005a0e6c7d0e2b8fc1cf097450264f6a72d0f2698b6d5fcee69",
-    "src/ui/examples-dialog.js": "74e79761d7d0b33e8d8683ba4fdfb0583b1eec25e3576b4ac0b4c0567de6b7fa",
+    "src/ui/arch-switcher.js": "a45c12c75d8e2548bb30c434dd3a374bda1a65bea41c737694015b9b2d0997fd",
+    "src/ui/assist.js": "db64986d6b396abcad2b636a57adc6eed2ff168b1ac3a16eb324300b1c421f2e",
+    "src/ui/boot.js": "781bf65dd97e756d75e69352f4605771ec52cdab448cf75ca1e2de1679d8b938",
+    "src/ui/cache-anim-model.js": "afe2ae3677a1d4f6487dca1915722d3c9f60704e631c11946362df566525f79d",
+    "src/ui/cache-anim.js": "94790809307fb41bfb16d3a20398413c3d6981ca9296b64827444b0fbea4899d",
+    "src/ui/cache-view.js": "b46669beefc5d442afc68d4a8c0db73360b886b5ea947238768a9ec55e5bdd85",
+    "src/ui/data-dialog.js": "e9360e0743780a05d81b3fbf289c17ef8c783608353ace759514e304e4fb55b4",
+    "src/ui/datapath.js": "9f6bf5ac4df0056d12353f12776f74e59cb86342e0c49eb522566e7fbe229591",
+    "src/ui/dom.js": "89f201e793ffba34be8fe701b30a6c0c1e7438c02940071779e9baf3cf484ab4",
+    "src/ui/editor.js": "08bf0c367f5712c0669bc232150189fd84ec78e071a5d8da65a979ba4281df9d",
+    "src/ui/examples-dialog.js": "dbde1771fd8e26d4188851b987a6b591740c4305b0706a77ec43892400e9e3cb",
     "src/ui/exercise-dialog.js": "de3a647833768e51ef6cbc3d7cffa164daa5de6c12f560077c1a112195e1c3d9",
-    "src/ui/fsm.js": "3530fc81cacdb578e112c4dc651a09ad30ad7c72793b137447d51a2070dd4fb4",
-    "src/ui/help-dialog.js": "9e24debf01940e74cf2f1520fed907926940e9add81f4b94c25a6f8132d711d7",
-    "src/ui/icons.js": "ffabe954272a383c31f90cdd4174abd04f6f1f6379dff65946d9e8a382a3fdf4",
-    "src/ui/listing.js": "4b9653583efa4df4ccb179a4f8eb174c5e888fd4fdb82b8cb004ecf8e5c11ffd",
-    "src/ui/multi-view.js": "360699fac85e6255e5f20cb9e907afb2b51a307440077bc651facf14ca035cfb",
-    "src/ui/pipe-view.js": "bbdb1a90b46934103a1bb8d8232082bcd15566fb29ca6e7c6f3c9c9f93920747",
-    "src/ui/single-view.js": "4ac0a062d4af01ce89f90906087fd321963f9734a0819d734690327c0b1900cd",
+    "src/ui/help-dialog.js": "aa70355f4bbd9e582ef5cd2a276870741ba8c50a2c3fe39ad835b6ca251a6ffb",
+    "src/ui/icons.js": "e865a7758356b059b14f680051a525521871b713f2a8270bd042712de8355e08",
+    "src/ui/listing.js": "cc6c55a7210e773dd267651b2078f82c5c4c50ebc859c52b282535195c9257b9",
+    "src/ui/mem-ui.js": "833f2aeb6ad15690aa4ded08a5c02b7486825e50423e9ae3d76ab0c07d293383",
+    "src/ui/mem-viewmodel.js": "a8aa106965c6b794b9b2365f6302777f19912fd66af7830b0444846da72c2fd7",
+    "src/ui/overflow.js": "c26b1ab4e12917a948ab4c53793aa48701103450620fac7c8459626bf1179289",
+    "src/ui/pan-zoom.js": "7908e9dc577dc094d6e5069a9d407ea5a0e15fa543e0b24584e17832766999f1",
+    "src/ui/platform-figure.js": "f8dcf3ec1cda6ed527ac214764c67970244ccb03126f99741ce7c55453b2473c",
+    "src/ui/platform-view.js": "0a1a2db40910cbe4eb77bd5a6b1e4947a9bb1f1871ee2a2b71b753a91aa20086",
+    "src/ui/schematic.js": "b4ceae5a8e428e37bb29233abd8b16a07f71c2b96c3cbf1b541b06b8fa66cda5",
     "src/ui/split-math.js": "e0edce05f827d405f27fc4a13f225652b7b44ca3773a4d47c4162cf86f99054a",
-    "src/ui/split.js": "0bd29b38c1e05852a7a7840270e37146ecf70c42f85c3cd4c6dbe52c5fb1a56d",
-    "src/ui/state-panels.js": "d61bd7f0033486e0f4e07eaca63ad50db82121933c1957f5a2858bdb1139071d",
-    "src/ui/strings.js": "0060fe57c5af33a4e555e34f638e64960055f6c758637466c62b9a67bf0933b7",
-    "src/ui/theme.css": "48f781ae84790e2ac8bd019f4d18f2865bfc8098dc37c55aa1e6580cdfafa64f",
+    "src/ui/split.js": "ea902fd6f182c5eca158625effc1c1f136ff97e789a114817b5144aa38c8783d",
+    "src/ui/state-panels.js": "69017ea7db04a793b35e71b7d8584d0e16a8f6aad29a54e01993341bfa8408ba",
+    "src/ui/strings.js": "292b3e144d32b87dee25e516ef7fd7f25bdac372b167e5ce59ec1749607762b9",
+    "src/ui/theme.css": "e89731d73754e537ef5bfa8e6799b84b0f2019b90c968466210b00030e83b794",
     "src/ui/waveform.js": "fe4a2910f3b4944d707d449b93a95d1d9ee6aa4c2d2bf4f665553c1b662474f0",
     "src/ui/wire-colours.js": "8b9e402a48835295370b5c888b2da6135bd6122c19452dfbea55122ddf05bac4",
-    "src/worker/run.js": "c2e072deb02799e9ce36bba4424b15c062076c716ba352f502a2e9347abf39cf",
-    "content/branding/mavilera/apple-touch-icon.png": "18b334dfaf83c7f55a79ae2a74819de0443ee6f6bac0e72247e7888ac424f32e",
-    "content/branding/mavilera/favicon.ico": "c2ccecc964ac8cb0e72eac25960583ecb25b59f11b053671f113ab2f872b466e",
-    "content/branding/mavilera/icon-16.png": "6a8d3ebe8679b4fc5bd77c74e580d95210405747d71551890a3d9a5d89de4026",
-    "content/branding/mavilera/icon-192.png": "60bd095670c0fab4b15621c0d267bd8f60270f0d21b0b2c78e71aa1154888b59",
-    "content/branding/mavilera/icon-32.png": "0fe95c772ff6f797f11e0081f13d126b3bf47d1a8e72caaf1f4ba101a3082ddd",
-    "content/branding/mavilera/icon-48.png": "c21ef44bedf7886e64b241b26c35005009da09794251f9faa6bcca079306c909",
-    "content/branding/mavilera/icon-512.png": "bfd27154017878621bfc0c5295b74ca889d1902b846e832b6f2fc538013d633f",
-    "content/branding/mavilera/icon-maskable-512.png": "8f4b835f0d491f9082f7e443f572e75d9d726f44712a369bf3c2c20ca1cdea23",
-    "content/branding/mavilera/mavilera-dark.svg": "0cc57db890eafef460d67399dcf4de8f3cecdfb52b4b13544adbd63f651c0f8f",
-    "content/branding/mavilera/mavilera-icon-small.svg": "81bc4807e2101b79963b5bedc4b0deb0c4cc28c16ebfc5ca3064779ba91ce21f",
-    "content/branding/mavilera/mavilera-icon.svg": "29928ec1f600bb35cc2f3c838138d19db9c90962fbb3db8c8fbbdbb29fdc432f",
-    "content/branding/mavilera/mavilera-light.svg": "7cc6663a82f4dc00fc366acc20323d139a3a0eedae815fb97b3a3a868bed451a",
-    "content/branding/mavilera/mavilera-logo.svg": "38e8557b50d954423307bfa3f7a4b2e8dee49b24a4a7c3f37b07747c19e18685",
-    "content/branding/mavilera/mavilera-mono.svg": "d4a5f39de094a0e59e7a5e5bdfd32f662c4472a062798f1e5aafc967eca66118",
-    "content/branding/mavilera/social-preview.png": "f9b9a32475470f5f02b2a670f3a6e7ed7664ecc7d4928a9b78d15d7f5ea726b8",
+    "src/ui/workspaces.js": "e97b498b47642c3c2fe85adeb6e6b70819dad8d4d15a4682cfa27af33d732baf",
+    "src/worker/run.js": "47c4e5624010c71bb1fcb44bc408bed3b5649f8b0f3d5089b51bc287b41c965d",
+    "content/branding/mavilera/apple-touch-icon.png": "689ebbc5ef98d0c6eb209d9f18a7d1e5e526c099020d0eb025acd73658333255",
+    "content/branding/mavilera/favicon.ico": "db594d6ddac4c449d6de466a784854d09a28fc8cb0b04b97299b7da53cf08a7f",
+    "content/branding/mavilera/icon-16.png": "a0d490ec784d3a12527acf52c75a8d44b73412f95a127b3ddcaee30268d36155",
+    "content/branding/mavilera/icon-192.png": "76c65d2e515119c7188ab776d6299a068f508ca6bee5b6df1326ab8002ec6342",
+    "content/branding/mavilera/icon-32.png": "0b13ca66b946f6ae70a8f51a84d57de0d0fdd2f5a563ceb961fc9b22818f6f95",
+    "content/branding/mavilera/icon-48.png": "0914d326edcc1eed54c29cf5c7b6d96a57ee34adaf2352443a795280b64cff5c",
+    "content/branding/mavilera/icon-512.png": "ffc3cd02baf9e0070545b04ae02a8afd480e8e80de74889a9bffd5f3fabedf96",
+    "content/branding/mavilera/icon-maskable-512.png": "d690adb72271cd5cd48e01eac2224f6f49d9902b033f4cae2d2efc400b07b733",
+    "content/branding/mavilera/mavilera-dark.svg": "f23c21fb7ffc91d6d5e70bff8eae9b49a21eafe667e89e1bfff9da699987d9a7",
+    "content/branding/mavilera/mavilera-full.svg": "b71afec6b88d6c76093ee7cb2838bba19e67077e4aa6a4b811584452f79d7bda",
+    "content/branding/mavilera/mavilera-icon.svg": "631466d264331eb173746fd2b0841b919af922fedcd1a7c62c386a4f1a6501dd",
+    "content/branding/mavilera/mavilera-light.svg": "2fdc52b90d7857b673425f05c7b74595d6a5ca689c9866c1d57eb17b0ce0d982",
+    "content/branding/mavilera/mavilera-lockup.svg": "2edb9fe4ab16b1cc3063195e6b890c6410a48aad3ae0f94cd5d70e0c05e8a5e4",
+    "content/branding/mavilera/mavilera-logo-sap-1.svg": "b22df4048e2c097437aa33ce51cd5a4eabf996419068de5ad9d382800a663680",
+    "content/branding/mavilera/mavilera-logo-sap-2.svg": "6ce4c01ab8882354e0f8a41299cfe3424249959361bf3b1474263d9fd29499ca",
+    "content/branding/mavilera/mavilera-logo.svg": "7a3473b77953a5d55fae2072f2fc69f0cfa9a8ce1e091c467ceb8a80937937a0",
+    "content/branding/mavilera/mavilera-mark.svg": "35f1d0b46f9af5bf10812b69f6cf9d9b1008196259f1924ce46745a8bdf8495b",
+    "content/branding/mavilera/mavilera-mono.svg": "c34d32599cb51ab5287ff17baf1c930c0a88f13905070234d937dc54abb0448e",
+    "content/branding/mavilera/mavilera-wordmark.svg": "290d63559947db1f61462686f2753f1d227a5b640ed38984b85c6a84c972a881",
+    "content/branding/mavilera/social-preview.png": "6dcb1b185723c3b61e23e81d9f409e438c6a55acb31edd2bb3f98c154c5a2504",
     "content/data/ch06-delays.json": "373f9daf6eb638a9c15c553aa1a7d2f04e834c0ba954dc82b82bc2c028c0f053",
     "content/data/ch06-tables.json": "eb6eb84d017a2a7a4121e304289bee1b48e38742ab182e040a8fc05d2d255c98",
     "content/data/ch07-jalr.json": "21895cf89209750eaa59227833f919c8f9c2b3632f42e3333a603321ac9d5fae",
@@ -161,20 +223,64 @@
     "content/geometry/ch06.json": "3e0ee6940559825b7fb6cac4b2f309efa37d3a93361f9cd2eb052ed6ec171169",
     "content/geometry/ch07.json": "cef435e4b17fe914d52b7ec190a2cb3468c8c23bcc96a12e8c09250d16d22109",
     "content/geometry/ch08.json": "8222c264af93f3aafaa30c04c91334d42a35d8644c50aba7fceff7718f23d9fe",
-    "content/help/docs/index.html": "64eddaf50c6b4991d7753272d5ba0c435041348ed4d892a9988a9570a85888d4",
-    "content/help/help.json": "b67626899dd0457f111f9cda7a69f8de8d2f5c8bf0370ab40949c823d4bca69a",
+    "content/help/docs/index.html": "a4a780df00ac421ac93018830e29ab5678bc43b0e2a93cbb220abfa082359190",
+    "content/help/help.json": "42050b419cf58e3b61fa06986314aaf4b5813500d913b1678dfb84031b5d89d1",
     "content/help/narrative-ch06.json": "612026b34976e25ec309b125a1a2de5d116598fa77cceaa5dcd86805733bad6a",
     "content/help/narrative-ch07.json": "9006e11087d7edae8e4c4714a373b7e52d6da745e8f00bc82d537fb77491a933",
+    "content/sap-1/exercises/both-differences.json": "9e3f5095dcabd9caf4c76ccfea51f1b00f3d54a656a61b75ce1fa70a9bda5664",
+    "content/sap-1/exercises/index.json": "21f8be0c7c8ef70cf916df631dc07be1096ffc79e165a91ae4768f75e336734d",
+    "content/sap-1/exercises/negate.json": "d937f215c441d805a6378860c3a7041d1b85d93888e683ada335977689e12c1c",
+    "content/sap-1/exercises/running-total.json": "50439eb30bf4dfccc10f8e6d882ccf1da759dd67e33aa022220792f2a35d2f95",
+    "content/sap-1/exercises/sum-four.json": "77b1042b731b4eaa49eb6b0da05fccb8232f11a0be06534b5ec42a2cf182ad72",
+    "content/sap-1/exercises/times-ten.json": "44f7df0465b09c6885f7d1c1b9cdf8728e49cd1828a8f6c1edc780f432013699",
+    "content/sap-1/help/docs/index.html": "a98fa720988e7631692801986233a763f9c7506002c160a33c80e2abda4e55d9",
+    "content/sap-1/help/help.json": "50ed6611b427bfa526487a38cd189be302107d829d97b8f046bbad377202a45b",
+    "content/sap-1/templates/code-is-data.asm": "f127d497700a8752b3c1d6b44ec238cfe1cfcfcce3b7b2bcc4fabe60d0fb371f",
+    "content/sap-1/templates/index.json": "4a87e9e8181b55a8a8fab038db46ff1808660fe86c9f3fdc6a32f1cbfb88546b",
+    "content/sap-1/templates/missing-hlt.asm": "eee1e7e1220f230fb9c39cec0ab7ae9e01b4af34987e720bbf950a8d36529b71",
+    "content/sap-1/templates/multiply.asm": "69809868b414e0041773220cd1edef0e0afa9acd585226312838d8e95980a757",
+    "content/sap-1/templates/sum-three.asm": "c02645e998e9e98643d41dd96157430cb8d23e85e911adf26b72af8da9a76e66",
+    "content/sap-1/templates/timing-states.asm": "3a35be759cec4f93cbd358f73b38e96d81402974afffefdca08b5a4c488251b8",
+    "content/sap-1/templates/wrap-around.asm": "fb05e9e57a59ae687d22e1a3feaf1db0e3c468ca3958af6fc1044cbc8e5e73b2",
+    "content/sap-2/exercises/add-two-keys.json": "c3b7b466c3ee558c02a9054ed9033c646226dfdc8312e580f70148c901ad3b0c",
+    "content/sap-2/exercises/count-ones.json": "36271a7caa4733b2f6b716f9b15927b3c9d398901eb49a0348e4005a0ad9a643",
+    "content/sap-2/exercises/index.json": "1e00ced0a38291d1a6c56272e4c16ac7ecb2da5bbf8654fdd84237bd8b1c9f97",
+    "content/sap-2/exercises/sum-to-n.json": "f632c4c56fb88ff611acd8a7bf25c958742686968fb115d241840d67022eb12e",
+    "content/sap-2/exercises/swap.json": "7492ed3992bd539df45a03635592d243d68a75da7095b6199e368368799409fc",
+    "content/sap-2/exercises/times-four.json": "5d4e0cb0cb0f61afe3a6b33c41edb7f1e312c647d226fa9821aaed6c7adc7691",
+    "content/sap-2/help/docs/index.html": "6d695b208d0e3e5d5a2fa56c21233943f31f575704b51f597bae20bf4ec2fcd8",
+    "content/sap-2/help/help.json": "6198a622e8f4b1b3cb089849cff6fef763b73e7e3ca37d0987714fb3a8f391fd",
+    "content/sap-2/templates/alu-next-fetch.asm": "36949e946acd60bee920cb3e0fa2b070ef6a255a22c3574933d4dcdf4d76e30f",
+    "content/sap-2/templates/call-states.asm": "31995d560e4b335eaca10ba0493b1a89147751d403efc3e7e58e0ca11991f1ea",
+    "content/sap-2/templates/count-down.asm": "dd2b36227e710b211d74c83a8bb26d591485fbcad339d51e1ded7b5f143555da",
+    "content/sap-2/templates/index.json": "d29dd0dd43f46f640ab24bb22611b6ee89a3be89bdb3b9f888060ff3be8dde71",
+    "content/sap-2/templates/keyboard.asm": "265427f76f82bd9d3d1a9cdb68ebaaa8718e17fc9b38796db9c81cc49de5e198",
+    "content/sap-2/templates/larger.asm": "21c7d39c4dc9c0b8545dc84cb26dcfb0d3d825a784fd66f68f29e1de4cd41003",
+    "content/sap-2/templates/multiply.asm": "2436e54c472fc1c44cb47eed5dfe8d3989c8e0120959eb80b291b02ca1f0fb64",
+    "content/sap-2/templates/rom-write.asm": "c2f1d3c2bd391a55604ff2915fab0386faa09d3383480cd8904b48cb894f400c",
+    "content/sap-2/templates/serial-out.asm": "9682b09c3887f482e1f811beb5a02e9251899901c49baa7504f044216b85d2f5",
+    "content/sap-2/templates/subroutine.asm": "9af68ff85be10cad37529ddf623bd8cd82a4fc4dbca9db23b7ed26c0c293ad1e",
     "content/templates/abi-fault.s": "03bfa9ff3dc96560a501bbc61431a898b97296b2cb4b5023e37ad4f9a1dbb876",
     "content/templates/bit-fields.s": "d7340448b58df4f77c30202985cc694636707c18ac215c3856870add0f95b532",
     "content/templates/branch-loop.s": "be6e5ce07548b25e7f56a42c8a0f63f59e1b1fad316441466ddc28d9a8f013c2",
+    "content/templates/button-interrupt.s": "f9709855616d667632fda0e8c8bb5a6c442d2e7b5b4aca8a3f2a0c2edbbb6fad",
+    "content/templates/cache-conflict.s": "a9a3cc1f51f6ac48994cd02fc991958933227bc87cc63727cdb0a5e6ff0bd891",
+    "content/templates/cache-pipe.s": "eed306b47aa248f6aa38962e82245f1da8e89eff5b4ab77b94fe389313d08b4d",
+    "content/templates/cache-replacement.s": "f483671ab748caed338eb926d515f6bb0884d891e570e721b2f1ff1c8283edb8",
+    "content/templates/cache-spatial.s": "d73602d18b2b04e53105ceacd7568d08921d218d92d07a55dff5d2e46f9e3098",
+    "content/templates/cache-speedup.s": "6133342b50ea2fc3fec01e606eca2b8747b1ae14fabddd3a68c14c529204504f",
+    "content/templates/cache-stride.s": "0138eceb6e442b2500bfdf2a4d615ad6875bc4a5c181c49487f42daa31769b4f",
+    "content/templates/cache-writeback.s": "a6865c5d5ea5e36358da39584408969081c6be3d878f7e3259f726bb8e0d5262",
     "content/templates/class-tour.s": "58d1508a86c8dd30abc756609b34617ef0400a1b8edf6b3a91ee8e7c5d001a45",
     "content/templates/cpi-mix.s": "e342bc4a2d61b740cbdb3418b19b47f0fe818fcd4e8eefcad8770b84784239d9",
+    "content/templates/ecall-trap.s": "5a8e8a89b2b9223886c625057bb9d2635346687432554f044d7be34c4151f3af",
     "content/templates/endianness.s": "988d95e11a067c94580f9501a2b6b4316186d12898bc6fa0b7cf18f030cb1312",
     "content/templates/forwarding.s": "e0541a94cdaed6ae1cd708517535698694dc2ae0631907fffb4fcee1558f7d94",
+    "content/templates/gpio-leds.s": "315c462245e5749fe02698b2d94c465e23fc24bee05d2b739462cf601c88c54d",
+    "content/templates/gpio-switches.s": "4dbf70697b5b3d2cdad5c0c2625e2724fe60927045e2e2f5ff077bde5517ece6",
     "content/templates/hazard-unit-steps.s": "af7206fd48461708fedec5b862c823f39f583fe1e4455d993472c1f58922b4c8",
     "content/templates/hello.s": "31195e602a43470a33bd0967b300d780c2a91871bdc698a4656113ddbca73b7f",
-    "content/templates/index.json": "9ecba416800eec8b517fc279d152baa78bc2b6323d1b07950b503d367b7fdae7",
+    "content/templates/index.json": "9d44e0a5cae6fa9ee98850055d8499b91c7fcc60718755152dfe9d64c40b2336",
     "content/templates/jumps.s": "c95fcced197df11b545c6cd14a387b43020fcda489a082ac0859cbf293d9187e",
     "content/templates/load-use.s": "3f42560f210e163f149caf4c381bd0ff402142aa5a2568397eb3ccd1b9dd1a22",
     "content/templates/mispredict-pattern.s": "3415e72ee3dba5f0a152c08a01ddefbf27b09a3b5829475a1f88faa664e4d7bd",
@@ -186,24 +292,37 @@
     "content/templates/recursion.s": "ca753082a2c63974daaddb17dcd5166dc6a90003f43f138e02e01fe828a21c7e",
     "content/templates/speedup.s": "a35d78384ad7c9cd83fa20b0bd8f146867ad48a248de04ef2d6dc23860311b5e",
     "content/templates/sum-loop.s": "b7e4bebc96208baf45b3aa5838f60f22ae67aad223984d29431fdd2920696456",
+    "content/templates/timer-interrupt.s": "4ae18ec1ec20a81aa1f7c0c511ba061276e8ebfbf196b57b7dadb576dedbb59a",
+    "content/templates/timer-poll.s": "d779bb16006c1156c6e14fdf1c2890dd83e4dbc0d0c8d87e566b2d8fb2754352",
+    "content/templates/uart-hello.s": "97e3b093491ccdfef1175e6c4a5a181448edfb59c9f2386b46ca5bef6fa9f1fd",
     "content/templates/watch-overrun.s": "809af4dce59852c1fbe715e81b0c5ebceb2723c5135d108d637c9526800f9b4d"
    }
   },
   "corpus": {
-   "sha256": "da197b2ab3b13a78064928ad15eb75fcfc9f8ed88118d55398313c275f3a1c1d",
+   "sha256": "9aa2ea886646e56ecd8960f1f6c3f3135ce6c97f0031d6011b4daeb2c5595729",
    "files": {
-    "test/a11y.test.mjs": "f93184c8f7a80eae5ce1d35383618e98cd1ddf02b8e2f2c26c14da8626ec34a4",
-    "test/assist.test.mjs": "9be03b57f0f8a23daaa92c37d8357563e15739ab2ee7fcfbb47138c4f1a3e40b",
-    "test/branding.test.mjs": "d3761714767339bad70c823e78e3df2e2754655104cb39506e5b3c3c56307fbb",
+    "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
+    "test/arch-contract.test.mjs": "13f524e678a203b5caeef29e006b1c406b49e2865c2601ba6b0a0c6d8b0b575a",
+    "test/arch-riscv.test.mjs": "e5d2c2e2ee4652fe9fde85cb0362ca22af2c283e194c5bb050db48d7c7957369",
+    "test/arch-switcher.test.mjs": "484c45277b057d791ccdad61fdb063bd47367af1891b474134afb63cbde838cc",
+    "test/assist.test.mjs": "499c0459f963f175374c61decbd0f53442be6ca884127b864729eac0f10006f8",
+    "test/branding.test.mjs": "c1776e86d1911ef529d11bebfaafb815896304bfedd2565b2f1635d8ef19bd90",
+    "test/cache-anim.test.mjs": "9ac0709b15e3ba44a79c013eee240af131d7142f66cd705927a84b49ece21cd3",
     "test/callstack.test.mjs": "01c15bbc006ca53f10430a9976d7ba39eb44e4be1564e7dc5078bd5a8c335500",
+    "test/capabilities.test.mjs": "207f382fb049057e509ff5255d06004a3785a42669ef777f8f6dfa7f9266e211",
     "test/cc.test.mjs": "de3777dd752660b4faf4688c903f86b2f191fd1fb92c011db59c7c30f66acf73",
     "test/ch07-content.mjs": "17bd83ee475efd32d55748506eb848b28ea85727c51aaa6f83e517dcfaa29487",
-    "test/data-io.test.mjs": "a54bd4289b2d8dcbad8364d4609081f176874bf111a4beddf2618303b4701e2e",
+    "test/compare-memory.test.mjs": "6b46bd74b52f98c2290ed39138ab5a7e28191d13cf11bc112a217b37a68e1e72",
+    "test/data-io.test.mjs": "b92820292d425cc50b2a0859433d7283427e346d796870c849ff575bf8094268",
+    "test/devices.test.mjs": "f196dd142bd6238a71405498faca19b4884619b7f7ea4fb66f9e025f45e63cd4",
     "test/diagnostics.test.mjs": "05ffdd1a56ba760afed070654432e6d786d0498e29476114d96ce2ccef18a6ec",
     "test/examples.test.mjs": "99fc38ca3f760c3d5b8993674ff4a1c56dc3bde0b39d7600d310e663b89d27a6",
     "test/exercise.test.mjs": "a5d8324226b32f1d5712e339518cbabe6a16bc2ac7b5b73504a151f3939822bd",
     "test/exports.test.mjs": "ed16579a3249e06ea7c3cc08cb6494732bd8ec09b05474ebc66702a6ed4eca39",
-    "test/fields.test.mjs": "4d32b67179fac477df33d95869d4d75ebbc6e806ea907bafaee30eb1aafedf63",
+    "test/fields.test.mjs": "d6eabc49998748ab762e546d07f8131c30cf9acdf45b71c57f813f018a16ae88",
+    "test/fixtures/arch/acc4/index.js": "d9314ecf1b7c7f9fa6fed51e32a1d54f1d08271601d81a0b84fe9f18ecd79cf3",
+    "test/fixtures/dom-snapshot.json": "c2a5ccc68734e4dbfd4f6f1af0e5c0cfdb774f9776730c5ae2927266ec3f46f5",
+    "test/fixtures/drawing-review.json": "84458b7cd332e5455eef99a02796e9ef4e2913e65ac4ff72a30bb774af9af975",
     "test/fixtures/exercise/sum.json": "086fa0c5dc7322ce10c2c1f4c53d6919dfbd74c2cb9422a0a7c1a954b51eb363",
     "test/fixtures/gcc/README.md": "aa0fd9f856c08c2c00acc7eb94ce17b3ee3eb6cd706e6989b4bddc9ec833c1a9",
     "test/fixtures/gcc/calls-O0-rv32im.s": "257f36a55bda91f13961bbeb612e352f4247404f86c81dbf4d97a247cd243277",
@@ -213,55 +332,104 @@
     "test/fixtures/gcc/sum-O1-rv32i.s": "35a682b940713c0023532707abcb41243e1c31e2f625684df251c1ff3b0a2c64",
     "test/fixtures/gcc/sum-O2-rv32im.s": "21e33ff7fb6fc17bf0b022d416ad40e9b9b384fe796e3ec49870e9a2339cb0b1",
     "test/fixtures/gcc/sum.c": "ec33232dda504bc4bd2093a9176f2cab2fd41aebd58e62254eeff59c046b92d9",
+    "test/fixtures/priv/bad-handler.s": "1cb8b9289a11cc3544728e6a5c6bbedf0e934d7b1040482c315afa3ba4c62e55",
+    "test/fixtures/priv/button-irq.irq": "d24a808658e82c31fc6c15535fe7cf900d5102ff7d3b2e5ab2deb0b5db0563ed",
+    "test/fixtures/priv/button-irq.s": "38aba483b935f9b1c247f39cba8b280358334befa917e3ce84afabdbc608d621",
+    "test/fixtures/priv/exceptions.s": "1dde2cee25e6b4133f351752e26558c72751ea5854f4e6ab5d723f81723ba8d4",
+    "test/fixtures/priv/gpio-regs.s": "60282d03ebc30ffad20e06750c3ce0a88db8ca7d7a27979fad55f08719174fbb",
+    "test/fixtures/priv/timer-vectored.s": "34e42ef69253b2fe62c579a2784e29d8fbd4024222c071f3fb76cc73bab25178",
     "test/gcc-import.test.mjs": "d174834d4d140132f7f26446412da021086dd5ec54e341ad3075ec1d5dadfead",
     "test/history.test.mjs": "b0e55fa95c9e632b9003a00f89198e65bad5c6d3f8f3e0e0a9e28e483ae4e4be",
     "test/layout.test.mjs": "ed13e30a4af564e795047935bb1d3f4b57771bc760e1f48583c32e9ff7ca1740",
-    "test/mavilera-brand.test.mjs": "1d84988a3248f01e28b63305020808d30f45b1461efd018cf51bf929b7b9fe53",
+    "test/mavilera-brand.test.mjs": "a74a504072e55a37175a7a92f82ab57411afd371993f404c50209246f1976c4a",
+    "test/mem-cache-models.test.mjs": "3efb168b22027827cb7f97cc3da847228d03e6b416e4db32a61ac2d1c60b57db",
+    "test/mem-cache.test.mjs": "5685a5ebf68a45db7c04cc37cdf4caa2ae817372b9deb46256779a5034b36e48",
+    "test/mem-config.test.mjs": "f647ee6ce66e224fb9ef8d93c821061319ec6ea2763541ec18407b04aae6ddcb",
+    "test/mem-system.test.mjs": "d8ae97bbb4a52c5791502ec4fc484bffbeb8a31dcd7cb0ee24d1d705e19c4300",
+    "test/mem-timing.test.mjs": "effd79be70c13655e73f5bcf6178d164d43b808a6c891effc294efd5c68fe9fd",
+    "test/mem-viewmodel.test.mjs": "38e3ae395d1bc0a4857f98e0d0e9dc5235ca4143443c7123e70e10f00e76a120",
+    "test/minify.test.mjs": "50c808af5fdb637e29196c2b6455fded7d0ba603a0f3cd38e1dbed1a38fe05db",
     "test/multi-paths.test.mjs": "721cd0eb19583a1e0a3637529cad71a742256adcd0e1a257f7b5d59fb2525cb7",
     "test/multi.test.mjs": "ee176bd4b4f4b7ea70910ba483f76d2f2c2d040d878aa2967fa6f08d063d3a39",
+    "test/output-cap.test.mjs": "d431af9e8b9a25aa297ca6e8f6b19f91748a79bc9929ed9e8346e778d7c0fa5f",
+    "test/pan-zoom.test.mjs": "b17b223188da906244545323f144e15ce8a66752bee457c9839e417c98baff41",
     "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
     "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
     "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
-    "test/platform.test.mjs": "6fff4f048bf7bce8aaf58a8a2956a8beff6ffd44c3cdd6f5c6a024e29497334b",
+    "test/platform.test.mjs": "4d215795d7e7ec33f6bbc4485af61e7c935c2e438a828771ec35827a19ad3028",
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
     "test/random.test.mjs": "2c3f27c2a76ac3cb9bbda309ea3d0f42fed3ae3c9f4d3e4a01e8dd6152c6514e",
-    "test/release.test.mjs": "70b4cb04c679c547f84272e4158311e1e82e0075d6af389abfc8a89da9131842",
+    "test/release.test.mjs": "57654aef7e5c311e0b43e47162143ae5f41ebd598f9c3d180fb13aee9c22c7d3",
+    "test/sap1-bus-model.test.mjs": "1913ce4c7182278de219f52d06c958f68eed155fe7f433de9fd849df8417b841",
+    "test/sap1-engine.test.mjs": "11d8227fda92d105613f0a2c05679b14aa18a4b113b4709c92f1c31292f71eaa",
+    "test/sap1-extras.test.mjs": "8b0e7cbdab16c97c8d073fb72cb0a398d00f961cebce4d5f8755014cd76c9a20",
+    "test/sap1-language.test.mjs": "e76f232b9a6c330edd3d9d5dbe8beb338bb22a8c2572c9e38ad7328a72441e52",
+    "test/sap1-layout.test.mjs": "60354b7d1a3372852de966d4ec48d3d3a10963c02f602b15cd5f7cae5a2403c2",
+    "test/sap1-templates.test.mjs": "ef4338e0f55038749bed253f6e328f0712a32d4706dbb7a4153acb91b07da3f8",
+    "test/sap2-bus-model.test.mjs": "3bb5f7c586c10f5761c5cfb4b4481a79bcc0b5b9f75c378adbb80bf0d1ed1b07",
+    "test/sap2-engine.test.mjs": "ac81e3d9f574483ef5a1b1b6c5ceef67ab73dd3fdcacc28aaab8d67b83775886",
+    "test/sap2-language.test.mjs": "2198dab03bf94fe69afc19acfa38ff0350afe421bde991afbb78c55e1c46009c",
+    "test/sap2-layout.test.mjs": "923e24894f818e967431f864ca04df833a37a8013359cbbaadf905f026875458",
+    "test/sap2-shell.test.mjs": "a62269f1425c278637be6b656899be0bb4a671ebe6762a16abb5566ad245af23",
+    "test/sap2-templates.test.mjs": "64a91263917756f2bdd539018a58e9d0040241926e85687f3b60dfa1aba30677",
+    "test/schematic.test.mjs": "6d8f2e8d30c8a5e906d8a2c2fcf36bcd4ceb8e65f79e344a53ccf5cc31d6417e",
     "test/scratch.test.mjs": "123bc357f09f04cb5d84c9091a400d4a921bae9fcadc78ea37488e153e04e7f7",
     "test/session.test.mjs": "04431e64dddb0ba9b9526cdf2c2d747482b365d0d053a34b7475d60c7c9e1ef5",
-    "test/share.test.mjs": "0abf528ecfd9e11be3c9211cf498983d05958ca76e9067be275fb8bfba3ccf4d",
+    "test/share.test.mjs": "5f480d5098c2597c40fe57c7295ea941b5d65abb83561666f37cae0f6f376463",
+    "test/shell-format.test.mjs": "1c9c412752191064f46d76d67bc6a9a1808e63355ec8d9eeb067e542c8987e4e",
     "test/single-paths.test.mjs": "24664755d1c04dac1707ac7f301fb93572195afeb67d6175dc4f7bb7c416f66c",
     "test/single.test.mjs": "5e814551e3fe2fa48e252181f93333d9655219e2a6f57f2153c67792d43f8a02",
-    "test/split.test.mjs": "4079cd71f88df0d391da1d4ca0353dd5813025ffdebba9657940f7c9de251633",
-    "test/templates.test.mjs": "f476d1193a3fdf92706f46dbac07d27ea27b6a6cebcf0b1d378dee7e55fe03e1",
+    "test/split.test.mjs": "7eb2aa046e3b1f6c8afc2fadca721a510de8973ee5da40c3af6cdf03624ee482",
+    "test/strings-merge.test.mjs": "27a604b4f4e70e64fc5b8cf2f035be00dee066c3f15b14d713a62c2bd01549dd",
+    "test/templates.test.mjs": "385e9bb51667503dfa20bbfe0fa7d30d24b16fd2497ae6eb0bdf49f62f9b676f",
     "test/timing.test.mjs": "2f2707cda7d36d16df28ba8bcab6c1f106777b0bcda7e1174b51ca8bcdc743b9",
+    "test/uarch-ecall.test.mjs": "bb9cbd1e59249083493e0383513650a5c04394523cdef486c1be213f411a583e",
     "test/uninit.test.mjs": "7703a40cd13f36bbcb96384d60a633b7c713cb962a00ae2bb5210b6e179bc234",
     "test/wire-colours.test.mjs": "ab8c01ea4d3a9bb40e8c800203ba4b19b80354411b0bc6bfabbf1251d959e673",
-    "(not published: tests that need the private book repository or hold exercise solutions)": "19 files, sha256 f27670c2112da37ae53a50fbe12393dd3a22eb89688efe3ff3d265b5da49abee"
+    "test/workspaces.test.mjs": "59903c7db8c97d4c83e9d4963a8d4750e2165e73467a6f559690d56c8d8baa40",
+    "(not published: tests that need the private book repository or hold exercise solutions)": "32 files, sha256 0eb38a4ba20f188dd54bac559d8b6089d4ea41549f436f9e68cb4ad101971102"
    }
   },
   "tools": {
-   "sha256": "9eadf942a4203053de001fc13bc12ef0cfb56fac86985b6466946d45def90c31",
+   "sha256": "258f7b1ebeb991a2a15bf282b90cf2d60e900336e9193ef726b7dcf362c09673",
    "files": {
-    "tools/README.md": "cf7a095a7423b69cae6fa3e58c5105ba4da9343d9fb7d6e9162b97942467bed3",
-    "tools/browser-smoke.mjs": "505b0902283181a4bc7ef343b980169a705895241140d801201afe24a484d1e8",
-    "tools/browser.mjs": "672549033ce915d8be132524030ccbd4f1e374ad9ba8f65c31a3ec3064e7d135",
+    "tools/README.md": "7d0c5ea78b80110284d039e68c76034e35d963ea62fe437fab5eb2b994fd784b",
+    "tools/arch-coupling.mjs": "5a8a07afb00d10a0a28304d495205edf5aa55b1e15ceac7b68ff362d12bb0fc0",
+    "tools/browser-smoke.mjs": "60243c34143fe98e25c024c69bef581dec91756e49cafe0d57ea0e6a1c160f6f",
+    "tools/browser.mjs": "bdfb9016c4e657546371a233980d41ba41264f99b1f3add9bdfcbc664175018d",
+    "tools/header-smoke.mjs": "edd8f6d526fb18a78accd98589c041175fa3b17753c09e61a59304648ba6d6cd",
+    "tools/logo/README.md": "cf3947e7ca0f46af8e09bf63183f3f43c121eda7d456592208f62873c41c04da",
+    "tools/logo/finish.py": "30d3d97a717dc07acd3be71d7ea86630b3797213c53b37a69ac6385c757f7e05",
+    "tools/logo/fitlib.py": "e4e23d6ed99d0ba7292eb2ef3984a516e5b3ecd522d4f77804793b50f6821abc",
+    "tools/logo/geom.py": "849fdbab03ba21665659b00da867d8b136e2a55c8e962abebe136f8ee0d2e4ed",
+    "tools/logo/make_logo.py": "a4e894eafcd4c2cfb8a53faf991a1125b0a93d8beb2f09dafeed31490a42f53b",
+    "tools/logo/mark.json": "7cda5546946400fcc89ffd6fac072265e57c27ddec00fd2a554d76a81923a496",
+    "tools/logo/markfit.py": "3aaae38a8ce17fd4e8520c835e4d719c79e0666a5af9971a6138b4df1014acad",
+    "tools/logo/seg.py": "966e267dabda7f2e49bd60296c0e4f3f712526d1160e2143c504b6fbd2ac76bf",
+    "tools/logo/svgo.config.mjs": "5c03a29148d1674b45a3dad2a3459ed5c2fead60121a95dd1518a8541249c60b",
+    "tools/make-boot-screen.mjs": "cb4b3e7ea17b03eab321e7359765412c66f01ac876bd082cf50d9a23fd282177",
     "tools/make-exercises.mjs": "e2e010a60d2ea3011ab11a121f80dcd67eb93dc399d9e645eb03ca28328a8b36",
-    "tools/make-mavilera-brand.mjs": "ee536fbc712df02d955e924c837964340a3c7507c8c005c4ff7e87a1a971a8a6",
-    "tools/offline.mjs": "f38e5316a728436c258a36145692c986b6d9bba8644d90fd2b234b885d940d65",
-    "tools/release.mjs": "0a08051380f1f2661f34e44ee40da8e0dc6305fa989bafdd3162d1d25a3397ec",
+    "tools/make-mavilera-brand.mjs": "e50f731d69abffef5430d4584f61ef0a11ac97f545086ebbe3c4a8d8e7e3eb63",
+    "tools/make-sap1-exercises.mjs": "e8c754b46ecf83398bf030f48b2ba2f40a34dee52d03e40fdf49ba19845d57bc",
+    "tools/make-sap2-exercises.mjs": "b25aa4d90efcbf7ebe72cac3fc277653619fb8205213f3b22784afeda471d401",
+    "tools/minify.mjs": "bc242bb728410a8f26c80784f5205ce63d96c3761382b1bfda1bbb3d79d233d5",
+    "tools/mobile-smoke.mjs": "9b8158d47cf21ad74587dc85d753c7da300a14f35206d2ff9d91b548a432ffc2",
+    "tools/module-smoke.mjs": "26c5184d54f2eb2c5df0c9c2798363028baa4c51b83ad4792f25818e0e4f6ee5",
+    "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
+    "tools/release.mjs": "ce13fb0dab5c31ba99e16933939c685aa8a08083d1e64e2de8c347bd9fe0477c",
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
     "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
-    "tools/site-files.mjs": "a976ed7cdbe89388a7c19b17d76a75187cc4285b633b81248de5640fa4cce8a7",
-    "(not published: scripts that read the private book repository, and the publication scripts)": "13 files, sha256 ee9f039a065f1e69b6ee240f9e068770f38916af1cf0a4e37856a02110108f13"
+    "tools/site-files.mjs": "68c2bc5d2d2bcd15e8e137f764bb1f93cdda113e23006713631f79d0450b1f6b",
+    "(not published: scripts that read the private book repository, and the publication scripts)": "14 files, sha256 aa303dcc8516114d7329406c465ccff628337438d01f1b74276de16bb3f301f1"
    }
   }
  },
  "reference": {
   "repository": "book repository (private; paths not listed)",
-  "commit": "449bbb3932cb8a4a405aca0e8b955e4b12880d91",
+  "commit": "619994959fff0788e5cc1ec3fec1f44a7dba822c",
   "uncommitted": 0,
   "groups": {
    "chapter 6 reference RTL and model": {
@@ -296,6 +464,11 @@
  },
  "checks": [
   {
+   "file": "/tools/minify.mjs",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":828,\"pass\":828,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1004,\"differ\":0,\"first\":null}})",
+   "ok": true
+  },
+  {
    "file": "test/a11y.test.mjs",
    "name": "every part drawn without text has an accessible name (WS-U-031)",
    "ok": true
@@ -303,6 +476,381 @@
   {
    "file": "test/a11y.test.mjs",
    "name": "projector mode enlarges type and the drawing's lines (WS-U-012)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "acc4: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "riscv: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-1: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "sap-2: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "the validator reports a malformed descriptor",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "basics-array: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "basics-bitfield: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "basics-const: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "basics-divshift: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "basics-expr: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "basics-loads: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "basics-trace: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-branch: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-compound: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-fact: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-max: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-max3: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-paths: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-sum_index: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-sum_pointer: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "control-sumsq: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "listing data from the adapter (contract v2) equal what the listing computed from the assembler row",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "tests-abi_bad: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "tests-arraysum: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "tests-bytes: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "tests-divcases: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "tests-fact: every step record of the adapter equals the Hart's",
+   "ok": true
+  },
+  {
+   "file": "test/arch-riscv.test.mjs",
+   "name": "the adapter assembles exactly as the assembler (words, segments, entry, symbols)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "addresses: a release page links to its siblings, the offline file to the site, the development page to ?arch=",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "endBoot: waits for the minimum and for the tool, then fades and removes; reduced motion removes at once",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "strings: the switcher's labels are British English text in the shell strings, and the old home link is gone",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "the header lockup is split where the files have their gap (MAVILERA ends at 1578, the chip begins at 1637 of 192 high)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "the loading screen: in the page itself, written from the logo file, with the slow-load line and the no-script rule",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "the switcher lists the available modules, in the registry order, each with a logo file that exists",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "the targets leave out the current architecture and keep the order",
    "ok": true
   },
   {
@@ -332,7 +880,7 @@
   },
   {
    "file": "test/branding.test.mjs",
-   "name": "mavilera-icon-small.svg: native vector SVG, self-contained, titled, rights line present",
+   "name": "mavilera-full.svg: native vector SVG, self-contained, titled, rights line present",
    "ok": true
   },
   {
@@ -347,12 +895,27 @@
   },
   {
    "file": "test/branding.test.mjs",
+   "name": "mavilera-lockup.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
    "name": "mavilera-logo.svg: native vector SVG, self-contained, titled, rights line present",
    "ok": true
   },
   {
    "file": "test/branding.test.mjs",
+   "name": "mavilera-mark.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
    "name": "mavilera-mono.svg: native vector SVG, self-contained, titled, rights line present",
+   "ok": true
+  },
+  {
+   "file": "test/branding.test.mjs",
+   "name": "mavilera-wordmark.svg: native vector SVG, self-contained, titled, rights line present",
    "ok": true
   },
   {
@@ -381,6 +944,41 @@
    "ok": true
   },
   {
+   "file": "test/cache-anim.test.mjs",
+   "name": "a hit: split, lookup, hit, word; no fill",
+   "ok": true
+  },
+  {
+   "file": "test/cache-anim.test.mjs",
+   "name": "a read miss on an empty line: split, lookup, miss, fill, word",
+   "ok": true
+  },
+  {
+   "file": "test/cache-anim.test.mjs",
+   "name": "every stage has a place in the drawing: a box, and an arrow only for data moving between cache and memory",
+   "ok": true
+  },
+  {
+   "file": "test/cache-anim.test.mjs",
+   "name": "every stage that can occur has a text and a colour class",
+   "ok": true
+  },
+  {
+   "file": "test/cache-anim.test.mjs",
+   "name": "no access: no stages",
+   "ok": true
+  },
+  {
+   "file": "test/cache-anim.test.mjs",
+   "name": "no-write-allocate: the miss bypasses the cache and writes through; write-through hit adds a memory stage",
+   "ok": true
+  },
+  {
+   "file": "test/cache-anim.test.mjs",
+   "name": "replacing a clean line gives a victim stage, a dirty one also a write-back",
+   "ok": true
+  },
+  {
    "file": "test/callstack.test.mjs",
    "name": "textNamer: the label at or before an address, with an offset",
    "ok": true
@@ -393,6 +991,31 @@
   {
    "file": "test/callstack.test.mjs",
    "name": "WS-F-103/143: frames, names and a0-a7 at each call",
+   "ok": true
+  },
+  {
+   "file": "test/capabilities.test.mjs",
+   "name": "an architecture without capabilities: everything off, with the shell's generic reason",
+   "ok": true
+  },
+  {
+   "file": "test/capabilities.test.mjs",
+   "name": "every reason the RISC-V descriptor gives is worded in the strings",
+   "ok": true
+  },
+  {
+   "file": "test/capabilities.test.mjs",
+   "name": "gate: an item whose capability is off is disabled, with the reason as its tooltip; one that is on is untouched",
+   "ok": true
+  },
+  {
+   "file": "test/capabilities.test.mjs",
+   "name": "RISC-V: every capability on but traps, which its profile with traps turns on (and the Worker off)",
+   "ok": true
+  },
+  {
+   "file": "test/capabilities.test.mjs",
+   "name": "the shell handles every capability of the contract",
    "ok": true
   },
   {
@@ -571,6 +1194,56 @@
    "ok": true
   },
   {
+   "file": "test/compare-memory.test.mjs",
+   "name": "a scenario that cannot be built says why, and the others still run",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "CSV: a header and one line per row, numbers as numbers, empty where a value does not exist",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "errors of the program are reported per row: profile errors, a run that does not halt",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "every row: the memory model does not change what the program computes; stall cycles add up",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "multicycle, B (worked by hand): a wait in FETCH, MEMWR and MEMRD",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "ratios: C over A, C over B, B over A per processor; CPI against the single-cycle processor",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "scenario A is the existing comparison: same cycles, same instructions",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "single-cycle, B, one port (worked by hand): data first, the fetch waits for the bus",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "single-cycle, B, two ports (worked by hand): every edge fetches, 6 cycles an edge",
+   "ok": true
+  },
+  {
+   "file": "test/compare-memory.test.mjs",
+   "name": "the write buffer switch changes only the cost: ideal absorbs dirty evictions",
+   "ok": true
+  },
+  {
    "file": "test/conformance.test.mjs",
    "name": "WS-V-010/011/012/013: asm/abi_bad.s against rvasm.py, rvdis.py and rvsim.py",
    "ok": true
@@ -703,6 +1376,126 @@
   {
    "file": "test/data-io.test.mjs",
    "name": "WS-F-145: numbers from CSV and text",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "a live pin event is part of the script: the interface adds it at the current cycle, a step back and forward replays it",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "a processor model reaches a device through the bus: the single-cycle and pipelined models drive the GPIO LEDs",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "a trap with no handler is an error of the run, not an exception of the page",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "Controller is untouched: this work adds devices, not a change to the controller",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "devices keep time on a memory system: every edge of a model ticks them, ideal memory included",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "GPIO: a rising input sets its IRQ_PEND bit; the request needs IRQ_EN; writing 1 clears it",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "GPIO: OUT, OUT_SET, OUT_CLR, OUT_TGL, DIR and the read-only IN",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "multi: a load from RXDATA takes the byte once, at its edge; a step back puts it back",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "peek has no side effects on any device, whatever the number of times it is called",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "pipe: a load from RXDATA takes the byte once, at its edge; a step back puts it back",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "side effects once: a device access that waits in a timed memory system commits exactly once",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "single: a load from RXDATA takes the byte once, at its edge; a step back puts it back",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "step back on iss-priv: stepping N and going back N restores the whole state, at every step of a run with interrupts",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "step back with pin events: switches pressed at a cycle are replayed after going back",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "the memory setting: devices default to off, are read back, and give no system on ideal memory without a platform",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "the models tick the platform timer with their own cycle: a polled MTIME grows by one per edge",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "the platform on a memory system: the window reads 0 and ignores writes, the devices sit at their slots, a byte access is a bus fault",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "the profile iss-priv: ecall traps instead of stopping; the profile iss is unchanged",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "the script and the trap settings travel in links and settings files; the profile with traps is a known profile",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "timed memory with devices: the pipeline waits for memory and the devices still keep the model's time",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "timer: MTIME counts, MTIMECMP starts as all ones, MTIP = MTIME >= MTIMECMP, writes to MTIME and the divider",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "UART: the interrupt request follows CTRL and the status",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "UART: the receiver holds 8 bytes; the ninth is lost and RXOVR is set",
+   "ok": true
+  },
+  {
+   "file": "test/devices.test.mjs",
+   "name": "UART: TXDATA sends when ready and the transmitter is busy for txCycles; RXDATA pops; STATUS and CTRL",
    "ok": true
   },
   {
@@ -1226,6 +2019,696 @@
    "ok": true
   },
   {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "a dirty line stays out of RAM until it is evicted; the processor still sees it",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, data cache only, lru 2-way: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, data cache only, lru 2-way: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, instruction cache only: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, instruction cache only: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, wb/wa direct 64B/16B: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, wb/wa direct 64B/16B: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, wt/nwa 2-way fifo: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, wt/nwa 2-way fifo: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, wt/wa random 4-way: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch06, wt/wa random 4-way: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, data cache only, lru 2-way: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, data cache only, lru 2-way: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, instruction cache only: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, instruction cache only: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, wb/wa direct 64B/16B: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, wb/wa direct 64B/16B: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, wt/nwa 2-way fifo: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, wt/nwa 2-way fifo: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, wt/wa random 4-way: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch07, wt/wa random 4-way: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, data cache only, lru 2-way: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, data cache only, lru 2-way: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, instruction cache only: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, instruction cache only: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, wb/wa direct 64B/16B: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, wb/wa direct 64B/16B: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, wt/nwa 2-way fifo: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, wt/nwa 2-way fifo: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, wt/wa random 4-way: back-step restores registers, memory, lines, counters and controller",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "ch08, wt/wa random 4-way: same architectural results as ideal memory; counts consistent",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache-models.test.mjs",
+   "name": "invalid cache configurations are not activated",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "byte and half-word accesses read and write the right bytes of the line",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wb+nwa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wb+nwa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wb+nwa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wb+wa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wb+wa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wb+wa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wt+nwa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wt+nwa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wt+nwa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wt+wa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wt+wa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: fifo wt+wa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wb+nwa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wb+nwa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wb+nwa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wb+wa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wb+wa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wb+wa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wt+nwa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wt+nwa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wt+nwa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wt+wa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wt+wa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: lru wt+wa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wb+nwa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wb+nwa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wb+nwa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wb+wa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wb+wa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wb+wa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wt+nwa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wt+nwa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wt+nwa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wt+wa, 256 B, 16 B blocks, 1-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wt+wa, 256 B, 16 B blocks, 4-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "data coherence: random wt+wa, 256 B, 64 B blocks, 2-way",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "debugWrite updates memory and a present line without counting; flush and invalidate",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "direct-mapped: a compulsory miss, then hits inside the same block",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "direct-mapped: block 4 (set 0) is evicted by block 64; returning gives a conflict miss",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "geometry: sets, index and offset bits; default alloc follows the write policy",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "L2: an L1 fill is one L2 read, a dirty eviction one L2 write; data reach memory through both",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "LRU and FIFO choose different victims; LRU keeps the block just used",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "plan() changes nothing, and commit() does what plan() said",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "random replacement repeats for the same seed and differs between seeds",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "rvcache.py: a unified cache and an L2 behind split L1 caches give the same counts at both levels",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "rvcache.py: per-access hit/miss, miss kind and victim, and every count, on seeded traces (split I and D)",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "validateCache: powers of two, block >= 4, block x ways <= size, known policies",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "write-back + no-write-allocate: a store miss goes to memory, a store hit makes the line dirty",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "write-back + write-allocate: a store marks the line dirty; memory changes only at eviction",
+   "ok": true
+  },
+  {
+   "file": "test/mem-cache.test.mjs",
+   "name": "write-through + no-write-allocate: store miss writes memory only; store hit updates both",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "a cache remembers its last access for the viewer, and a back-step restores it",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "an invalid setting cannot be activated and says why",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "dataAccessOf: loads and stores of the base ISA give their address and size; other instructions none",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "describe: one line for each level",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "every cache preset and every memory size is a valid setting",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "every string the memory interface uses exists",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "isDirty: a word in a dirty line is stale in RAM; a clean line or no line is not",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "memory size (D2): a larger memory holds a program that needs it, and ideal timing is unchanged",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "readConfig: damaged or foreign text gives the default; a round trip keeps the setting",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "the default setting is ideal memory of 256 words and needs no memory system",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "the instruction-level view follows its position: advancing in pieces equals one run, a replay to the same point equals it too",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "the memory model is an optional part of the share format; an older file reads as ideal",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "trace-driven cache counts of the instruction-level view equal those of the single-cycle processor (no timing)",
+   "ok": true
+  },
+  {
+   "file": "test/mem-config.test.mjs",
+   "name": "write buffer (D5): ideal absorbs write costs, never changes the results, and charges less than none",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "AddressMap: a wrapping RAM region repeats over the space (offset = address & (size - 1))",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "AddressMap: narrowest region wins; a device is carved out of RAM and is never cacheable",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "AddressMap: overlaps, size 0, misaligned devices and bad wrap regions are errors",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "AddressMap: unmapped addresses fault, or read zero under the policy \"zero\"",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "baseline ch06: same cycles, registers and golden dump with an ideal memory system",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "baseline ch07: same cycles, registers and golden dump with an ideal memory system",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "baseline ch08: same cycles, registers and golden dump with an ideal memory system",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "baseline ISS (iss profile): same registers, counts and memory with an ideal memory system",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "baseline ISS: a device at a peripheral address is reached by loads and stores",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "Device: defaults; subscribers are notified and can unsubscribe",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "port: a ROM region ignores stores; restore() undoes RAM only; attach() resets devices",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "port: device width fault, fetch from a device fault, RAM beside a device unaffected",
+   "ok": true
+  },
+  {
+   "file": "test/mem-system.test.mjs",
+   "name": "port: sample() is pure, begin()+commit() runs the device read and write exactly once",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "accessCycles: RAM costs a transaction, a device its own latency, ideal memory and a fault 1",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch06: architectural results do not depend on the memory timing; transactions are counted once",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch06: step and back through wait edges restore the state and the ledger",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch06: with ideal memory a memory system adds no cycle and counts nothing",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch07: architectural results do not depend on the memory timing; transactions are counted once",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch07: step and back through wait edges restore the state and the ledger",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch07: with ideal memory a memory system adds no cycle and counts nothing",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch08: architectural results do not depend on the memory timing; transactions are counted once",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch08: step and back through wait edges restore the state and the ledger",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "ch08: with ideal memory a memory system adds no cycle and counts nothing",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "Controller.plan: one request; two ports overlap; one port serialises, data first, wait charged to arbitration",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "MainMemory: transaction = overhead + latency + ceil(bytes / busWidth)",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "multicycle: FETCH and MEM states wait; the other states do not",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "multicycle: stepInstruction and backInstruction treat the FETCH wait as part of the instruction",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "pipeline: every memory wait freezes the pipeline; real edges are those of the ideal run",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "single-cycle with wait states: one port serialises fetch and data; the extra cycle is arbitration",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "single-cycle with wait states: two ports, each edge takes the longer of its accesses",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "validateMain / configure: invalid values give messages and are not activated",
+   "ok": true
+  },
+  {
+   "file": "test/mem-timing.test.mjs",
+   "name": "waitEdge: a held request counts one transaction however long it waits; ideal mode never waits",
+   "ok": true
+  },
+  {
+   "file": "test/mem-viewmodel.test.mjs",
+   "name": "address split: 1 KiB direct-mapped, 16-byte blocks = tag 22, index 6, offset 4",
+   "ok": true
+  },
+  {
+   "file": "test/mem-viewmodel.test.mjs",
+   "name": "geometry text",
+   "ok": true
+  },
+  {
+   "file": "test/mem-viewmodel.test.mjs",
+   "name": "rows follow the cache; reading counts nothing",
+   "ok": true
+  },
+  {
+   "file": "test/mem-viewmodel.test.mjs",
+   "name": "victim marker: a free way first, then the head of the LRU order",
+   "ok": true
+  },
+  {
+   "file": "test/minify.test.mjs",
+   "name": "CSS: comments and spaces go; a space before a colon and strings stay",
+   "ok": true
+  },
+  {
+   "file": "test/minify.test.mjs",
+   "name": "every shipped JavaScript module minifies and still parses as a module; the shipped JSON round-trips",
+   "ok": true
+  },
+  {
+   "file": "test/minify.test.mjs",
+   "name": "JavaScript: comments and indentation go, the copyright and rights lines stay",
+   "ok": true
+  },
+  {
+   "file": "test/minify.test.mjs",
+   "name": "JavaScript: strings, template literals, regular expressions and statement-ending line breaks keep their meaning",
+   "ok": true
+  },
+  {
+   "file": "test/minify.test.mjs",
+   "name": "JSON is written without spaces; other files are unchanged",
+   "ok": true
+  },
+  {
    "file": "test/multi-paths.test.mjs",
    "name": "W-D20: without content/data/ch07-jalr.json (a release) nothing of the JALR answer remains, and the diagram matches the rules",
    "ok": true
@@ -1353,6 +2836,56 @@
   {
    "file": "test/multi.test.mjs",
    "name": "WS-V-023: chapter07/we71, cycles of every instruction equal mc_cpi.json for its class",
+   "ok": true
+  },
+  {
+   "file": "test/output-cap.test.mjs",
+   "name": "RISC-V engine: write ecalls past the cap; the state converts a million characters",
+   "ok": true
+  },
+  {
+   "file": "test/output-cap.test.mjs",
+   "name": "SAP-1 bus model: the same cap on its output",
+   "ok": true
+  },
+  {
+   "file": "test/output-cap.test.mjs",
+   "name": "SAP-1 engine: the output is capped, the count adds up, step back works within and past the cap",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "fit: the drawing scaled to the narrower side and centred",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "keys: + and = zoom in, - zooms out, 0 fits, the arrows pan; not with Ctrl, Alt or Meta",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "pan limits: the drawing cannot leave the pane; at least MARGIN pixels of it stay in view",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "wheel: down zooms out, up zooms in; lines and a touchpad pinch (Ctrl) are scaled",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "zoom around a point: the point under the pointer stays where it is",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "zoom limits: 25 % to 800 % of the drawing size; the fitted size is always allowed",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "zoom to 100 %: one pixel per drawing unit, around the centre of the pane",
    "ok": true
   },
   {
@@ -1502,12 +3035,12 @@
   },
   {
    "file": "test/platform.test.mjs",
-   "name": "registry: unique ids and paths, a known status, nothing but the RISC-V module available",
+   "name": "registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-2 modules available",
    "ok": true
   },
   {
    "file": "test/platform.test.mjs",
-   "name": "the app links to MAVILERA Home only in a release, and the logo files it reads exist",
+   "name": "the app links to MAVILERA Home only in a release (the logo does, test/arch-switcher.test.mjs), and the logo files it reads exist",
    "ok": true
   },
   {
@@ -1601,6 +3134,71 @@
    "ok": true
   },
   {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: a byte access to a device register stops with the reference model's message",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: a program with no handler for its trap stops with the reference model's message",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: bad-handler with the trap check against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: button-irq against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: exceptions against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: exceptions, mtval always 0 against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: gpio-regs against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: timer-vectored against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: timer-vectored with the trap check (its handler uses t3 without saving it) against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: timer-vectored, MTIME every 3 cycles against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: timer-vectored, MTIME every 7 cycles against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: timer-vectored, trap entry 5 cycles against rvsim.py --priv",
+   "ok": true
+  },
+  {
+   "file": "test/priv-conformance.test.mjs",
+   "name": "WS-F-111: wfi with nothing that can wake it stops with the reference model's message",
+   "ok": true
+  },
+  {
    "file": "test/random.test.mjs",
    "name": "WS-V-011: random instruction streams in lock-step with rvsim.py",
    "ok": true
@@ -1618,6 +3216,16 @@
   {
    "file": "test/release.test.mjs",
    "name": "W-D20: the multicycle files, the JALR file included, are what tools/export_ch07.py writes from the book",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "W-D29 phase 6: each architecture builds from its own modules and content folders",
+   "ok": true
+  },
+  {
+   "file": "test/release.test.mjs",
+   "name": "W-D29 phase 6: each module's page and manifest carry its name; RISC-V's are the development page's",
    "ok": true
   },
   {
@@ -1771,6 +3379,616 @@
    "ok": true
   },
   {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "an unknown opcode stops in T4 with an error; step back clears it",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "at most one driver on the bus in every state; a load always has a driver",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "fetch is T1 Ep Lm, T2 Cp, T3 CE Li; each instruction its own T4 to T6",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "HLT: the decoder asserts HLT bar from opcode 1111; the clock stops in T4",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "six states per instruction, HLT stops in T4; CPI of the default program",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "step back by clock returns every state; by instruction to its T1",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "the bus model agrees with the engine after every instruction",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "the control word: twelve bits, active-low signals 0 when asserted",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "the microprogram: every CON word of Malvino and Brown, Table 10-5 and the fetch table of Sec. 10-7",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "timing: T1 PC to MAR, T2 count, T3 RAM to IR; ADD and SUB T6 load the sum or difference into A",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-bus-model.test.mjs",
+   "name": "waveforms and VCD of the bus view: one frame per timing state, up to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "a program without HLT wraps round the memory until the run budget stops it",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "a watched register stops the run after the instruction that writes it; step back restores the output",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "an opcode that is not one of the five stops the run with an error; step back clears it",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "arithmetic wraps modulo 256",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "each instruction writes MAR, IR and its own registers; LDA, ADD and SUB read memory",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "share links of SAP-1: a state without subset or language options round-trips; RISC-V refuses it",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "the default program shows 28 + 17 - 5 = 40 and halts after five instructions",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "the history limit drops the oldest steps and counts them",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-engine.test.mjs",
+   "name": "trace exports: one record per instruction, as JSON lines and CSV",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "an exercise of one architecture is refused by the other, with the reason",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "C5: no model solution is published; the starters hold no instruction with an operand",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "SAP-1 practice exercise both-differences: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "SAP-1 practice exercise negate: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "SAP-1 practice exercise running-total: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "SAP-1 practice exercise sum-four: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "SAP-1 practice exercise times-ten: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "the checks: expected against actual, a missing halt and a missing label are errors",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-exercises.test.mjs",
+   "name": "the SAP-1 exercise files are those tools/make-sap1-exercises.mjs writes",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-extras.test.mjs",
+   "name": "data files: the DB labels are data arrays; a load replaces their bytes as far as their room goes",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-extras.test.mjs",
+   "name": "the golden dump: the values loaded into OUT by the bus view's export model; a run without a halt is reported",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-extras.test.mjs",
+   "name": "the scratch line: a byte decodes, an instruction encodes, errors are the assembler's",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-extras.test.mjs",
+   "name": "the shell's data arrays are unchanged for every RISC-V program of content/ and test/ (one data segment)",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "an empty source assembles to an empty program; comments and blank lines are ignored",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "DB with several values and a label as value; a forward reference",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "disassembly of every byte; reassembling an instruction gives the byte again",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "editor data: lower-case words, help and detail for every mnemonic",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "errors: each with line, column and length",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "labels, ORG and DB: data in the data listing, symbols as a record",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "number notations",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "the .hex and .bin images hold the sixteen bytes; they load back as a program without source",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-language.test.mjs",
+   "name": "the five instructions encode as opcode and address",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-layout.test.mjs",
+   "name": "clock, clear and halt: polarity, edges and destinations as in Figs. 10-1 and 10-14",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-layout.test.mjs",
+   "name": "data paths: widths and directions; B and OUT never drive the bus, the display only reads OUT",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-layout.test.mjs",
+   "name": "every control signal is one wire from its cell in the controller to its port, and nothing else is",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-layout.test.mjs",
+   "name": "no control or clock wire touches the W bus, a data path or a unit it does not end at",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-layout.test.mjs",
+   "name": "the control wires do not cross one another; clock lines cross only control wires",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-layout.test.mjs",
+   "name": "the control word: twelve signals in textbook order, polarity and destination",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-layout.test.mjs",
+   "name": "units, ports and port labels do not overlap; everything is inside the drawing",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-templates.test.mjs",
+   "name": "each template runs as its comment says, on the engine and on the bus model",
+   "ok": true
+  },
+  {
+   "file": "test/sap1-templates.test.mjs",
+   "name": "the index lists every template file once, in a group and a view of the descriptor",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "errors stop the model in the instruction the engine stops in",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "every op code takes the T states of Table 11-3; one bus driver per state; signals of known units",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "lock-step with the engine: a program of all 43 instructions",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "lock-step with the engine: every template and every exercise test",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "step back undoes every clock: registers, memory, output, inputs",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "the ALU result waits for T2 of the next fetch, which the view shows as pending",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "the golden dump: the port writes in order, then the RAM stored, by address (author, 2026-10-30)",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-bus-model.test.mjs",
+   "name": "waveforms: every signal of the list has a value in every state; the transfers read as the table",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "a byte that names another port, or is not an op code, stops the run with an error (decision 5)",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "a program without HLT runs through the zero bytes (NOP) and wraps at FFFFH until the run budget stops it",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "a STA to 0000H-07FFH stops the run with an error naming the address; step back clears it (decision 4)",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "CALL keeps the return address low byte first at FFFEH; RET returns there; the call hooks (decision 3)",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "contract: run stops at a breakpoint, then runs to the halt; snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "contract: state after each step agrees with the step record and last(); reset",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "contract: step back restores registers, the whole memory and the PC",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "each of the 43 instructions on fixed registers: registers, flags, memory, next PC and T states",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "flags: set by the ten flag instructions from the result, kept by the others",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "inputs are logged by step count: a replay reproduces the run; step back past an input withdraws it",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "INR and DCR of B and C keep A; the flags follow the register (decision 2)",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "jumps: taken 10 T states, not taken 7; the counters by mnemonic; step back undoes them",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "LDA reads and STA writes memory; step back restores the byte",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "ports: a program waits for READY, reads the key, shows it on port 3 and acknowledges (decision 6)",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "RAL and RAR: the book's examples (A = B4H gives 69H and 5AH); the flags are kept",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "the history limit drops the oldest steps and counts them",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "the output cap: a long run keeps OUTPUT_KEEP to 2 x OUTPUT_KEEP characters; step back over the drop",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-engine.test.mjs",
+   "name": "watched registers and memory stop a run after the instruction that writes them",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "add-two-keys: a program without the handshake reads the first key twice and fails",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "an exercise of one architecture is refused by the others, with the reason",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "C5: no model solution is published; the starters hold only HLT and data",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "SAP-2 practice exercise add-two-keys: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "SAP-2 practice exercise count-ones: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "SAP-2 practice exercise sum-to-n: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "SAP-2 practice exercise swap: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "SAP-2 practice exercise times-four: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "the checks: registers, flags, memory and outputs against the run; a missing halt and a missing label are errors",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-exercises.test.mjs",
+   "name": "the SAP-2 exercise files are those tools/make-sap2-exercises.mjs writes",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "a warning for bytes at FFFEH-FFFFH when the program has a CALL; none without one",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "an empty source assembles to an empty program; comments and blank lines are ignored",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "case and spacing: mnemonics and registers in any case, spaces around the comma",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "editor data: lower-case words; help and detail for every mnemonic and register",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "errors: each with line, column and length",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "every byte disassembles: an op code of one byte as its instruction, anything else as data that reassembles",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "every instruction assembles to its op code, length and operand bytes, and disassembles back",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "fields: the op code, then a byte, a port, or an address low byte first; describe gives format and operand",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "labels, ORG, DB and DW: little-endian addresses and words, data in the data listing",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "number notations",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "op codes are distinct; no op code of two or three bytes is 00",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "the 43 instructions equal the reference sheet, §2: form, op code, bytes, T states, flags",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-language.test.mjs",
+   "name": "the scratch line: bytes decode, an instruction encodes, errors are worded",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-layout.test.mjs",
+   "name": "one pin per control signal, on its unit's outer edge, apart; the controller keeps its own",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-layout.test.mjs",
+   "name": "stubs reach the bus from their unit; links join neighbours' facing sides",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-layout.test.mjs",
+   "name": "taps run from the bundles to the pins; the bundles leave the controller",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-layout.test.mjs",
+   "name": "the units lie inside the drawing, apart from each other and from the bus",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-shell.test.mjs",
+   "name": "call stack: the innermost call with its site, target and return; empty after RET",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-shell.test.mjs",
+   "name": "capabilities: what SAP-2 lacks has its own reason; step over has its hooks; one view and the ports panel",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-shell.test.mjs",
+   "name": "data files: a load replaces the bytes at its DB label; one larger than the label's room is refused",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-shell.test.mjs",
+   "name": "images: .hex and .bin up to the last byte, read back to the same memory and listing",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-shell.test.mjs",
+   "name": "ports panel: the byte field reads hexadecimal and the assembler's notations, not decimal",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-shell.test.mjs",
+   "name": "the contract v8: panels are checked for id, label and load",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-shell.test.mjs",
+   "name": "trace exports: a record per instruction, memory writes, the input log replayed",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-templates.test.mjs",
+   "name": "each template runs as its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-templates.test.mjs",
+   "name": "keyboard: without keys the program waits for READY until the run budget",
+   "ok": true
+  },
+  {
+   "file": "test/sap2-templates.test.mjs",
+   "name": "the index lists every template file once, in a group and a view of the descriptor",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "Chapter 7: result and pc_next, drawn as one bus, are both 32 bits and differ only in bit 0",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "every connection has a width from the signal dictionary (the constant 4 of Chapter 7 excepted)",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "junction dots agree with connectivity: none misplaced, none missing",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "markers: the net width, one per net, near the source, clear of texts, elements, junctions and each other",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "markers: the register-file ports, the ALU operands and the write-back carry theirs",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "multiplexer ports: the input numbers locate the ports; the active wire into one selects it",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "review list: overlaps of the book geometry and connections too short for a marker (fixture)",
+   "ok": true
+  },
+  {
+   "file": "test/schematic.test.mjs",
+   "name": "widths: buses, fields, flags and the control bundles of the pipeline registers",
+   "ok": true
+  },
+  {
    "file": "test/scratch.test.mjs",
    "name": "WS-F-024: a word decodes to its instruction",
    "ok": true
@@ -1822,6 +4040,11 @@
   },
   {
    "file": "test/share.test.mjs",
+   "name": "W-D29 decision 4: links and files carry the architecture; none means riscv, another is refused naming it",
+   "ok": true
+  },
+  {
+   "file": "test/share.test.mjs",
    "name": "WS-F-122/144: a state goes through a link unchanged, compressed or not",
    "ok": true
   },
@@ -1838,6 +4061,16 @@
   {
    "file": "test/share.test.mjs",
    "name": "WS-N-013: a long program fits a link once compressed; unknown keys are dropped",
+   "ok": true
+  },
+  {
+   "file": "test/shell-format.test.mjs",
+   "name": "32-bit values are shown as before",
+   "ok": true
+  },
+  {
+   "file": "test/shell-format.test.mjs",
+   "name": "narrower registers: ceil(width / 4) digits, signed and binary within the width",
    "ok": true
   },
   {
@@ -1966,6 +4199,21 @@
    "ok": true
   },
   {
+   "file": "test/strings-merge.test.mjs",
+   "name": "every architecture of the registry: a key it shares with the shell has the shell type (group, text or function)",
+   "ok": true
+  },
+  {
+   "file": "test/strings-merge.test.mjs",
+   "name": "mergeStrings joins groups key by key, the architecture winning, and freezes the result",
+   "ok": true
+  },
+  {
+   "file": "test/strings-merge.test.mjs",
+   "name": "the RISC-V descriptor gives its strings; a key both have is a group in both or in neither",
+   "ok": true
+  },
+  {
    "file": "test/templates.test.mjs",
    "name": "every template file is in the index, every entry has a file, a group, a view and a check",
    "ok": true
@@ -1987,6 +4235,46 @@
   },
   {
    "file": "test/templates.test.mjs",
+   "name": "template button-interrupt: A button interrupt: wfi, handler, mret",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cache-conflict: Conflict misses: two arrays in the same sets",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cache-pipe: The pipeline waits for memory",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cache-replacement: Replacement: LRU against FIFO",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cache-spatial: Spatial locality: one miss per block",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cache-speedup: Three processors, three memories",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cache-stride: Stride: a miss on every load",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cache-writeback: Write-back: dirty lines and their eviction",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
    "name": "template class-tour: One instruction of each class, and the critical path",
    "ok": true
   },
@@ -1997,12 +4285,27 @@
   },
   {
    "file": "test/templates.test.mjs",
+   "name": "template ecall-trap: A system call as a trap: ecall, handler, mret",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
    "name": "template endianness: Bytes, half-words and words: little-endian memory",
    "ok": true
   },
   {
    "file": "test/templates.test.mjs",
    "name": "template forwarding: Data dependences and forwarding",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template gpio-leds: GPIO output: a running light of eight LEDs",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template gpio-switches: GPIO input: polling switches and a push button",
    "ok": true
   },
   {
@@ -2072,7 +4375,27 @@
   },
   {
    "file": "test/templates.test.mjs",
+   "name": "template timer-interrupt: A periodic timer interrupt",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template timer-poll: The timer by polling: a delay in a loop",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template uart-hello: A serial port: send a greeting, echo what arrives",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
    "name": "template watch-overrun: A watchpoint catches a write past an array",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "the templates are numbered by their place in the index: the device templates are 22 to 28, the cache templates 29 to 35",
    "ok": true
   },
   {
@@ -2088,6 +4411,66 @@
   {
    "file": "test/timing.test.mjs",
    "name": "WS-V-024: the lw path runs along the connections and arrival times of FIG-0012",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch06: ebreak stops the run",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch06: ecall directly after the li a7 (hazard) still sees a7 = 93; back-step undoes the halt",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch06: ecall with a7 = 93 stops the run; nothing after it executes",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch06: ecall with another a7 is an error that names it",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch07: ebreak stops the run",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch07: ecall directly after the li a7 (hazard) still sees a7 = 93; back-step undoes the halt",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch07: ecall with a7 = 93 stops the run; nothing after it executes",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch07: ecall with another a7 is an error that names it",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch08: ebreak stops the run",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch08: ecall directly after the li a7 (hazard) still sees a7 = 93; back-step undoes the halt",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch08: ecall with a7 = 93 stops the run; nothing after it executes",
+   "ok": true
+  },
+  {
+   "file": "test/uarch-ecall.test.mjs",
+   "name": "ch08: ecall with another a7 is an error that names it",
    "ok": true
   },
   {
@@ -2154,6 +4537,51 @@
    "file": "test/wire-colours.test.mjs",
    "name": "runClose: parallel within the gap over a long enough stretch; crossings and far lines are not close",
    "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "a datapath view adds Datapath, and its Listing is the details pane",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "an architecture with fewer panes gets fewer tabs: nothing is offered for a pane that does not exist",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "every pane a workspace names is a pane main.js lays out",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "every workspace has a name, an icon and a layout; the ids are unique",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "resolveWorkspace keeps a workspace that is on offer and falls back to the first",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "tabKeyTarget: arrows wrap, Home and End jump, other keys are left alone",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "the comparison view has Compare in place of Listing",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "the instruction view offers Code, Listing, CPU and Memory; no Datapath without a datapath pane",
+   "ok": true
+  },
+  {
+   "file": "test/workspaces.test.mjs",
+   "name": "the status and unread strings read well",
+   "ok": true
   }
  ],
  "smoke": {
@@ -2162,11 +4590,15 @@
   "browsers": [
    {
     "name": "chrome",
-    "version": "Chrome/155.0.8059.85",
+    "version": "Chrome/156.0.8078.79",
     "installed": true,
     "results": [
      {
       "name": "loads without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+      "ok": true
+     },
+     {
+      "name": "DOM snapshot of every view equals test/fixtures/dom-snapshot.json (panes, controls, names, states)",
       "ok": true
      },
      {
@@ -2218,86 +4650,19 @@
       "ok": true
      },
      {
-      "name": "a reload keeps the program, the step reached, breakpoints and watchpoints",
+      "name": "M7 phase 7: a cache template sets the Memory model; the Cache tab animates the last access, and it passes the axe-core scan",
       "ok": true
      },
      {
-      "name": "M8: waveforms of the pipelined view, a cycle chosen on them; the panel passes the axe-core scan (WS-F-146)",
+      "name": "M7 devices and traps: a template of the group Devices and traps runs on the profile with traps; the Peripherals tab shows the board, a switch and the button work from mouse and keyboard, and the panel passes the axe-core scan",
       "ok": true
      },
      {
-      "name": "M8: an exercise file opened from the disk runs its tests on the program; the dialog passes the axe-core scan (WS-F-148)",
+      "name": "M7 devices in a processor view: with the Memory setting on, the pipelined view shows the board, a switch works, a program writes the LEDs, and the panel passes axe",
       "ok": true
      },
      {
-      "name": "M8: an uninitialised register read is reported in the console (WS-F-147)",
-      "ok": true
-     },
-     {
-      "name": "release site: the landing page and the documentation load and pass the axe-core scan in both themes (WS-U-034)",
-      "ok": true
-     },
-     {
-      "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 32 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
-      "ok": true
-     }
-    ]
-   },
-   {
-    "name": "edge",
-    "version": "Edg/151.0.4129.78",
-    "installed": true,
-    "results": [
-     {
-      "name": "loads without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
-      "ok": true
-     },
-     {
-      "name": "assemble, step three times, step back once (WS-F-090)",
-      "ok": true
-     },
-     {
-      "name": "trace export equals the headless runner (WS-F-126, WS-F-127)",
-      "ok": true
-     },
-     {
-      "name": "golden dump of the pipelined view equals the headless runner (WS-F-124)",
-      "ok": true
-     },
-     {
-      "name": "share link round trip: program and view (WS-F-122)",
-      "ok": true
-     },
-     {
-      "name": "every tab stop of the ISA view shows a visible focus (WS-U-030)",
-      "ok": true
-     },
-     {
-      "name": "every tab stop of the pipelined view shows a visible focus (WS-U-030)",
-      "ok": true
-     },
-     {
-      "name": "projector mode: every view keeps the editor, its main pane and the registers open, and every pane reachable (WS-U-012)",
-      "ok": true
-     },
-     {
-      "name": "release edition: the multicycle and comparison views offer no JALR state (W-D20)",
-      "ok": true
-     },
-     {
-      "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
-      "ok": true
-     },
-     {
-      "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
-      "ok": true
-     },
-     {
-      "name": "help: the dialog opens with its topics, each topic shows, and it passes the axe-core scan (W-D20, WS-U-034)",
-      "ok": true
-     },
-     {
-      "name": "templates: the toolbar menu opens a pipelined template in its view with its settings, without errors",
+      "name": "lower pane of the middle column (inspector, pipeline details): up arrow folds the pane above and grows upward, the down arrow opens it again; Maximise fills the workspace and Esc restores; axe",
       "ok": true
      },
      {
@@ -2326,6 +4691,119 @@
      }
     ]
    }
-  ]
+  ],
+  "modules": {
+   "riscv": {
+    "axeCore": "4.14.0",
+    "exitStatus": 0,
+    "browsers": [
+     {
+      "name": "chrome",
+      "version": "Chrome/156.0.8078.79",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: RISC-V Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 32 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     }
+    ]
+   },
+   "sap-1": {
+    "axeCore": "4.14.0",
+    "exitStatus": 0,
+    "browsers": [
+     {
+      "name": "chrome",
+      "version": "Chrome/156.0.8078.79",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: SAP-1 Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 12 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     }
+    ]
+   },
+   "sap-2": {
+    "axeCore": "4.14.0",
+    "exitStatus": 0,
+    "browsers": [
+     {
+      "name": "chrome",
+      "version": "Chrome/156.0.8078.79",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: SAP-2 Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 12 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     }
+    ]
+   }
+  }
  }
 }
