@@ -119,12 +119,14 @@ async function openPage(cdp, { width = 1366, height = 768, colorScheme = null, r
     errors,
     /** A raw DevTools protocol call on this page's session. */
     send,
-    /** Load `url` and wait for the load event. */
+    /** Load `url` and wait for the load event, and for the loading screen of a tool page (#boot, src/ui/boot.js) to go:
+     *  a check made while it fades would measure the transition, not the page. */
     async goto(url) {
       const loaded = event('Page.loadEventFired');
       const r = await send('Page.navigate', { url });
       if (r.errorText) throw new Error(`${url}: ${r.errorText}`);
       await loaded;
+      await page.waitFor(`!document.getElementById('boot')`, 20000).catch(() => {});
     },
     /** Evaluate an expression (promises awaited) and return its value. */
     async eval(expression) {

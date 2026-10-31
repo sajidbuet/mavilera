@@ -12,7 +12,7 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { ROOT, shippedFiles, releaseFiles } from '../tools/site-files.mjs';
+import { ROOT, shippedFiles, releaseFiles, registry, archFiles, archOverrides, archPage } from '../tools/site-files.mjs';
 import { collect, transform, buildOffline } from '../tools/offline.mjs';
 
 test('W-D20: a release publishes the application without the JALR answer and without the site documentation', () => {
@@ -37,13 +37,75 @@ test('W-D20: the multicycle files, the JALR file included, are what tools/export
 test('WS-N-002: every module of the offline build exports what Node.js reads from it', async () => {
   const mods = new Map([...collect(ROOT, 'src/main.js'), ...collect(ROOT, 'src/worker/run.js')]);
   const js = shippedFiles().filter((p) => p.endsWith('.js'));
-  // every module of the application is reached from the two entries
-  assert.deepEqual(js.filter((p) => !mods.has(p)), []);
+  // every module of the application is reached from the two entries; src/mem/ (the memory
+  // hierarchy of M7) is not wired into the interface yet and is exempt, as is the viewer's model
+  // (phase 5) until the viewer panel that uses it is wired into a view
+  assert.deepEqual(js.filter((p) => !mods.has(p) && !p.startsWith('src/mem/') && p !== 'src/ui/mem-viewmodel.js'), []);
   for (const [p, m] of mods) {
     if (p === 'src/main.js' || p === 'src/worker/run.js') continue; // entries: they run on import
     const real = Object.keys(await import(pathToFileURL(join(ROOT, p)))).sort();
     assert.deepEqual([...m.exports].sort(), real, p);
   }
+});
+
+test('W-D29 phase 6: each architecture builds from its own modules and content folders', () => {
+  const all = releaseFiles();
+  const own = { riscv: ['src/arch/riscv/', 'src/isa/', 'src/asm/', 'src/core/', 'src/uarch/', 'src/cc/'], 'sap-1': ['src/arch/sap-1/'], 'sap-2': ['src/arch/sap-2/'] };
+  const built = registry().filter((a) => a.content);
+  assert.deepEqual(built.map((a) => a.id), ['riscv', 'sap-1', 'sap-2']);
+  for (const a of built) {
+    for (const c of a.content) assert.ok(existsSync(join(ROOT, c)), `${a.id}: ${c}`);
+    const { files, overrides } = archFiles(a.id);
+    const others = built.filter((b) => b !== a);
+    // nothing of another architecture: neither its modules nor its content
+    for (const b of others) {
+      const theirs = [...own[b.id], ...b.content];
+      assert.deepEqual(files.filter((p) => theirs.some((t) => p.startsWith(t))), [], `${a.id} has ${b.id}'s files`);
+    }
+    for (const p of ['index.html', 'manifest.webmanifest', 'src/main.js', 'src/worker/run.js', 'src/ui/theme.css', 'content/branding/mavilera/mavilera-icon.svg']) assert.ok(files.includes(p), `${a.id}: ${p}`);
+    // the overrides: one registry entry, importing what the development registry imports; the id fixed
+    const reg = transform('src/arch/registry.js', overrides['src/arch/registry.js']);
+    assert.deepEqual(reg.deps, [`src/arch/${a.id}/index.js`]);
+    assert.deepEqual(reg.exports, ['ARCHITECTURES']);
+    assert.match(overrides['src/shell/arch-id.js'], new RegExp(`^export const ARCH_ID = "${a.id}";$`, 'm'));
+  }
+  // the RISC-V build is the release files without SAP-1's and SAP-2's and without the logo files no page, manifest or module
+  // names (WS-N-004: the social preview and the print variants belong to the landing page and the repository)
+  const rv = new Set(archFiles('riscv').files);
+  const brand = 'content/branding/mavilera/';
+  const unused = ['social-preview.png', 'mavilera-dark.svg', 'mavilera-light.svg', 'mavilera-mono.svg', 'mavilera-lockup.svg'];
+  assert.deepEqual(all.filter((p) => !rv.has(p) && !p.startsWith(brand)),
+    all.filter((p) => /^(src\/arch|content)\/sap-[12]\//.test(p)));
+  for (const f of unused) assert.ok(!rv.has(brand + f), f);
+  for (const f of ['favicon.ico', 'mavilera-icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'mavilera-logo.svg', 'mavilera-full.svg']) assert.ok(rv.has(brand + f), f);
+  assert.ok(archFiles('sap-1').files.includes(`${brand}mavilera-logo-sap-1.svg`), 'SAP-1: its header lockup');
+  assert.ok(archFiles('sap-2').files.includes(`${brand}mavilera-logo-sap-2.svg`), 'SAP-2: its header lockup');
+  assert.throws(() => archOverrides('mips'), /no architecture mips/);
+});
+
+test('W-D29 phase 6: each module\'s page and manifest carry its name; RISC-V\'s are the development page\'s', () => {
+  const dev = readFileSync(join(ROOT, 'index.html'), 'utf8');
+  const devManifest = JSON.parse(readFileSync(join(ROOT, 'manifest.webmanifest'), 'utf8'));
+  const [rv, sap] = ['riscv', 'sap-1'].map((id) => registry().find((a) => a.id === id));
+  const r = archPage(rv, { appName: 'MAVILERA', appFull: 'RISC-V Laboratory' });
+  assert.equal(r.page, dev);
+  assert.deepEqual(r.manifest, devManifest);
+  const s = archPage({ ...sap, description: 'Sixteen bytes & one bus.' }, { appName: 'MAVILERA', appFull: 'SAP-1 Laboratory' });
+  assert.match(s.page, /<title>MAVILERA: SAP-1 Laboratory<\/title>/);
+  assert.match(s.page, /<meta name="application-name" content="MAVILERA SAP-1 Laboratory">/);
+  assert.match(s.page, /<meta name="description" content="MAVILERA SAP-1 Laboratory: Sixteen bytes &amp; one bus\.">/);
+  assert.match(s.page, /application shell of MAVILERA SAP-1 Laboratory\./);
+  assert.ok(!/RISC-V/.test(s.page), 'no RISC-V text in the SAP-1 page');
+  assert.equal(s.manifest.name, 'MAVILERA: SAP-1 Laboratory');
+  assert.equal(s.manifest.description, 'Sixteen bytes & one bus.');
+  assert.throws(() => archPage({ ...sap, description: undefined }, { appName: 'MAVILERA', appFull: 'SAP-1 Laboratory' }), /no description/);
+  // the offline file of SAP-1: its page, its content, none of RISC-V's modules or content
+  const { files, overrides } = archFiles('sap-1');
+  const { html, mainModules, workerModules } = buildOffline(ROOT, { files, version: '0.0.0-test', overrides, page: s.page });
+  assert.match(html, /<meta name="application-name" content="MAVILERA SAP-1 Laboratory">/);
+  assert.ok(html.includes('"content/sap-1/templates/index.json"') && !html.includes('"content/help/help.json"'));
+  assert.deepEqual([...mainModules, ...workerModules].filter((p) => !files.includes(p)), []);
+  assert.ok(html.includes('export const ARCH_ID') === false && html.includes('const ARCH_ID = "sap-1"'));
 });
 
 test('WS-N-002: the offline rewriting refuses what it does not understand', () => {
@@ -68,13 +130,21 @@ test('WS-N-002: the offline page holds the release content, marked as the releas
 });
 
 test('W-D20: the in-app help has sections of known block kinds, and the documentation no unfilled fields', () => {
-  const help = JSON.parse(readFileSync(join(ROOT, 'content/help/help.json'), 'utf8'));
-  const ids = help.sections.map((s) => s.id);
-  assert.equal(new Set(ids).size, ids.length);
-  for (const s of help.sections) {
-    assert.ok(s.title && s.blocks.length, s.id);
-    for (const b of s.blocks) assert.equal(Object.keys(b).filter((k) => ['p', 'ul', 'ol', 'dl'].includes(k)).length, 1, s.id);
+  for (const dir of ['content/help', 'content/sap-1/help', 'content/sap-2/help']) {
+    const help = JSON.parse(readFileSync(join(ROOT, dir, 'help.json'), 'utf8'));
+    const ids = help.sections.map((s) => s.id);
+    assert.equal(new Set(ids).size, ids.length, dir);
+    for (const s of help.sections) {
+      assert.ok(s.title && s.blocks.length, s.id);
+      for (const b of s.blocks) assert.equal(Object.keys(b).filter((k) => ['p', 'ul', 'ol', 'dl', 'brand', 'refs', 'notice'].includes(k)).length, 1, s.id);
+    }
+    // the first page: the logo, the architecture's references (each linked over https, or a book without a page) and its notice
+    const first = help.sections[0].blocks;
+    assert.ok(first[0].brand && first.some((b) => b.refs) && first.some((b) => b.notice), `${dir}: first page`);
+    for (const [t, url] of first.filter((b) => b.refs).flatMap((b) => b.refs)) assert.ok(t && (url === null || /^https:\/\//.test(url)), `${dir}: ${t}`);
+    const docs = readFileSync(join(ROOT, dir, 'docs/index.html'), 'utf8');
+    assert.ok(!/\{\{|<!--(ABOUT|RIGHTS)-->/.test(docs), `${dir}: no unfilled fields`);
   }
   const docs = readFileSync(join(ROOT, 'content/help/docs/index.html'), 'utf8');
-  assert.ok(!/\{\{|chapter|figure \d|PRB-\d|exercise \d/i.test(docs.replace(/<!--[\s\S]*?-->/g, '')), 'no fields and no book references (W-D16)');
+  assert.ok(!/chapter|figure \d|PRB-\d|exercise \d/i.test(docs.replace(/<!--[\s\S]*?-->/g, '')), 'no book references (W-D16)');
 });

@@ -14,6 +14,7 @@ const RD_SHIFT = 4;
 const MEM_SHIFT = 9;
 const HALT_BIT = 1 << 12;
 const EXTRA_BIT = 1 << 13;
+const TRAP = 9; // class of a trap step (iss.js)
 
 export class History {
   constructor(limit = 1_000_000) {
@@ -55,13 +56,17 @@ export class History {
       this.size += 1;
     }
     let info = h.d_cls | (h.d_rd << RD_SHIFT) | (h.d_memSize << MEM_SHIFT) | (h.d_halt ? HALT_BIT : 0);
-    if (h.d_outLen || h.d_spChanged || h.d_abiChanged) {
+    // iss-priv: the state saved before the step, a step that did not take one cycle, a trap step
+    const priv = Boolean(h.priv) && (h.d_priv !== null || h.d_dcyc !== 1);
+    if (h.d_outLen || h.d_spChanged || h.d_abiChanged || priv) {
       info |= EXTRA_BIT;
-      this.extra.set(this.seq, {
+      const e = {
         out: h.d_outLen,
         spMinOld: h.d_spChanged ? h.d_spMinOld : null,
         abi: h.d_abiChanged ? { top: h.d_abiTopOld, viol: h.d_abiViolOld } : null,
-      });
+      };
+      if (priv) { e.priv = h.d_priv; e.dcyc = h.d_dcyc; e.idle = h.d_idle; e.trap = h.d_cls === TRAP ? h.d_trap : null; }
+      this.extra.set(this.seq, e);
     }
     this.pc[i] = h.d_pc;
     this.info[i] = info;
@@ -81,20 +86,28 @@ export class History {
     const cls = info & 15;
     const rd = (info >>> RD_SHIFT) & 31;
     const memSize = (info >>> MEM_SHIFT) & 7;
-    h.instret -= 1;
+    if (cls !== TRAP) h.instret -= 1; // a trap step retires nothing
     h.countArr[cls] -= 1;
+    let dcyc = 1; // iss-priv: cycles the step took (one, unless it waited or took a trap)
     h.pc = this.pc[i];
     if (rd) h.x[rd] = this.regOld[i];
-    if (memSize) h.mem.write(this.memAddr[i], memSize, this.memOld[i]);
+    if (memSize) h.mem.restore(this.memAddr[i], memSize, this.memOld[i]);
     h.halted = false;
     if (info & HALT_BIT) h.exitCode = null;
     if (info & EXTRA_BIT) {
       const e = this.extra.get(this.seq);
       this.extra.delete(this.seq);
-      if (e.out) h.output.length -= e.out;
+      if (e.out) h.output.length = Math.max(0, h.output.length - e.out); // (none left: dropped by the cap, OUTPUT_KEEP)
       if (e.spMinOld !== null) h.spMin = e.spMinOld;
       if (e.abi) { h.abiTop = e.abi.top; h.abiViolations.length = e.abi.viol; }
+      if (e.dcyc !== undefined) {
+        dcyc = e.dcyc;
+        h.idleCycles -= e.idle;
+        if (e.trap !== null) h.trapCounts[e.trap] -= 1;
+        if (e.priv) h.restorePriv(e.priv);
+      }
     }
+    if (h.priv) h.cycle -= dcyc;
     return true;
   }
 
@@ -103,7 +116,8 @@ export class History {
     if (this.size === 0) return null;
     const i = (this.start + this.size - 1) % this.cap;
     const info = this.info[i];
-    return { pc: this.pc[i], rd: (info >>> RD_SHIFT) & 31, memAddr: this.memAddr[i], memSize: (info >>> MEM_SHIFT) & 7 };
+    return { pc: this.pc[i], rd: (info >>> RD_SHIFT) & 31, memAddr: this.memAddr[i], memSize: (info >>> MEM_SHIFT) & 7,
+      regOld: this.regOld[i], memOld: this.memOld[i] };
   }
 
   /** pc of the k-th newest step (0 = newest). */

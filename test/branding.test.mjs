@@ -14,15 +14,16 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { STRINGS } from '../src/ui/strings.js';
+import { RISCV_STRINGS } from '../src/arch/riscv/strings.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const read = (...p) => readFileSync(join(ROOT, ...p), 'utf8');
-const LOGOS = ['mavilera-logo.svg', 'mavilera-icon.svg', 'mavilera-icon-small.svg', 'mavilera-light.svg', 'mavilera-dark.svg', 'mavilera-mono.svg'];
+const LOGOS = ['mavilera-logo.svg', 'mavilera-full.svg', 'mavilera-lockup.svg', 'mavilera-wordmark.svg', 'mavilera-mark.svg', 'mavilera-icon.svg', 'mavilera-light.svg', 'mavilera-dark.svg', 'mavilera-mono.svg'];
 const BR = 'content/branding/mavilera';
 
 test('the name, the module name and the tagline', () => {
   assert.equal(STRINGS.appName, 'MAVILERA');
-  assert.equal(STRINGS.appFull, 'RISC-V Laboratory');
+  assert.equal(RISCV_STRINGS.appFull, 'RISC-V Laboratory'); // the module's name, merged over the shell's
   assert.equal(STRINGS.tagline, 'Visualize. Execute. Understand.');
 });
 
@@ -32,7 +33,7 @@ for (const file of LOGOS) {
     assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 \d+ \d+"/);
     assert.doesNotMatch(svg, /<image|<foreignObject|<filter|base64|@import|@font-face/i);
     assert.doesNotMatch(svg.replace('xmlns="http://www.w3.org/2000/svg"', ''), /https?:\/\/|href=/i, 'no external references');
-    assert.match(svg, /<title id="[\w-]+">MAVILERA<\/title>/);
+    assert.match(svg, /<title id="[\w-]+">MAVILERA(?: RISC-V)?<\/title>/);
     assert.match(svg, /Copyright \(c\) 2026 Sajid Muhaimin Choudhury\. Licensed under the Apache License, Version 2\.0\./);
     assert.match(svg, /Rights class: content/);
   });
@@ -45,7 +46,7 @@ test('every colour of the logo is a value of the interface tokens (theme.css)', 
     assert.ok(colours.length > 0, file);
     for (const c of colours) assert.ok(['#000000', '#ffffff'].includes(c) || css.includes(c), `${file}: ${c} is not a colour of theme.css`);
   }
-  assert.match(css, /--rv-teal: var\(--accent\)/);
+  assert.match(css, /--mv-navy: #0b2a55/);
 });
 
 test('the page: title, description, SVG favicon that exists', () => {

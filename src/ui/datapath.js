@@ -4,6 +4,11 @@
 // single wires; control stubs dashed in the control colour; the active path
 // in the highlight colour and heavier (WS-F-030); inactive elements muted,
 // never hidden (WS-U-002). Values appear on hover or all at once (WS-F-031).
+// The shared schematic conventions (docs/ui/datapath-schematics.md, schematic.js): bus-width
+// markers from the model's signal widths, the selected multiplexer input, asserted control
+// stubs, stage bands and a state badge. Layers, bottom to top: bands, elements, connections
+// (with their width markers), junctions, control stubs, labels; then the overlays of the
+// cycle (direction arrows, flow, annotations, marks, value tags), which take no pointer events.
 // Lengths follow config/tikz-styles.tex: 1 cm of the drawing is SCALE user
 // units, 1 pt is PT units. Colours come from theme.css; export inlines them.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
@@ -12,6 +17,7 @@
 import { el, store } from './dom.js';
 import { STRINGS } from './strings.js';
 import { colourWires, WIRE_COLOURS } from './wire-colours.js';
+import { wireWidth, placeMarkers, muxPorts, selectedInputs } from './schematic.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const SCALE = 40;
@@ -114,16 +120,22 @@ export class DatapathView {
    * @param {object} geom geometry file
    * @param {{title: string, description: string, tip: HTMLElement}} opts
    *   nearColours: offer "Colour nearby wires" (wire-colours.js), on unless the user turned it off
+   *   info: the model's signal dictionary (name -> {width}), the source of the bus-width markers
+   *   bands: shaded columns behind the drawing [{left, right}] (cm; Chapter 8: the stages)
    */
-  constructor(geom, { title, description, valueAt = {}, labelBounds = false, nearColours = false }) {
+  constructor(geom, { title, description, valueAt = {}, labelBounds = false, nearColours = false, info = null, bands = [] }) {
     this.geom = geom;
     this.valueAt = valueAt; // signal -> wire id where its value tag goes
+    this.info = info;
     this.wires = new Map();
     this.elements = new Map();
     this.stubs = new Map();
     this.tags = new Map();
+    this.muxIndex = new Map(); // multiplexer id -> {index -> its input-number text}
+    this.ports = muxPorts(geom);
     this.values = { signals: new Map(), controls: new Map() };
     this.showAll = false;
+    this.markers = this.widthMarkers();
 
     const points = (g) => [...g.wires.flatMap((w) => w.points), ...g.control.flatMap((c) => c.points),
       ...g.elements.flatMap((e) => (e.size ? [[e.at[0] - e.size[0] / 2, e.at[1] - e.size[1] / 2], [e.at[0] + e.size[0] / 2, e.at[1] + e.size[1] / 2]]
@@ -154,6 +166,12 @@ export class DatapathView {
     this.svg = svg('svg', { viewBox: vb, class: 'dp', role: 'img', 'aria-labelledby': 'dp-title dp-desc' },
       this.titleNode, this.descNode, defs);
 
+    // Stage bands: from the top to the bottom of every view box, so that a variant's larger box is covered too.
+    const boxes = Object.values(this.viewBoxes).map((b) => b.split(' ').map(Number));
+    const top = Math.min(...boxes.map((b) => b[1]));
+    const bottom = Math.max(...boxes.map((b) => b[1] + b[3]));
+    const gBand = svg('g', { class: 'dp-bands', 'aria-hidden': 'true' },
+      bands.map((b) => svg('rect', { x: X(b.left), y: top, width: (b.right - b.left) * SCALE, height: bottom - top, class: 'dp-band' })));
     const gEl = svg('g', { class: 'dp-elements' });
     for (const e of geom.elements) gEl.append(this.drawElement(e));
     // Signal and wire labels: for the eye; the cycle and signal tables give the same values as text (WS-U-031).
@@ -190,12 +208,14 @@ export class DatapathView {
       const parts = [svg('g', { class: 'dp-elements' }, v.elements.map((e) => this.drawElement(e))),
         svg('g', { class: 'dp-wires' }, v.wires.map((w) => this.drawWire(w))),
         svg('g', { class: 'dp-junctions' }, v.junctions.map(([x, y]) => svg('circle', { cx: X(x), cy: Y(y), r: 1.6 * PT }))),
-        svg('g', { class: 'dp-labels' }, v.labels.map((l) => this.drawLabel(l))),
-        svg('g', { class: 'dp-control' }, v.control.map((c) => this.drawStub(c)))];
+        svg('g', { class: 'dp-control' }, v.control.map((c) => this.drawStub(c))),
+        svg('g', { class: 'dp-labels' }, v.labels.map((l) => this.drawLabel(l)))];
       const g = svg('g', { class: 'dp-variant', 'data-variant': name, display: 'none' }, parts);
       this.variants.set(name, { g, hide: v.hide ?? [], on: false });
     }
-    this.svg.append(gEl, gWire, gJ, gLab, gCtl, ...[...this.variants.values()].map((v) => v.g), this.gDir, this.gFlow, this.gAnn, this.gMarks, this.gTags);
+    this.gBadge = svg('g', { class: 'dp-badges' });
+    // labels above the connections and stubs, so that their halo keeps a crossing line off the letters
+    this.svg.append(gBand, gEl, gWire, gJ, gCtl, gLab, ...[...this.variants.values()].map((v) => v.g), this.gDir, this.gFlow, this.gAnn, this.gBadge, this.gMarks, this.gTags);
 
     this.tip = document.createElement('div');
     this.tip.className = 'tip';
@@ -227,9 +247,14 @@ export class DatapathView {
     } else {
       const pic = this.geom.pics[e.type];
       g.append(svg('polygon', { points: pts(pic.outline.map(([a, b]) => [e.at[0] + a, e.at[1] + b])), class: 'dp-shape' }));
+      const index = new Map();
       for (const l of pic.labels) {
-        g.append(svg('text', { ...textAt(e.at[0] + l.at[0], e.at[1] + l.at[1], l.anchor, PT), class: e.type === 'alu' ? 'dp-alutext' : 'dp-pintext' }, l.text));
+        const mux = this.ports.has(e.id);
+        const t = svg('text', { ...textAt(e.at[0] + l.at[0], e.at[1] + l.at[1], l.anchor, PT), class: e.type === 'alu' ? 'dp-alutext' : mux ? 'dp-pintext dp-muxidx' : 'dp-pintext' }, l.text);
+        g.append(t);
+        if (mux) index.set(Number(l.text), t);
       }
+      if (index.size) this.muxIndex.set(e.id, index);
     }
     this.elements.set(e.id, g);
     return g;
@@ -261,6 +286,8 @@ export class DatapathView {
     const hit = svg('polyline', { points: d, class: 'dp-hit' });
     for (const lab of w.labels) g.append(this.drawLabel({ ...lab, style: 'sig' }));
     g.append(line, hit);
+    const m = this.markers.get(w.id);
+    if (m) g.append(this.drawMarker(m, 'dp-bw'));
     hit.addEventListener('pointerenter', (ev) => this.hover(ev, w.signal));
     hit.addEventListener('pointermove', (ev) => this.place(ev));
     hit.addEventListener('pointerleave', () => { this.tip.hidden = true; });
@@ -288,7 +315,8 @@ export class DatapathView {
     const name = svg('text', attrs, text);
     const line = svg('polyline', { points: pts([a, b]), class: 'dp-ctrl', 'marker-end': c.arrow === false ? null : 'url(#dp-arrow-ctrl)' });
     const hit = svg('polyline', { points: pts([a, b]), class: 'dp-hit' });
-    const g = svg('g', { class: 'dp-stub', 'data-signal': c.signal }, line, hit, name);
+    const m = this.markers.get(c);
+    const g = svg('g', { class: 'dp-stub', 'data-signal': c.signal }, line, hit, m ? this.drawMarker(m, 'dp-bw dp-bw-ctrl') : null, name);
     hit.addEventListener('pointerenter', (ev) => this.hover(ev, c.signal, true));
     hit.addEventListener('pointermove', (ev) => this.place(ev));
     hit.addEventListener('pointerleave', () => { this.tip.hidden = true; });
@@ -297,6 +325,42 @@ export class DatapathView {
     if (!this.stubs.has(c.signal)) this.stubs.set(c.signal, []);
     this.stubs.get(c.signal).push({ g, name, text });
     return g;
+  }
+
+  /**
+   * The bus-width markers (schematic.js), keyed by wire id or by control stub: one per net of a
+   * known width above 1 bit, from the model's signal dictionary; none without a dictionary. A
+   * variant's markers keep clear of the drawing's.
+   */
+  widthMarkers() {
+    const out = new Map();
+    const info = this.info;
+    if (!info) return out;
+    const widthOf = (w) => wireWidth(w.signal, w.style, info);
+    const stubWidth = (c) => info[c.signal]?.width ?? null;
+    const g = this.geom;
+    const base = placeMarkers(g, widthOf, { stubs: g.control, stubWidth });
+    this.unplaced = base.unplaced;
+    for (const m of base.markers) out.set(m.wire ?? m.stub, m);
+    const reserved = base.markers.flatMap((m) => [{ box: m.slash, line: m.line, width: m.width }, { box: m.number.box }]);
+    for (const v of Object.values(g.variants ?? {})) {
+      const mine = new Set(v.wires);
+      const merged = { ...g, elements: [...g.elements, ...v.elements], labels: [...g.labels, ...v.labels],
+        wires: [...g.wires.filter((w) => !(v.hide ?? []).includes(w.id)), ...v.wires], junctions: [...g.junctions, ...v.junctions],
+        control: [...g.control, ...v.control] };
+      const r = placeMarkers(merged, (w) => (mine.has(w) ? widthOf(w) : null), { stubs: v.control, stubWidth, reserved });
+      for (const m of r.markers) out.set(m.wire ?? m.stub, m);
+    }
+    return out;
+  }
+
+  /** A bus-width marker: the book's slash across the connection and the width beside it. */
+  drawMarker(m, cls) {
+    const [sx, sy] = [m.at[0] - (m.slash[2] - m.slash[0]) / 2, m.at[1] - (m.slash[3] - m.slash[1]) / 2];
+    const [ex, ey] = [m.at[0] + (m.slash[2] - m.slash[0]) / 2, m.at[1] + (m.slash[3] - m.slash[1]) / 2];
+    return svg('g', { class: cls, 'aria-hidden': 'true' },
+      svg('line', { x1: X(sx), y1: Y(sy), x2: X(ex), y2: Y(ey), class: 'dp-bwslash' }),
+      svg('text', { ...textAt(m.number.at[0], m.number.at[1], m.number.anchor, 0), class: 'dp-bwtext' }, String(m.width)));
   }
 
   hover(ev, signal, control = false) {
@@ -339,6 +403,12 @@ export class DatapathView {
       if (hl) this.dirWires.add(id);
     }
     for (const [id, g] of this.elements) g.classList.toggle('dp-muted', Boolean(active) && !active.elements.has(id));
+    // the input each multiplexer passes on: its number marked, as the wire into it is highlighted
+    const shown = [...this.wires.values()].filter((w) => !this.hidden(w)).map((w) => w.def);
+    const selected = active ? selectedInputs(this.ports, shown, critical ?? active.wires) : new Map();
+    for (const [id, index] of this.muxIndex) {
+      for (const [k, t] of index) t.classList.toggle('dp-selidx', selected.get(id) === k);
+    }
     this.drawDirections();
   }
 
@@ -480,7 +550,34 @@ export class DatapathView {
   /** Values: signals {name -> {text, tip}}, controls {name -> {text, tip}}. */
   setValues(signals, controls) {
     this.values = { signals, controls };
+    // a single-bit control stub asserted (1) or not (0); multi-bit selects and codes stay plain
+    for (const [name, list] of this.stubs) {
+      const v = controls.get(name);
+      const one = this.info?.[name]?.width === 1 && v ? v.text : null;
+      for (const s of list) {
+        s.g.classList.toggle('dp-on', one === '1');
+        s.g.classList.toggle('dp-off', one === '0');
+      }
+    }
     this.renderTags();
+  }
+
+  /**
+   * A badge inside an element, at its right end (Chapter 7: the controller's present state on
+   * the control unit); null removes it. The box is sized from the text (code face, 0.6 em).
+   */
+  setBadge(id, text) {
+    this.gBadge.replaceChildren();
+    const e = this.geom.elements.find((x) => x.id === id);
+    if (!e?.size || !text) return;
+    const fs = 7.5 * PT;
+    const w = text.length * 0.6 * fs + 6 * PT;
+    const h = fs + 4 * PT;
+    const right = X(e.at[0] + e.size[0] / 2) - 3 * PT;
+    const cy = Y(e.at[1]);
+    this.gBadge.append(svg('g', { class: 'dp-badge', 'aria-hidden': 'true' },
+      svg('rect', { x: right - w, y: cy - h / 2, width: w, height: h, rx: 2 }),
+      svg('text', { x: right - w / 2, y: cy, 'text-anchor': 'middle', 'dominant-baseline': 'central' }, text)));
   }
 
   setShowAll(on) {

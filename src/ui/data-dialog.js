@@ -7,17 +7,19 @@
 
 import { el, hex8 } from './dom.js';
 import { STRINGS } from './strings.js';
-import { SIZES, parseNumbers, dataArrays, readRange, saveCsv, saveBin } from '../core/data-io.js';
+import { SIZES, parseNumbers, dataArrays, readRange, saveCsv, saveBin } from '../shell/data-io.js';
 
 const D = () => STRINGS.dataIo;
 
 export class DataDialog {
   /**
    * @param {{program: () => object, memory: () => object|null, loads: () => Array, onLoad: (label, bytes, name) => void,
-   *   onClear: () => void, onSave: (name, data, type) => void}} hooks
+   *   onClear: () => void, onSave: (name, data, type) => void, hex?: (address) => string}} hooks  hex: an address with the
+   *   architecture's digits (default 32 bits)
    */
   constructor(hooks) {
     this.hooks = hooks;
+    this.hex = hooks.hex ?? hex8;
     const T = D();
     const sizeSel = () => el('select', {}, Object.keys(SIZES).map((k) => el('option', { value: k, text: T.sizes[k] })));
     this.array = el('select', { 'aria-label': T.array });
@@ -60,7 +62,7 @@ export class DataDialog {
     const T = D();
     const arrays = dataArrays(this.hooks.program());
     const keep = this.array.value;
-    this.array.replaceChildren(...arrays.map((a) => el('option', { value: a.name, text: T.arrayOption(a.name, hex8(a.address), a.room) })));
+    this.array.replaceChildren(...arrays.map((a) => el('option', { value: a.name, text: T.arrayOption(a.name, this.hex(a.address), a.room) })));
     if (arrays.some((a) => a.name === keep)) this.array.value = keep;
     if (!arrays.length) this.loadStatus.textContent = T.noArrays;
     if (!this.from.value && arrays.length) this.from.value = arrays[0].name;
@@ -90,7 +92,7 @@ export class DataDialog {
     const p = this.hooks.program();
     if (!mem) { this.saveStatus.textContent = T.noMemory; return; }
     const t = this.from.value.trim();
-    const sym = p?.symbols?.get(t);
+    const sym = p?.symbols && Object.hasOwn(p.symbols, t) ? p.symbols[t] : undefined; // contract: a plain record
     const addr = sym ?? (/^(0x)?[0-9a-f]+$/i.test(t) ? parseInt(t.replace(/^0x/i, ''), 16) : null);
     const n = Number(this.count.value);
     const size = SIZES[this.saveSize.value];
@@ -101,6 +103,6 @@ export class DataDialog {
     const base = /^[A-Za-z_]\w*$/.test(t) ? t : `mem-${(addr >>> 0).toString(16)}`;
     if (this.format.value === 'bin') this.hooks.onSave(`${base}.bin`, saveBin(values, size), 'application/octet-stream');
     else this.hooks.onSave(`${base}.csv`, saveCsv(values, addr >>> 0, size), 'text/csv');
-    this.saveStatus.textContent = T.saved(n, hex8(addr));
+    this.saveStatus.textContent = T.saved(n, this.hex(addr));
   }
 }

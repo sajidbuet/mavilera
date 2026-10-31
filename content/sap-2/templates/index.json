@@ -1,0 +1,83 @@
+{
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). SAP-2 teaching templates written for the application (plan step 4, docs/architecture/sap-2-plan.md); what each one shows is checked by test/sap2-templates.test.mjs.",
+  "groups": {
+    "isa": "Instructions and flags",
+    "memory": "Memory and subroutines",
+    "io": "Ports",
+    "bus": "Bus and T states"
+  },
+  "templates": [
+    {
+      "id": "count-down",
+      "file": "count-down.asm",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "Count down on the display"
+    },
+    {
+      "id": "multiply",
+      "file": "multiply.asm",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "Multiply by repeated addition"
+    },
+    {
+      "id": "larger",
+      "file": "larger.asm",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "The larger of two numbers, with the sign flag"
+    },
+    {
+      "id": "subroutine",
+      "file": "subroutine.asm",
+      "group": "memory",
+      "view": "isa",
+      "lang": "asm",
+      "title": "A subroutine called twice"
+    },
+    {
+      "id": "rom-write",
+      "file": "rom-write.asm",
+      "group": "memory",
+      "view": "isa",
+      "lang": "asm",
+      "title": "The read-only memory stops a store"
+    },
+    {
+      "id": "keyboard",
+      "file": "keyboard.asm",
+      "group": "io",
+      "view": "isa",
+      "lang": "asm",
+      "title": "Add three keys from the keyboard"
+    },
+    {
+      "id": "serial-out",
+      "file": "serial-out.asm",
+      "group": "io",
+      "view": "isa",
+      "lang": "asm",
+      "title": "Send a byte bit by bit on SERIAL OUT"
+    },
+    {
+      "id": "alu-next-fetch",
+      "file": "alu-next-fetch.asm",
+      "group": "bus",
+      "view": "bus",
+      "lang": "asm",
+      "title": "An ALU result written in the next fetch"
+    },
+    {
+      "id": "call-states",
+      "file": "call-states.asm",
+      "group": "bus",
+      "view": "bus",
+      "lang": "asm",
+      "title": "CALL and RET, T state by T state"
+    }
+  ]
+}

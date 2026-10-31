@@ -7,7 +7,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { immediateSteps } from '../src/ui/listing.js';
+import { immediateSteps } from '../src/arch/riscv/immediate.js';
 import { assemble } from '../src/asm/assembler.js';
 import { INSTRUCTIONS, immI, immS, immB, immU, immJ } from '../src/isa/encoding.js';
 

@@ -9,6 +9,11 @@ Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, 
 | `https://sajidlab.org/mavilera/` | MAVILERA landing page |
 | `https://sajidlab.org/mavilera/riscv/` | RISC-V Laboratory (works when opened directly, and after a refresh) |
 | `https://sajidlab.org/mavilera/riscv/docs/` | its documentation |
+| `https://sajidlab.org/mavilera/sap-1/` | SAP-1 Laboratory (no separate documentation) |
+| `https://sajidlab.org/mavilera/sap-2/` | SAP-2 Laboratory (no separate documentation) |
+
+Every module whose status is `available` in `site/architectures.json` is built by `tools/release.mjs` into its
+registry path, from `src/arch/<id>` and its content folders (W-D29; `docs/ADDING-SIMULATORS.md`).
 
 ## How it is hosted (checked 2026-10-27)
 
@@ -35,10 +40,10 @@ No DNS record changes are needed or wanted: DNS resolves hostnames, not paths.
 
 The domain is proxied by Cloudflare. Nothing is required for correctness. Optional, for speed:
 
-- **Cache Rule**: if URI Path starts with `/mavilera/riscv/assets/` then Eligible for cache, Edge TTL 1 year,
-  Browser TTL 1 year. Safe because the folder name under `assets/` is a hash of the release's files: a new release
-  gets a new folder.
-- Leave everything else at the default. `riscv/sw.js` and `riscv/index.html` are re-validated by the service
+- **Cache Rule**: if URI Path starts with `/mavilera/riscv/assets/` or `/mavilera/sap-1/assets/` or `/mavilera/sap-2/assets/` (one condition per
+  module) then Eligible for cache, Edge TTL 1 year, Browser TTL 1 year. Safe because the folder name under `assets/`
+  is a hash of the module's files: a new release gets a new folder.
+- Leave everything else at the default. Each module's `sw.js` and `index.html` are re-validated by the service
   worker on each visit; GitHub Pages sets their cache lifetime (10 minutes), so after a release a visitor can see
   the previous page for up to that time, or longer if Cloudflare caches HTML ("Cache Everything" must not be used on `/mavilera/`).
 - After a release you may purge `/mavilera/*` from the Cloudflare cache.
@@ -57,14 +62,15 @@ addresses printed on the landing page and in `og:` tags; every file reference is
 
 ## Checks after publishing
 
-- `/mavilera/` and `/mavilera/riscv/` load; refresh on each works; `/mavilera/riscv/docs/` loads.
-- The browser console shows no 404 for `riscv/assets/<hash>/...`, and the service worker registers with scope
-  `/mavilera/riscv/`.
+- `/mavilera/`, `/mavilera/riscv/`, `/mavilera/sap-1/` and `/mavilera/sap-2/` load; refresh on each works; `/mavilera/riscv/docs/` loads.
+- The browser console shows no 404 for `<module>/assets/<hash>/...`, and each module's service worker registers
+  with its own scope (`/mavilera/riscv/`, `/mavilera/sap-1/`, `/mavilera/sap-2/`).
 - `https://sajidlab.org/` and the other project pages are unchanged.
-- The planned modules' paths (`/mavilera/sap-1/` ...) return 404 and are not linked from the landing page.
+- The planned modules' paths (`/mavilera/6502/` ...) return 404 and are not linked from the landing page.
 
 ## Storage
 
 The earlier RISC-VISTA build was never published, so no user data under another origin has to be migrated. The
 browser-storage keys keep their historical names (`pips.*`), which are internal and not shown to users. All
-simulators of MAVILERA share the origin `https://sajidlab.org`, so a future simulator must use its own key prefix.
+simulators of MAVILERA share the origin `https://sajidlab.org`; the shell scopes every key but the theme and
+projector settings by architecture (`pips.sap-1.*`, `pips.sap-2.*`; RISC-V keeps `pips.*`).

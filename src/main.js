@@ -7,75 +7,176 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-import { STRINGS } from './ui/strings.js';
-import { el, hex8, download, store } from './ui/dom.js';
+import { STRINGS, mergeStrings } from './ui/strings.js';
+import { el, hex8, hexAddr, download, store, scoped } from './ui/dom.js';
 import { Editor } from './ui/editor.js';
-import { ListingPanel, FieldsPanel, dataTable, symbolTable } from './ui/listing.js';
-import { RegistersPanel, MemoryPanel, CountersPanel, ConsolePanel, CallStackPanel } from './ui/state-panels.js';
-import { Session, STOP } from './core/session.js';
-import { callStack } from './core/callstack.js';
-import { scratch } from './asm/scratch.js';
-import { encodeFragment, decodeFragment, isShareFragment, settingsFile, readSettingsFile, LINK_LIMIT } from './core/share.js';
+import { ListingPanel, FieldsTable, dataTable, symbolTable } from './ui/listing.js';
+import { RegistersPanel, MemoryPanel, CountersPanel, ConsolePanel, CallStackPanel, OUTPUT_LIMIT } from './ui/state-panels.js';
+import { STOP, capability } from './arch/contract.js';
+import { capabilityStates, gate } from './shell/capabilities.js';
+import { checkFits } from './shell/data-io.js';
+import { createShare, isShareFragment, LINK_LIMIT, normalisePlatform, defaultPlatform } from './shell/share.js';
+import { shareSchema, settingValue } from './shell/share-schema.js';
 import { DataDialog } from './ui/data-dialog.js';
 import { ExamplesDialog } from './ui/examples-dialog.js';
 import { HelpDialog } from './ui/help-dialog.js';
 import { ExerciseDialog } from './ui/exercise-dialog.js';
-import { PROFILES } from './core/profiles.js';
-import { assemble, hexImage, usage } from './asm/assembler.js';
-import { disassemble, readWords } from './asm/disassembler.js';
-import { decodeMnemonic, ABI_NAMES } from './isa/encoding.js';
-import { goldenText, traceRecords, traceJsonLines, traceCsv, recordFrames, vcd } from './core/exports.js';
+import { recordFrames, vcd } from './shell/vcd.js';
 import { Split } from './ui/split.js';
 import { icon } from './ui/icons.js';
+import { overflowBar } from './ui/overflow.js';
+import { MobileWorkspaces } from './ui/workspaces.js';
+import { PanZoom } from './ui/pan-zoom.js';
+import { CONFIG_KEY, readConfig, writeConfig, validateConfig, buildMemsys, describe as describeMem } from './mem/config.js';
+import { MemSettings, PeripheralsView } from './ui/mem-ui.js';
+import { PlatformView } from './ui/platform-view.js';
+import { parseStimulus, Platform } from './mem/platform.js';
+import { CacheView } from './ui/cache-view.js';
+import { isDirty } from './ui/mem-viewmodel.js';
+import { traceCacheRun, TraceCache } from './mem/trace-cache.js';
+import { ARCHITECTURES } from './arch/registry.js';
+import { ARCH_ID } from './shell/arch-id.js';
+import { archSwitcher } from './ui/arch-switcher.js';
+import { PLATFORM_ARCHS, switchTargets, homeUrl } from './shell/platform-archs.js';
+import { endBoot } from './ui/boot.js';
 
-const EXAMPLE = `# Sum of an array -- an example to start from.
-        .data
-nums:   .word 3, -1, 4, 1, -5, 9
-n:      .word 6
-msg:    .asciz "sum computed\\n"
+// The architecture this application runs (contract W-D29; one per build from phase 6, until then `?arch=<id>`). The
+// shell reads it through its descriptor only.
+const arch = (await ARCHITECTURES[ARCH_ID]()).descriptor;
+mergeStrings(arch.strings); // the architecture's interface text over the shell's (phase 4)
+// share links and settings files of this architecture (WS-F-122; what they may hold comes from the descriptor)
+const { encodeFragment, decodeFragment, settingsFile, readSettingsFile } = createShare(shareSchema(arch));
+const EXAMPLE = arch.language.defaultSource;
+/** A content file of the architecture (contract: content, URLs relative to the application), or null without one. */
+const contentUrl = (key) => (arch.content?.[key] ? new URL(arch.content[key], new URL('..', import.meta.url)) : null);
+/** The register ids in table order; a RISC-V register number is its index here (until the views give state by id). */
+const REG_IDS = arch.registers.groups.flatMap((g) => g.registers.map((r) => r.id));
+/** Register widths by id, and an address with the architecture's digits (32 bits: as hex8), for messages. */
+const REG_WIDTH = Object.fromEntries(arch.registers.groups.flatMap((g) => g.registers.map((r) => [r.id, r.width])));
+const hexA = (a) => hexAddr(a, arch.addressSpace.addressBits);
+const regsById = (x) => Object.fromEntries(REG_IDS.map((id, i) => [id, x[i]]));
+/** A profile of the architecture (contract v2: every profile of the profile menu). */
+const profileOf = (id) => arch.engine.profiles.find((p) => p.id === id) ?? null;
+// What the shell offers (W-D29): an item whose capability is off stays visible, disabled, with the reason. A profile's
+// overrides (RISC-V: traps, worker) are read where they apply.
+const CAP = capabilityStates(arch, STRINGS);
+/** Whether a capability is on; if not, its reason goes to the console (a shortcut or a click on a disabled item's place). */
+const can = (k) => CAP[k].enabled || (consolePanel.message(CAP[k].text, 'warn'), false);
 
-        .text
-_start: la    t0, nums        # pointer
-        la    t1, n
-        lw    t1, 0(t1)       # count
-        li    a0, 0           # sum
-loop:   beqz  t1, done
-        lw    t2, 0(t0)
-        add   a0, a0, t2
-        addi  t0, t0, 4
-        addi  t1, t1, -1
-        j     loop
-done:   mv    s0, a0
-        li    a0, 1           # write(1, msg, 13)
-        la    a1, msg
-        li    a2, 13
-        li    a7, 64
-        ecall
-        mv    a0, s0
-        li    a7, 93          # exit(sum)
-        ecall
-`;
+const RUN_LIMIT = 10_000_000; // steps in one run (WS-F-090)
+const HISTORY_LIMIT = 1_000_000; // steps kept for step back
+// The shell's state: the sources, the program and its settings, the breakpoints and watches (registers by id,
+// W-D29 decision 3), the data loads (WS-F-145) and the platform script (W-D26). The program runs on the
+// architecture's engine (contract), one per loaded program.
+const session = {
+  files: [{ name: `main${arch.language.extension}`, text: '' }],
+  profile: arch.engine.profiles[0].id,
+  subset: null, // an option of the profile (spec §6)
+  program: null,
+  breakpoints: new Set(),
+  watchRegs: new Set(),
+  watchWords: new Set(),
+  dataLoads: [],
+  loadReport: { applied: [], dropped: [] },
+  platformConfig: defaultPlatform(),
+  get runnable() { return Boolean(this.program?.ok); },
+  /** Keep `bytes` for the data array `label` (replacing an earlier load of it); assemble again to apply. */
+  loadData(label, bytes, name) {
+    checkFits(this.program, label, bytes);
+    this.dataLoads = [...this.dataLoads.filter((l) => l.label !== label), { label, bytes, name }];
+  },
+  clearData() { this.dataLoads = []; },
+};
+let engine = null; // the engine of the loaded program, or null
+let enginePort = null; // its memory as the panels read it
 
-const session = new Session();
+/**
+ * A fresh engine for the session's program: after assembling, on reset, with a new platform script; `inputs`, an
+ * input log to replay (contract v8: a reload).
+ */
+function resetEngine(inputs = null) {
+  engine = session.runnable ? arch.engine.create(session.program, { platformConfig: session.platformConfig, runLimit: RUN_LIMIT, historyLimit: HISTORY_LIMIT,
+    ...(inputs ? { inputs } : {}) }) : null;
+  enginePort = engine ? memoryPort(engine) : null;
+  lastStop = null;
+  diag.reset();
+}
+
+/** The engine's memory as {read(address, size)}, read without side effects (Engine.peek). */
+function memoryPort(e) {
+  const little = arch.addressSpace.endianness === 'little';
+  return { read: (a, size) => {
+    const b = e.peek(a >>> 0, size);
+    let v = 0;
+    for (let i = 0; i < size; i++) v = v * 256 + b[little ? size - 1 - i : i];
+    return v >>> 0;
+  } };
+}
+
+/** The source location of an address, for a console message, or null. */
+function srcLoc(pc) {
+  const l = session.program?.listing.find((x) => x.address === pc);
+  return l ? { file: l.file, line: edLine(l.line) } : null;
+}
+
+/**
+ * The engine's warnings shown so far (contract v2 diagnostics): an entry with `at` is shown once, by step count;
+ * a kind without is counted, and a step back takes the count as shown.
+ */
+const diag = {
+  seen: {}, at: {},
+  reset() { this.seen = {}; this.at = {}; },
+  counts() {
+    const n = {};
+    for (const d of engine?.diagnostics?.() ?? []) n[d.kind] = (n[d.kind] ?? 0) + 1;
+    return n;
+  },
+  show() {
+    const n = {};
+    for (const d of engine?.diagnostics?.() ?? []) {
+      const k = d.kind;
+      n[k] = (n[k] ?? 0) + 1;
+      if (d.at !== undefined) {
+        if (d.at <= (this.at[k] ?? 0)) continue;
+        this.at[k] = d.at;
+      } else if (n[k] <= (this.seen[k] ?? 0)) continue;
+      consolePanel.message(d.message, 'warn', d.pc !== undefined ? srcLoc(d.pc) : null, d.note ?? null);
+    }
+    Object.assign(this.seen, n);
+  },
+  /** Taken as shown: after a step back, and after a replay. */
+  skip() {
+    Object.assign(this.seen, this.counts());
+    for (const d of engine?.diagnostics?.() ?? []) if (d.at !== undefined) this.at[d.kind] = Math.max(this.at[d.kind] ?? 0, d.at);
+  },
+};
 let running = false;
+let lastStop = null; // how the last run ended: {stop, pc}, for the narrow screen's status
 let selected = null;
 let dirty = false;
-// The language of the editor (spec §10.1): 'asm', or 'c', compiled to the assembly the session runs.
+// The language of the editor (spec §10.1): 'asm', or the architecture's other language (contract v5
+// Language.extraLanguages; RISC-V: C), compiled to the assembly the session runs.
 let lang = 'asm';
-let cc = null; // the compiler module, loaded with the first use of C (WS-N-011)
-let cMap = null; // C line of each line of the generated assembly (WS-F-082), or null
-const sourceKey = () => (lang === 'c' ? 'pips.source.c' : 'pips.source');
+const XL = arch.language.extraLanguages?.[0] ?? null;
+const XID = XL?.id ?? null;
+let cc = null; // XL's compiler, loaded with its first use (XL.load, WS-N-011)
+let cMap = null; // source line of each line of the generated assembly (WS-F-082), or null
+const sourceKey = () => (lang === 'asm' ? 'pips.source' : `pips.source.${lang}`);
+/** A file name without the extra language's extension. */
+const stem = (name) => (XL && name.endsWith(XL.extension) ? name.slice(0, -XL.extension.length) : name);
 
 // --- panels -----------------------------------------------------------------------------
-const consolePanel = new ConsolePanel({ onGoTo: (loc) => editor.selectAt(loc.line, loc.column ?? 1, loc.length ?? 0) });
+const consolePanel = new ConsolePanel({ onGoTo: (loc) => { ws.toggleSheet(false); ws.reveal('code'); editor.selectAt(loc.line, loc.column ?? 1, loc.length ?? 0); } }); // narrow screen: the source line is in the Code workspace
 const editor = new Editor({
+  language: arch.language,
   onChange: (text) => { dirty = true; store.set(sourceKey(), text); editorStatus(); saveSoon(); },
   onCursorLine: () => { editorStatus(); saveSoon(); },
   onHoverLine: (line) => linkFromC(line),
   onGutterClick: (line) => toggleBreakLine(line),
 });
-const fields = new FieldsPanel();
-const listing = new ListingPanel({
+// the instruction inspector: the architecture's own (contract v2), or the plain fields table
+const fields = arch.language.inspector ? (await arch.language.inspector()).create({ strings: STRINGS }) : new FieldsTable(arch.language, arch.addressSpace.addressBits);
+const listing = new ListingPanel({ language: arch.language, addressBits: arch.addressSpace.addressBits,
   onSelect: (l) => {
     selected = l;
     fields.show(l);
@@ -86,6 +187,7 @@ const listing = new ListingPanel({
 });
 
 function toggleBreak(addr) {
+  if (!can('breakpoints')) return;
   if (session.breakpoints.has(addr)) session.breakpoints.delete(addr);
   else session.breakpoints.add(addr);
   listing.render();
@@ -112,26 +214,112 @@ function showBreakLines() {
   }
   editor.setBreaks(lines);
 }
-const regs = new RegistersPanel({ onWatch: (r, on) => { if (on) session.watchRegs.add(r); else session.watchRegs.delete(r); saveSoon(); } });
-const memory = new MemoryPanel({
+const regs = new RegistersPanel({ registers: arch.registers, pcBits: arch.addressSpace.addressBits,
+  onWatch: (id, on) => { watchReg(id, on); saveSoon(); } });
+/** Watched registers are kept by id (W-D29 decision 3). */
+function watchReg(id, on) {
+  if (on && !can('watchpoints')) return;
+  if (on) session.watchRegs.add(id); else session.watchRegs.delete(id);
+}
+/** Whether a step wrote a watched register or word (a single step stops as a run would). */
+function watchHit(rec) {
+  const word = (a) => session.watchWords.has(memory.wordOf(a));
+  return rec.registers.some((w) => session.watchRegs.has(w.id)) || rec.memory.some((m) => word(m.address) || word(m.address + m.size - 1));
+}
+/** One instruction of the engine, as the stop reason of a run. */
+function stepEngine() {
+  const rec = engine.step();
+  if (!rec) return engine.state().error ? STOP.ERROR : STOP.HALT;
+  if (rec.halt) return STOP.HALT;
+  return watchHit(rec) ? STOP.WATCH : STOP.NONE;
+}
+/** The run options the engine takes (contract v2): breakpoints and watches with the run's own. */
+const runOptions = (opts) => ({ ...opts, breakpoints: session.breakpoints, watch: { registers: session.watchRegs, memory: session.watchWords } });
+const memory = new MemoryPanel({ registers: arch.registers, addressSpace: arch.addressSpace,
   onWatch: (addr) => {
+    if (!session.watchWords.has(addr) && !can('watchpoints')) return;
     if (session.watchWords.has(addr)) session.watchWords.delete(addr);
     else session.watchWords.add(addr);
-    consolePanel.message(STRINGS.watchWord(hex8(addr), session.watchWords.has(addr)));
+    consolePanel.message(STRINGS.watchWord(hexA(addr), session.watchWords.has(addr)));
     memory.render();
     saveSoon();
   },
 });
+// the memory model (M7, D7, D8): ideal, main memory with waits, or caches; kept in the browser, applied to the
+// processor views and the comparison; an invalid saved setting is not used
+let memCfg = readConfig(store.get(CONFIG_KEY));
+const memProblems = validateConfig(memCfg);
+if (memProblems.length) { memCfg = readConfig(null); consolePanel.message(STRINGS.mem.invalidSaved, 'warn'); }
+const cacheView = new CacheView({ resolve: (t) => memory.resolve(t) });
+// the platform board (WS-F-111), on the profile iss-priv and, when the Memory setting asks for it, in the processor views:
+// its pin events and received bytes join the session's script, so that a reset or a step back replays them
+const insertEvent = (list, ev) => { let i = list.length; while (i > 0 && list[i - 1].cycle > ev.cycle) i--; list.splice(i, 0, { ...ev }); };
+/** What the board shows and changes now: {platform, privileged, cycle, memsys, config} for the engine (contract v5 Engine.platform) or the datapath model in use, or null. */
+function platformCtx() {
+  const v = uv();
+  if (v) {
+    const ms = memsysOf[mode];
+    const s = v.state();
+    return ms?.platform && s ? { platform: ms.platform, privileged: null, cycle: s.cycle, memsys: ms, config: session.platformConfig } : null;
+  }
+  const p = engine?.platform?.() ?? null;
+  return p ? { ...p, config: session.platformConfig } : null;
+}
+/** The other views' platforms get the event too, so that they replay it when they are entered. */
+function otherPlatforms(except) {
+  return Object.values(memsysOf).map((ms) => ms?.platform).filter((p) => p && p !== except);
+}
+// the board and the Peripherals tab exist only with capability devices (their text is the architecture's)
+const platformView = !CAP.devices.enabled ? null : new PlatformView({
+  onPin: (mask, value) => {
+    const c = platformCtx();
+    if (!c) return;
+    c.memsys?.detach(); // a pin set from the interface is part of no step
+    const ev = c.platform.gpio.setPins(mask, value, c.cycle);
+    insertEvent(session.platformConfig.stimulus, ev);
+    for (const p of otherPlatforms(c.platform)) insertEvent(p.gpio.stim, ev);
+    refresh();
+  },
+  onReceive: (bytes) => {
+    const c = platformCtx();
+    const u = c?.platform.uart;
+    if (!u) return;
+    c.memsys?.detach();
+    for (const b of bytes) {
+      const ev = u.receive(b, c.cycle);
+      insertEvent(session.platformConfig.rx, ev);
+      for (const p of otherPlatforms(c.platform)) if (p.uart) insertEvent(p.uart.rxStim, ev);
+    }
+    consolePanel.message(STRINGS.platform.uartSent(bytes.length), 'info');
+    refresh();
+  },
+  onClearScript: () => {
+    session.platformConfig = { ...session.platformConfig, stimulus: [], rx: [] };
+    consolePanel.message(STRINGS.platform.stimCleared, 'ok');
+    applyMemory(memCfg); // new platforms from the setting, and the program restarts
+  },
+  onSettings: (change) => {
+    session.platformConfig = normalisePlatform({ ...session.platformConfig, ...change });
+    applyMemory(memCfg);
+  },
+});
+const periph = platformView ? new PeripheralsView(platformView) : { root: el('div'), update: () => {} }; // the disabled tab's pane
+// the architecture's own panels (contract v8; SAP-2: the ports), tabs of the memory pane after the shell's; their
+// inputs go to the engine, the Worker or the view in use (giveInput)
+const archPanels = await Promise.all((arch.panels ?? []).map(async (p) => ({ p, inst: (await p.load()).create({ strings: STRINGS,
+  input: (x) => giveInput(x), message: (text, kind) => consolePanel.message(text, kind) }) })));
+const memSettings = new MemSettings({ get: () => memCfg, onApply: (cfg) => applyMemory(cfg) });
 const counters = new CountersPanel();
 // the call stack (WS-F-103): a frame shows its call site in the listing and the editor
-const calls = new CallStackPanel({ onGoTo: (addr) => { if (session.program && !session.program.imported) listing.select(addr); } });
+const calls = new CallStackPanel({ onGoTo: (addr) => { if (session.program && !session.program.imported) { ws.reveal('listing'); listing.select(addr); } },
+  unavailable: CAP.callStack.enabled ? null : CAP.callStack.text, addressBits: arch.addressSpace.addressBits });
 const dataBox = el('div.scroll');
 const symBox = el('div.scroll');
 const asmBox = el('div.scroll'); // the assembly generated from C (WS-F-082)
 
 /** The editor line of a line of the assembly the session runs: itself, or its C line. */
 function edLine(asmLine) {
-  if (lang !== 'c') return asmLine;
+  if (lang !== XID) return asmLine;
   return cMap?.[asmLine - 1] || null;
 }
 
@@ -144,7 +332,7 @@ function renderAsm(asm) {
     linkAsm(Number.isFinite(k) && cMap?.[k] ? cMap[k] : null);
   }, onmouseleave: () => { editor.setLinked([]); linkAsm(null); } },
   asm.trimEnd().split('\n').map((text, k) => el(`span.cc-line${cMap[k] ? '' : '.cc-lib'}`, { 'data-k': k,
-    title: cMap[k] ? `C line ${cMap[k]}` : null }, text || ' ')));
+    title: cMap[k] ? STRINGS.cc.sourceLine(cMap[k]) : null }, text || ' ')));
   asmBox.replaceChildren(el('p.note', { text: `${STRINGS.cc.note} ${STRINGS.cc.asmHint}` }), pre);
 }
 
@@ -161,7 +349,7 @@ function linkAsm(line) {
 
 /** The pointer is over C line `line` in the editor: mark its assembly lines (WS-F-082). */
 function linkFromC(line) {
-  if (lang !== 'c' || !cMap) return;
+  if (lang !== XID || !cMap) return;
   const first = linkAsm(line);
   if (first) {
     const box = asmBox;
@@ -183,8 +371,11 @@ const btn = (label, action, key) => el('button', { type: 'button', onclick: acti
 function tool(name, label, action, { key = null, cls = '', iconOnly = false } = {}) {
   const tip = key ? `${label} (${keyText(key)})` : label;
   return el(`button.tool${cls}${iconOnly ? '.tool-icon' : ''}`, { type: 'button', onclick: action, 'aria-label': tip,
-    'aria-keyshortcuts': key, title: tip }, icon(name), el('span.tool-label', { text: label }));
+    'aria-keyshortcuts': key, title: tip, 'data-keys': key ? keyText(key) : null }, icon(name), el('span.tool-label', { text: label }));
 }
+// the header and the toolbar keep one line each: what does not fit moves into their More menus (overflow.js)
+let headerFit = null, toolbarFit = null;
+function refit() { headerFit?.fitNow(); toolbarFit?.fitNow(); } // at once, so that no frame shows a row too wide
 function setToolLabel(b, name, label, key) {
   const tip = key ? `${label} (${keyText(key)})` : label;
   b.replaceChildren(icon(name), el('span.tool-label', { text: label }));
@@ -194,34 +385,34 @@ function setToolLabel(b, name, label, key) {
 // An export of a whole run (WS-F-124 to WS-F-126); `.dp-only` items exist only in a datapath view.
 const runExport = (label, action, cls = '') => el(`button${cls}`, { type: 'button', onclick: action, title: STRINGS.exportRunTitle, text: label });
 const profileSel = el('select', { 'aria-label': STRINGS.profile, onchange: (e) => { session.profile = e.target.value; store.set('pips.profile', session.profile); syncLangControls(); doAssemble(); } },
-  Object.keys(PROFILES).map((p) => el('option', { value: p, text: STRINGS.profileNames[p] })));
+  arch.engine.profiles.map((p) => el('option', { value: p.id, text: p.label })));
 const speedSel = el('select', { 'aria-label': STRINGS.speed },
   el('option', { value: 'max', text: STRINGS.speedMax }), el('option', { value: 'slow', text: STRINGS.speedSlow }));
 const runBtn = tool('play', STRINGS.run, () => (running ? pause() : startRun()), { key: 'F5', cls: '.tool-run' });
 const runStatus = el('span.run-status', { role: 'status', 'aria-live': 'polite' });
 const fileInput = el('input', { type: 'file', accept: '.s,.asm,.S,.c,.hex,.bin,.json', hidden: true, onchange: (e) => { openFile(e.target.files[0]); e.target.value = ''; } });
-const assembleBtn = tool('build', TL.build, () => doAssemble(), { key: 'Control+Enter', cls: '.tool-build' });
+const assembleBtn = gate(tool('build', TL.build, () => doAssemble(), { key: 'Control+Enter', cls: '.tool-build' }), CAP.assembler);
 // C (spec §10.1): the language of the editor, the translation mode (WS-F-081) and, for the ISA profile, the ISA (WS-F-083)
 const C = STRINGS.cc;
 const savedOpt = (k, list, d) => { const v = store.get(k); return list.includes(v) ? v : d; };
 const langSel = el('select', { 'aria-label': C.language, onchange: (e) => setLang(e.target.value) },
-  Object.entries(C.languages).map(([v, t]) => el('option', { value: v, text: t })));
-const ccMode = el('select', { 'aria-label': C.mode, title: C.modeTitle, onchange: (e) => { store.set('pips.cc.mode', e.target.value); doAssemble(); } },
-  Object.entries(C.modes).map(([v, t]) => el('option', { value: v, text: t })));
-const ccMarch = el('select', { 'aria-label': C.march, onchange: (e) => { store.set('pips.cc.march', e.target.value); doAssemble(); } },
-  Object.entries(C.marches).map(([v, t]) => el('option', { value: v, text: t })));
-ccMode.value = savedOpt('pips.cc.mode', Object.keys(C.modes), 'plain');
-ccMarch.value = savedOpt('pips.cc.march', Object.keys(C.marches), 'rv32im');
-const ccOpts = el('span.cc-opts', { hidden: true },
-  el('label', { title: C.modeTitle }, `${C.mode} `, ccMode), el('label', { title: C.marchTitle }, `${C.march} `, ccMarch));
+  el('option', { value: 'asm', text: C.languages.asm }), XL ? gate(el('option', { value: XID, text: XL.label }), CAP.cLanguage) : null);
+// the compiler's options (contract v5), kept in the browser as pips.cc.<option>; an option with `profiles` only for those
+const xlOpts = (XL?.options ?? []).map((o) => {
+  const sel = el('select', { 'aria-label': o.label, onchange: (e) => { store.set(`pips.cc.${o.id}`, e.target.value); doAssemble(); } },
+    o.values.map((v) => el('option', { value: v.id, text: v.label })));
+  sel.value = savedOpt(`pips.cc.${o.id}`, o.values.map((v) => v.id), o.default);
+  return { o, sel, label: el('label', { title: o.title ?? null }, `${o.label} `, sel) };
+});
+if (xlOpts[0]?.o.title) xlOpts[0].sel.title = xlOpts[0].o.title; // the first select carries its title too, as before
+/** The compiler's options as chosen: {id: value}. */
+const xlValues = () => Object.fromEntries(xlOpts.map((x) => [x.o.id, x.sel.value]));
+const ccOpts = el('span.cc-opts', { hidden: true }, xlOpts.map((x) => x.label));
 
 function doReset() {
   cancelRun();
-  session.reset();
-  if (uv()) uv().reset();
-  report.abiSeen = 0; // a fresh hart: its reports start again
-  report.uninitAt = 0;
-  report.uninitN = 0;
+  resetEngine(); // its warnings start again
+  if (uv()) { if (uv().reset) uv().reset(); else uv().load(session.runnable ? session.program : null); }
   consolePanel.message(STRINGS.resetDone);
   refresh();
 }
@@ -231,17 +422,23 @@ function doReset() {
 // menu first opens (WS-N-011); "More examples…" opens the example library.
 let templateIndex = null;
 async function loadTemplates() {
+  if (!templateIndex && !contentUrl('templates')) templateIndex = { groups: {}, templates: [] }; // an architecture without templates
   if (!templateIndex) {
-    const r = await fetch(new URL('../content/templates/index.json', import.meta.url));
+    const r = await fetch(contentUrl('templates'));
     if (!r.ok) throw new Error(`index.json: ${r.status}`);
     templateIndex = await r.json();
   }
   return templateIndex;
 }
 async function openTemplate(t) {
-  const r = await fetch(new URL(`../content/templates/${t.file}`, import.meta.url));
+  const r = await fetch(new URL(t.file, contentUrl('templates')));
   if (!r.ok) { consolePanel.message(STRINGS.templates.failed(`${t.file}: ${r.status}`), 'error'); return; }
-  await applyShared({ view: t.view, profile: 'iss', lang: t.lang, name: t.file, source: await r.text(), pipe: t.pipe ?? null },
+  // a template of the group Devices and traps names its profile and may carry a pin script and bytes for the UART
+  let stimulus = [];
+  try { stimulus = t.stimulus ? parseStimulus(t.stimulus) : []; } catch (e) { consolePanel.message(STRINGS.platform.scriptError(e.message), 'error'); }
+  session.platformConfig = { ...defaultPlatform(), stimulus, rx: (t.rx ?? []).map((e) => ({ ...e })), mtimeDiv: t.mtimeDiv ?? 1 };
+  await applyShared({ view: t.view, profile: t.profile ?? arch.engine.profiles[0].id, lang: t.lang, name: t.file, source: await r.text(),
+    ...Object.fromEntries(SETTINGS.map((v) => [v.settings.key, t[v.settings.key] ?? null])), mem: t.mem ? readConfig(t.mem) : null },
     STRINGS.templates.opened(t.title));
 }
 /** The templates as menu items: a heading per group, a button per template. */
@@ -268,41 +465,53 @@ const templatesMenu = dropMenu(
 // shown while an exercise is open (WS-F-148)
 const exerciseBtn = el('button.tool', { type: 'button', hidden: true, title: STRINGS.exercise.buttonTitle, onclick: () => exerciseDialog.open() },
   icon('list'), el('span.tool-label', { text: STRINGS.exercise.button }));
-const sep = () => el('span.tool-sep', { 'aria-hidden': 'true' });
-const toolbar = el('div.toolbar', { role: 'toolbar', 'aria-label': TL.group },
-  assembleBtn,
-  sep(),
-  runBtn,
-  tool('stepBack', STRINGS.stepBack, () => stepBack(), { key: 'Shift+F10', iconOnly: true }),
-  tool('step', STRINGS.step, () => stepOnce(), { key: 'F10' }),
-  tool('stepOver', STRINGS.stepOver, () => stepOver(), { key: 'F11' }),
-  tool('stepOut', STRINGS.stepOut, () => stepOut(), { key: 'Shift+F11' }),
-  tool('runToCursor', STRINGS.runToCursor, () => runToCursor(), { key: 'Control+F10', iconOnly: true }),
-  tool('reset', STRINGS.reset, doReset, { iconOnly: true }),
-  sep(),
-  el('label.tool-field', {}, el('span', { text: STRINGS.speed }), speedSel),
-  runStatus,
-  el('span.sep'),
-  el('label.tool-field', {}, el('span', { text: STRINGS.profile }), profileSel),
-  templatesMenu,
-  exerciseBtn,
-  fileMenu(
+const memBtn = gate(tool('memory', STRINGS.mem.button, () => memSettings.open()), CAP.memoryModel);
+function syncMemButton() {
+  if (!CAP.memoryModel.enabled) return; // the reason stays its tooltip
+  const tip = `${STRINGS.mem.buttonTitle}: ${memCfg.mode === 'ideal' && memCfg.words === 256 ? STRINGS.mem.describeIdeal : describeMem(memCfg)}`;
+  memBtn.title = tip;
+  memBtn.setAttribute('aria-label', tip);
+  memBtn.classList.toggle('tool-active', memCfg.mode !== 'ideal' || memCfg.words !== 256);
+}
+// The toolbar: the program's build and run, the steps, the speed; then the program's tools (memory model,
+// templates, exercise, file). The Architecture (profile) selector is beside the speed.
+const stepBackBtn = gate(tool('stepBack', STRINGS.stepBack, () => stepBack(), { key: 'Shift+F10', iconOnly: true }), CAP.backStep);
+const stepBtn = tool('step', STRINGS.step, () => stepOnce(), { key: 'F10', cls: '.tool-step' });
+const stepOverBtn = gate(tool('stepOver', STRINGS.stepOver, () => stepOver(), { key: 'F11' }), CAP.stepOver);
+const stepOutBtn = gate(tool('stepOut', STRINGS.stepOut, () => stepOut(), { key: 'Shift+F11' }), CAP.stepOver);
+const runToCursorBtn = gate(tool('runToCursor', STRINGS.runToCursor, () => runToCursor(), { key: 'Control+F10', iconOnly: true }), CAP.runToCursor);
+const resetBtn = tool('reset', STRINGS.reset, doReset, { iconOnly: true });
+const speedField = el('label.tool-field', {}, el('span', { text: STRINGS.speed }), speedSel);
+const profileField = el('label.tool-field.arch-field', {}, el('span', { text: STRINGS.profile }), profileSel);
+const group = (cls, ...items) => el(`div.tb-group${cls}`, {}, items);
+const fileMenuBox = fileMenu(
     btn(STRINGS.open, () => fileInput.click()),
     btn(STRINGS.examples.menu, () => examplesDialog.open()),
-    btn(STRINGS.exercise.menu, () => exerciseDialog.open()),
-    btn(STRINGS.save, () => download(sourceName(), editor.value)),
-    btn(STRINGS.exportHex, () => session.program && download('prog.hex', hexImage(session.program))),
-    btn(STRINGS.exportBin, () => session.program && download('prog.bin', session.program.segments[0].bytes, 'application/octet-stream')),
+    gate(btn(STRINGS.exercise.menu, () => exerciseDialog.open()), CAP.exercises),
+    btn(STRINGS.save(arch.language.extension), () => download(sourceName(), editor.value)),
+    gate(btn(STRINGS.exportHex, () => session.program && download('prog.hex', arch.exports.image(session.program).hex)), CAP.exportImage),
+    gate(btn(STRINGS.exportBin, () => session.program && download('prog.bin', arch.exports.image(session.program).bin, 'application/octet-stream')), CAP.exportImage),
     btn(STRINGS.exportListing, () => session.program && download('prog.lst', listingText(session.program))),
-    runExport(STRINGS.exportTrace, () => exportTrace('jsonl')),
-    runExport(STRINGS.exportTraceCsv, () => exportTrace('csv')),
-    runExport(STRINGS.exportGolden, () => exportGolden(), '.dp-only'),
-    runExport(STRINGS.exportVcd, () => exportVcd(), '.dp-only'),
-    el('button', { type: 'button', text: STRINGS.dataIo.menu, title: STRINGS.dataIo.menuTitle, onclick: () => dataDialog.open() }),
+    gate(runExport(STRINGS.exportTrace, () => exportTrace('jsonl')), CAP.exportTrace),
+    gate(runExport(STRINGS.exportTraceCsv, () => exportTrace('csv')), CAP.exportTrace),
+    gate(runExport(STRINGS.exportGolden, () => exportGolden(), '.dp-only'), CAP.exportGolden),
+    gate(runExport(STRINGS.exportVcd, () => exportVcd(), '.dp-only'), CAP.waveform),
+    gate(el('button', { type: 'button', text: STRINGS.dataIo.menu, title: STRINGS.dataIo.menuTitle, onclick: () => dataDialog.open() }), CAP.dataIO),
     el('hr.menu-sep'),
-    el('button', { type: 'button', text: STRINGS.share.copyLink, title: STRINGS.share.copyLinkTitle, onclick: () => copyShareLink() }),
-    el('button', { type: 'button', text: STRINGS.share.saveSettings, title: STRINGS.share.saveSettingsTitle, onclick: () => saveSettings() }),
-    el('button', { type: 'button', text: STRINGS.share.restore, title: STRINGS.share.restoreTitle, onclick: () => restoreBefore() })),
+    gate(el('button', { type: 'button', text: STRINGS.share.copyLink, title: STRINGS.share.copyLinkTitle, onclick: () => copyShareLink() }), CAP.share),
+    gate(el('button', { type: 'button', text: STRINGS.share.saveSettings, title: STRINGS.share.saveSettingsTitle, onclick: () => saveSettings() }), CAP.share),
+    el('button', { type: 'button', text: STRINGS.share.restore, title: STRINGS.share.restoreTitle, onclick: () => restoreBefore() }));
+const toolbarMore = moreMenu(TL.more, TL.moreTitle, ['simulation', 'processor', 'program']);
+// the processor context: the Architecture (profile) and, in a view that has them, the subset
+const archCtx = el('div.arch-ctx', {}, profileField);
+const toolbar = el('div.toolbar', { role: 'toolbar', 'aria-label': TL.group },
+  group('.tb-run', assembleBtn, runBtn),
+  group('.tb-step', stepBackBtn, stepBtn, stepOverBtn, stepOutBtn, runToCursorBtn, resetBtn),
+  group('.tb-speed', speedField, archCtx),
+  runStatus,
+  el('span.sep'),
+  group('.tb-program', memBtn, templatesMenu, exerciseBtn, fileMenuBox),
+  toolbarMore.menu,
   fileInput);
 
 /** A drop-down of commands (details/summary); closes after a choice, on Escape or on a click elsewhere. */
@@ -311,17 +520,27 @@ function dropMenu(summary, items, { onOpen = null, cls = '' } = {}) {
   const menu = el(`details.menu${cls}`, {}, summary, list);
   menu.addEventListener('toggle', () => { if (menu.open) onOpen?.(list); });
   menu.addEventListener('click', (e) => { if (e.target.closest('.menu-list button')) menu.open = false; });
-  menu.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
+  // Escape closes the innermost open menu only (a menu can sit in a More menu)
+  menu.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.open) { e.stopPropagation(); menu.open = false; menu.querySelector('summary').focus(); } });
   document.addEventListener('click', (e) => { if (!menu.contains(e.target)) menu.open = false; });
   return menu;
 }
 function fileMenu(...items) {
   return dropMenu(el('summary.tool', { title: STRINGS.file }, icon('folder'), el('span.tool-label', { text: STRINGS.file })), items);
 }
+/** A More menu (overflow.js): a section per group, each with its heading, hidden while empty. */
+function moreMenu(label, title, groups) {
+  const bodies = Object.fromEntries(groups.map((g) => [g, el('div.ovf-body')]));
+  const sections = groups.map((g) => el('div.ovf-sec', { role: 'group', 'aria-label': TL.sections[g], hidden: true },
+    el('p.menu-head', { text: TL.sections[g], 'aria-hidden': 'true' }), bodies[g]));
+  const menu = dropMenu(el('summary.tool.tool-icon.ovf-btn', { title, 'aria-label': title }, icon('more'), el('span.tool-label', { text: label })),
+    sections, { cls: '.ovf' });
+  menu.hidden = true;
+  return { menu, bodies };
+}
 
 // --- header: name, views, View menu, theme, full screen, keys (WS-U-010, WS-U-040) ---------------
 const header = document.querySelector('.app-header');
-const VIEW_ICON = { isa: 'chip', single: 'clock', multi: 'steps', pipe: 'pipeline', compare: 'compare' };
 const themeBtn = el('button.tool.tool-icon', { type: 'button', onclick: () => {
   const cur = document.documentElement.dataset.theme ?? '';
   const next = cur === '' ? 'dark' : cur === 'dark' ? 'light' : '';
@@ -355,7 +574,7 @@ function setProjector(on, quiet = false) {
   projBtn.title = STRINGS.projectorTitle;
   projBtn.setAttribute('aria-pressed', String(on)); // the name stays; the pressed state tells on or off
   store.set('pips.projector', on ? '1' : '');
-  if (!quiet) configureLayout();
+  if (!quiet) { configureLayout(); refit(); } // larger type: the bars fit again
 }
 setProjector(projector, true);
 const keysBox = el('details.keys', {}, el('summary.tool.tool-icon', { title: STRINGS.keys, 'aria-label': STRINGS.keys }, icon('keyboard'),
@@ -372,9 +591,13 @@ function head(title, iconName = null, ...tools) {
 const tabs = (items) => {
   const bar = el('div.tabs', { role: 'tablist' });
   const host = el('div.tab-body');
-  const buttons = items.map(([title, body], i) => el('button', { type: 'button', role: 'tab', text: title,
-    'aria-selected': String(i === 0), onclick: () => select(i) }));
+  // an item's fourth element is the capability state of the tab, if it has one: off, the tab is disabled (W-D29)
+  const buttons = items.map(([title, , , cap], i) => {
+    const b = el('button', { type: 'button', role: 'tab', text: title, 'aria-selected': String(i === 0), onclick: () => select(i) });
+    return cap ? gate(b, cap) : b;
+  });
   function select(i) {
+    if (buttons[i].disabled) return;
     buttons.forEach((b, k) => b.setAttribute('aria-selected', String(k === i)));
     host.replaceChildren(items[i][1]);
     items[i][2]?.(); // a tab that draws only while shown
@@ -385,42 +608,156 @@ const tabs = (items) => {
   return { root: el('div.tabbed', {}, bar, host), select, selectTitle };
 };
 
-// --- views (WS-U-010): ISA, the single-cycle view of Chapter 6 (M2), the multicycle view of Chapter 7 (M4),
-// the pipelined view of Chapter 8 (M3), the comparison of the three (M5, WS-F-060)
-let mode = 'isa';
-const views = { single: null, multi: null, pipe: null }; // SingleView, MultiView, PipeView, each loaded with its tab (WS-N-011)
-let compareView = null; // CompareView, loaded with its tab
-const VIEW_IDS = ['isa', 'single', 'multi', 'pipe', 'compare'];
-const VIEW_PROFILE = { single: 'ch06', multi: 'ch07', pipe: 'ch08' };
-// The comparison checks the program against the processors' common subset, the Chapter 6 profile.
-const COMPARE_PROFILE = 'ch06';
-const uv = () => views[mode] ?? null; // the datapath view in use, or null in the ISA and comparison views
+// --- views (WS-U-010): the architecture's views (contract: arch.views). The first is the instruction-level view the
+// shell draws itself; the others are loaded with their tab (WS-N-011) and give a ViewInstance (RISC-V: the
+// single-cycle, multicycle and pipelined views of Chapters 6 to 8, and the comparison of the three, WS-F-060)
+let mode = arch.views[0].id;
+const viewOf = (id) => arch.views.find((v) => v.id === id) ?? null;
+const inst = {}; // view id -> ViewInstance, created on first use
+const memsysOf = {}; // view id -> the MemorySystem the view was given (null: ideal memory of the default size)
+/** A view with its own model and drawing (kind datapath or bus). */
+const isDp = (id = mode) => ['datapath', 'bus'].includes(viewOf(id)?.kind);
+const isCmp = (id = mode) => viewOf(id)?.kind === 'compare';
+const uv = () => (isDp() ? inst[mode] ?? null : null); // the datapath view in use, or null in the ISA and comparison views
+
+// --- the memory model applied to the views (each gets its own MemorySystem) ------------------------------
+const makeMemsys = () => buildMemsys(memCfg, { platform: memCfg.devices ? new Platform(session.platformConfig) : null }).memsys; // null: ideal memory of the default size, the book's processors
+document.body.append(memSettings.root);
+syncMemButton();
+function applyMemory(cfg, { assemble = true } = {}) {
+  cancelRun();
+  memCfg = cfg;
+  store.set(CONFIG_KEY, writeConfig(cfg));
+  for (const id of Object.keys(inst)) {
+    if (!isDp(id)) continue; // the comparison reads the setting when the program is loaded again (ViewContext.memConfig)
+    memsysOf[id] = makeMemsys();
+    inst[id].setMemsys?.(memsysOf[id]);
+  }
+  syncMemButton();
+  consolePanel.message(STRINGS.mem.applied(cfg.mode === 'ideal' && cfg.words === 256 ? STRINGS.mem.describeIdeal : describeMem(cfg)), 'ok');
+  if (assemble) doAssemble(); // the program restarts on the new memory
+}
+
+/** The data access this cycle will make (a datapath view) or the next instruction makes (ISA), or null. */
+function dataAccessNow() {
+  try {
+    const a = (uv() ? uv().dataAccess?.() : engine?.dataAccess?.()) ?? null;
+    return a ? { addr: a.address, size: a.size } : null;
+  } catch { return null; }
+}
+
+/** A fresh engine of the session's program for the trace-driven caches (contract v5: step records with reads), without history. */
+const DEVICES = arch.addressSpace.regions.filter((r) => r.kind === 'device');
+const traceRun = () => ({ program: session.program, harvard: profileOf(session.profile)?.memory === 'harvard',
+  devices: DEVICES,
+  create: () => arch.engine.create(session.program, { platformConfig: session.platformConfig, historyLimit: 1 }) });
+/** ISA view: the trace-driven cache counts of the whole program, on request. */
+let traceResult = null;
+function analyseTrace() {
+  if (!ensureRunnable()) { consolePanel.message(STRINGS.exportNothing, 'error'); return; }
+  const r = traceCacheRun(traceRun(), memCfg);
+  traceResult = { caches: r.caches, instructions: r.instructions, stop: r.stop, error: r.error, program: session.program, cfg: memCfg,
+    at: engine?.state().retired ?? 0 };
+  updateMemPanels();
+}
+/**
+ * The caches at the ISA view's current position, counted on the same engine as the processor views: the program's
+ * own run replayed from reset (forward steps continue the same replay, a step back or reset starts it again).
+ * Capped, so that a long run does not stall the page; no timing.
+ */
+const LIVE_CAP = 300_000;
+let live = null;
+function liveTrace() {
+  if (!engine || !session.program || memCfg.mode !== 'cache' || !(memCfg.l1i.on || memCfg.l1d.on)) { live = null; return null; }
+  const n = Math.min(engine.state().retired, LIVE_CAP);
+  if (!live || live.program !== session.program || live.cfg !== memCfg || live.retired > n) live = new TraceCache(traceRun(), memCfg);
+  live.advanceTo(n);
+  return { caches: live.caches, instructions: live.instructions, stop: live.stop === 'limit' ? 'here' : live.stop, error: live.error };
+}
+/** The Cache and Peripherals tabs, for the view in use (drawn only while shown). */
+function updateMemPanels() {
+  const v = uv();
+  const ms = v ? memsysOf[mode] ?? null : null;
+  const ctx = { memsys: ms, cfg: memCfg, mode, accessed: dataAccessNow(), fetch: v ? v.state()?.pc ?? null : engine?.state().pc ?? null, words: ms?.memWords, dev: platformCtx(), // the devices on the bus, if any
+    // the instruction-level view counts a whole run on demand (no clock, so no timing)
+    ...(mode === arch.views[0].id ? { analyse: analyseTrace, trace: traceResult && traceResult.at === (engine?.state().retired ?? 0) ? traceResult : liveTrace(),
+      traceStale: traceResult && (traceResult.program !== session.program || traceResult.cfg !== memCfg) } : {}) };
+  cacheView.update(ctx);
+  periph.update(ctx);
+}
+/** The architecture's panels (contract v8) show the state of the view in use, or of the engine. */
+function updateArchPanels() {
+  if (!archPanels.length) return;
+  const v = uv();
+  const s = v ? v.state() : engine?.state() ?? null;
+  const accepts = Boolean(session.runnable && s && (v ? v.input : engine?.input));
+  const state = s ? { registers: s.registers, steps: v ? s.cycle : s.steps ?? s.retired, clock: Boolean(v) } : null; // a view counts clocks
+  for (const { inst } of archPanels) inst.update(state, { accepts, running });
+}
+/**
+ * An input of an architecture panel (contract v8): to the view in use, to the Worker during a long run (kept
+ * until it answers, for an input that arrives after its run ended), or to the engine; then redraw.
+ */
+function giveInput(x) {
+  const v = uv();
+  if (v) { if (v.input) { v.input(x); refresh(); } return; }
+  if (!session.runnable || !engine?.input) return;
+  if (running && workerRun) { workerInputs.push(x); worker.postMessage({ type: 'input', x }); return; }
+  engine.input(x);
+  if (running) updateArchPanels(); else refresh();
+}
 let isaProfile = session.profile;
 const viewTabs = el('nav.mode-nav', { role: 'tablist', 'aria-label': STRINGS.views });
-const viewButtons = [['isa', STRINGS.viewIsa], ['single', STRINGS.viewSingle], ['multi', STRINGS.viewMulti], ['pipe', STRINGS.viewPipe],
-  ['compare', STRINGS.viewCompare]].map(([id, label]) =>
-  el('button.mode-btn', { type: 'button', role: 'tab', title: label, 'aria-label': label, 'aria-selected': String(id === 'isa'), onclick: () => setMode(id) },
-    icon(VIEW_ICON[id]), el('span', { text: label })));
+const viewButtons = arch.views.map((v) =>
+  el('button.mode-btn', { type: 'button', role: 'tab', title: v.label, 'aria-label': v.label, 'aria-selected': String(v.id === mode), onclick: () => setMode(v.id) },
+    icon(v.icon), el('span', { text: v.label })));
 viewTabs.append(...viewButtons);
-const subsetSel = el('select', { 'aria-label': STRINGS.single.subset, hidden: true, onchange: (e) => {
-  session.subset = e.target.value === 'full' ? null : e.target.value;
+// the subsets of the profile of a view that offers them (RISC-V: the Chapter 6 laboratory subset and extension); the first is the whole profile
+const SUBSETS = profileOf(arch.views.find((v) => v.subsets)?.profile)?.subsets ?? [];
+const noSubset = (value) => !SUBSETS.length || value === SUBSETS[0].id;
+const subsetSel = el('select', { 'aria-label': STRINGS.view.subset, hidden: true, onchange: (e) => {
+  session.subset = noSubset(e.target.value) ? null : e.target.value;
   store.set('pips.subset', e.target.value);
   doAssemble();
-} }, Object.entries(STRINGS.single.subsets).map(([v, t]) => el('option', { value: v, text: t })));
-profileSel.after(subsetSel);
+} }, SUBSETS.map((s) => el('option', { value: s.id, text: s.label })));
+archCtx.append(subsetSel);
+const helpBtn = tool('help', STRINGS.help.button, () => helpDialog.open(), { iconOnly: true });
+const headerMore = moreMenu(TL.menu, TL.menuTitle, ['views', 'workspace', 'application']);
 header.replaceChildren(
   el('div.brand', {}, header.querySelector('.app-logo') ?? el('span.app-logo', { 'aria-hidden': 'true' }),
-    el('div.brand-text', {}, header.querySelector('.app-title'), el('span.app-subtitle', { text: STRINGS.appFull }),
-      ...(document.querySelector('meta[name="risc-vista-edition"][content="release"]')
-        ? [el('a.home-link', { href: location.protocol === 'file:' ? 'https://sajidlab.org/mavilera/' : new URL('../', location.href).href, text: STRINGS.homeLink })] : []))),
+    el('div.brand-text', {}, header.querySelector('.app-title'), el('span.app-subtitle', { text: STRINGS.appFull }))),
   viewTabs,
-  el('div.header-tools', {}, viewMenu, themeBtn, projBtn, fullBtn, keysBox,
-    tool('help', STRINGS.help.button, () => helpDialog.open(), { iconOnly: true })));
+  el('div.header-tools', {}, viewMenu, themeBtn, projBtn, fullBtn, keysBox, helpBtn),
+  headerMore.menu);
 showTheme();
+// Each control of the two bars carries its command's id (data-cmd), wherever the overflow puts it.
+for (const [cmd, node] of Object.entries({ assemble: assembleBtn, run: runBtn, stepBack: stepBackBtn, step: stepBtn, stepOver: stepOverBtn,
+  stepOut: stepOutBtn, runToCursor: runToCursorBtn, reset: resetBtn, speed: speedSel, memory: memBtn, templates: templatesMenu, exercise: exerciseBtn,
+  file: fileMenuBox, profile: profileSel, subset: subsetSel, views: viewTabs, layout: viewMenu, theme: themeBtn, projector: projBtn,
+  fullScreen: fullBtn, keys: keysBox, help: helpBtn, moreHeader: headerMore.menu, moreToolbar: toolbarMore.menu })) node.dataset.cmd = cmd;
+// The order in which each bar gives way, lowest priority first: compact styles, then controls into its More menu.
+// Assemble, Run and Step never leave the toolbar; the brand never leaves the header.
+headerFit = overflowBar({ bar: header, more: headerMore.menu, sections: headerMore.bodies, steps: [
+  { cls: 'hb-tight' }, { cls: 'hb-views-active' }, // the views: only the open one keeps its name
+  { node: projBtn, group: 'workspace' }, { node: keysBox, group: 'application' }, { node: fullBtn, group: 'application' },
+  { node: viewMenu, group: 'workspace' }, { node: themeBtn, group: 'application' }, { cls: 'hb-views-icons' },
+  { node: viewTabs, group: 'views' }, { node: helpBtn, group: 'application' },
+  { cls: 'hb-mini' }] });
+toolbarFit = overflowBar({ bar: toolbar, more: toolbarMore.menu, sections: toolbarMore.bodies, steps: [
+  { cls: 'tb-compact' },
+  { node: runToCursorBtn, group: 'simulation' }, { node: memBtn, group: 'program' }, { node: templatesMenu, group: 'program' },
+  { node: archCtx, group: 'processor' }, { node: speedField, group: 'simulation' },
+  { node: exerciseBtn, group: 'program' }, { node: fileMenuBox, group: 'program' },
+  { node: resetBtn, group: 'simulation' }, { node: stepOutBtn, group: 'simulation' }, { node: stepOverBtn, group: 'simulation' },
+  { node: stepBackBtn, group: 'simulation' },
+  { cls: 'tb-mini' }] });
+refit();
+document.fonts?.ready.then(refit);
 
 // --- the MAVILERA logo and the About dialog --------------------------------------------------
 // The logo files (content/branding/) are inlined, so that their colours follow the theme through the
-// --rv-* tokens of theme.css; the header keeps the name as text for screen readers.
+// --mv-* tokens of theme.css; the header keeps the name as text for screen readers. The header shows the
+// lockup MAVILERA, microprocessor, RISC-V (the icon alone on narrow screens); the About dialog the full logo.
 async function brandSvg(file, decorative = true) {
   const r = await fetch(new URL(`../content/branding/mavilera/${file}`, import.meta.url));
   if (!r.ok) throw new Error(`${file}: ${r.status}`);
@@ -433,13 +770,18 @@ async function brandSvg(file, decorative = true) {
   }
   return svg;
 }
-(async () => {
+const brandReady = (async () => {
   try {
-    const [full, small] = await Promise.all([brandSvg('mavilera-logo.svg'), brandSvg('mavilera-icon.svg')]);
+    const [full, small] = await Promise.all([brandSvg(arch.content?.logo ?? 'mavilera-logo.svg'), brandSvg('mavilera-icon.svg')]); // contract v6
     full.classList.add('brand-logo', 'brand-full');
     small.classList.add('brand-logo', 'brand-icon');
-    header.querySelector('.app-logo')?.replaceChildren(full, small);
+    // MAVILERA goes to the landing page, the architecture part opens the switcher (docs/architecture/arch-switcher.md)
+    const where = { protocol: location.protocol, href: location.href, release: !!document.querySelector('meta[name="risc-vista-edition"][content="release"]') };
+    const switcher = archSwitcher({ logo: full, targets: switchTargets(ARCH_ID, where), home: homeUrl(where), current: PLATFORM_ARCHS.find((a) => a.id === ARCH_ID)?.name ?? STRINGS.appFull,
+      loadLogo: (file) => brandSvg(file), strings: STRINGS.archSwitch });
+    header.querySelector('.app-logo')?.replaceChildren(switcher, small);
     header.classList.add('has-logo');
+    refit();
   } catch { /* without the files the name stays as text */ }
 })();
 
@@ -459,8 +801,9 @@ document.body.append(about);
 
 // data import and export (WS-F-145): the loads are kept by the session and applied at each assembly
 const dataDialog = new DataDialog({
+  hex: (a) => hexA(a),
   program: () => session.program,
-  memory: () => (uv() ? (uv().loaded ? (uv().model.dmem ?? uv().model.mem) : null) : session.hart?.mem ?? null),
+  memory: () => (uv() ? uv().memoryPort?.() ?? null : enginePort),
   loads: () => session.dataLoads,
   onLoad: (label, bytes, name) => { session.loadData(label, bytes, name); doAssemble(); },
   onClear: () => { session.clearData(); doAssemble(); },
@@ -469,32 +812,34 @@ const dataDialog = new DataDialog({
 document.body.append(dataDialog.root);
 
 // the example library (WS-F-123): an example opens like a shared program, in the view of its processor
-const EXAMPLE_VIEW = { iss: 'isa', ch06: 'single', ch07: 'multi', ch08: 'pipe' };
-const examplesDialog = new ExamplesDialog({ base: new URL('..', import.meta.url), templates: () => loadTemplates(), onTemplate: (t) => openTemplate(t), templateItems, onOpen: async (x, text) => {
+// the view that runs an example's profile: the first view of that profile that is not the comparison (the ISA view: the first profile)
+const viewForProfile = (profile) => arch.views.find((v) => !isCmp(v.id) && (v.profile ?? arch.engine.profiles[0].id) === profile)?.id ?? arch.views[0].id;
+const examplesDialog = new ExamplesDialog({ index: contentUrl('examples'), templates: () => loadTemplates(), onTemplate: (t) => openTemplate(t), templateItems, onOpen: async (x, text) => {
   let source = text;
-  if (x.gcc) source = (await import('./asm/gcc-import.js')).importGcc(text).text;
-  await applyShared({ view: EXAMPLE_VIEW[x.profile], profile: x.profile === 'iss' ? 'iss' : isaProfile, subset: x.profile === 'ch06' ? x.subset ?? 'full' : null,
+  if (x.gcc) { const imps = await arch.language.importers(); source = (imps.find((i) => i.test(text)) ?? imps[0]).convert(text, x.file).text; }
+  await applyShared({ view: viewForProfile(x.profile), profile: x.profile === arch.engine.profiles[0].id ? x.profile : isaProfile,
+    subset: profileOf(x.profile)?.subsets ? x.subset ?? profileOf(x.profile).subsets[0].id : null,
     lang: x.lang, name: x.file, source }, STRINGS.examples.opened(x.title));
-  if (x.jalr && store.get('pips.multi.jalr') !== '1') {
-    const { fetchJalr } = await import('./uarch/ch07-jalr.js');
-    consolePanel.message((await fetchJalr(new URL('..', import.meta.url))) ? STRINGS.examples.needsJalr : STRINGS.examples.noJalr, 'warn');
-  }
+  // contract v5: the view's warning when an example opens in it (RISC-V: the multicycle JALR state)
+  const note = await viewOf(viewForProfile(x.profile))?.openNote?.(x);
+  if (note) consolePanel.message(note, 'warn');
   if (x.halts === false) consolePanel.message(STRINGS.examples.noHalt, 'warn');
 } });
 document.body.append(examplesDialog.root);
 // the help (W-D20); the documentation is beside the application in a release (../docs/), on the site for the
-// offline file, and in content/help/docs/ of the development tree
-const helpDialog = new HelpDialog({ base: new URL('..', import.meta.url), onAbout: () => openAbout(),
-  docsUrl: RELEASE === null ? new URL('../content/help/docs/index.html', import.meta.url).href
-    : location.protocol === 'file:' ? 'https://sajidlab.org/mavilera/riscv/docs/' : new URL('./docs/', location.href).href });
+// offline file, and in the architecture's content.docs of the development tree (contract v6; none: no link)
+const helpDialog = new HelpDialog({ index: contentUrl('help'), onAbout: () => openAbout(), logo: () => brandSvg('mavilera-full.svg'),
+  docsUrl: !contentUrl('docs') ? null : RELEASE === null ? contentUrl('docs').href
+    : location.protocol === 'file:' ? `https://sajidlab.org/mavilera/${arch.id}/docs/` : new URL('./docs/', location.href).href });
 document.body.append(helpDialog.root);
 async function openAbout() {
-  if (!aboutLogo.firstChild) aboutLogo.append(await brandSvg('mavilera-logo.svg').catch(() => el('strong', { text: STRINGS.appName })));
+  if (!aboutLogo.firstChild) aboutLogo.append(await brandSvg('mavilera-full.svg').catch(() => el('strong', { text: STRINGS.appName })));
   about.showModal();
 }
 
 // --- panels -------------------------------------------------------------------------------------
-const listingTabs = tabs([[STRINGS.listing, listing.root], [STRINGS.data, dataBox], [STRINGS.symbols, symBox], [C.asmTab, asmBox]]);
+const listingTabs = tabs([[STRINGS.listing, listing.root], [STRINGS.data, dataBox], [STRINGS.symbols, symBox],
+  ...(arch.language.extraLanguages?.length ? [[C.asmTab, asmBox]] : [])]); // the generated assembly only with another language
 const pListing = panel(STRINGS.listing, listingTabs.root, '.p-listing', 'list');
 // the encode/decode scratchpad (WS-F-024) above the fields of the instruction inspector
 const scratchOut = el('div.scratch-out.mono', { 'aria-live': 'polite' });
@@ -502,29 +847,95 @@ const scratchIn = el('input.mono.scratch-in', { type: 'text', spellcheck: false,
   placeholder: STRINGS.scratch.placeholder, title: STRINGS.scratch.title, oninput: () => runScratch() });
 function runScratch() {
   const X = STRINGS.scratch;
-  const r = scratch(scratchIn.value);
+  const r = arch.language.scratch(scratchIn.value); // contract v4: rows for the inspector, or an error diagnostic
   if (r.kind === 'empty') { scratchOut.replaceChildren(); return; }
   if (r.kind === 'decode') {
     scratchOut.replaceChildren(el('div', { text: r.ok ? X.decoded(r.text) : X.notInstr }));
-    if (r.ok) fields.show(r.lines[0]);
+    if (r.ok) fields.show(r.rows[0]);
     return;
   }
   if (!r.ok) {
-    const hint = r.error.hint === 'scratchOne' ? X.oneOnly : STRINGS.hints[r.error.hint]?.(r.error, r.error.mnemonic ? usage(r.error.mnemonic) : null);
-    scratchOut.replaceChildren(el('div.scratch-err', { text: `✖ ${r.error.message}` }), ...(hint && hint !== X.oneOnly ? [el('div.note', { text: hint })] : []));
+    scratchOut.replaceChildren(el('div.scratch-err', { text: `✖ ${r.error.message}` }), ...(r.error.note ? [el('div.note', { text: r.error.note })] : []));
     return;
   }
-  const bin = (w) => (w >>> 0).toString(2).padStart(32, '0').replace(/(.{4})(?!$)/g, '$1_');
-  scratchOut.replaceChildren(...r.lines.map((l) => el('button.link-btn.mono', { type: 'button', title: X.pick, onclick: () => fields.show(l) },
-    X.word(hex8(l.word), bin(l.word)))));
-  fields.show(r.lines[0]);
+  const bin = (l) => (l.word >>> 0).toString(2).padStart(8 * l.size, '0').replace(/(.{4})(?!$)/g, '$1_');
+  scratchOut.replaceChildren(...r.rows.map((l) => el('button.link-btn.mono', { type: 'button', title: X.pick, onclick: () => fields.show(l) },
+    X.word(hex8(l.word), bin(l)))));
+  fields.show(r.rows[0]);
 }
 const pFields = panel(STRINGS.layout.panes.inspector, el('div.col', {},
-  el('label.scratch', { title: STRINGS.scratch.title }, el('span', { text: STRINGS.scratch.label }), scratchIn), scratchOut, fields.root), '.p-fields', 'inspect');
-const pDatapath = panel(STRINGS.single.panel, el('p.note', { text: STRINGS.loadingView }), '.p-datapath');
-const pInfo = panel(STRINGS.single.info, el('div'), '.p-info', 'inspect');
-const pCompare = panel(STRINGS.compare.panel, el('p.note', { text: STRINGS.loadingView }), '.p-compare', 'compare');
-const pMemory = panel(STRINGS.memory, memory.root, '.p-memory', 'memory');
+  el('label.scratch', { title: STRINGS.scratch.title }, el('span', { text: STRINGS.scratch.label }), gate(scratchIn, CAP.scratch)), scratchOut, fields.root), '.p-fields', 'inspect');
+const pDatapath = panel(STRINGS.view.panel, el('p.note', { text: STRINGS.loadingView }), '.p-datapath');
+const pInfo = panel(STRINGS.view.info, el('div'), '.p-info', 'inspect');
+// The lower pane of the middle column (instruction inspector, cycle details, pipeline details) has, besides its
+// fold arrow: an up arrow that folds the pane above so that it grows upward (the same place then shows a down arrow
+// that opens the pane above again), and Maximise, which gives it the whole workspace (Esc restores).
+function paneControls(node, title) {
+  const L = STRINGS.layout;
+  const up = el('button.pane-up', { type: 'button', onclick: () => midSplit.setCollapsed(midSplit.panes[0].id, !midSplit.collapsed[0]) });
+  const max = el('button.pane-max', { type: 'button', onclick: () => setMidMax(node, !workspace.classList.contains('mid-max')) });
+  node.querySelector(':scope > h2').append(up, max);
+  node.addEventListener('keydown', (e) => { if (e.key === 'Escape' && workspace.classList.contains('mid-max')) { setMidMax(node, false); max.focus(); } });
+  const sync = () => {
+    const here = node._split === midSplit && midSplit.panes[1]?.node === node;
+    up.hidden = !here;
+    max.hidden = !here;
+    if (!here) return;
+    const h = node.querySelector(':scope > h2'); // a view replaces the heading when it loads: the controls join the new one
+    if (h && up.parentNode !== h) h.insertBefore(max, node._toggle?.parentNode === h ? node._toggle : null), h.insertBefore(up, max);
+    const aboveFolded = midSplit.collapsed[0];
+    up.replaceChildren(icon(aboveFolded ? 'chevronDown' : 'chevronUp'));
+    const label = aboveFolded ? L.openAbove : L.enlargeUp(title);
+    up.setAttribute('aria-label', label);
+    up.setAttribute('aria-pressed', String(aboveFolded));
+    up.title = label;
+    if (node._toggle) node._toggle.hidden = aboveFolded; // this pane is the only one open: nothing to fold into
+    const on = workspace.classList.contains('mid-max') && node.classList.contains('max-pane');
+    const ml = on ? L.restorePane(title) : L.maximisePane(title);
+    max.replaceChildren(icon(on ? 'restore' : 'fullscreen'), el('span.pane-max-label', { text: on ? L.restoreShort : L.maximiseShort }));
+    max.setAttribute('aria-label', ml);
+    max.setAttribute('aria-pressed', String(on));
+    max.title = on ? `${ml} (Esc)` : ml;
+  };
+  return sync;
+}
+function setMidMax(node, on) {
+  if (on && midSplit.isCollapsed(midSplit.panes[1].id)) midSplit.setCollapsed(midSplit.panes[1].id, false);
+  if (on) setDockMax(false);
+  workspace.classList.toggle('mid-max', on);
+  for (const n of [pInfo, pFields]) n.classList.toggle('max-pane', on && n === node);
+  midSplit.onApply();
+}
+const pCompare = panel(STRINGS.view.comparison, el('p.note', { text: STRINGS.loadingView }), '.p-compare', 'compare');
+// the shared memory panel (D7): the same in every view, with the Cache and Peripherals tabs; a view's own
+// detail tabs only link to it
+const memTabs = tabs([[STRINGS.mem.tabMemory, memory.root], [STRINGS.mem.tabCache, cacheView.root, () => updateMemPanels(), CAP.cache],
+  [STRINGS.mem.tabPeripherals, periph.root, () => updateMemPanels(), CAP.devices], ...archPanels.map(({ p, inst }) => [p.label, inst.root, () => updateArchPanels()])]);
+// the memory pane's name: without caches (capability cache off) it is the Memory pane
+const MEM_PANE = CAP.cache.enabled ? { panel: STRINGS.mem.panel, link: STRINGS.mem.link, bar: STRINGS.layout.dockBarDp }
+  : { panel: STRINGS.mem.panelPlain, link: STRINGS.mem.linkPlain, bar: STRINGS.layout.dockBarDpPlain };
+const pMemory = panel(MEM_PANE.panel, memTabs.root, '.p-memory', 'memory');
+// Maximise: the panel takes the whole workspace (the editor, views and registers step aside); the icon changes from corners out to corners in
+const maxBtn = el('button.pane-max', { type: 'button', onclick: () => setDockMax(!workspace.classList.contains('dock-max')) });
+pMemory.querySelector(':scope > h2').append(maxBtn);
+pMemory.addEventListener('keydown', (e) => { if (e.key === 'Escape' && workspace.classList.contains('dock-max')) { setDockMax(false); maxBtn.focus(); } });
+function setDockMax(on) {
+  if (on && rootSplit.isCollapsed('dock')) rootSplit.setCollapsed('dock', false);
+  workspace.classList.toggle('dock-max', on);
+  const label = on ? STRINGS.mem.restorePanel : STRINGS.mem.maximisePanel;
+  maxBtn.replaceChildren(icon(on ? 'restore' : 'fullscreen'), el('span.pane-max-label', { text: on ? STRINGS.mem.restoreShort : STRINGS.mem.maximiseShort }));
+  maxBtn.setAttribute('aria-label', label);
+  maxBtn.setAttribute('aria-pressed', String(on));
+  maxBtn.title = on ? `${label} (Esc)` : label;
+}
+/** A view's Memory tab: a note and a button that opens the shared panel. */
+const memLink = () => el('div.mem-link', {}, el('p.note', { text: MEM_PANE.link }),
+  el('button', { type: 'button', text: STRINGS.mem.openPanel, onclick: () => showMemoryPanel() }));
+function showMemoryPanel(tab = 0) {
+  if (rootSplit.isCollapsed('dock')) rootSplit.setCollapsed('dock', false);
+  memTabs.select(tab);
+  flashPanel(pMemory);
+}
 const clearBtn = tool('trash', TL.clear, () => consolePanel.clearMessages(), { iconOnly: true, cls: '.tool-small' });
 const pConsole = el('section.panel.p-console', { 'aria-label': `${STRINGS.console} · ${STRINGS.messages}` },
   head(`${STRINGS.console} · ${STRINGS.messages}`, 'terminal', clearBtn), consolePanel.root);
@@ -551,7 +962,7 @@ function editorStatus() {
   const line = before.split('\n').length;
   const col = a.selectionStart - before.lastIndexOf('\n');
   edPos.textContent = TL.status(line, col, a.value.split('\n').length);
-  edProfile.textContent = STRINGS.profileNames[session.profile] ?? session.profile;
+  edProfile.textContent = profileOf(session.profile)?.label ?? session.profile;
   edState.textContent = dirty ? TL.modified : TL.saved;
   edState.classList.toggle('ed-modified', dirty);
   dirtyMark.hidden = !dirty;
@@ -568,21 +979,25 @@ const workSplit = new Split('row', 'work');
 const dockSplit = new Split('row', 'dock');
 const rootSplit = new Split('column', 'root');
 // The folded dock's bar: a click anywhere opens it; the fold button that Split puts in it is the keyboard's way.
-const dockBar = el('div.dock-bar', { onclick: () => rootSplit.setCollapsed('dock', false) },
-  icon('chevronUp', { size: 14 }), el('span', { text: STRINGS.layout.dockBar }));
+const dockBarText = el('span', { text: STRINGS.layout.dockBar });
+const dockBar = el('div.dock-bar', { onclick: () => rootSplit.setCollapsed('dock', false) }, icon('chevronUp', { size: 14 }), dockBarText);
 const dock = el('div.dock', {}, dockBar, dockSplit.root);
 const workspace = el('div.workspace', {}, rootSplit.root);
+const syncMidControls = [paneControls(pInfo, STRINGS.view.info), paneControls(pFields, STRINGS.layout.panes.inspector)];
+midSplit.onApply = () => syncMidControls.forEach((f) => f());
 const P = STRINGS.layout.panes;
 
 // Projector mode (WS-U-012) keeps every pane, so that nothing is out of reach, but starts with only the
 // editor, the main view (drawing, listing or comparison) and one table, the registers, open; the others
 // are folded and open from their heading or View ▸ Show. Its layouts are saved apart (`….proj`).
 function configureLayout() {
-  const dp = Boolean(VIEW_PROFILE[mode]);
-  const cmp = mode === 'compare';
+  const dp = isDp();
+  const cmp = isCmp();
   const pj = projector;
   const k = pj ? `${mode}.proj` : mode;
   workspace.classList.toggle('projector', pj);
+  workspace.classList.remove('mid-max');
+  pInfo.classList.remove('max-pane'); pFields.classList.remove('max-pane');
   midSplit.configure(dp ? [{ node: pDatapath, id: 'datapath', min: 220, size: pj ? 0.74 : 0.64 },
     { node: pInfo, id: 'info', min: 90, size: pj ? 0.26 : 0.36, collapsible: true, collapsed: pj, title: P.info }]
     : cmp ? [{ node: pCompare, id: 'compare', min: 120, size: 1 }]
@@ -598,23 +1013,24 @@ function configureLayout() {
   `right.${k}`);
   workSplit.configure([{ node: pEditor, id: 'editor', min: 220, size: dp ? 0.22 : 0.3, collapsible: true, title: P.editor },
     { node: midSplit.root, id: 'mid', min: dp ? 360 : 300, size: dp ? 0.56 : 0.44 },
-    { node: rightSplit.root, id: 'right', min: 230, size: dp ? 0.22 : 0.26 }], `work.${k}`);
-  if (dp) {
-    rootSplit.configure([{ node: workSplit.root, id: 'work', min: 200, size: 1 }], `root.${k}`);
-  } else {
-    dockSplit.configure([{ node: pMemory, id: 'memory', min: 220, size: 0.58, collapsible: true, title: STRINGS.memory },
+    { node: rightSplit.root, id: 'right', min: 230, size: dp ? 0.22 : 0.26, foldable: true, title: P.right }], `work.${k}`);
+  // the dock, in every view (D7): the shared memory panel, and in the ISA and comparison views the console;
+  // a datapath view needs the height, so there it starts folded
+  dockSplit.configure(dp ? [{ node: pMemory, id: 'memory', min: 220, size: 1 }]
+    : [{ node: pMemory, id: 'memory', min: 220, size: 0.58, collapsible: true, title: MEM_PANE.panel },
       { node: pConsole, id: 'console', min: 200, size: 0.42, collapsible: true, title: STRINGS.console }], `dock.${k}`);
-    rootSplit.configure([{ node: workSplit.root, id: 'work', min: 200, size: 0.7 },
-      { node: dock, id: 'dock', min: 90, size: 0.3, collapsible: true, collapsed: pj, title: P.dock, header: dockBar }], `root.${k}`);
-  }
+  dockBarText.textContent = dp ? MEM_PANE.bar : STRINGS.layout.dockBar;
+  rootSplit.configure([{ node: workSplit.root, id: 'work', min: 200, size: dp ? 0.6 : 0.7 },
+    { node: dock, id: 'dock', min: 90, size: dp ? 0.4 : 0.3, collapsible: true, collapsed: pj || dp, title: dp ? MEM_PANE.panel : P.dock, header: dockBar }], `root.${k}`);
+  ws?.afterLayout(); // a narrow screen: the active workspace's panes show
 }
 
 /** View ▸ projector mode, the layout commands and a Show switch for each pane that folds. */
 function fillViewMenu(list) {
-  const dp = Boolean(VIEW_PROFILE[mode]);
+  const dp = isDp();
   const panes = [[workSplit, 'editor', P.editor],
-    ...(dp ? [[midSplit, 'info', P.info], [rightSplit, 'counters', P.counters], [rightSplit, 'console', STRINGS.console]]
-      : [...(mode === 'compare' ? [] : [[midSplit, 'inspector', P.inspector]]), [rightSplit, 'calls', P.calls], [rightSplit, 'counters', P.counters], [rootSplit, 'dock', P.dock]])];
+    ...(dp ? [[midSplit, 'info', P.info], [rightSplit, 'counters', P.counters], [rightSplit, 'console', STRINGS.console], [rootSplit, 'dock', MEM_PANE.panel]]
+      : [...(isCmp() ? [] : [[midSplit, 'inspector', P.inspector]]), [rightSplit, 'calls', P.calls], [rightSplit, 'counters', P.counters], [rootSplit, 'dock', P.dock]])];
   list.replaceChildren(
     el('label.menu-check', { title: STRINGS.projectorTitle }, el('input', { type: 'checkbox', checked: projector,
       onchange: (e) => setProjector(e.target.checked) }), ` ${STRINGS.projector}`),
@@ -638,96 +1054,148 @@ function setZoom(on) {
 /** Open what an element of the drawing stands for: a shared panel or an information tab, flashed. */
 function openTarget(t) {
   if (!t) return;
-  if (t.panel === 'regs') { flashPanel(pRegs); return; }
+  if (t.panel === 'registers') { flashPanel(pRegs); return; }
+  if (t.panel === 'memory') { setZoom(false); showMemoryPanel(0); return; } // the memory lives in the shared panel
   setZoom(false);
+  ws.reveal('datapath'); // a narrow screen: the details are under the drawing there
   if (midSplit.isCollapsed('info')) midSplit.setCollapsed('info', false);
   if (viewParts[mode]?.tabs.selectTitle(t.tab)) flashPanel(pInfo);
 }
 
 function flashPanel(p) {
+  ws.revealPane(p.dataset.pane); // a narrow screen: the workspace that holds it
   p.classList.remove('flash');
   void p.offsetWidth; // restart the animation
   p.classList.add('flash');
   setTimeout(() => p.classList.remove('flash'), 1300);
 }
 
-const app = document.getElementById('app');
-app.replaceChildren(toolbar, workspace);
-configureLayout();
+// --- the workspaces of a narrow screen (ui/workspaces.js) ---------------------------------------------
+// Below 900 px one workspace shows at a time, from a tab row under the toolbar; the console is a sheet. The panes are the
+// ones above, hidden or shown: nothing is rebuilt or reset by a change of workspace, and the simulator does not know of them.
+let drawingStale = false; // the datapath view's drawing was not redrawn while its workspaces were hidden
+let listingForced = false; // the Details tabs were put on the listing by the Listing workspace
+const seen = { listing: null, line: null }; // the PC row and the editor's current line when their workspace last showed
+const ws = new MobileWorkspaces({
+  workspace, strings: STRINGS.ws, context: () => ({ dp: isDp() }),
+  relayout: () => { setDockMax(false); setZoom(false); configureLayout(); }, // wide again: every pane back in its split
+  sheet: { id: 'console', node: pConsole, label: STRINGS.console, icon: 'terminal' },
+  onShow: (id) => {
+    const parts = viewParts[mode];
+    if (isDp() && parts) { // the listing is a tab of the Details pane in a datapath view
+      if (id === 'listing') { parts.tabs.selectTitle(STRINGS.listing); listingForced = true; } else if (id === 'datapath' && listingForced) { parts.tabs.select(0); listingForced = false; }
+    }
+    if (drawingStale) redrawDrawing(); // the panels were kept up to date while hidden; only the drawing was not
+    // where the PC moved while a pane was away, bring it into view; otherwise the pane stays as it was left (scroll and all)
+    if (id === 'listing' && listing.pc !== seen.listing) listing.markPc(listing.pc);
+    if (id === 'code' && editor.current && editor.current !== seen.line) editor.scrollToLine(editor.current, true);
+    seen.listing = listing.pc;
+    seen.line = editor.current;
+  },
+});
+consolePanel.onNote = (kind) => ws.note(kind);
+for (const li of consolePanel.msgs.children) ws.note(li.className === 'msg-error' ? 'error' : li.className === 'msg-warn' ? 'warn' : null); // messages from before
+/** Draw the datapath view's drawing and details that were skipped while no workspace showed them. */
+function redrawDrawing() {
+  const v = uv();
+  drawingStale = false;
+  if (!v) return;
+  v.render();
+  refreshWave();
+}
+/** The datapath view's drawing and details are out of sight: they are drawn again when a workspace shows them. */
+const drawingHidden = () => ws.mobile && pDatapath.classList.contains('ws-off') && pInfo.classList.contains('ws-off');
+const syncDensity = () => memory.setRowBytes(ws.mobile ? 8 : 16); // a narrow table on a narrow screen: the same memory, fewer bytes a row
+ws.mq.addEventListener('change', () => { syncDensity(); syncPanAuto(); });
 
-/** Load a datapath view and its information tabs. Returns false if it could not be loaded. */
+/** The PC of the processor in use as text (a datapath view: the instruction its cycle works on), or null. */
+function currentPc() {
+  const v = uv();
+  const st = v ? v.state() : engine?.state() ?? null;
+  return st ? hexA(v ? st.instruction ?? st.pc : st.pc) : null;
+}
+/** The strip under the tabs: the PC and the state (Running, Paused, Halted, at a breakpoint), whichever workspace is shown. */
+function updateWsStatus() {
+  const W = STRINGS.ws;
+  const v = uv();
+  const st = v ? v.state() : engine?.state() ?? null;
+  if (!session.program || !st) { ws.setStatus(W.status(null, W.state.none)); return; }
+  const pc = currentPc();
+  const fresh = !(st.retired > 0) && !(st.cycle > 0);
+  const stopped = lastStop && lastStop.pc === pc ? lastStop.stop : null;
+  const state = running ? W.state.running : st.error ? W.state.error : st.halted ? W.state.halted
+    : stopped === STOP.BREAK ? W.state.breakpoint : stopped === STOP.WATCH ? W.state.watch : fresh ? W.state.ready : W.state.paused;
+  ws.setStatus(W.status(pc, state));
+}
+
+const app = document.getElementById('app');
+app.replaceChildren(toolbar, ws.nav, workspace, ws.sheet);
+refit();
+configureLayout();
+setDockMax(false);
+syncDensity();
+
+const panShared = { pan: false }; // the Pan toggle of the drawings, one for the page
+let panAuto = false; // Pan was switched on by the narrow screen
+/** On a touch screen in the workspaces the page does not scroll, so a touch on a drawing pans and pinches it (Pan on); the toggle still works. */
+function syncPanAuto() {
+  const any = panShared.all ? [...panShared.all][0] : null;
+  if (!any) return;
+  if (ws.mobile && matchMedia('(pointer: coarse)').matches && !panShared.pan) { any.setPan(true); panAuto = true; }
+  else if (!ws.mobile && panAuto) { any.setPan(false); panAuto = false; }
+}
+/** What the shell gives a view (contract ViewContext). */
+const viewContext = () => ({
+  strings: STRINGS, memsys: null,
+  message: (text, kind) => consolePanel.message(text, kind),
+  openPanel: (t) => openTarget(t), refresh: () => refresh(), goToCycle: (k) => goToCycle(k),
+  command: (name) => (name === 'stepUnit' ? stepUnit() : name === 'backUnit' ? backUnit() : undefined), // the view's own buttons
+  memConfig: () => memCfg,
+  download: (name, data, type) => download(name, data, type),
+});
+
+/** Load a view (its module and content) and build its panes. Returns false if it could not be loaded. */
 async function loadView(id) {
-  if (views[id] || (id === 'compare' && compareView)) return true;
-  const base = new URL('..', import.meta.url);
+  if (inst[id]) return true;
+  let v;
   try {
-    if (id === 'compare') {
-      const { CompareView, loadCompareContent } = await import('./ui/compare-view.js');
-      compareView = new CompareView(await loadCompareContent(base));
-      pCompare.replaceChildren(el('h2', { text: STRINGS.compare.panel }), compareView.root);
+    const mod = await viewOf(id).load();
+    v = mod.create(viewContext());
+    if (isCmp(id)) {
+      inst[id] = v;
+      pCompare.replaceChildren(el('h2', { text: v.title }), v.root);
       return true;
     }
-    if (id === 'single') {
-      const { SingleView, loadSingleContent } = await import('./ui/single-view.js');
-      const v = new SingleView(await loadSingleContent(base));
-      views.single = v;
-      viewParts.single = {
-        header: el('h2.with-status', {}, el('span', { text: STRINGS.single.panel }), v.status, v.headerTools), info: STRINGS.single.info,
-        tabs: tabs([[STRINGS.single.tabCycle, v.cycleBox], [STRINGS.single.tabControl, v.controlBox],
-          [STRINGS.single.tabTiming, v.timingBox], await waveTab('single', v), [STRINGS.listing, listing.root], // these two move here while selected
-          [STRINGS.single.tabMemory, memory.root]]),
-      };
-    } else if (id === 'multi') {
-      const { MultiView, loadMultiContent } = await import('./ui/multi-view.js');
-      const v = new MultiView(await loadMultiContent(base), { onGoTo: () => refresh(), onStepInstr: () => stepInstr(), onBackInstr: () => backInstr() });
-      views.multi = v;
-      const M = STRINGS.multi;
-      viewParts.multi = {
-        header: el('h2.with-status', {}, el('span', { text: M.panel }), v.status, v.headerTools), info: M.info,
-        tabs: tabs([[M.tabFsm, v.fsmBox], [M.tabCycle, v.cycleBox], [M.tabRegisters, v.regsBox], [M.tabStrip, v.stripBox],
-          [M.tabTiming, v.timingBox], await waveTab('multi', v), [STRINGS.listing, listing.root], [STRINGS.memory, memory.root]]),
-      };
-    } else {
-      const { PipeView, loadPipeContent } = await import('./ui/pipe-view.js');
-      const v = new PipeView(await loadPipeContent(base), { onGoTo: () => refresh() });
-      views.pipe = v;
-      const P = STRINGS.pipe;
-      viewParts.pipe = {
-        header: el('h2.with-status', {}, el('span', { text: P.panel }), v.status, v.headerTools), info: P.info,
-        tabs: tabs([[P.tabDiagram, v.diagramBox], [P.tabHazards, v.hazardsBox], [P.tabSummary, v.summaryBox], [P.tabRegisters, v.registersBox],
-          [P.tabPredictor, v.predictorBox], [P.tabCpi, v.cpiBox], [P.tabSignals, v.signalsBox], await waveTab('pipe', v),
-          [STRINGS.listing, listing.root], [STRINGS.single.tabMemory, memory.root]]),
-      };
-    }
+    // after the view's own tabs: the waveforms, the listing and the memory link (the listing moves here while selected)
+    // a view that gives waveforms gets the tab; with the capability off it stays, disabled (W-D29)
+    const wave = !v.waveform || !v.exportModel ? [] : CAP.waveform.enabled ? [await waveTab(id, v)] : [[STRINGS.wave.title, el('div'), null, CAP.waveform]];
+    viewParts[id] = {
+      header: el('h2.with-status', {}, el('span', { text: v.title }), v.status ?? null, v.headerTools ?? null), info: v.infoTitle,
+      tabs: tabs([...v.tabs, ...wave, [STRINGS.listing, listing.root], [v.memoryTab ?? STRINGS.memory, memLink()]]),
+    };
+    // pan and zoom of the view's drawings (contract v7), named by the drawing's own title; kept while the page is open
+    for (const svg of v.diagrams ?? []) new PanZoom(svg, { name: svg.querySelector(':scope > title')?.textContent || v.title, shared: panShared });
+    syncPanAuto();
+    inst[id] = v;
   } catch (e) {
     consolePanel.message(STRINGS.loadFailed(e.message), 'error');
     return false;
   }
-  const v = views[id];
-  v.dp.setLinks(v.targets, (eid) => openTarget(v.targets[eid]), STRINGS.elementNames[VIEW_PROFILE[id]]);
-  v.fsm?.setLink(() => openTarget(v.targets.cu), (s) => STRINGS.openFor(s)); // multicycle: the state-output table
+  const ms = makeMemsys();
+  memsysOf[id] = ms;
+  if (ms) v.setMemsys?.(ms); // the saved memory model, for a view loaded now
   return true;
 }
 
 // --- the waveform panel of each datapath view (WS-F-146) ---------------------------------------------
 // The records are those of the VCD export: a fresh model of the same program and options run from
-// reset, kept and extended while the view's program and model stay the same, up to the furthest
+// reset, kept and extended while the view's program, memory and settings stay the same, up to the furthest
 // cycle reached (so that stepping back keeps the later cycles in view).
-const WAVE_DEFAULTS = {
-  single: ['pc', 'instr', 'RegWrite', 'ALUSrc', 'MemWrite', 'ResultSel', 'PCSel', 'alu_y', 'result'],
-  multi: ['state', 'pc', 'IRWrite', 'PCWrite', 'AddrSel', 'ALUSrcA', 'ALUSrcB', 'RegWrite', 'alu_y'],
-  pipe: ['pc_if', 'instr_id', 'instr_ex', 'stall_if', 'flush_ex', 'fwd_sel_a', 'fwd_sel_b', 'PCSel_ex', 'alu_y_ex'],
-};
 const waves = {};
 const waveRec = {};
 async function waveTab(id, v) {
   const { WaveformPanel } = await import('./ui/waveform.js');
-  let format = null;
-  if (id === 'multi') {
-    const { STATE_CODE } = await import('./uarch/multi.js');
-    const names = Object.fromEntries(Object.entries(STATE_CODE).map(([n, c]) => [c, n]));
-    format = (name, val) => (name === 'state' || name === 'next' ? names[val] ?? String(val) : null);
-  }
-  waves[id] = new WaveformPanel({ id, signals: v.exportModel().signals, defaults: WAVE_DEFAULTS[id], format, onGoTo: (k) => goToCycle(k) });
+  waves[id] = new WaveformPanel({ id, signals: v.exportModel().signals, defaults: v.waveform.defaults, format: v.waveform.format ?? null, onGoTo: (k) => goToCycle(k) });
   return [STRINGS.wave.title, waves[id].root, () => refreshWave(true)];
 }
 let waveShownAt = 0;
@@ -737,18 +1205,19 @@ function refreshWave(force = false) {
   if (!v || !w || !w.root.isConnected) return;
   if (running && !force && performance.now() - waveShownAt < 500) return; // a run in progress: twice a second
   waveShownAt = performance.now();
-  if (!v.loaded) { w.update([], 0); return; }
-  const opt = `${JSON.stringify(v.options ?? null)}|${v.jalr ?? ''}|${v.early ?? ''}|${session.subset ?? ''}`;
+  const s = v.state();
+  if (!s) { w.update([], 0); return; }
+  const opt = v.revision?.() ?? '';
   let rec = waveRec[mode];
-  if (!rec || rec.program !== session.program || rec.live !== v.model || rec.opt !== opt) {
-    rec = waveRec[mode] = { program: session.program, live: v.model, opt, model: v.exportModel().model, frames: [], done: false, max: 0 };
+  if (!rec || rec.program !== session.program || rec.memsys !== memsysOf[mode] || rec.opt !== opt) {
+    rec = waveRec[mode] = { program: session.program, memsys: memsysOf[mode], opt, model: v.exportModel().model, frames: [], done: false, max: 0 };
   }
-  const cur = v.model.cycle;
+  const cur = s.cycle;
   rec.max = Math.min(Math.max(rec.max, cur), VCD_CAP);
   while (!rec.done && rec.frames.length <= rec.max) {
     rec.frames.push({ ...rec.model.evaluate().signals });
     if (rec.frames.length > rec.max) break;
-    if (rec.model.step() !== 'step') rec.done = true;
+    if (rec.model.step() !== 'step') rec.done = true; // the export model's own protocol, as for the VCD export
   }
   w.update(rec.frames.slice(0, rec.max + 1), Math.min(cur, rec.frames.length - 1));
 }
@@ -756,21 +1225,23 @@ function refreshWave(force = false) {
 function goToCycle(k) {
   const v = uv();
   if (!v || running || k < 0) return;
-  while (v.model.cycle > k && v.back());
-  while (v.model.cycle < k && v.step() === 'step');
+  const cycle = () => v.state()?.cycle ?? 0;
+  while (cycle() > k && v.back());
+  while (cycle() < k && v.step() === STOP.NONE);
   refresh();
 }
 
-/** Switch view. A datapath view runs its chapter's profile; the ISA view gets its profile back (WS-F-004). */
+/** Switch view. A view with a profile runs it; the ISA view gets its profile back (WS-F-004). */
 async function setMode(next) {
   if (next === mode) return;
   cancelRun();
-  if (next !== 'isa' && !(await loadView(next))) return;
-  const wasIsa = mode === 'isa';
+  const isa = arch.views[0].id;
+  if (next !== isa && !(await loadView(next))) return;
+  const wasIsa = mode === isa;
   mode = next;
-  viewButtons.forEach((b, i) => b.setAttribute('aria-selected', String(VIEW_IDS[i] === mode)));
-  const sc = Boolean(VIEW_PROFILE[mode]); // a datapath view
-  const cmp = mode === 'compare';
+  viewButtons.forEach((b, i) => b.setAttribute('aria-selected', String(arch.views[i].id === mode)));
+  const sc = isDp(); // a datapath view
+  const cmp = isCmp();
   for (const b of toolbar.querySelectorAll('.dp-only')) b.hidden = !sc;
   if (sc) {
     const parts = viewParts[mode];
@@ -779,18 +1250,20 @@ async function setMode(next) {
     pInfo.replaceChildren(head(parts.info, 'inspect'), parts.tabs.root);
   } else setZoom(false);
   workspace.classList.toggle('dp-mode', sc);
-  // The datapath needs the height: the console joins the right column, the data memory becomes a tab.
-  if (!sc) pMemory.append(memory.root);
+  // The datapath needs the height: the console joins the right column and the memory panel starts folded.
   configureLayout();
-  subsetSel.hidden = mode !== 'single';
+  subsetSel.hidden = !viewOf(mode).subsets;
   profileSel.disabled = sc || cmp;
-  profileSel.parentElement.hidden = sc || cmp; // a datapath view fixes the profile; its panel title names the chapter
-  listing.names = sc ? 'x' : 'abi'; // the datapath chapters name registers by number
+  profileField.hidden = sc || cmp; // a datapath view fixes the profile; its panel title names the chapter
+  archCtx.hidden = profileField.hidden && subsetSel.hidden;
+  refit();
+  // the view's register naming (RISC-V: the datapath chapters name registers by number)
+  listing.names = viewOf(mode).names ?? arch.language.disassembly?.names?.[0];
   if (sc || cmp) {
     if (sc) viewParts[mode].tabs.select(0);
     if (wasIsa) isaProfile = session.profile;
-    session.profile = sc ? VIEW_PROFILE[mode] : COMPARE_PROFILE;
-    session.subset = mode === 'single' && subsetSel.value !== 'full' ? subsetSel.value : null;
+    session.profile = viewOf(mode).profile; // the comparison: the processors' common subset, the Chapter 6 profile
+    session.subset = viewOf(mode).subsets && !noSubset(subsetSel.value) ? subsetSel.value : null;
     memory.base = 0;
   } else {
     session.profile = isaProfile;
@@ -804,15 +1277,16 @@ async function setMode(next) {
 }
 
 // --- C (spec §10.1) --------------------------------------------------------------------------
-let cName = 'main.c';
-const sourceName = () => (lang === 'c' ? cName : session.files[0].name.replace(/\.\w+$/, '') + '.s');
+let cName = `main${XL?.extension ?? ''}`; // the source file of the extra language
+const sourceName = () => (lang === XID ? cName : session.files[0].name.replace(/\.\w+$/, '') + arch.language.extension);
 
 /** The toolbar for the language: Compile or Assemble; the C options; the ISA choice only for the ISA profile. */
 function syncLangControls() {
   langSel.value = lang;
-  ccOpts.hidden = lang !== 'c';
-  ccMarch.parentElement.hidden = session.profile !== 'iss';
-  setToolLabel(assembleBtn, 'build', lang === 'c' ? TL.buildC : TL.build, 'Control+Enter');
+  ccOpts.hidden = lang !== XID;
+  for (const x of xlOpts) x.label.hidden = Boolean(x.o.profiles) && !x.o.profiles.includes(session.profile);
+  setToolLabel(assembleBtn, 'build', lang === XID ? TL.buildC : TL.build, 'Control+Enter');
+  refit();
   editor.setLanguage(lang);
   editorStatus();
 }
@@ -820,20 +1294,20 @@ function syncLangControls() {
 /** Switch the editor between assembly and C; each keeps its own text in the browser. */
 async function setLang(next) {
   if (next === lang) return;
-  if (next === 'c' && !(await loadCompiler())) { langSel.value = lang; return; }
+  if (next === XID && !(await loadExtra())) { langSel.value = lang; return; }
   store.set(sourceKey(), editor.value);
   lang = next;
   store.set('pips.lang', lang);
-  editor.value = store.get(sourceKey()) ?? (lang === 'c' ? C.example : EXAMPLE);
-  if (lang !== 'c') { cMap = null; renderAsm(null); editor.setLinked([]); }
+  editor.value = store.get(sourceKey()) ?? (lang === XID ? XL.example : EXAMPLE);
+  if (lang !== XID) { cMap = null; renderAsm(null); editor.setLinked([]); }
   syncLangControls();
   doAssemble();
 }
 
-async function loadCompiler() {
+async function loadExtra() {
   if (cc) return true;
   try {
-    cc = await import('./cc/compiler.js');
+    cc = await XL.load();
     return true;
   } catch (e) {
     consolePanel.message(STRINGS.loadFailed(e.message), 'error');
@@ -841,44 +1315,50 @@ async function loadCompiler() {
   }
 }
 
-/** Compile the editor's C into session.files; false (with the errors shown) if it does not compile. */
-function compileC() {
-  const r = cc.compile(editor.value, { name: cName, profile: session.profile, march: ccMarch.value, mode: ccMode.value,
-    lbu: session.profile === 'ch06' && session.subset === 'ext' });
+/** Compile the editor's source into session.files; false (with the errors shown) if it does not compile. */
+function compileExtra() {
+  const r = cc.compile(editor.value, { name: cName, profile: session.profile, subset: session.subset, options: xlValues() });
   if (!r.ok) {
     cMap = null;
     renderAsm(null);
-    editor.setErrors(r.errors);
-    for (const e of r.errors) consolePanel.message(e.message, 'error', { line: e.line, column: e.column }, e.subset ? C.subsetHint : null);
+    editor.setErrors(r.diagnostics);
+    for (const e of r.diagnostics) consolePanel.message(e.message, 'error', { line: e.line, column: e.column }, e.note ?? null);
     consolePanel.message(C.errors, 'error');
     return false;
   }
-  cMap = r.map;
-  session.files = [{ name: cName.replace(/\.c$/, '') + '.s', text: r.asm }];
-  renderAsm(r.asm);
+  cMap = r.lines;
+  session.files = [{ name: stem(cName) + arch.language.extension, text: r.text }];
+  renderAsm(r.text);
   return true;
 }
 
 // --- actions --------------------------------------------------------------------------------
+/** Assemble the session's files with the architecture's assembler (a contract Program) and load a fresh engine. */
+function assembleSession() {
+  const p = arch.language.assemble(session.files, { profile: session.profile, subset: session.subset ?? undefined, data: session.dataLoads });
+  session.program = p;
+  session.loadReport = p.loadReport ?? { applied: [], dropped: [] };
+  resetEngine();
+  return p;
+}
+
 function doAssemble() {
   cancelRun();
-  if (lang === 'c') { doCompile(); return; }
+  if (lang === XID) { doCompile(); return; }
   session.files = [{ name: session.files[0].name, text: editor.value }];
-  const p = session.assemble();
+  const p = assembleSession();
   dirty = false;
   consolePanel.clearMessages();
-  editor.setErrors([...p.errors, ...p.profileErrors.map((e) => ({ ...e, message: profileMessage(e) }))]);
-  for (const e of p.errors) {
-    const hint = STRINGS.hints[e.hint]?.(e, e.mnemonic ? usage(e.mnemonic) : null) ?? null;
-    consolePanel.message(e.message, 'error', e, hint);
-  }
-  for (const e of p.profileErrors) consolePanel.message(profileMessage(e), 'error', e, STRINGS.profileHint(e.chapter));
-  if (p.ok) {
+  // the diagnostics, each with its location and the architecture's hint line (contract v3)
+  editor.setErrors(p.diagnostics);
+  for (const d of p.diagnostics) consolePanel.message(d.message, d.severity === 'warning' ? 'warn' : 'error', d, d.note ?? null);
+  // contract v5: `assembled`, code produced though instructions are outside the profile; the count leaves those out
+  if (p.assembled ?? p.ok) {
     const n = p.listing.length;
-    const d = p.segments[1]?.bytes.length ?? 0;
-    consolePanel.message(STRINGS.assembled(n, d), p.profileErrors.length ? 'warn' : 'ok');
+    const d = p.segments.filter((s) => !s.executable).reduce((k, s) => k + s.bytes.length, 0); // data bytes: the segments without code
+    consolePanel.message(STRINGS.assembled(n, d), p.ok ? 'ok' : 'warn');
   } else {
-    consolePanel.message(STRINGS.asmErrors(p.errors.length), 'error');
+    consolePanel.message(STRINGS.asmErrors(errorCount(p)), 'error');
   }
   afterAssemble(p);
 }
@@ -888,19 +1368,17 @@ function doCompile() {
   dirty = false;
   consolePanel.clearMessages();
   let p;
-  if (cc && compileC()) {
-    p = session.assemble();
+  if (cc && compileExtra()) {
+    p = assembleSession();
     const at = (e) => edLine(e.line) ?? 1;
-    editor.setErrors([...p.errors.map((e) => ({ line: at(e), column: 1, message: C.asmError(e.line, e.message) })),
-      ...p.profileErrors.map((e) => ({ line: at(e), column: 1, message: C.asmError(e.line, profileMessage(e)) }))]);
-    for (const e of p.errors) consolePanel.message(C.asmError(e.line, e.message), 'error', { line: at(e) }, /does not fit/.test(e.message) ? C.fitHint : null);
-    for (const e of p.profileErrors) consolePanel.message(C.asmError(e.line, profileMessage(e)), 'error', { line: at(e) });
-    if (p.ok && !p.profileErrors.length) consolePanel.message(C.compiled(cMap.length, p.listing.length), 'ok');
+    editor.setErrors(p.diagnostics.map((e) => ({ line: at(e), column: 1, message: C.asmError(e.line, e.message) })));
+    for (const e of p.diagnostics) consolePanel.message(C.asmError(e.line, e.message), 'error', { line: at(e) }, XL.asmNote?.(e) ?? null);
+    if (p.ok) consolePanel.message(C.compiled(cMap.length, p.listing.length), 'ok');
   } else {
-    session.files = [{ name: cName.replace(/\.c$/, '') + '.s', text: '' }];
-    p = session.assemble();
+    session.files = [{ name: stem(cName) + arch.language.extension, text: '' }];
+    p = assembleSession();
     p.ok = false; // nothing to run until the C program compiles
-    session.reset();
+    resetEngine();
   }
   afterAssemble(p);
 }
@@ -912,9 +1390,7 @@ function afterAssemble(p) {
   for (const d of lr.dropped) consolePanel.message(STRINGS.dataIo.droppedLoad(d.label, d.why), 'warn');
   consolePanel.msgs.scrollTop = 0; // the first error first
   if (p.segments[1]) memory.base = p.segments[1].address;
-  if (mode === 'single') views.single.load(session.runnable ? p : null, session.subset);
-  else if (mode === 'multi' || mode === 'pipe') views[mode].load(session.runnable ? p : null);
-  else if (mode === 'compare') compareView.load(session.runnable ? session.files : null);
+  if (uv() || isCmp()) inst[mode].load(session.runnable ? p : null);
   refresh(true);
 }
 
@@ -926,9 +1402,11 @@ const VCD_CAP = 20_000; // cycles in a waveform file
 
 function exportTrace(kind) {
   if (!ensureRunnable()) { consolePanel.message(STRINGS.exportNothing, 'error'); return; }
-  const { records, error } = traceRecords(session.program, session.profile, TRACE_CAP);
-  if (kind === 'csv') download('trace.csv', traceCsv(records), 'text/csv');
-  else download('trace.jsonl', traceJsonLines(records), 'application/x-ndjson');
+  const X = arch.exports;
+  const { records, error } = X.trace(session.program, { profile: session.profile, platformConfig: session.platformConfig, cap: TRACE_CAP,
+    inputs: engine?.inputs?.() ?? [] });
+  if (kind === 'csv') download('trace.csv', X.traceCsv(records), 'text/csv');
+  else download('trace.jsonl', X.traceJsonLines(records), 'application/x-ndjson');
   consolePanel.message(records.length === TRACE_CAP && !error ? STRINGS.exportedTraceCut(TRACE_CAP) : STRINGS.exportedTrace(records.length, error), 'ok');
 }
 
@@ -936,11 +1414,11 @@ function exportGolden() {
   if (!uv() || !ensureRunnable()) { consolePanel.message(STRINGS.exportNothing, 'error'); return; }
   const { model, label } = uv().exportModel();
   let stop;
-  try { stop = model.run(session.runLimit); } catch (e) { consolePanel.message(STRINGS.exportNoHalt(e.message), 'error'); return; }
+  try { stop = model.run(RUN_LIMIT); } catch (e) { consolePanel.message(STRINGS.exportNoHalt(e.message), 'error'); return; }
   if (stop !== 'halt') { consolePanel.message(STRINGS.exportNoHalt(model.error ?? stop), 'error'); return; }
-  const words = model.golden();
-  download('golden.hex', goldenText(words));
-  consolePanel.message(STRINGS.exportedGolden(label, words.length), 'ok');
+  const { text, count } = arch.exports.golden(model);
+  download('golden.hex', text);
+  consolePanel.message(STRINGS.exportedGolden(label, count), 'ok');
 }
 
 function exportVcd() {
@@ -948,14 +1426,10 @@ function exportVcd() {
   const { model, signals, module, label } = uv().exportModel();
   const { frames, stop } = recordFrames(model, VCD_CAP);
   const name = session.files[0].name.replace(/\.\w+$/, '');
-  download(`${name}-${VIEW_PROFILE[mode]}.vcd`, vcd(frames, signals, { module, comment: `${name}, ${label}; one cycle = 10 ns of the time axis` }));
+  download(`${name}-${viewOf(mode).profile}.vcd`, vcd(frames, signals, { module, comment: `${name}, ${label}; one cycle = 10 ns of the time axis` }));
   consolePanel.message(STRINGS.exportedVcd(label, frames.length), 'ok');
   if (stop === 'step') consolePanel.message(STRINGS.exportedVcdCut(VCD_CAP + 1), 'warn');
   else if (stop === 'error') consolePanel.message(STRINGS.exportNoHalt(model.error), 'warn');
-}
-
-function profileMessage(e) {
-  return e.chapter ? STRINGS.profileError(e.mnemonic, e.chapter) : STRINGS.profileIss(e.mnemonic);
 }
 
 function ensureRunnable() {
@@ -965,75 +1439,52 @@ function ensureRunnable() {
 }
 
 function report(stop) {
-  const h = session.hart;
+  const s = engine.state();
   switch (stop) {
-    case STOP.HALT: consolePanel.message(STRINGS.halted(hex8(h.pc), h.exitCode), 'ok'); break;
-    case STOP.ERROR: {
-      const loc = session.program.listing.find((l) => l.address === h.pc);
-      consolePanel.message(STRINGS.simError(session.error), 'error', loc ? { file: loc.file, line: edLine(loc.line) } : null, STRINGS.simHint(session.error));
-      break;
-    }
-    case STOP.BREAK: consolePanel.message(STRINGS.stoppedBreak(hex8(h.pc))); break;
+    case STOP.HALT: consolePanel.message(STRINGS.halted(hexA(s.pc), s.exitCode), 'ok'); break;
+    case STOP.ERROR: consolePanel.message(STRINGS.simError(s.error), 'error', srcLoc(s.pc), STRINGS.simHint(s.error)); break;
+    case STOP.BREAK: consolePanel.message(STRINGS.stoppedBreak(hexA(s.pc))); break;
     case STOP.WATCH: {
-      const last = session.last;
-      if (last?.rd && session.watchRegs.has(last.rd)) {
-        consolePanel.message(STRINGS.stoppedWatchReg(`x${last.rd} (${ABI_NAMES[last.rd]})`, hex8(h.x[last.rd]), hex8(last.pc)));
-      } else if (last?.memSize) {
-        const a = (last.memAddr & ~3) >>> 0;
-        consolePanel.message(STRINGS.stoppedWatchWord(hex8(a), hex8(h.mem.read(a, 4)), hex8(last.pc)));
+      const last = engine.last();
+      const r = last?.registers.find((w) => session.watchRegs.has(w.id));
+      if (r) {
+        consolePanel.message(STRINGS.stoppedWatchReg(regs.label(r.id), hexAddr(s.registers[r.id], REG_WIDTH[r.id]), hexA(last.pc)));
+      } else if (last?.memory.length) {
+        const a = memory.wordOf(last.memory[0].address);
+        consolePanel.message(STRINGS.stoppedWatchWord(hexA(a), hexAddr(enginePort.read(a, arch.addressSpace.wordBytes), 8 * arch.addressSpace.wordBytes), hexA(last.pc)));
       }
       break;
     }
     case STOP.BUDGET: {
-      const r = session.loopRange();
-      consolePanel.message(STRINGS.stoppedBudget(session.runCount, hex8(r.from), hex8(r.to)), 'warn');
+      const r = engine.loopRange?.() ?? { from: s.pc, to: s.pc };
+      consolePanel.message(STRINGS.stoppedBudget(RUN_LIMIT, hexA(r.from), hexA(r.to)), 'warn');
       break;
     }
     default: break;
   }
-  if (session.history.dropped && !report.droppedShown) {
+  if (s.historyDropped && !report.droppedShown) {
     report.droppedShown = true;
-    consolePanel.message(STRINGS.historyDropped(session.history.dropped), 'warn');
+    consolePanel.message(STRINGS.historyDropped(s.historyDropped), 'warn');
   }
-  const seen = report.abiSeen ?? 0;
-  for (const v of h.abiViolations.slice(seen)) consolePanel.message(STRINGS.abiViolation(v), 'warn');
-  report.abiSeen = h.abiViolations.length;
-  reportUninit(h);
+  diag.show(); // the ABI check, the trap check, the uninitialised-value check (WS-F-147): the new warnings
 }
 
-/** The new warnings of the uninitialised-value check (WS-F-147), each linked to its line; at most UNINIT_SHOWN after a reset. */
-const UNINIT_SHOWN = 20;
-function reportUninit(h) {
-  const after = report.uninitAt ?? 0;
-  for (const u of h.uninitSoFar) {
-    if (u.count <= after) continue;
-    report.uninitN = (report.uninitN ?? 0) + 1;
-    if (report.uninitN <= UNINIT_SHOWN) {
-      const loc = session.program?.listing.find((l) => l.address === u.pc);
-      consolePanel.message(STRINGS.uninit(u.text), 'warn', loc ? { file: loc.file, line: edLine(loc.line) } : null,
-        report.uninitN === 1 ? STRINGS.uninitNote : null);
-    } else if (report.uninitN === UNINIT_SHOWN + 1) consolePanel.message(STRINGS.uninitMore, 'warn');
-    report.uninitAt = u.count;
-  }
-}
+/** The errors of a program the console counts: its error diagnostics but those of kind 'profile' (contract v5). */
+function errorCount(p) { return p.diagnostics.filter((x) => x.severity === 'error' && x.kind !== 'profile').length; }
 
 /** Message for the end of a step or run of a datapath view. */
 function reportSingle(stop) {
-  const m = uv().model;
-  if (stop === 'halt' && mode === 'pipe') consolePanel.message(STRINGS.pipe.halted(hex8(m.haltPc ?? 0), m.cycle, m.stats.retired), 'ok');
-  else if (stop === 'halt' && mode === 'multi') {
-    consolePanel.message(STRINGS.multi.halted(hex8(m.haltPc ?? 0), m.cycle, m.retired, m.retired ? (m.cycle / m.retired).toFixed(3) : '—'), 'ok');
-  }
-  else if (stop === 'halt') consolePanel.message(STRINGS.single.halted(hex8(m.pc), m.cycle), 'ok');
-  else if (stop === 'error') {
-    const loc = session.program?.listing.find((l) => l.address === (m.instrAddress ?? m.pc));
-    consolePanel.message(STRINGS.single.stopped(m.error), 'error', loc ? { file: loc.file, line: edLine(loc.line) } : null);
-  } else if (stop === STOP.BREAK) consolePanel.message(STRINGS.stoppedBreak(hex8(m.pc)));
-  else if (stop === STOP.PAUSE) consolePanel.message(STRINGS.paused(hex8(m.pc)));
+  const v = uv();
+  const s = v.state() ?? { pc: 0, cycle: 0 };
+  const at = s.instruction ?? s.pc; // multicycle: the instruction the cycle works on
+  if (stop === STOP.HALT) consolePanel.message(v.stopMessage?.(stop) ?? STRINGS.view.halted(hexA(s.pc), s.cycle), 'ok');
+  else if (stop === STOP.ERROR) consolePanel.message(STRINGS.simError(s.error), 'error', srcLoc(at));
+  else if (stop === STOP.BREAK) consolePanel.message(STRINGS.stoppedBreak(hexA(s.pc)));
+  else if (stop === STOP.PAUSE) consolePanel.message(STRINGS.paused(hexA(s.pc)));
   else if (stop === 'event') consolePanel.message(reportSingle.event);
-  if (m.dropped && !reportSingle.dropped) {
+  if (s.dropped && !reportSingle.dropped) {
     reportSingle.dropped = true;
-    consolePanel.message(STRINGS.single.historyNote(m.dropped), 'warn');
+    consolePanel.message(STRINGS.view.historyNote(s.dropped), 'warn');
   }
 }
 
@@ -1041,58 +1492,62 @@ function stepOnce() {
   if (running || !ensureRunnable()) return;
   if (uv()) {
     const r = uv().step();
-    if (r !== 'step') reportSingle(r);
+    if (r !== STOP.NONE) reportSingle(r);
   } else {
-    report(session.step());
+    report(stepEngine());
   }
   refresh();
 }
 
-/** Multicycle view: the rest of this instruction, up to the next FETCH (WS-F-040). */
-function stepInstr() {
-  if (running || !ensureRunnable() || mode !== 'multi') return;
-  const r = uv().stepInstruction();
-  if (r !== 'step') reportSingle(r);
+/** A view's larger step (contract ViewInstance.unit; the multicycle view: the rest of this instruction, up to the next FETCH, WS-F-040). */
+function stepUnit() {
+  if (running || !ensureRunnable() || !uv()?.unit) return;
+  const r = uv().unit.step();
+  if (r !== STOP.NONE) reportSingle(r);
   refresh();
 }
 
-function backInstr() {
+function backUnit() {
   if (running) { pause(); return; }
-  if (mode !== 'multi') return;
-  if (!uv().backInstruction()) consolePanel.message(STRINGS.nothingToUndo);
+  if (!uv()?.unit) return;
+  if (!uv().unit.back()) consolePanel.message(STRINGS.nothingToUndo);
   refresh();
 }
 
 function stepBack() {
+  if (!can('backStep')) return;
   if (running) { pause(); return; } // the run stops first; press again to step back
   if (uv()) {
     if (!uv().back()) consolePanel.message(STRINGS.nothingToUndo);
     refresh();
     return;
   }
-  if (!session.hart || !session.back()) { consolePanel.message(STRINGS.nothingToUndo); return; }
-  report.abiSeen = session.hart.abiViolations.length;
+  if (!engine || !engine.back()) { consolePanel.message(STRINGS.nothingToUndo); return; }
+  diag.skip();
   refresh();
 }
 
 function stepOver() {
+  if (!can('stepOver')) return;
   if (running || !ensureRunnable()) return;
-  if (mode === 'multi') { stepInstr(); return; } // one whole instruction
-  const t = uv() ? null : session.stepOverTarget(); // one cycle in the other datapath views
-  if (t === null) stepOnce(); else startRun({ target: t, depth: session.callDepth() });
+  if (uv()?.unit) { stepUnit(); return; } // one larger step (multicycle: one whole instruction)
+  const t = uv() ? null : engine.stepOverTarget?.() ?? null; // one cycle in the other datapath views
+  if (t === null) stepOnce(); else startRun({ target: t, depth: engine.callDepth() });
 }
 
 function stepOut() {
+  if (!can('stepOver')) return;
   if (running || !ensureRunnable()) return;
   if (uv()) { stepOnce(); return; }
-  const t = session.stepOutTarget();
-  if (t === null) stepOnce(); else startRun({ target: t, depth: session.callDepth() - 1 });
+  const t = engine.stepOutTarget?.() ?? null;
+  if (t === null) stepOnce(); else startRun({ target: t, depth: engine.callDepth() - 1 });
 }
 
 function runToCursor() {
+  if (!can('runToCursor')) return;
   if (running || !ensureRunnable()) return;
   const line = editor.cursorLine();
-  const l = session.program.listing.find((x) => (lang === 'c' ? edLine(x.line) === line : x.line === line && x.part === 0));
+  const l = session.program.listing.find((x) => (lang === XID ? edLine(x.line) === line : x.line === line && x.part === 0));
   if (!l) { consolePanel.message(STRINGS.noLine); return; }
   startRun({ target: l.address, depth: null });
 }
@@ -1106,6 +1561,8 @@ function runToCursor() {
 // animated speed always steps on the main thread, one instruction per frame
 // group, so that every step is drawn.
 let worker; // undefined: not tried yet; null: unavailable
+let workerRun = false; // the run in progress is the Worker's
+let workerInputs = []; // the panel inputs given to the Worker during its run, in order (contract v8)
 let runId = 0; // a result of an older run is ignored
 let runOpts = null;
 
@@ -1117,6 +1574,8 @@ function getWorker() {
     worker.onerror = (e) => {
       e.preventDefault?.();
       worker = null; // module workers unavailable: carry on in main-thread slices
+      workerRun = false;
+      for (const x of workerInputs.splice(0)) engine?.input?.(x); // what the Worker was given, to the page's engine
       if (running) runOnMainThread(true);
     };
   } catch {
@@ -1125,17 +1584,36 @@ function getWorker() {
   return worker;
 }
 
+/**
+ * Send a run to the Worker: the architecture by id, the program, the engine's options and snapshot (contract:
+ * Engine.snapshot). False if the Worker cannot take it (the run goes on in main-thread slices).
+ */
+function postRun(w, opts) {
+  try {
+    w.postMessage({ type: 'run', id: runId, arch: arch.id, program: session.program,
+      options: { platformConfig: session.platformConfig, runLimit: RUN_LIMIT, historyLimit: HISTORY_LIMIT },
+      snapshot: engine.snapshot(), run: runOptions({ ...opts, resumed: true }) });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function setRunning(on) {
   running = on;
   setToolLabel(runBtn, on ? 'pause' : 'play', on ? STRINGS.pause : STRINGS.run, 'F5');
   runBtn.setAttribute('aria-pressed', String(on));
-  runStatus.textContent = on ? STRINGS.runningStatus(session.hart?.instret ?? 0) : '';
+  runStatus.textContent = on ? STRINGS.runningStatus(engine?.state().retired ?? 0) : '';
+  if (on) lastStop = null;
+  updateWsStatus();
 }
 
 function finishRun(stop) {
+  lastStop = { stop, pc: currentPc() };
   setRunning(false);
+  workerRun = false;
   if (uv()) reportSingle(stop);
-  else if (stop === STOP.PAUSE) consolePanel.message(STRINGS.paused(hex8(session.hart.pc)));
+  else if (stop === STOP.PAUSE) consolePanel.message(STRINGS.paused(hexA(engine.state().pc)));
   else report(stop);
   refresh();
 }
@@ -1143,27 +1621,26 @@ function finishRun(stop) {
 /** Run of a datapath view: cycles in ~12 ms slices, or one cycle per 0.4 s when animated. */
 function runSingle(id, opts) {
   const v = uv();
-  const m = v.model;
   const tick = (first) => {
     if (!running || id !== runId) return;
     const slow = speedSel.value === 'slow';
     const t0 = performance.now();
-    let r = 'step';
+    let r = STOP.NONE;
     let k = 0;
     do {
       if (!first || k > 0) {
-        const at = v.breakAt ? v.breakAt() : m.pc; // multicycle: only at a FETCH
+        const at = v.breakAt ? v.breakAt() : v.state().pc; // multicycle: only at a FETCH
         if (at !== null && session.breakpoints.has(at)) { r = STOP.BREAK; break; }
         if (at !== null && opts.target === at) { r = STOP.TARGET; break; }
       }
-      if (m.cycle >= session.runLimit) { r = STOP.BUDGET; break; }
+      if (v.state().cycle >= RUN_LIMIT) { r = STOP.BUDGET; break; }
       r = v.step();
       k += 1;
-      const why = r === 'step' ? v.stopReason?.() : null; // pipelined view: stop on a stall, flush or misprediction (WS-F-091)
+      const why = r === STOP.NONE ? v.event?.() : null; // pipelined view: stop on a stall, flush or misprediction (WS-F-091)
       if (why) { reportSingle.event = why; r = 'event'; }
-    } while (r === 'step' && !slow && performance.now() - t0 < 12);
-    if (r === 'step') {
-      runStatus.textContent = `${STRINGS.single.cycles}: ${m.cycle}`;
+    } while (r === STOP.NONE && !slow && performance.now() - t0 < 12);
+    if (r === STOP.NONE) {
+      runStatus.textContent = `${STRINGS.view.cycles}: ${v.state().cycle}`;
       if (slow) { refresh(); setTimeout(() => tick(false), 400); } else requestAnimationFrame(() => tick(false));
       return;
     }
@@ -1183,13 +1660,14 @@ function startRun(opts = {}) {
   let stop;
   let resumed = false;
   do {
-    stop = session.run({ ...opts, chunk: 20_000, resumed });
+    stop = engine.run(runOptions({ ...opts, chunk: 20_000, resumed }));
     resumed = true;
   } while (stop === STOP.CHUNK && performance.now() - t0 < 10);
   if (stop !== STOP.CHUNK) { finishRun(stop); return; }
-  const w = getWorker();
-  if (w) {
-    w.postMessage({ type: 'run', id: runId, request: session.workerRequest({ ...opts, resumed: true }) });
+  const w = capability(arch, 'worker', profileOf(session.profile)).enabled ? getWorker() : null; // iss-priv: the devices stay on this page
+  if (w && postRun(w, opts)) {
+    workerRun = true;
+    workerInputs = [];
     refresh();
   } else {
     runOnMainThread(true);
@@ -1204,11 +1682,11 @@ function runOnMainThread(resumed) {
     let stop;
     let r = first;
     do {
-      stop = session.run({ ...runOpts, chunk: 20_000, resumed: r });
+      stop = engine.run(runOptions({ ...runOpts, chunk: 20_000, resumed: r }));
       r = true;
     } while (stop === STOP.CHUNK && performance.now() - t0 < 12);
     if (stop === STOP.CHUNK) {
-      runStatus.textContent = STRINGS.runningStatus(session.hart.instret);
+      runStatus.textContent = STRINGS.runningStatus(engine.state().retired);
       requestAnimationFrame(() => tick(true));
       return;
     }
@@ -1219,7 +1697,7 @@ function runOnMainThread(resumed) {
 
 function animate(id, resumed) {
   if (!running || id !== runId) return;
-  const stop = session.run({ ...runOpts, chunk: 1, resumed });
+  const stop = engine.run(runOptions({ ...runOpts, chunk: 1, resumed }));
   if (stop === STOP.CHUNK) { refresh(); setTimeout(() => animate(id, true), 150); return; }
   finishRun(stop);
 }
@@ -1228,10 +1706,11 @@ function onWorkerMessage(e) {
   const m = e.data;
   if (!running) return;
   if (m.type === 'progress') {
-    runStatus.textContent = STRINGS.runningStatus(m.instret);
+    runStatus.textContent = STRINGS.runningStatus(m.retired);
   } else if (m.type === 'done') {
-    session.applyWorkerResult(m.result);
-    finishRun(m.result.stop);
+    engine.restore(m.snapshot); // the state, with every step the Worker made (step back works across the run)
+    for (const x of workerInputs.splice(0).slice(m.applied ?? 0)) engine.input?.(x); // inputs that came after its run ended
+    finishRun(m.stop);
   }
 }
 
@@ -1251,14 +1730,16 @@ function cancelRun() {
     worker.terminate();
     worker = undefined; // a fresh one next time
   }
+  workerRun = false;
+  workerInputs = [];
   setRunning(false);
 }
 
 // Until an instruction is chosen in the listing, the inspector shows the one at the PC, so that it is never empty.
 let followed = null;
-function followPc(p, h) {
+function followPc(p, s) {
   if (selected) return;
-  const l = h && !h.halted ? p?.listing.find((x) => x.address === h.pc) ?? null : null;
+  const l = s && !s.halted ? p?.listing.find((x) => x.address === s.pc) ?? null : null;
   if (l === followed) return;
   followed = l;
   fields.show(l);
@@ -1268,82 +1749,99 @@ function followPc(p, h) {
 function refresh(programChanged = false) {
   saveSoon();
   const p = session.program;
-  const h = session.hart;
   if (programChanged) {
     listing.setProgram(p, session.breakpoints);
-    dataBox.replaceChildren(dataTable(p));
-    symBox.replaceChildren(symbolTable(p, (s) => { memory.goTo(s.name); const ln = edLine(s.line); if (ln) editor.goToLine(ln); }));
+    dataBox.replaceChildren(dataTable(p, arch.addressSpace));
+    symBox.replaceChildren(symbolTable(p, (s) => { memory.goTo(s.name); const ln = edLine(s.line); if (ln) editor.goToLine(ln); }, arch.addressSpace.addressBits));
     selected = null; // the inspector follows the PC again
     followed = null;
     fields.show(null);
-    report.abiSeen = 0;
-    report.uninitAt = 0;
-    report.uninitN = 0;
     report.droppedShown = false;
     reportSingle.dropped = false;
     showBreakLines();
   }
   editorStatus();
+  updateArchPanels();
   if (uv()) { refreshSingle(p); return; }
-  const last = session.last;
-  regs.update(h ? { x: h.x, pc: h.pc, changed: last?.rd || null } : null);
-  listing.markPc(h?.pc);
-  followPc(p, h);
-  const line = p?.listing.find((l) => l.address === h?.pc)?.line ?? null;
-  editor.setCurrentLine(h && !h.halted && !p?.imported && line ? edLine(line) : null);
-  memory.setContext({ mem: h?.mem, program: p, x: h?.x, watched: session.watchWords, written: last?.memSize ? { addr: last.memAddr, size: last.memSize } : null, profile: PROFILES[session.profile] });
-  counters.update(h);
-  calls.update(h ? callStack(h, p) : null);
-  consolePanel.setOutput(h?.output ?? []);
+  const st = engine?.state() ?? null;
+  // halted, not stopped by an error: the line of the failing instruction stays marked
+  const s = st ? { ...st, halted: st.halted && !st.error } : null;
+  const last = engine?.last() ?? null;
+  const w = last?.memory[0];
+  regs.update(s ? { registers: s.registers, pc: s.pc, changed: last ? last.registers.map((r) => r.id) : [] } : null);
+  listing.markPc(s?.pc);
+  followPc(p, s);
+  const line = p?.listing.find((l) => l.address === s?.pc)?.line ?? null;
+  editor.setCurrentLine(s && !s.halted && !p?.imported && line ? edLine(line) : null);
+  memory.setContext({ mem: enginePort ?? undefined, program: p, registers: s?.registers ?? null, watched: session.watchWords, written: w ? { addr: w.address, size: w.size } : null, profile: profileOf(session.profile),
+    accessed: dataAccessNow() });
+  updateMemPanels();
+  counters.show(engine?.counters?.() ?? null);
+  calls.update(CAP.callStack.enabled && engine?.callStack ? engine.callStack() : null);
+  // the engine's console (iss-priv: what the UART sent), its last OUTPUT_LIMIT characters
+  const output = s?.output ?? '';
+  const from = output.length - OUTPUT_LIMIT;
+  const nl = from > 0 ? output.indexOf('\n', from) : -1;
+  const shown = from > 0 ? output.slice(nl >= 0 && nl < output.length - 1 ? nl + 1 : from) : output; // from a line's start
+  consolePanel.setOutput(Array.from(shown, (c) => c.charCodeAt(0)), (s?.outputDropped ?? 0) + output.length - shown.length);
+  updateWsStatus();
 }
 
 /** The shared panels show the datapath processor's state: registers, PC, data memory, cycles. */
 function refreshSingle(p) {
   const v = uv();
-  const m = v.model;
-  const last = m.last;
-  const loaded = v.loaded;
-  const at = m.instrAddress ?? m.pc; // multicycle: the instruction the cycle works on
-  regs.update(loaded ? { x: m.x, pc: m.pc, changed: last?.rd || null } : null);
-  listing.markPc(loaded ? at : undefined);
-  const line = loaded ? p?.listing.find((l) => l.address === at)?.line ?? null : null;
-  editor.setCurrentLine(loaded && !m.halted && !p?.imported && line ? edLine(line) : null);
-  memory.setContext({ mem: loaded ? (m.dmem ?? m.mem) : null, program: p, x: m.x, watched: session.watchWords,
-    written: last && last.mem >= 0 ? { addr: last.mem & ~3, size: 4 } : null, profile: PROFILES[VIEW_PROFILE[mode]] });
-  const R = STRINGS.pipe.cpiRows;
-  counters.updateCycles({ cycles: m.cycle, instructions: mode === 'pipe' ? m.stats.retired : mode === 'multi' ? m.retired : m.cycle,
-    extra: mode === 'pipe' ? [[R.stalls, m.stats.loadUse], [R.redirects, m.stats.redirects], [R.mispredicts, m.stats.mispredicts]] : [] });
+  const s = v.state(); // null while no program is loaded
+  const at = s ? s.instruction ?? s.pc : undefined; // multicycle: the instruction the cycle works on
+  regs.update(s ? { registers: s.registers, pc: s.pc, changed: s.changed ?? [] } : null);
+  listing.markPc(at);
+  const line = s ? p?.listing.find((l) => l.address === at)?.line ?? null : null;
+  editor.setCurrentLine(s && !s.halted && !p?.imported && line ? edLine(line) : null);
+  const port = v.memoryPort?.() ?? null;
+  const ms = memsysOf[mode] ?? null;
+  const dcache = ms?.caches.D ?? null;
+  memory.setContext({ mem: port, program: p, registers: s?.registers ?? null, watched: session.watchWords,
+    written: s?.written ? { addr: s.written.address, size: s.written.size } : null, profile: profileOf(viewOf(mode).profile),
+    ram: port && dcache ? port.store : null, dirty: dcache ? (a) => isDirty([dcache], a) : null, accessed: s ? dataAccessNow() : null });
+  updateMemPanels();
+  const waits = ms?.timed ? ms.stats.waitCycles : 0; // clock edges spent waiting for memory
+  counters.updateCycles({ cycles: s?.cycle ?? 0, instructions: s?.retired ?? 0,
+    extra: [...(v.counters?.() ?? []), ...(ms?.timed ? [[STRINGS.mem.waitCycles, waits]] : [])] });
   consolePanel.setOutput([]);
-  v.render();
-  refreshWave();
+  // on a narrow screen, while no workspace shows the drawing or the details they are not redrawn (ws.onShow does it)
+  if (drawingHidden()) drawingStale = true;
+  else { drawingStale = false; v.render(); refreshWave(); }
+  updateWsStatus();
 }
 
 function listingText(p) {
   return p.listing.map((l) => `${l.address.toString(16).padStart(8, '0')}  ${l.word.toString(16).padStart(8, '0')}  `
-    + `${disassemble(l.word, l.address).padEnd(28)}  ${l.part === 0 ? l.text.trim() : ''}`.trimEnd()).join('\n') + '\n';
+    + `${arch.language.disassemble(l.word, l.address).padEnd(28)}  ${l.part === 0 ? l.text.trim() : ''}`.trimEnd()).join('\n') + '\n';
 }
 
 /** The changes of a GCC import, each with a link to its line (WS-F-085). */
-function reportGcc(name, r) {
-  const G = STRINGS.gcc;
-  consolePanel.message(G.imported(name, r.report.length), 'ok', null, G.note);
-  for (const e of r.report) consolePanel.message(G.actions[e.action](e.what), e.action === 'pcrel' || e.action === 'unsupported' ? 'warn' : 'info', { file: name, line: e.line });
-  consolePanel.message(G.added(r.added.join(', ')));
-  if (r.missing.length) consolePanel.message(G.missing(r.missing.join(', ')), 'error');
+function reportImport(name, report) {
+  for (const m of report) consolePanel.message(m.message, m.kind ?? 'info', m.line ? { file: name, line: m.line } : null, m.note ?? null);
 }
 
 // --- share link and settings file (WS-F-122, WS-F-144, WS-N-013) ---------------------------
-const PIPE_OPTIONS = { hazard: ['full', 'stall', 'memwb', 'mem', 'none'], predictor: ['none', '1bit', '2bit'], entries: ['2', '4', '8', '16', '32', '64'], resolution: ['ex', 'id'] };
-const PIPE_DEFAULTS = { hazard: 'full', predictor: 'none', entries: '8', resolution: 'ex' };
+/** The views with settings in links (contract v5 View.settings); a setting is kept in storage as pips.<key>.<setting>. */
+const SETTINGS = arch.views.filter((v) => v.settings);
+/** A view's settings: from the loaded view, else as stored, else the defaults; as a link carries them. */
+function viewSettings(v) {
+  const { key, defaults, values } = v.settings;
+  const o = inst[v.id]?.options?.get();
+  return Object.fromEntries(Object.keys(defaults).map((k) => [k, settingValue(o ? o[k] : savedOpt(`pips.${key}.${k}`, values[k], defaults[k]))]));
+}
+
+/** Whether a profile has traps and the devices (RISC-V: iss-priv): its platform setting goes into links. */
+const hasTraps = (id) => capability(arch, 'traps', profileOf(id)).enabled;
 
 /** The program with its view and settings, as share.js takes it. */
 function shareState() {
-  const o = views.pipe?.options;
-  const pipe = {};
-  for (const [k, list] of Object.entries(PIPE_OPTIONS)) pipe[k] = o ? o[k] : savedOpt(`pips.pipe.${k}`, list, PIPE_DEFAULTS[k]);
-  pipe.entries = Number(pipe.entries);
-  return { view: mode, profile: mode === 'isa' ? session.profile : isaProfile, subset: subsetSel.value, lang, name: sourceName(),
-    source: editor.value, cc: { mode: ccMode.value, march: ccMarch.value }, pipe };
+  return { arch: arch.id, view: mode, profile: mode === arch.views[0].id ? session.profile : isaProfile, subset: subsetSel.value || null, lang, name: sourceName(), // no subset: an empty menu
+    source: editor.value, cc: xlValues(), ...Object.fromEntries(SETTINGS.map((v) => [v.settings.key, viewSettings(v)])),
+    ...(memCfg.mode !== 'ideal' || memCfg.words !== 256 || memCfg.devices ? { mem: memCfg } : {}),
+    ...(hasTraps(session.profile) || hasTraps(isaProfile) || memCfg.devices ? { platform: session.platformConfig } : {}) };
 }
 
 async function copyShareLink() {
@@ -1367,26 +1865,29 @@ function saveSettings() {
 async function applyShared(st, message) {
   cancelRun();
   store.set('pips.source.before', JSON.stringify({ lang, text: editor.value }));
-  if (st.cc?.mode) { ccMode.value = st.cc.mode; store.set('pips.cc.mode', st.cc.mode); }
-  if (st.cc?.march) { ccMarch.value = st.cc.march; store.set('pips.cc.march', st.cc.march); }
-  if (st.pipe) {
-    for (const k of Object.keys(PIPE_OPTIONS)) if (st.pipe[k] !== null && st.pipe[k] !== undefined) store.set(`pips.pipe.${k}`, String(st.pipe[k]));
-    views.pipe?.applyOptions(st.pipe);
+  for (const x of xlOpts) { const v = st.cc?.[x.o.id]; if (v) { x.sel.value = v; store.set(`pips.cc.${x.o.id}`, v); } }
+  for (const v of SETTINGS) {
+    const s = st[v.settings.key];
+    if (!s) continue;
+    for (const k of Object.keys(v.settings.defaults)) if (s[k] !== null && s[k] !== undefined) store.set(`pips.${v.settings.key}.${k}`, String(s[k]));
+    inst[v.id]?.options?.apply(s);
   }
   if (st.subset) { subsetSel.value = st.subset; store.set('pips.subset', st.subset); }
+  if (st.platform) session.platformConfig = st.platform; // the pin script and the trap settings of the state
+  if (st.mem && validateConfig(st.mem).length === 0) applyMemory(st.mem, { assemble: false }); // the program is assembled below
   isaProfile = st.profile;
   store.set('pips.profile', st.profile);
-  if (st.lang === 'c' && !(await loadCompiler())) return;
+  if (st.lang === XID && !(await loadExtra())) return;
   lang = st.lang;
   store.set('pips.lang', lang);
-  if (lang === 'c') cName = st.name?.endsWith('.c') ? st.name : 'main.c';
-  else { session.files = [{ name: st.name && !st.name.endsWith('.c') ? st.name : 'main.s', text: st.source }]; cMap = null; renderAsm(null); }
+  if (lang === XID) cName = st.name?.endsWith(XL.extension) ? st.name : `main${XL.extension}`;
+  else { session.files = [{ name: st.name && !(XL && st.name.endsWith(XL.extension)) ? st.name : `main${arch.language.extension}`, text: st.source }]; cMap = null; renderAsm(null); }
   editor.value = st.source;
   store.set(sourceKey(), st.source);
   syncLangControls();
   if (st.view === mode) {
-    if (mode === 'isa') { session.profile = st.profile; profileSel.value = st.profile; }
-    else if (mode === 'single') session.subset = subsetSel.value === 'full' ? null : subsetSel.value;
+    if (mode === arch.views[0].id) { session.profile = st.profile; profileSel.value = st.profile; }
+    else if (viewOf(mode).subsets) session.subset = noSubset(subsetSel.value) ? null : subsetSel.value;
     doAssemble();
   } else await setMode(st.view);
   consolePanel.message(message, 'ok', null, STRINGS.share.keptNote);
@@ -1401,18 +1902,20 @@ async function openFragment() {
     const st = await decodeFragment(frag);
     await applyShared(st, STRINGS.share.opened(viewName(st.view)));
   } catch (e) {
-    consolePanel.message(STRINGS.share.refused(e.message), 'error', null, e.code === 'version' ? STRINGS.share.refusedVersion : null);
+    consolePanel.message(STRINGS.share.refused(e.message), 'error', null, refusedNote(e));
   }
 }
 
-const viewName = (v) => ({ isa: STRINGS.viewIsa, single: STRINGS.viewSingle, multi: STRINGS.viewMulti, pipe: STRINGS.viewPipe, compare: STRINGS.viewCompare }[v]);
+const viewName = (v) => viewOf(v)?.label;
+/** The hint under a refused link or file: another version, or another architecture (W-D29 decision 4). */
+const refusedNote = (e) => (e.code === 'version' ? STRINGS.share.refusedVersion : e.code === 'arch' ? STRINGS.share.refusedArch(e.data.arch) : null);
 
 function restoreBefore() {
   let b = null;
   try { b = JSON.parse(store.get('pips.source.before') ?? 'null'); } catch { /* nothing kept */ }
   if (!b || typeof b.text !== 'string') { consolePanel.message(STRINGS.share.nothingToRestore); return; }
   (async () => {
-    if (b.lang !== lang) await setLang(b.lang === 'c' ? 'c' : 'asm');
+    if (b.lang !== lang) await setLang(b.lang === XID ? XID : 'asm');
     editor.value = b.text;
     store.set(sourceKey(), b.text);
     store.set('pips.source.before', '');
@@ -1423,12 +1926,11 @@ function restoreBefore() {
 
 // --- the exercise mode (WS-F-148): an instructor's task and tests, opened from the user's computer ---
 // The file is kept in this browser (like the program) until the exercise is closed; nothing is uploaded.
-let exerciseMod = null; // core/exercise.js, loaded with the first exercise (WS-N-011)
 let exercise = null;
 async function openExercise(raw, name = null, quiet = false) {
-  exerciseMod ??= await import('./core/exercise.js');
+  if (!can('exercises')) return;
   try {
-    exercise = exerciseMod.parseExercise(raw);
+    exercise = await arch.exercises.parse(raw); // loaded with the first exercise (WS-N-011)
   } catch (e) {
     consolePanel.message(STRINGS.exercise.refused(e.message), 'error');
     return;
@@ -1436,6 +1938,7 @@ async function openExercise(raw, name = null, quiet = false) {
   store.set('pips.exercise', JSON.stringify(raw));
   exerciseDialog.set(exercise);
   exerciseBtn.hidden = false;
+  refit();
   if (!quiet) {
     consolePanel.message(STRINGS.exercise.opened(exercise.title, name), 'ok');
     if (!exerciseDialog.root.open) exerciseDialog.open();
@@ -1446,32 +1949,33 @@ async function runExerciseTests() {
   if (!exercise) return null;
   if (exercise.lang !== lang) { consolePanel.message(STRINGS.exercise.wrongLang(exercise.lang), 'error'); return null; }
   let text = editor.value;
-  if (lang === 'c') {
-    if (!(await loadCompiler())) return null;
-    const c = cc.compile(editor.value, { name: cName, profile: 'iss', mode: ccMode.value, march: ccMarch.value });
+  if (lang === XID) {
+    if (!(await loadExtra())) return null;
+    const c = cc.compile(editor.value, { name: cName, profile: arch.engine.profiles[0].id, options: xlValues() });
     if (!c.ok) { consolePanel.message(STRINGS.cc.errors, 'error'); return null; }
-    text = c.asm;
+    text = c.text;
   }
-  const p = assemble([{ name: lang === 'c' ? cName.replace(/\.c$/, '.s') : session.files[0].name, text }], { profile: 'iss' });
-  if (!p.ok) { consolePanel.message(STRINGS.asmErrors(p.errors.length), 'error'); return null; }
-  return exerciseMod.runExercise(p, exercise);
+  const p = arch.language.assemble([{ name: lang === XID ? stem(cName) + arch.language.extension : session.files[0].name, text }], { profile: arch.engine.profiles[0].id });
+  if (!(p.assembled ?? p.ok)) { consolePanel.message(STRINGS.asmErrors(errorCount(p)), 'error'); return null; }
+  return arch.exercises.run(p, exercise);
 }
 const exerciseDialog = new ExerciseDialog({
   onRun: () => runExerciseTests(),
   onStarter: async (source, l) => {
     exerciseDialog.root.close();
-    await applyShared({ view: mode, profile: 'iss', lang: l, name: l === 'c' ? 'exercise.c' : 'exercise.s', source }, STRINGS.exercise.starterLoaded);
+    await applyShared({ view: mode, profile: arch.engine.profiles[0].id, lang: l, name: `exercise${l === XID ? XL.extension : arch.language.extension}`, source }, STRINGS.exercise.starterLoaded);
   },
-  onClose: () => { exercise = null; store.set('pips.exercise', ''); exerciseBtn.hidden = true; },
+  onClose: () => { exercise = null; store.set('pips.exercise', ''); exerciseBtn.hidden = true; refit(); },
   onOpenFile: () => { exerciseDialog.root.close(); fileInput.click(); },
   // the practice exercises written for the tool (content/exercises/, W-D24), fetched when the list is first shown
   list: async () => {
-    const r = await fetch(new URL('../content/exercises/index.json', import.meta.url));
+    if (!contentUrl('exercises')) throw new Error(STRINGS.capability.notSupported);
+    const r = await fetch(contentUrl('exercises'));
     if (!r.ok) throw new Error(`index.json: ${r.status}`);
     return r.json();
   },
   onPick: async (e) => {
-    const r = await fetch(new URL(`../content/exercises/${e.file}`, import.meta.url));
+    const r = await fetch(new URL(e.file, contentUrl('exercises')));
     if (!r.ok) { consolePanel.message(STRINGS.exercise.refused(`: ${r.status}`), 'error'); return; }
     await openExercise(await r.json());
   },
@@ -1491,49 +1995,45 @@ async function openFile(file) {
       const st = readSettingsFile(text);
       await applyShared(st, STRINGS.share.openedFile(file.name, viewName(st.view)));
     } catch (e) {
-      consolePanel.message(STRINGS.share.refused(e.message), 'error', null, e.code === 'version' ? STRINGS.share.refusedVersion : null);
+      consolePanel.message(STRINGS.share.refused(e.message), 'error', null, refusedNote(e));
     }
     return;
   }
-  const kind = low.endsWith('.hex') ? 'hex' : low.endsWith('.bin') ? 'bin' : low.endsWith('.c') ? 'c' : 's';
-  if (kind === 's' || kind === 'c') {
+  const kind = low.endsWith('.hex') ? 'hex' : low.endsWith('.bin') ? 'bin' : XL && low.endsWith(XL.extension) ? XID : 's';
+  if (kind === 's' || kind === XID) {
     let text = await file.text();
     let gccReport = null;
-    if (kind === 's') { // GCC -S output (WS-F-085); the importer is loaded with the first .s file (WS-N-011)
-      const g = await import('./asm/gcc-import.js');
-      if (g.looksLikeGcc(text)) {
-        gccReport = g.importGcc(text);
+    // another assembler's output (RISC-V: GCC -S, WS-F-085); the importers load with the first .s file (WS-N-011)
+    if (kind === 's') {
+      const imp = CAP.gccImport.enabled ? (await arch.language.importers?.() ?? []).find((i) => i.test(text)) : null;
+      if (imp) {
+        gccReport = imp.convert(text, file.name);
         text = gccReport.text;
       }
     }
-    if (kind === 'c' && !(await loadCompiler())) return;
+    if (kind === XID && !(await loadExtra())) return;
     store.set(sourceKey(), editor.value);
-    lang = kind === 'c' ? 'c' : 'asm';
+    lang = kind === XID ? XID : 'asm';
     store.set('pips.lang', lang);
-    if (lang === 'c') cName = file.name;
+    if (lang === XID) cName = file.name;
     else { session.files = [{ name: file.name, text }]; cMap = null; renderAsm(null); }
     editor.value = text;
     store.set(sourceKey(), text);
     syncLangControls();
-    if (gccReport && mode === 'isa' && session.profile !== 'iss') { session.profile = 'iss'; isaProfile = 'iss'; profileSel.value = 'iss'; store.set('pips.profile', 'iss'); }
+    const first = arch.engine.profiles[0].id; // imported code is for the whole ISA
+    if (gccReport && mode === arch.views[0].id && session.profile !== first) { session.profile = first; isaProfile = first; profileSel.value = first; store.set('pips.profile', first); }
     doAssemble();
-    if (gccReport) reportGcc(file.name, gccReport);
+    if (gccReport) reportImport(file.name, gccReport.report);
     return;
   }
-  const words = kind === 'hex' ? readWords(await file.text(), 'hex') : readWords(new Uint8Array(await file.arrayBuffer()), 'bin');
-  const bytes = new Uint8Array(words.length * 4);
-  words.forEach((w, i) => { bytes[4 * i] = w; bytes[4 * i + 1] = w >>> 8; bytes[4 * i + 2] = w >>> 16; bytes[4 * i + 3] = w >>> 24; });
-  session.program = {
-    ok: true, imported: true, errors: [], profileErrors: [], profile: session.profile,
-    segments: [{ address: 0, bytes, executable: true }], entry: 0, symbols: new Map(), symbolTable: [],
-    listing: words.map((w, i) => ({ address: 4 * i, word: w, mnemonic: decodeMnemonic(w), source: decodeMnemonic(w),
-      file: file.name, line: i + 1, text: '', part: -1, parts: 1, operands: [] })),
-    dataListing: [], lines: new Map(),
-  };
+  if (!can('imageImport')) return;
+  try {
+    session.program = arch.language.loadImage(kind === 'hex' ? await file.text() : new Uint8Array(await file.arrayBuffer()), kind, file.name, { profile: session.profile });
+  } catch (e) { consolePanel.message(`${file.name}: ${e.message}`, 'error'); return; } // not an image of this architecture
   cancelRun();
-  session.reset();
+  resetEngine();
   consolePanel.clearMessages();
-  consolePanel.message(STRINGS.importedImage(words.length), 'ok', null, STRINGS.importedNote);
+  consolePanel.message(STRINGS.importedImage(session.program.listing.length), 'ok', null, STRINGS.importedNote);
   editor.setErrors([]);
   refresh(true);
   dirty = false;
@@ -1555,7 +2055,7 @@ function textHash(s) {
   for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
   return (h >>> 0).toString(16);
 }
-const programKey = () => textHash(`${lang}|${session.profile}|${subsetSel.value}|${ccMode.value}|${ccMarch.value}|${editor.value}`);
+const programKey = () => textHash(`${lang}|${session.profile}|${subsetSel.value}|${Object.values(xlValues()).join('|')}|${editor.value}`);
 function toB64(bytes) {
   let s = '';
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
@@ -1568,17 +2068,19 @@ function saveWorkspace() {
   clearTimeout(wsTimer);
   const a = editor.area;
   const st = {
-    v: 1, key: programKey(), name: lang === 'c' ? cName : session.files[0].name,
+    v: 1, key: programKey(), name: lang === XID ? cName : session.files[0].name,
     cursor: [a.selectionStart, a.selectionEnd], scroll: [a.scrollTop, a.scrollLeft],
     breakpoints: [...session.breakpoints], watchRegs: [...session.watchRegs], watchWords: [...session.watchWords],
-    run: { mode, steps: uv() ? (uv().loaded ? uv().model.cycle : 0) : session.runCount },
+    run: { mode, steps: uv() ? uv().state()?.cycle ?? 0 : engine?.state().steps ?? 0,
+      ...(!uv() && engine?.inputs?.().length ? { inputs: engine.inputs() } : {}) }, // the panel inputs to replay (contract v8)
+    platform: session.platformConfig, // the pin script and the trap settings: a replay needs them
   };
   const loads = session.dataLoads.map((l) => ({ label: l.label, name: l.name, b64: toB64(l.bytes) }));
   try {
-    localStorage.setItem(WS_KEY, JSON.stringify({ ...st, dataLoads: loads }));
+    localStorage.setItem(scoped(WS_KEY), JSON.stringify({ ...st, dataLoads: loads }));
   } catch {
     // over the browser's storage quota (large data files): keep the rest
-    try { localStorage.setItem(WS_KEY, JSON.stringify({ ...st, dataLoads: [], loadsDropped: loads.length })); } catch { /* storage unavailable */ }
+    try { localStorage.setItem(scoped(WS_KEY), JSON.stringify({ ...st, dataLoads: [], loadsDropped: loads.length })); } catch { /* storage unavailable */ }
   }
 }
 const saveSoon = () => { if (!restoring) { clearTimeout(wsTimer); wsTimer = setTimeout(saveWorkspace, 400); } };
@@ -1593,7 +2095,8 @@ function keptWorkspace() {
 /** Before the first assembly: file name, data loads, cursor and scroll. */
 function restoreEditorState(st) {
   if (!st) return;
-  if (st.name) { if (lang === 'c') cName = st.name; else session.files[0].name = st.name; }
+  if (st.platform) session.platformConfig = normalisePlatform(st.platform);
+  if (st.name) { if (lang === XID) cName = st.name; else session.files[0].name = st.name; }
   try { session.dataLoads = (st.dataLoads ?? []).map((l) => ({ label: l.label, name: l.name, bytes: fromB64(l.b64) })); } catch { session.dataLoads = []; }
   const a = editor.area;
   const n = editor.value.length;
@@ -1606,7 +2109,13 @@ function restoreEditorState(st) {
 function restoreRunState(st) {
   if (!st || st.key !== programKey() || !session.runnable) return;
   for (const a of st.breakpoints ?? []) session.breakpoints.add(a >>> 0);
-  for (const r of st.watchRegs ?? []) { session.watchRegs.add(r); if (regs.watches[r]) regs.watches[r].checked = true; }
+  // by id; a register number kept before W-D29 is migrated to the id at that index, once
+  for (const r of st.watchRegs ?? []) {
+    const id = typeof r === 'number' ? REG_IDS[r] : r;
+    if (!REG_IDS.includes(id)) continue;
+    watchReg(id, true);
+    regs.setWatch(id, true);
+  }
   for (const w of st.watchWords ?? []) session.watchWords.add(w >>> 0);
   showBreakLines();
   const steps = Math.max(0, Number(st.run?.steps) || 0);
@@ -1615,13 +2124,13 @@ function restoreRunState(st) {
       consolePanel.message(STRINGS.workspace.tooLong(steps));
     } else if (uv()) {
       const v = uv();
-      for (let i = 0; i < steps && v.loaded && v.step() === 'step'; i++);
-      consolePanel.message(STRINGS.workspace.restored(v.model.cycle, 'cycle'));
+      for (let i = 0; i < steps && v.state() && v.step() === STOP.NONE; i++);
+      consolePanel.message(STRINGS.workspace.restored(v.state()?.cycle ?? 0, 'cycle'));
     } else {
-      for (let i = 0; i < steps && !session.halted; i++) session.step();
-      report.abiSeen = session.hart?.abiViolations.length ?? 0;
-      report.uninitAt = session.hart?.instret ?? 0; // the replay does not report again
-      consolePanel.message(STRINGS.workspace.restored(session.runCount, 'instruction'));
+      if (Array.isArray(st.run.inputs) && st.run.inputs.length && engine.inputs) resetEngine(st.run.inputs); // replayed at their steps
+      engine.run({ chunk: steps, breakpoints: new Set() }); // the steps made (contract v3 EngineState.steps); no breakpoint or watch stops it
+      diag.skip(); // the replay does not report again
+      consolePanel.message(STRINGS.workspace.restored(engine.state().steps, 'instruction'));
     }
   }
   if (st.loadsDropped) consolePanel.message(STRINGS.workspace.loadsDropped(st.loadsDropped), 'warn');
@@ -1649,21 +2158,21 @@ for (const node of document.querySelectorAll('[data-string]')) {
 const theme = store.get('pips.theme');
 if (theme) document.documentElement.dataset.theme = theme;
 const savedProfile = store.get('pips.profile');
-if (savedProfile && PROFILES[savedProfile]) session.profile = savedProfile;
+if (savedProfile && profileOf(savedProfile)) session.profile = savedProfile;
 profileSel.value = session.profile;
-if (store.get('pips.lang') === 'c' && (await loadCompiler())) lang = 'c';
-editor.value = store.get(sourceKey()) ?? (lang === 'c' ? C.example : EXAMPLE);
+if (XL && store.get('pips.lang') === XID && (await loadExtra())) lang = XID;
+editor.value = store.get(sourceKey()) ?? (lang === XID ? XL.example : EXAMPLE);
 const kept = isShareFragment(location.hash) ? null : keptWorkspace();
 restoreEditorState(kept);
 editor.area.addEventListener('scroll', () => saveSoon());
 renderAsm(null);
 syncLangControls();
 const savedSubset = store.get('pips.subset');
-if (savedSubset && STRINGS.single.subsets[savedSubset]) subsetSel.value = savedSubset;
+if (savedSubset && SUBSETS.some((s) => s.id === savedSubset)) subsetSel.value = savedSubset;
 doAssemble();
 for (const b of toolbar.querySelectorAll('.dp-only')) b.hidden = true;
 if (isShareFragment(location.hash)) await openFragment(); // a share link decides the view (WS-F-122)
-else if (['single', 'multi', 'pipe', 'compare'].includes(store.get('pips.view'))) await setMode(store.get('pips.view'));
+else if (viewOf(store.get('pips.view')) && store.get('pips.view') !== arch.views[0].id) await setMode(store.get('pips.view'));
 restoreRunState(kept);
 restoring = false;
 { // an exercise kept from an earlier visit
@@ -1672,3 +2181,4 @@ restoring = false;
   if (raw) await openExercise(raw, null, true);
 }
 window.addEventListener('hashchange', () => openFragment());
+endBoot(brandReady); // the loading screen of index.html (docs/architecture/arch-switcher.md, AS-6)

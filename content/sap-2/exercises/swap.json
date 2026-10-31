@@ -1,0 +1,144 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148), not taken from a textbook; produced by tools/make-sap2-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "sap-2",
+ "title": "Swap two bytes",
+ "task": "Swap the bytes at p and q, in the RAM, then stop: p gets the byte that was at q, and q the byte that was at p. Keep the labels p and q and their DB lines.",
+ "lang": "asm",
+ "starter": "; swap -- practice exercise (MAVILERA, SAP-2)\n; Swap the bytes at p and q.\n; Hint: LDA and STA move one byte; keep one of them in B on the way.\n        HLT           ; replace with your code\n\n        ORG 0800H     ; the data, in the RAM\np:      DB 0\nq:      DB 0\n",
+ "tests": [
+  {
+   "name": "01H and 02H",
+   "memory": [
+    {
+     "at": "p",
+     "bytes": [
+      1
+     ]
+    },
+    {
+     "at": "q",
+     "bytes": [
+      2
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "p",
+      "bytes": [
+       2
+      ]
+     },
+     {
+      "at": "q",
+      "bytes": [
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "00H and FFH",
+   "memory": [
+    {
+     "at": "p",
+     "bytes": [
+      0
+     ]
+    },
+    {
+     "at": "q",
+     "bytes": [
+      255
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "p",
+      "bytes": [
+       255
+      ]
+     },
+     {
+      "at": "q",
+      "bytes": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "07H and 07H",
+   "memory": [
+    {
+     "at": "p",
+     "bytes": [
+      7
+     ]
+    },
+    {
+     "at": "q",
+     "bytes": [
+      7
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "p",
+      "bytes": [
+       7
+      ]
+     },
+     {
+      "at": "q",
+      "bytes": [
+       7
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "80H and 7FH",
+   "memory": [
+    {
+     "at": "p",
+     "bytes": [
+      128
+     ]
+    },
+    {
+     "at": "q",
+     "bytes": [
+      127
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "p",
+      "bytes": [
+       127
+      ]
+     },
+     {
+      "at": "q",
+      "bytes": [
+       128
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

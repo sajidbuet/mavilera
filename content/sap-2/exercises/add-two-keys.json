@@ -1,0 +1,88 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148), not taken from a textbook; produced by tools/make-sap2-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "sap-2",
+ "title": "Add two keys",
+ "task": "Read two bytes from the keyboard on port 1 and show their sum (modulo 256) on port 3, then stop. Wait for READY (port 2, bit 0) before each read, and after each read set ACKNOWLEDGE (port 4, bit 7), which resets READY: otherwise the second read finds the first byte again. The tests press the keys at different moments.",
+ "lang": "asm",
+ "starter": "; add-two-keys -- practice exercise (MAVILERA, SAP-2)\n; Show on port 3 the sum of two keys from the keyboard.\n; Hint: IN 02H and ANI 01H test READY; OUT 04H with 80H acknowledges.\n        HLT           ; replace with your code\n",
+ "tests": [
+  {
+   "name": "05H + 07H, keys before instructions 1 and 201",
+   "inputs": [
+    {
+     "at": 0,
+     "key": 5
+    },
+    {
+     "at": 200,
+     "key": 7
+    }
+   ],
+   "expect": {
+    "outputs": [
+     12
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "0FH + 0FH, keys before instructions 51 and 401",
+   "inputs": [
+    {
+     "at": 50,
+     "key": 15
+    },
+    {
+     "at": 400,
+     "key": 15
+    }
+   ],
+   "expect": {
+    "outputs": [
+     30
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "FFH + 02H, keys before instructions 11 and 301",
+   "inputs": [
+    {
+     "at": 10,
+     "key": 255
+    },
+    {
+     "at": 300,
+     "key": 2
+    }
+   ],
+   "expect": {
+    "outputs": [
+     1
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "03H + 09H, keys before instructions 1 and 61",
+   "inputs": [
+    {
+     "at": 0,
+     "key": 3
+    },
+    {
+     "at": 60,
+     "key": 9
+    }
+   ],
+   "expect": {
+    "outputs": [
+     12
+    ]
+   },
+   "limit": 2000
+  }
+ ]
+}

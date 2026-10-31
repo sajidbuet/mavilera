@@ -16,7 +16,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-import { HALT_WORD, decodeMnemonic } from '../isa/encoding.js';
+import { ECALL_WORD, stopKind, unsupportedEcall, decodeMnemonic } from '../isa/encoding.js';
 import { WordMemory } from '../core/memory.js';
 import { PROFILES } from '../core/profiles.js';
 import { ALU_FUNCS, IMM, buildDecoders } from './single.js';
@@ -53,7 +53,8 @@ export class Multicycle {
    * @param {object} t7 content/data/ch07-tables.json
    * @param {{jalr?: boolean, historyLimit?: number}} options jalr: the JALR state (the answer of exercise PRB-0129)
    */
-  constructor(t6, t7, { jalr = false, historyLimit = 100_000 } = {}) {
+  constructor(t6, t7, { jalr = false, historyLimit = 100_000, memsys = null } = {}) {
+    this.memsys = memsys; // optional memory system (docs/architecture/memory-hierarchy.md)
     this.dec = buildDecoders(t6);
     // the JALR state is in the tables only where content/data/ch07-jalr.json was merged (src/uarch/ch07-jalr.js)
     this.jalrAvailable = t7.state_outputs.columns.some((c) => c.state === 'JALR');
@@ -61,7 +62,7 @@ export class Multicycle {
     this.ctl = buildController(t7, { jalr: this.jalr });
     const p = PROFILES.ch07;
     this.isa = p.isa;
-    this.words = p.words;
+    this.words = this.memsys?.memWords ?? p.words;
     this.historyLimit = historyLimit;
     this.load({ segments: [] });
   }
@@ -75,7 +76,9 @@ export class Multicycle {
   reset() {
     this.mem = new WordMemory(this.words);
     for (const seg of this.program.segments) this.mem.loadBytes(seg.address, seg.bytes);
-    this.x = new Uint32Array(32);
+    this.imem = this.mem;
+    if (this.memsys) ({ I: this.imem, D: this.mem } = this.memsys.attach(this.mem, this.mem)); // one memory for fetch and data; two ports, so that L1I and L1D can differ
+    this.x =new Uint32Array(32);
     this.pc = 0;
     // non-architectural registers: not reset in the RTL; the model starts them at 0
     Object.assign(this, { ir: 0, instr_pc: 0, rs1_q: 0, rs2_q: 0, alu_q: 0, mdr: 0 });
@@ -116,7 +119,7 @@ export class Multicycle {
     s.rs1_val = this.x[s.rs1];
     s.rs2_val = this.x[s.rs2];
     s.addr = s.AddrSel ? this.alu_q : this.pc;
-    s.rdata = this.mem.read(s.addr, 4);
+    s.rdata = (this.state === 'FETCH' ? this.imem : this.mem).read(s.addr, 4);
     s.src_a = s.ALUSrcA === 0 ? this.pc : s.ALUSrcA === 1 ? this.instr_pc : this.rs1_q;
     s.src_b = s.ALUSrcB === 0 ? this.rs2_q : s.ALUSrcB === 1 ? 4 : s.imm;
     const ad = this.dec.alu(s.ALUOp, (s.op >>> 5) & 1, s.funct3, s.funct7b5);
@@ -141,7 +144,7 @@ export class Multicycle {
       cls: m.cls, // main-decoder class of the instruction in ir, or null
       rows: { state: out.index, alu: ad.index, branch: s.Branch ? br.index : -1 },
       mnemonic,
-      halt: this.state === 'FETCH' && s.rdata === HALT_WORD,
+      halt: this.state === 'FETCH' && stopKind(s.rdata, this.x[17]) !== null,
     };
     return this.cache;
   }
@@ -158,6 +161,7 @@ export class Multicycle {
     const c = this.evaluate();
     const s = c.signals;
     if (c.halt) { this.halted = true; this.haltPc = this.pc; return 'halt'; }
+    if (c.state === 'DECODE' && this.ir === ECALL_WORD) { this.error = unsupportedEcall('multicycle', this.x[17]); return 'error'; }
     if (c.state === 'DECODE') {
       if (c.mnemonic === 'jalr' && !this.jalr) {
         this.error = this.jalrAvailable
@@ -176,6 +180,22 @@ export class Multicycle {
     }
     const rec = { state: this.state, pc: this.pc, ir: this.ir, instr_pc: this.instr_pc, rs1_q: this.rs1_q, rs2_q: this.rs2_q,
       alu_q: this.alu_q, mdr: this.mdr, at: this.instrAddress, rd: 0, old: 0, mem: -1, memOld: 0, done: c.next === 'FETCH' };
+    if (this.memsys?.active) rec.hold = this.memsys.edge(this.cycle); // also tells the platform devices the time (step back restores them)
+    if (this.memsys?.timed && (c.state === 'FETCH' || c.state === 'MEMRD' || s.MemWrite)) {
+      // FETCH_WAIT / MEM_WAIT: the state repeats until the memory is ready (the request is held, issued once)
+      const cause = this.memsys.waitEdge(c.state === 'FETCH'
+        ? { I: { op: 'read', addr: s.addr, size: 4 } }
+        : { D: { op: s.MemWrite ? 'write' : 'read', addr: s.addr, size: 4 } });
+      if (cause) {
+        rec.wait = cause;
+        rec.done = false;
+        this.cycle += 1;
+        this.remember(rec);
+        this.cache = null;
+        return 'step';
+      }
+    }
+    if (c.state === 'MEMRD' && this.memsys?.devices.length) this.mem.commitRead(s.addr, 4); // a device's side effect of a load, once
     if (s.RegWrite && s.rd !== 0) {
       rec.rd = s.rd;
       rec.old = this.x[s.rd];
@@ -194,13 +214,17 @@ export class Multicycle {
     this.state = c.next;
     this.cycle += 1;
     if (rec.done) this.retired += 1;
+    this.remember(rec);
+    this.cache = null;
+    return 'step';
+  }
+
+  remember(rec) {
     this.history.push(rec);
     if (this.history.length > this.historyLimit) {
       this.history.splice(0, this.history.length - this.historyLimit);
       this.dropped += 1;
     }
-    this.cache = null;
-    return 'step';
   }
 
   /** Undo the last clock edge (WS-F-090). Returns false if nothing is left. */
@@ -209,7 +233,9 @@ export class Multicycle {
     if (this.halted) { this.halted = false; this.haltPc = null; return true; }
     const r = this.history.pop();
     if (!r) return false;
-    if (r.mem >= 0) this.mem.write(r.mem, 4, r.memOld);
+    if (r.hold) this.memsys.load(r.hold);
+    if (r.wait) { this.cycle -= 1; this.cache = null; return true; } // a wait edge changed nothing else
+    if (r.mem >= 0) this.mem.restore(r.mem, 4, r.memOld);
     if (r.rd) this.x[r.rd] = r.old;
     Object.assign(this, { state: r.state, pc: r.pc, ir: r.ir, instr_pc: r.instr_pc, rs1_q: r.rs1_q, rs2_q: r.rs2_q,
       alu_q: r.alu_q, mdr: r.mdr });
@@ -222,14 +248,14 @@ export class Multicycle {
   /** Clock cycles up to the next FETCH: the rest of this instruction (WS-F-040). */
   stepInstruction() {
     let r;
-    do r = this.step(); while (r === 'step' && this.state !== 'FETCH');
+    do r = this.step(); while (r === 'step' && (this.state !== 'FETCH' || this.last.wait)); // FETCH_WAIT repeats FETCH
     return r;
   }
 
   /** Undo cycles back to the FETCH of this instruction, or of the one before when at a FETCH. */
   backInstruction() {
     if (!this.back()) return false;
-    while (this.state !== 'FETCH' && this.back());
+    while ((this.state !== 'FETCH' || this.last?.wait) && this.back());
     return true;
   }
 

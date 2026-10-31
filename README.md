@@ -1,6 +1,6 @@
 # MAVILERA
 
-![MAVILERA](content/branding/mavilera/mavilera-logo.svg)
+![MAVILERA](content/branding/mavilera/mavilera-full.svg)
 
 **Interactive Microprocessor Architecture Laboratory** — *Visualize. Execute. Understand.*
 
@@ -16,7 +16,9 @@ registered trademark (see [`TRADEMARKS.md`](TRADEMARKS.md)).
 | Module | Status | Address |
 |---|---|---|
 | **RISC-V Laboratory** | available | `https://sajidlab.org/mavilera/riscv/` |
-| SAP-1, SAP-2, MOS 6502, Intel 8086, Armv7, MIPS | planned, not built | — |
+| **SAP-1 Laboratory** | available | `https://sajidlab.org/mavilera/sap-1/` |
+| **SAP-2 Laboratory** | available | `https://sajidlab.org/mavilera/sap-2/` |
+| MOS 6502, Intel 8086, Armv7, MIPS | planned, not built | — |
 
 The landing page is `https://sajidlab.org/mavilera/`. Each simulator is
 independent: its own execution engine, tests, build and address. See

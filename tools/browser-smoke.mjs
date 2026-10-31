@@ -10,7 +10,10 @@
 // WS-U-033 through their text alternative) and without label-in-name (pin
 // numbers drawn inside a multiplexer's link).
 //
-//   node tools/browser-smoke.mjs [--browser chrome|edge] [--root dir --path sub/] [--offline file.html] [--out report.json]
+//   node tools/browser-smoke.mjs [--browser chrome|edge] [--root dir --path sub/] [--offline file.html] [--out report.json] [--update-snapshot]
+//
+// --update-snapshot rewrites test/fixtures/dom-snapshot.json from the page instead of comparing with it (only on a
+// deliberate change of the interface).
 //
 // --root and --path test a release build (node tools/release.mjs; --root dist --path riscv/): then also the
 // release edition (no JALR switch, W-D20) and the service worker (the page reloads with the network off,
@@ -67,6 +70,30 @@ const setSource = (src) => `(() => { const a = document.querySelector('.p-editor
   a.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`;
 const pc = `document.querySelector('.pc-val')?.textContent.trim()`;
 const view = (i) => `(async () => { document.querySelectorAll('.mode-btn')[${i}].click(); return true; })()`;
+// The DOM snapshot of one view (arch-contract phase 0): the open panes (folded ones marked -) and every visible control
+// outside the drawings, each as its pane, role, name and state. Screenshot-free; compared with SNAPSHOT_FILE. The
+// release's MAVILERA Home link is left out, and its missing JALR switch (W-D20) expected, so that a release build
+// compares with the development page's snapshot.
+const SNAPSHOT_FILE = 'test/fixtures/dom-snapshot.json';
+const snapshot = `(() => {
+  // a drawing's zoom level ("58 %: zoom to 100 %") follows the pane's size and the fonts: recorded as "N %"
+  const clean = (t) => (t ?? '').replace(/\\s+/g, ' ').trim().replace(/^\\d+ %:/, 'N %:').slice(0, 60);
+  const name = (e) => clean(e.getAttribute('aria-label') || (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.tagName)
+    ? e.labels?.[0]?.textContent || e.getAttribute('title') || e.getAttribute('placeholder') || e.name : e.textContent || e.getAttribute('title')));
+  const panes = [...document.querySelectorAll('.workspace [data-pane]')].filter((n) => n.offsetParent)
+    .map((n) => n.dataset.pane + (n.classList.contains('collapsed') ? '-' : ''));
+  const controls = [...document.querySelectorAll('button, input, select, textarea, summary, a[href], [role=tab], [role=switch], [role=checkbox]')]
+    .filter((e) => e.offsetParent !== null && !e.closest('svg') && !e.matches('a.brand-home'))
+    .map((e) => {
+      const pane = e.closest('[data-pane]')?.dataset.pane ?? (e.closest('header, .toolbar') ? 'toolbar' : '-');
+      const role = e.getAttribute('role') || e.tagName.toLowerCase() + (e.tagName === 'INPUT' ? ':' + e.type : '');
+      const st = [(e.disabled || e.getAttribute('aria-disabled') === 'true') && 'disabled', e.getAttribute('aria-selected') === 'true' && 'selected',
+        e.getAttribute('aria-pressed') === 'true' && 'pressed', (e.checked || e.getAttribute('aria-checked') === 'true') && 'checked',
+        e.tagName === 'SELECT' && 'value=' + e.value].filter(Boolean).join(',');
+      return pane + ' ' + role + ' "' + name(e) + '"' + (st ? ' [' + st + ']' : '');
+    });
+  return { panes, controls };
+})()`;
 const activeView = `[...document.querySelectorAll('.mode-btn')].findIndex((b) => b.getAttribute('aria-selected') === 'true')`;
 
 async function checks(b, base) {
@@ -96,6 +123,39 @@ async function checks(b, base) {
     const w = await p.eval('[document.documentElement.scrollWidth, innerWidth]');
     if (w[0] > w[1]) throw new Error(`page ${w[0]} px wide in a ${w[1]} px window`);
     if (p.errors.length) throw new Error(p.errors.join('; '));
+  });
+
+  await check(`DOM snapshot of every view equals ${SNAPSHOT_FILE} (panes, controls, names, states)`, async () => {
+    // reduced motion set, not taken from the machine: the "Signal flow" control is disabled under it, and the snapshot
+    // was recorded so (a machine without the setting made it differ, §17 item 3)
+    const d = await fresh({ reducedMotion: 'reduce' });
+    const got = {};
+    for (let i = 0; i < VIEWS.length; i++) {
+      await d.eval(view(i));
+      await d.waitFor(`${activeView} === ${i} && !document.querySelector('.p-datapath .note, .p-compare .note')?.textContent.startsWith('Loading')
+        && (${i} === 0 || ${i} === 4 || Boolean(document.querySelector('svg.dp')))`);
+      await new Promise((r) => setTimeout(r, 300));
+      got[VIEWS[i]] = await d.eval(snapshot);
+    }
+    if (d.errors.length) throw new Error(d.errors.join('; '));
+    const rel = await d.eval(`Boolean(document.querySelector('meta[name="risc-vista-edition"][content="release"]'))`);
+    await d.close();
+    const n = Object.values(got).reduce((s, v) => s + v.controls.length, 0);
+    if (args.includes('--update-snapshot')) {
+      const head = { _copyright: 'Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.', _source: 'node tools/browser-smoke.mjs --update-snapshot' };
+      writeFileSync(join(ROOT, SNAPSHOT_FILE), `${JSON.stringify({ ...head, ...got }, null, 1)}\n`);
+      return `written: ${n} controls`;
+    }
+    const want = JSON.parse(readFileSync(join(ROOT, SNAPSHOT_FILE), 'utf8'));
+    // the snapshot is the development page's; the release edition has no JALR switch by design (W-D20)
+    if (rel) for (const v of VIEWS) if (want[v]) want[v].controls = want[v].controls.filter((c) => !/reference JALR state/i.test(c));
+    const diff = [];
+    for (const v of VIEWS) for (const k of ['panes', 'controls']) {
+      const a = want[v]?.[k] ?? [], g = got[v][k];
+      for (let j = 0; j < Math.max(a.length, g.length); j++) if (a[j] !== g[j]) { diff.push(`${v} ${k}[${j}]: ${JSON.stringify(a[j])} -> ${JSON.stringify(g[j])}`); break; }
+    }
+    if (diff.length) throw new Error(diff.join('; '));
+    return `${VIEWS.length} views, ${n} controls`;
   });
 
   await check('assemble, step three times, step back once (WS-F-090)', async () => {
@@ -282,6 +342,95 @@ async function checks(b, base) {
     await t.close();
   });
 
+  await check('M7 phase 7: a cache template sets the Memory model; the Cache tab animates the last access, and it passes the axe-core scan', async () => {
+    const c = await fresh();
+    await c.eval(`document.querySelector('.templates-menu summary').click(); true`);
+    await c.waitFor(`document.querySelectorAll('.templates-menu .menu-list button').length > 20`);
+    await c.eval(`[...document.querySelectorAll('.templates-menu .menu-list button')].find((b) => /Spatial locality/.test(b.textContent)).click(); true`);
+    await c.waitFor(`/cache-spatial/.test(document.querySelector('.p-editor textarea').value)`);
+    await c.key('Enter', { keyCode: 13, modifiers: 2 });
+    for (let i = 0; i < 6; i++) await c.key('F10', { keyCode: 121 });
+    await c.eval(`[...document.querySelectorAll('.tabs button')].find((b) => b.textContent === __S.mem.tabCache).click(); true`);
+    await c.waitFor(`document.querySelector('.ca-card .ca-step.ca-on')`);
+    await c.eval(`document.querySelector('.ca-card .ca-controls button:nth-child(3)').click(); true`); // Show all steps
+    const steps = await c.eval(`document.querySelectorAll('.ca-card .ca-step.ca-on').length`);
+    if (steps < 4) throw new Error(`${steps} steps shown`);
+    await c.eval(axe);
+    const v = await c.eval(axeRun(`{ include: [['.cache-view']] }`));
+    if (v.length) throw new Error(v.join('; '));
+    if (c.errors.length) throw new Error(c.errors.join('; '));
+    await c.close();
+    return `${steps} steps`;
+  });
+
+  await check('M7 devices and traps: a template of the group Devices and traps runs on the profile with traps; the Peripherals tab shows the board, a switch and the button work from mouse and keyboard, and the panel passes the axe-core scan', async () => {
+    const d = await fresh();
+    await d.eval(`document.querySelector('.templates-menu summary').click(); true`);
+    await d.waitFor(`document.querySelectorAll('.templates-menu .menu-list button').length > 30`);
+    await d.eval(`[...document.querySelectorAll('.templates-menu .menu-list button')].find((b) => /button interrupt/.test(b.textContent)).click(); true`);
+    await d.waitFor(`/button-interrupt/.test(document.querySelector('.p-editor textarea').value)`);
+    await d.eval(`[...document.querySelectorAll('.tabs button')].find((b) => b.textContent === __S.mem.tabPeripherals).click(); true`);
+    await d.key('Enter', { keyCode: 13, modifiers: 2 });
+    await d.key('F5', { keyCode: 116 });
+    await d.waitFor(`/Traps taken3/.test(document.querySelector('.pf-cpudl')?.textContent ?? '')`);
+    if (!await d.eval(`document.querySelector('.pf-board') && document.querySelectorAll('.pf-led').length === 8 && document.querySelectorAll('.pf-switch').length === 4`)) throw new Error('no board');
+    if (await d.eval(`document.querySelectorAll('.pf-led.on').length`) !== 2) throw new Error('the three presses show as 0b11 on the LEDs');
+    await d.eval(`document.querySelector('.pf-switch').dispatchEvent(new MouseEvent('click', { bubbles: true })); true`);
+    if (await d.eval(`document.querySelector('.pf-switch').getAttribute('aria-checked')`) !== 'true') throw new Error('the switch did not turn on');
+    await d.eval(`(() => { const b = document.querySelector('.pf-button'); b.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true })); return true; })()`);
+    if (await d.eval(`document.querySelector('.pf-button').getAttribute('aria-pressed')`) !== 'true') throw new Error('the button did not go down');
+    await d.eval(`document.querySelector('.pf-button').dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true })); true`);
+    await d.eval(axe);
+    const v = await d.eval(axeRun(`{ include: [['.platform']] }`));
+    if (v.length) throw new Error(v.join('; '));
+    if (d.errors.length) throw new Error(d.errors.join('; '));
+    await d.close();
+  });
+
+  await check('M7 devices in a processor view: with the Memory setting on, the pipelined view shows the board, a switch works, a program writes the LEDs, and the panel passes axe', async () => {
+    const q = await fresh({}, { 'pips.mem.v1': JSON.stringify({ devices: true }) });
+    await q.eval(`document.querySelector('.templates-menu summary').click(); true`);
+    await q.waitFor(`document.querySelectorAll('.templates-menu .menu-list button').length > 30`);
+    await q.eval(`[...document.querySelectorAll('.templates-menu .menu-list button')].find((b) => /Data dependences and forwarding/.test(b.textContent)).click(); true`); // a program the pipelined processor can run
+    await q.waitFor(`${activeView} === 3 && document.querySelector('svg.dp') && /forwarding/.test(document.querySelector('.p-editor textarea').value)`);
+    await q.eval(`[...document.querySelectorAll('.tabs button')].find((b) => b.textContent === 'Peripherals').click(); true`);
+    await q.waitFor(`document.querySelector('.pf-board')`);
+    await q.eval(`document.querySelector('.pf-switch').dispatchEvent(new MouseEvent('click', { bubbles: true })); true`);
+    if (await q.eval(`document.querySelector('.pf-switch').getAttribute('aria-checked')`) !== 'true') throw new Error('the switch did not turn on');
+    if (!await q.eval(`/no traps in this view/.test(document.querySelector('.platform').textContent) && document.querySelector('.pf-set')`)) throw new Error('settings or the note on traps missing');
+    await q.eval(axe);
+    const v = await q.eval(axeRun(`{ include: [['.platform']] }`));
+    if (v.length) throw new Error(v.join('; '));
+    if (q.errors.length) throw new Error(q.errors.join('; '));
+    await q.close();
+  });
+
+  await check('lower pane of the middle column (inspector, pipeline details): up arrow folds the pane above and grows upward, the down arrow opens it again; Maximise fills the workspace and Esc restores; axe', async () => {
+    const q = await fresh();
+    const vis = (sel) => `(() => { const n = document.querySelector('${sel}'); return Boolean(n) && n.offsetParent !== null && n.getBoundingClientRect().height > 20; })()`;
+    for (const [name, v, pane, above] of [['inspector', 0, '.p-fields', '.p-listing'], ['pipeline details', 3, '.p-info', '.p-datapath']]) {
+      await q.eval(view(v));
+      await q.waitFor(`document.querySelector('${pane} .pane-up') && !document.querySelector('${pane} .pane-up').hidden && ${vis(above)}`);
+      const h0 = await q.eval(`document.querySelector('${pane}').getBoundingClientRect().height`);
+      await q.eval(`document.querySelector('${pane} .pane-up').click(); true`);
+      await q.waitFor(`!${vis(above)}`);
+      const h1 = await q.eval(`document.querySelector('${pane}').getBoundingClientRect().height`);
+      if (!(h1 > h0)) throw new Error(`${name}: did not grow (${h0} -> ${h1})`);
+      const label = await q.eval(`document.querySelector('${pane} .pane-up').getAttribute('aria-label')`);
+      await q.eval(`document.querySelector('${pane} .pane-up').click(); true`);
+      await q.waitFor(vis(above));
+      await q.eval(`document.querySelector('${pane} .pane-max').click(); true`);
+      await q.waitFor(`document.querySelector('.workspace.mid-max') && !${vis('.p-editor')} && !${vis('.p-regs')} && ${vis(pane)}`);
+      await q.eval(axe);
+      const ax = await q.eval(axeRun(`{ include: [['${pane} .pane-up'], ['${pane} .pane-max'], ['${pane} .pane-toggle']] }`)); // the controls; the fields' own colours are scanned with the view states
+      if (ax.length) throw new Error(`${name}: ${ax.join('; ')}`);
+      await q.eval(`document.querySelector('${pane}').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); true`);
+      await q.waitFor(`!document.querySelector('.workspace.mid-max') && ${vis('.p-editor')}`);
+      if (!label) throw new Error(`${name}: no label`);
+    }
+    if (q.errors.length) throw new Error(q.errors.join('; '));
+    await q.close();
+  });
   await check('a reload keeps the program, the step reached, breakpoints and watchpoints', async () => {
     const k = await fresh();
     await k.eval(setSource(readFileSync(join(ROOT, TRACE_PROGRAM), 'utf8')));

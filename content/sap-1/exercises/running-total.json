@@ -1,0 +1,144 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148), not taken from a textbook; produced by tools/make-sap1-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "sap-1",
+ "title": "A running total",
+ "task": "Show on OUT, one after another, the byte at a, then the sum of a and b, then the sum of a, b and c (each modulo 256), then stop. Keep the labels and their DB lines.",
+ "lang": "asm",
+ "starter": "; running-total -- practice exercise (MAVILERA, SAP-1)\n; Show a, then a + b, then a + b + c on OUT.\n; Hint: OUT copies A and leaves it as it is.\n        HLT           ; replace with your code\n\n        ORG 0DH       ; the data at the end of the memory\na:      DB 0\nb:      DB 0\nc:      DB 0\n",
+ "tests": [
+  {
+   "name": "5, 6, 7",
+   "memory": [
+    {
+     "at": "a",
+     "bytes": [
+      5
+     ]
+    },
+    {
+     "at": "b",
+     "bytes": [
+      6
+     ]
+    },
+    {
+     "at": "c",
+     "bytes": [
+      7
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     5,
+     11,
+     18
+    ],
+    "registers": {
+     "OUT": 18
+    }
+   }
+  },
+  {
+   "name": "200, 50, 10",
+   "memory": [
+    {
+     "at": "a",
+     "bytes": [
+      200
+     ]
+    },
+    {
+     "at": "b",
+     "bytes": [
+      50
+     ]
+    },
+    {
+     "at": "c",
+     "bytes": [
+      10
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     200,
+     250,
+     4
+    ],
+    "registers": {
+     "OUT": 4
+    }
+   }
+  },
+  {
+   "name": "0, 0, 1",
+   "memory": [
+    {
+     "at": "a",
+     "bytes": [
+      0
+     ]
+    },
+    {
+     "at": "b",
+     "bytes": [
+      0
+     ]
+    },
+    {
+     "at": "c",
+     "bytes": [
+      1
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     0,
+     0,
+     1
+    ],
+    "registers": {
+     "OUT": 1
+    }
+   }
+  },
+  {
+   "name": "128, 128, 128",
+   "memory": [
+    {
+     "at": "a",
+     "bytes": [
+      128
+     ]
+    },
+    {
+     "at": "b",
+     "bytes": [
+      128
+     ]
+    },
+    {
+     "at": "c",
+     "bytes": [
+      128
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     128,
+     0,
+     128
+    ],
+    "registers": {
+     "OUT": 128
+    }
+   }
+  }
+ ]
+}

@@ -16,6 +16,8 @@
     "dev": "node tools/serve.mjs",
     "test": "node --test",
     "smoke": "node tools/browser-smoke.mjs",
+    "smoke:header": "node tools/header-smoke.mjs",
+    "smoke:mobile": "node tools/mobile-smoke.mjs",
     "release": "node tools/release.mjs",
     "preview": "node tools/release.mjs --preview && node tools/serve.mjs 8001 dist"
   },

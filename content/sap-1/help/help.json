@@ -1,0 +1,118 @@
+{
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). In-app help of the MAVILERA SAP-1 Laboratory, written for the application (spec W-D20); shown by the Help dialog (src/ui/help-dialog.js). The detailed documentation is content/sap-1/help/docs/.",
+  "sections": [
+    {
+      "id": "about",
+      "title": "About SAP-1",
+      "blocks": [
+        { "brand": true },
+        { "p": "SAP-1 is the first of the simple-as-possible (SAP) computers, teaching designs by Albert Paul Malvino in his textbook Digital Computer Electronics (McGraw-Hill, first edition 1977; third edition with Jerald A. Brown, Glencoe/McGraw-Hill, 1993). The book presents SAP-1, SAP-2 and SAP-3 in turn as computers a student can build from digital components; its preface describes their instruction set as a subset of the Intel 8085's. SAP-1 is a textbook design, not a commercial product." },
+        { "p": "SAP-1 has five instructions (LDA, ADD, SUB, OUT and HLT), sixteen bytes of memory, an accumulator, a B register, an adder-subtracter and an output register on one 8-bit bus, the W bus. A controller-sequencer steps every instruction through six timing states." },
+        { "p": "Why it matters: SAP-1 shows the whole of a stored-program computer, fetch and execute, bus transfers and the control word, in parts few enough to follow one clock at a time. It prepares for the larger SAP-2 and for real 8-bit microprocessors." },
+        { "p": "Where it is seen today: Ben Eater has said that the programmable 8-bit computer he built on breadboards follows, roughly, the SAP-1 architecture of this book." },
+        { "p": "The detailed description of SAP-1 is chapter 10 of the book. The book has no DOI." },
+        { "refs": [
+          ["Digital Computer Electronics, third edition", null, "A. P. Malvino, J. A. Brown. Glencoe/McGraw-Hill, 1993. ISBN 0-02-800594-5. Chapter 10: SAP-1."],
+          ["The Amp Hour #444: An Interview with Ben Eater", "https://theamphour.com/444-an-interview-with-ben-eater/", "27 May 2019."],
+          ["Ben Eater: 8-bit computer", "https://eater.net/8bit/", null]
+        ] },
+        { "notice": "SAP-1 is described in Digital Computer Electronics by Albert Paul Malvino and Jerald A. Brown, © 1977, 1983 McGraw-Hill, Inc. and © 1983, 1993 Glencoe/McGraw-Hill. MAVILERA reproduces no text or figure of the book; its simulator, drawings, help and programs are its own. It is not affiliated with or endorsed by the authors, the publisher or Ben Eater. Intel is a trademark of Intel Corporation or its subsidiaries." }
+      ]
+    },
+    {
+      "id": "start",
+      "title": "Getting started",
+      "blocks": [
+        { "p": "The MAVILERA SAP-1 Laboratory runs SAP-1 programs in your browser and shows how the computer executes them on its bus. Nothing is installed and nothing is uploaded." },
+        { "ol": [
+          "Type a program in the editor, or open one from Templates in the toolbar: short programs that each show one idea, with a note at the top on what to try.",
+          "Press Assemble (Ctrl+Enter). Errors are marked in the editor and explained in the console.",
+          "Step through the program with Step (F10) and Step back (Shift+F10), or run it with Run (F5).",
+          "Watch the registers A, B, OUT and PC, the sixteen bytes of memory and the console, where each OUT writes a line.",
+          "Switch to the Bus view to see the same program on the drawing of the computer, one timing state at a time."
+        ] },
+        { "p": "A program ends with HLT. Without it the computer goes on into the bytes after the program and runs its data as instructions." }
+      ]
+    },
+    {
+      "id": "views",
+      "title": "The views",
+      "blocks": [
+        { "dl": [
+          ["Instructions", "One instruction per step: the editor, the listing with each byte in hexadecimal and binary, the instruction inspector, the registers, the counters, the memory and the console."],
+          ["Bus", "The drawing of the W bus and the units on it. Each step is one clock, one timing state: the unit that drives the bus, the registers that load from it and the control lines that are asserted are highlighted. Step instruction and Back instruction go to the first timing state of the next or of this instruction."],
+          ["Control word", "A tab of the Bus view: the twelve lines of the control word CON in the present timing state, with their levels and what each does."],
+          ["Sequence", "A tab of the Bus view: the timing states of the present instruction and the transfer each one makes."],
+          ["Waveforms", "A tab of the Bus view: chosen signals over the clocks run so far, as a timing diagram; select a clock to go to it."]
+        ] },
+        { "p": "Select a control signal, in the controller or on its wire, to trace it on the drawing and read what it does in the present state." }
+      ]
+    },
+    {
+      "id": "programs",
+      "title": "Writing programs",
+      "blocks": [
+        { "ul": [
+          "Instructions: LDA, ADD, SUB, OUT and HLT. LDA, ADD and SUB take a memory address, 0 to 15, or a label.",
+          "Data: DB places bytes; ORG sets the address of what follows. A label ends with a colon; a comment starts with a semicolon.",
+          "Numbers: decimal (28), hexadecimal (1CH or 0x1C) or binary (0b00011100).",
+          "Point at an instruction in the editor for what it does; completion suggests the mnemonics.",
+          "The scratch line above the instruction fields turns one instruction into its byte, or a byte into its instruction, without changing the program."
+        ] }
+      ]
+    },
+    {
+      "id": "debug",
+      "title": "Running and debugging",
+      "blocks": [
+        { "ul": [
+          "Breakpoints: click a line number in the editor or an address in the listing (B on a row).",
+          "Watchpoints: tick a register's eye to stop when it is written; double-click a memory byte, or use Watch, to stop when that byte is written.",
+          "Step back undoes one step at a time, back to the start of the run.",
+          "Run to cursor stops at the editor's line.",
+          "Step over, Step out and the call stack are not available: SAP-1 has no jumps or calls.",
+          "A run that does not halt stops after a large number of instructions and says so in the console."
+        ] }
+      ]
+    },
+    {
+      "id": "keys",
+      "title": "Keyboard",
+      "blocks": [
+        { "dl": [
+          ["Ctrl+Enter", "Assemble"],
+          ["F5", "Run or pause"],
+          ["F10 / Shift+F10", "Step / step back (in the Bus view, one timing state)"],
+          ["Ctrl+F10", "Run to the editor's line"],
+          ["Ctrl+F", "Find in the editor"],
+          ["Esc, then Tab", "Leave the editor (Tab inside it indents)"],
+          ["↑ ↓, Enter, B", "In the listing: move, show the fields, set a breakpoint"],
+          ["↑ ↓, W", "In the registers: move, watch"],
+          ["Arrow keys on a divider", "Resize panes (Shift for larger steps; Enter restores)"],
+          ["Enter on a drawn element", "Open its details in the Bus view"]
+        ] }
+      ]
+    },
+    {
+      "id": "files",
+      "title": "Files, sharing and exports",
+      "blocks": [
+        { "ul": [
+          "Your work is kept in this browser: after a refresh or a closed tab, the program, its file name, the cursor, breakpoints, watchpoints and the step you had reached come back.",
+          "File ▸ Copy share link puts the program, the view and its settings into a link. They travel in the part after #, which the browser never sends to a server.",
+          "File ▸ Save program and settings… writes a .json file; File ▸ Open reads it back, and also .asm files.",
+          "Exports: the memory image (.hex for $readmemh, and .bin), the listing and traces (JSON lines, CSV); in the Bus view also a golden dump of the values loaded into OUT and a VCD waveform. File ▸ Import .hex/.bin… loads an image.",
+          "Exercises: File ▸ Exercise… lists practice exercises written for MAVILERA, each with a starter program; Run the tests checks your program and shows expected against actual. No solutions are included.",
+          "File ▸ Data in and out… loads bytes into memory before a run, and saves a memory range."
+        ] }
+      ]
+    },
+    {
+      "id": "privacy",
+      "title": "Offline use and privacy",
+      "blocks": [
+        { "p": "Every computation runs in your browser. MAVILERA has no account, sends no telemetry and uploads nothing. After a first visit the hosted version also opens without a network connection, and a single-file version can be downloaded for computers that have none." }
+      ]
+    }
+  ]
+}

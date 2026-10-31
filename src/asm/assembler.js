@@ -91,6 +91,9 @@ const IGNORED = new Set(['.globl', '.global', '.type', '.size', '.file', '.optio
 const DATA_SECTIONS = new Set(['.data', '.rodata', '.bss', '.sdata', '.sbss']);
 const DATA_DIRECTIVES = new Set(['.word', '.half', '.short', '.byte', '.ascii', '.asciz', '.string',
   '.space', '.zero', '.skip']);
+/** Every directive the assembler accepts (the architecture descriptor's editor data, W-D29). */
+export const DIRECTIVES = Object.freeze(['.text', '.section', ...DATA_SECTIONS, ...DATA_DIRECTIVES,
+  '.align', '.balign', '.p2align', '.equ', '.set', ...IGNORED].sort());
 
 // --- lexical helpers -------------------------------------------------------------
 function stripComment(line) {

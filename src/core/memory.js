@@ -79,6 +79,9 @@ export class Memory {
     return old;
   }
 
+  /** Undo of a store (back-step); a MemPort distinguishes it from a store, which may reach a device. */
+  restore(addr, size, old) { this.write(addr, size, old); }
+
   /** Copy of all pages (for a snapshot sent to or from the Worker). */
   copyPages() {
     const out = new Map();
@@ -135,6 +138,8 @@ export class WordMemory {
     else for (let i = 0; i < size; i++) this.writeByte(addr + i, value >>> (8 * i));
     return old;
   }
+
+  restore(addr, size, old) { this.write(addr, size, old); }
 
   copyPages() {
     return this.words.slice();

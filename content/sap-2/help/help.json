@@ -1,0 +1,131 @@
+{
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). In-app help of the MAVILERA SAP-2 Laboratory, written for the application (spec W-D20); shown by the Help dialog (src/ui/help-dialog.js). The detailed documentation is content/sap-2/help/docs/.",
+  "sections": [
+    {
+      "id": "about",
+      "title": "About SAP-2",
+      "blocks": [
+        { "brand": true },
+        { "p": "SAP-2 is the second of the simple-as-possible (SAP) computers, teaching designs by Albert Paul Malvino in his textbook Digital Computer Electronics (McGraw-Hill, first edition 1977; third edition with Jerald A. Brown, Glencoe/McGraw-Hill, 1993). The book presents SAP-1, SAP-2 and SAP-3 in turn as computers a student can build from digital components; its preface describes their instruction set as a subset of the Intel 8085's, and SAP-2's mnemonics, such as MVI, LDA, JNZ and CALL, are the 8085's. SAP-2 is a textbook design, not a commercial product." },
+        { "p": "SAP-2 has 64K of memory, the first 2K of it read-only, an accumulator and the registers B and C, the sign and zero flags, conditional jumps, a subroutine call and return, and four ports: a hexadecimal keyboard, a hexadecimal display and serial lines. Its instruction set is the 43 instructions of the book's tables." },
+        { "p": "Why it matters: SAP-2 adds what SAP-1 lacks to be programmed like a real microprocessor: decisions on flags, loops, subroutines and input and output. It bridges SAP-1 and the 8080/8085 family that the book goes on to teach." },
+        { "p": "The detailed description of SAP-2 is chapter 11 of the book. The book has no DOI." },
+        { "refs": [
+          ["Digital Computer Electronics, third edition", null, "A. P. Malvino, J. A. Brown. Glencoe/McGraw-Hill, 1993. ISBN 0-02-800594-5. Chapter 11: SAP-2."]
+        ] },
+        { "notice": "SAP-2 is described in Digital Computer Electronics by Albert Paul Malvino and Jerald A. Brown, © 1977, 1983 McGraw-Hill, Inc. and © 1983, 1993 Glencoe/McGraw-Hill. MAVILERA reproduces no text or figure of the book; its simulator, drawings, microprogram, help and programs are its own. It is not affiliated with or endorsed by the authors or the publisher. Intel is a trademark of Intel Corporation or its subsidiaries." }
+      ]
+    },
+    {
+      "id": "start",
+      "title": "Getting started",
+      "blocks": [
+        { "p": "The MAVILERA SAP-2 Laboratory runs SAP-2 programs in your browser and shows how the computer executes them on its bus. Nothing is installed and nothing is uploaded." },
+        { "ol": [
+          "Type a program in the editor, or open one from Templates in the toolbar: short programs that each show one idea, with a note at the top on what to try.",
+          "Press Assemble (Ctrl+Enter). Errors are marked in the editor and explained in the console.",
+          "Step through the program with Step (F10) and Step back (Shift+F10), or run it with Run (F5).",
+          "Watch the registers A, B and C, the flags S and Z, the program counter, the ports and the memory. Each OUT 03H also writes a line in the console.",
+          "Enter keys on the Ports tab when the program reads the keyboard.",
+          "Switch to the Bus view to see the same program on the drawing of the computer, one T state at a time."
+        ] },
+        { "p": "A run starts at 0000H and ends with HLT. Memory from 0000H to 07FFH is read-only: a store there stops the run with a message." }
+      ]
+    },
+    {
+      "id": "views",
+      "title": "The views",
+      "blocks": [
+        { "dl": [
+          ["Instructions", "One instruction per step: the editor, the listing with each instruction's bytes in hexadecimal and binary, the instruction inspector, the registers and flags, the call stack, the counters, the memory, the ports and the console."],
+          ["Bus", "The drawing of the W bus and the units on it. Each step is one clock, one T state: the unit that drives the bus, the registers that load from it and the control signals that are asserted are highlighted. Step instruction and Back instruction go to the first T state of the next or of this instruction."],
+          ["Microinstruction", "A tab of the Bus view: the control signals of the present T state, asserted or not, with what each does."],
+          ["Sequence", "A tab of the Bus view: the T states of the present instruction and the transfer each one makes."],
+          ["Waveforms", "A tab of the Bus view: chosen signals over the clocks run so far, as a timing diagram; select a clock to go to it."]
+        ] },
+        { "p": "The microprogram shown in the Bus view is the simulator's own design; the drawing marks the units it adds. Select a control signal, at its unit or in the Microinstruction tab, to trace it." }
+      ]
+    },
+    {
+      "id": "ports",
+      "title": "Ports and keyboard",
+      "blocks": [
+        { "p": "The Ports tab of the memory pane is the computer's front panel." },
+        { "dl": [
+          ["Input port 1", "The hexadecimal keyboard: press a key, or type a byte and press Enter, to put it on port 1 and set READY."],
+          ["Input port 2", "READY (bit 0), set when a byte is entered and reset by ACKNOWLEDGE, and the SERIAL IN switch (bit 7)."],
+          ["Output port 3", "The hexadecimal display."],
+          ["Output port 4", "SERIAL OUT (bit 0) and ACKNOWLEDGE (bit 7)."]
+        ] },
+        { "p": "Each input is kept with the instruction it was entered before: stepping back past it withdraws it, and a reload or a long run replays it there. Reset clears the inputs." }
+      ]
+    },
+    {
+      "id": "programs",
+      "title": "Writing programs",
+      "blocks": [
+        { "ul": [
+          "Instructions: the 43 of SAP-2, from ADD to XRI. Point at a mnemonic in the editor for its operands, its operation and its T states; completion suggests mnemonics and registers.",
+          "Data: DB places bytes, DW two-byte words; ORG sets the address of what follows. A label ends with a colon; a comment starts with a semicolon.",
+          "Numbers: decimal, hexadecimal (0FFH or 0xFF) or binary (0b11111111).",
+          "IN reads port 1 or 2 and OUT writes port 3 or 4; the assembler refuses other ports.",
+          "The scratch line above the instruction fields turns one instruction into its bytes, or bytes into their instruction, without changing the program."
+        ] }
+      ]
+    },
+    {
+      "id": "debug",
+      "title": "Running and debugging",
+      "blocks": [
+        { "ul": [
+          "Breakpoints: click a line number in the editor or an address in the listing (B on a row).",
+          "Watchpoints: tick a register's eye to stop when it is written; double-click a memory byte, or use Watch, to stop when that byte is written.",
+          "Step back undoes one step at a time, back to the start of the run.",
+          "Step over runs a CALL to its RET; Step out runs to the RET of the present subroutine; Run to cursor stops at the editor's line.",
+          "The call stack shows the innermost CALL only: SAP-2 keeps one return address, at FFFEH and FFFFH, and a CALL inside a subroutine overwrites it.",
+          "A run that does not halt stops after a large number of instructions and says so in the console."
+        ] }
+      ]
+    },
+    {
+      "id": "keys",
+      "title": "Keyboard",
+      "blocks": [
+        { "dl": [
+          ["Ctrl+Enter", "Assemble"],
+          ["F5", "Run or pause"],
+          ["F10 / Shift+F10", "Step / step back (in the Bus view, one T state)"],
+          ["F11 / Shift+F11", "Step over / step out"],
+          ["Ctrl+F10", "Run to the editor's line"],
+          ["Ctrl+F", "Find in the editor"],
+          ["Esc, then Tab", "Leave the editor (Tab inside it indents)"],
+          ["↑ ↓, Enter, B", "In the listing: move, show the fields, set a breakpoint"],
+          ["↑ ↓, W", "In the registers: move, watch"],
+          ["Arrow keys on a divider", "Resize panes (Shift for larger steps; Enter restores)"],
+          ["Enter on a drawn element", "Open its details in the Bus view"]
+        ] }
+      ]
+    },
+    {
+      "id": "files",
+      "title": "Files, sharing and exports",
+      "blocks": [
+        { "ul": [
+          "Your work is kept in this browser: after a refresh or a closed tab, the program, its file name, the cursor, breakpoints, watchpoints and the step you had reached come back.",
+          "File ▸ Copy share link puts the program, the view and its settings into a link. They travel in the part after #, which the browser never sends to a server.",
+          "File ▸ Save program and settings… writes a .json file; File ▸ Open reads it back, and also .asm files.",
+          "Exports: the memory image from 0000H to the last byte (.hex for $readmemh, and .bin), the listing and traces (JSON lines, CSV); in the Bus view also a golden dump (the writes to ports 3 and 4, then the RAM bytes stored) and a VCD waveform. File ▸ Import .hex/.bin… loads an image.",
+          "Exercises: File ▸ Exercise… lists practice exercises written for MAVILERA, each with a starter program; Run the tests checks your program and shows expected against actual. No solutions are included.",
+          "File ▸ Data in and out… loads bytes into memory before a run, and saves a memory range."
+        ] }
+      ]
+    },
+    {
+      "id": "privacy",
+      "title": "Offline use and privacy",
+      "blocks": [
+        { "p": "Every computation runs in your browser. MAVILERA has no account, sends no telemetry and uploads nothing. After a first visit the hosted version also opens without a network connection, and a single-file version can be downloaded for computers that have none." }
+      ]
+    }
+  ]
+}

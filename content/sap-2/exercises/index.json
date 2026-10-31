@@ -1,0 +1,45 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148), not taken from a textbook; produced by tools/make-sap2-exercises.mjs.",
+ "groups": {
+  "loops": "Loops and flags",
+  "memory": "Memory and subroutines",
+  "ports": "Ports"
+ },
+ "exercises": [
+  {
+   "id": "sum-to-n",
+   "file": "sum-to-n.json",
+   "group": "loops",
+   "title": "The sum of 1 to n",
+   "lang": "asm"
+  },
+  {
+   "id": "count-ones",
+   "file": "count-ones.json",
+   "group": "loops",
+   "title": "Count the ones",
+   "lang": "asm"
+  },
+  {
+   "id": "swap",
+   "file": "swap.json",
+   "group": "memory",
+   "title": "Swap two bytes",
+   "lang": "asm"
+  },
+  {
+   "id": "times-four",
+   "file": "times-four.json",
+   "group": "memory",
+   "title": "A subroutine that multiplies by four",
+   "lang": "asm"
+  },
+  {
+   "id": "add-two-keys",
+   "file": "add-two-keys.json",
+   "group": "ports",
+   "title": "Add two keys",
+   "lang": "asm"
+  }
+ ]
+}

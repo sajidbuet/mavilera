@@ -10,7 +10,9 @@
 import { assemble } from '../asm/assembler.js';
 import { Hart, SimError, STEP_HALT_WORD } from './iss.js';
 import { History } from './history.js';
-import { applyLoads, checkFits } from './data-io.js';
+import { applyLoads, checkFits } from '../shell/data-io.js';
+import { BusError } from '../mem/bus.js';
+import { defaultPlatform } from '../shell/share.js';
 
 export const STOP = Object.freeze({
   HALT: 'halt', ERROR: 'error', BREAK: 'break', WATCH: 'watch', BUDGET: 'budget',
@@ -35,6 +37,9 @@ export class Session {
     this.dataLoads = []; // files loaded into data arrays (WS-F-145): [{label, bytes, name}]
     this.uninitCheck = true; // the uninitialised-value check (WS-F-147), a simulator check
     this.loadReport = { applied: [], dropped: [] };
+    // The platform of the profile iss-priv: pin events of the GPIO inputs, bytes arriving at the UART, the
+    // MTIME divider. Kept across resets, so that a run can be repeated; the interface adds to it.
+    this.platformConfig = defaultPlatform();
   }
 
   /** Assemble the sources and apply the data loads; on success load a fresh hart. Returns the program. */
@@ -58,7 +63,9 @@ export class Session {
   }
 
   reset() {
-    this.hart = this.runnable ? new Hart(this.program, { profile: this.profile, abiCheck: true, uninitCheck: this.uninitCheck }) : null;
+    this.hart = this.runnable
+      ? new Hart(this.program, { profile: this.profile, abiCheck: true, uninitCheck: this.uninitCheck, platformConfig: this.platformConfig })
+      : null;
     this.history.clear();
     this.error = null;
     this.runCount = 0;
@@ -80,7 +87,7 @@ export class Session {
     try {
       if (h.stepFast() === STEP_HALT_WORD) return STOP.HALT;
     } catch (e) {
-      if (!(e instanceof SimError)) throw e;
+      if (!(e instanceof SimError || e instanceof BusError)) throw e;
       this.error = e.message;
       return STOP.ERROR;
     }
@@ -165,6 +172,9 @@ export class Session {
 
   // --- Worker support ---------------------------------------------------------------
   /** Everything a Worker needs to continue this session. */
+  /** The profile iss-priv keeps devices and privileged state that a Worker does not carry: it runs in slices on the page. */
+  get workerCapable() { return !this.hart?.priv; }
+
   workerRequest(opts) {
     return {
       state: this.hart.snapshot(), runCount: this.runCount, runLimit: this.runLimit,

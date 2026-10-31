@@ -1,5 +1,5 @@
 {
-  "_comment": "Architecture registry: the source of truth of the MAVILERA landing page (tools/release.mjs builds the cards from it; tools/release.mjs refuses a registry that links a module whose build is missing). Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Add a module by appending an entry; see docs/ADDING-SIMULATORS.md.",
+  "_comment": "Architecture registry: the source of truth of the MAVILERA landing page (tools/release.mjs builds the cards from it; tools/release.mjs refuses a registry that links a module whose build is missing). Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Add a module by appending an entry; see docs/ADDING-SIMULATORS.md. `content`: the content folders of a module built from src/arch/<id> (tools/site-files.mjs archFiles).",
   "architectures": [
     {
       "id": "riscv",
@@ -7,10 +7,27 @@
       "description": "RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths.",
       "path": "riscv/",
       "status": "available",
-      "docs": "riscv/docs/"
+      "docs": "riscv/docs/",
+      "content": ["content/data/", "content/examples/", "content/exercises/", "content/geometry/", "content/help/", "content/templates/"]
     },
-    { "id": "sap-1", "name": "SAP-1", "path": "sap-1/", "status": "planned" },
-    { "id": "sap-2", "name": "SAP-2", "path": "sap-2/", "status": "planned" },
+    {
+      "id": "sap-1",
+      "name": "SAP-1",
+      "description": "The simple-as-possible computer: five instructions, sixteen bytes of memory, an accumulator and an adder-subtracter on one bus, each instruction stepped through its six timing states on a drawing of the bus and its controller.",
+      "path": "sap-1/",
+      "status": "available",
+      "docs": "sap-1/docs/",
+      "content": ["content/sap-1/"]
+    },
+    {
+      "id": "sap-2",
+      "name": "SAP-2",
+      "description": "The simple-as-possible computer, version 2: 43 instructions, 64K bytes of memory, a flag pair, CALL and RET, and input and output ports with a keys-and-serial panel; each instruction stepped through its timing states on a drawing of the bus and its controller.",
+      "path": "sap-2/",
+      "status": "available",
+      "docs": "sap-2/docs/",
+      "content": ["content/sap-2/"]
+    },
     { "id": "6502", "name": "MOS 6502", "path": "6502/", "status": "planned" },
     { "id": "8086", "name": "Intel 8086", "path": "8086/", "status": "planned" },
     { "id": "armv7", "name": "Armv7", "path": "armv7/", "status": "planned" },

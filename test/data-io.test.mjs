@@ -9,7 +9,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { parseNumbers, dataArrays, readRange, saveCsv, saveBin, DataError } from '../src/core/data-io.js';
+import { parseNumbers, dataArrays, readRange, saveCsv, saveBin, DataError } from '../src/shell/data-io.js';
 import { Session, STOP } from '../src/core/session.js';
 import { assemble } from '../src/asm/assembler.js';
 

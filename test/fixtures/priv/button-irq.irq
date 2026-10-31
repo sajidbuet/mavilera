@@ -1,0 +1,9 @@
+# Pin events for button-irq.s: CYCLE NAME VALUE (the format of rvsim.py --irq).
+# Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+# Rights class: code.
+200 btn 1
+210 btn 0
+900 btn 1
+905 btn 0
+1500 sw 5
+1500 btn 1

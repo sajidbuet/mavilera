@@ -14,7 +14,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const read = (p) => readFileSync(join(ROOT, p), 'utf8');
 const registry = JSON.parse(read('site/architectures.json')).architectures;
 
-test('registry: unique ids and paths, a known status, nothing but the RISC-V module available', () => {
+test('registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-2 modules available', () => {
   assert.equal(new Set(registry.map((a) => a.id)).size, registry.length);
   assert.equal(new Set(registry.map((a) => a.path)).size, registry.length);
   for (const a of registry) {
@@ -22,9 +22,13 @@ test('registry: unique ids and paths, a known status, nothing but the RISC-V mod
     assert.ok(a.name);
     assert.match(a.path, /^[a-z0-9-]+\/$/, 'a relative directory path, no leading slash');
     assert.ok(['available', 'planned'].includes(a.status), a.id);
-    if (a.status === 'available') assert.ok(a.description, `${a.id}: an available module needs a description`);
+    if (a.status === 'available') {
+      assert.ok(a.description, `${a.id}: an available module needs a description`);
+      assert.ok(a.content?.length, `${a.id}: an available module is built from src/arch/${a.id} and its content folders`);
+    }
   }
-  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv']);
+  // updated deliberately (docs/ADDING-SIMULATORS.md): SAP-1 since phase 6 of the architecture contract (W-D29), SAP-2 since step 6 of its plan
+  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2']);
   assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', '6502', '8086', 'armv7', 'mips']);
 });
 
@@ -48,10 +52,10 @@ test('paths stay relative: no root-absolute asset or link in the pages, the mani
   assert.doesNotMatch(read('tools/release.mjs'), /new URL\(['"]\//, 'the service worker derives its scope from its own location');
 });
 
-test('the app links to MAVILERA Home only in a release, and the logo files it reads exist', () => {
+test('the app links to MAVILERA Home only in a release (the logo does, test/arch-switcher.test.mjs), and the logo files it reads exist', () => {
   const main = read('src/main.js');
-  assert.match(main, /home-link/);
-  assert.match(main, /STRINGS\.homeLink/);
+  assert.match(main, /homeUrl\(where\)/);
+  assert.match(main, /STRINGS\.archSwitch/);
   for (const f of ['mavilera-logo.svg', 'mavilera-icon.svg']) assert.ok(existsSync(join(ROOT, 'content/branding/mavilera', f)), f);
 });
 

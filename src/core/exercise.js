@@ -4,6 +4,8 @@
 // test files or answers (C5). Pure JavaScript, no DOM: the same code runs under Node.js.
 //
 // The file (JSON, "format": "risc-vista-exercise", "version": 1):
+//   arch                        optional: "riscv" (default); another architecture's file is refused (SAP-1's:
+//                               src/arch/sap-1/exercise.js)
 //   title, task                 strings shown to the student
 //   lang                        "asm" (default) or "c": the language the program is written in
 //   starter                     optional: a program to start from
@@ -42,6 +44,7 @@ export function parseExercise(o) {
   const fail = (m) => { throw new Error(m); };
   if (!isExercise(o)) fail(`not an exercise file (no "format": "${EXERCISE_FORMAT}")`);
   if (o.version !== 1) fail(`version ${o.version} of the exercise format is not known to this version of MAVILERA`);
+  if (o.arch !== undefined && o.arch !== 'riscv') fail(`this exercise is for ${o.arch}, not RISC-V (its file has "arch": "${o.arch}")`);
   if (typeof o.title !== 'string' || !o.title.trim()) fail('the exercise has no title');
   if (!Array.isArray(o.tests) || !o.tests.length) fail('the exercise has no tests');
   const lang = o.lang ?? 'asm';

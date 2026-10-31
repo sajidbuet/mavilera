@@ -2,6 +2,8 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
+import { ARCH_ID } from '../shell/arch-id.js';
+
 // Boxes that scroll take the keyboard focus, so that the arrow keys can scroll them (WS-U-030).
 const SCROLLERS = new Set(['scroll', 'counters']);
 
@@ -34,10 +36,22 @@ export function menu(title, ...items) {
 }
 
 export const hex8 = (v) => `0x${(v >>> 0).toString(16).padStart(8, '0')}`;
+/** An address with the digits of the architecture's address width (32 bits: as hex8). */
+export const hexAddr = (v, bits = 32) => `0x${(v >>> 0).toString(16).padStart(Math.ceil(bits / 4), '0')}`;
 export const hex2 = (v) => (v & 0xff).toString(16).padStart(2, '0');
 export const bin32 = (v) => (v >>> 0).toString(2).padStart(32, '0');
 
-export function formatValue(v, fmt) {
+/** A register value in a format; `bits` is the register's width (W-D29: ceil(bits / 4) hexadecimal digits). */
+export function formatValue(v, fmt, bits = 32) {
+  if (bits < 32) {
+    const u = (v >>> 0) % 2 ** bits;
+    switch (fmt) {
+      case 'signed': return String(u >= 2 ** (bits - 1) ? u - 2 ** bits : u);
+      case 'unsigned': return String(u);
+      case 'binary': return u.toString(2).padStart(bits, '0').replace(/(?=(.{8})+$)(?!^)/g, ' ');
+      default: return `0x${u.toString(16).padStart(Math.ceil(bits / 4), '0')}`;
+    }
+  }
   switch (fmt) {
     case 'signed': return String(v | 0);
     case 'unsigned': return String(v >>> 0);
@@ -55,8 +69,14 @@ export function download(name, data, type = 'text/plain') {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+// Each architecture keeps its own settings and workspace (W-D29: the applications share an origin); RISC-V keeps the
+// historical keys. The theme and the projector mode are the platform's.
+const SHARED_KEYS = new Set(['pips.theme', 'pips.projector']);
+/** The storage key of a setting for this page's architecture. */
+export const scoped = (key) => (ARCH_ID === 'riscv' || SHARED_KEYS.has(key) ? key : key.replace(/^pips\./, `pips.${ARCH_ID}.`));
+
 /** Read storage without failing where it is blocked (WS-U-010). */
 export const store = {
-  get(key) { try { return localStorage.getItem(key); } catch { return null; } },
-  set(key, value) { try { localStorage.setItem(key, value); } catch { /* storage unavailable */ } },
+  get(key) { try { return localStorage.getItem(scoped(key)); } catch { return null; } },
+  set(key, value) { try { localStorage.setItem(scoped(key), value); } catch { /* storage unavailable */ } },
 };

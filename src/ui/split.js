@@ -3,7 +3,8 @@
 // neighbours. Dividers follow the pointer with pointer capture (mouse, touch
 // and pen), move with the arrow keys (Shift: further), and return to their
 // default on a double click or Enter; each pane keeps a minimum size, and a
-// pane marked collapsible folds to its heading with a button there. Sizes
+// pane marked collapsible folds to its heading with a button there, and every
+// divider carries a fold button for the pane beside it (D6). Sizes
 // are fractions of the split (flex-grow), so the proportions hold when the
 // window changes size. Each split's layout is saved in the browser under a
 // versioned key per view; Split.resetAll() restores every default. The
@@ -11,7 +12,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-import { el, store } from './dom.js';
+import { el, store, scoped } from './dom.js';
 import { STRINGS } from './strings.js';
 import { icon } from './icons.js';
 import { normalise, dragPair, resetPair, readLayout, writeLayout, LAYOUT_PREFIX } from './split-math.js';
@@ -27,12 +28,13 @@ export class Split {
     this.root = el(`div.split.split-${dir}`, { 'data-split': name });
     this.panes = [];
     this.dividers = [];
+    this.onApply = null; // called after every change of sizes or folds (the panes' own controls follow it)
     live.add(this);
   }
 
   /**
    * Lay out `panes`, restoring the layout saved under `key`.
-   * Each pane: {node, id, min (px), size (default fraction), collapsible?, collapsed? (default), header?}
+   * Each pane: {node, id, min (px), size (default fraction), collapsible?, foldable?, collapsed? (default), header?, title?}
    * `header` is where the collapse button goes (default: the node's h2).
    */
   configure(panes, key) {
@@ -44,9 +46,10 @@ export class Split {
     this.fracs = saved?.sizes ?? this.defaults.slice();
     this.collapsed = saved?.collapsed ?? this.defaultCollapsed.slice();
     this.dividers = [];
+    this.folds = [];
     const children = [];
     panes.forEach((p, i) => {
-      if (i > 0) children.push(this.divider(i - 1));
+      if (i > 0) children.push(this.divider(i - 1), this.foldButton(i - 1));
       p.node.classList.add('pane');
       p.node.dataset.pane = p.id;
       p.node._split = this;
@@ -78,6 +81,19 @@ export class Split {
     return d;
   }
 
+  /**
+   * The fold button of divider i (D6): it folds the pane after the divider, or else the one before it, whichever
+   * can fold (`collapsible`, or `foldable` for a pane without a heading, which then folds out of sight and
+   * returns from this button). It is a sibling of the divider, a zero-size box at its end, because a separator
+   * may not contain a control.
+   */
+  foldButton(i) {
+    const at = [i + 1, i].find((j) => this.panes[j].collapsible || this.panes[j].foldable);
+    const b = at === undefined ? null : el('button.divider-fold', { type: 'button', onclick: () => this.toggle(at) });
+    this.folds.push(b && { at, b });
+    return el(`div.divider-fold-box.${this.dir === 'row' ? 'fold-v' : 'fold-h'}`, { 'data-fold': this.panes[i].id }, b ?? []);
+  }
+
   toggleButton(p) {
     if (!p.node._toggle) {
       p.node._toggle = el('button.pane-toggle', { type: 'button', onclick: (e) => {
@@ -98,16 +114,35 @@ export class Split {
       const c = this.collapsed[i];
       const n = p.node;
       n.classList.toggle('collapsed', c);
+      n.classList.toggle('pane-away', c && !p.collapsible); // no heading to fold to: out of sight
       n.style.flex = c ? '0 0 auto' : `${(this.fracs[i] / open).toFixed(5)} 1 0px`;
       n.style[vertical ? 'minWidth' : 'minHeight'] = c ? '' : `${p.min ?? 60}px`;
       n.style[vertical ? 'minHeight' : 'minWidth'] = '';
       if (n._toggle && n._split === this) {
         const label = c ? STRINGS.layout.expand(p.title ?? p.id) : STRINGS.layout.collapse(p.title ?? p.id);
-        n._toggle.replaceChildren(icon(c ? (vertical ? 'chevronRight' : 'chevronDown') : (vertical ? 'chevronLeft' : 'chevronUp')));
+        // the arrow points the way the pane goes when it folds (a pane after another folds down or right), and back when it opens
+        const after = i > 0;
+        const toward = vertical ? (after ? 'chevronRight' : 'chevronLeft') : (after ? 'chevronDown' : 'chevronUp');
+        const back = vertical ? (after ? 'chevronLeft' : 'chevronRight') : (after ? 'chevronUp' : 'chevronDown');
+        n._toggle.replaceChildren(icon(c ? back : toward));
         n._toggle.setAttribute('aria-expanded', String(!c));
         n._toggle.setAttribute('aria-label', label);
         n._toggle.title = label;
       }
+    });
+    this.folds.forEach((f, i) => {
+      if (!f) return;
+      const c = this.collapsed[f.at];
+      const p = this.panes[f.at];
+      const after = f.at === i + 1;
+      const label = (c ? STRINGS.layout.expand : STRINGS.layout.collapse)(p.title ?? p.id);
+      // the arrow points the way the pane goes when it folds, and back when it opens
+      const toward = vertical ? (after ? 'chevronRight' : 'chevronLeft') : (after ? 'chevronDown' : 'chevronUp');
+      const back = vertical ? (after ? 'chevronLeft' : 'chevronRight') : (after ? 'chevronUp' : 'chevronDown');
+      f.b.replaceChildren(icon(c ? back : toward));
+      f.b.setAttribute('aria-expanded', String(!c));
+      f.b.setAttribute('aria-label', label);
+      f.b.title = label;
     });
     this.dividers.forEach((d, i) => {
       const off = this.collapsed[i] || this.collapsed[i + 1];
@@ -116,6 +151,7 @@ export class Split {
       const pair = this.fracs[i] + this.fracs[i + 1];
       d.setAttribute('aria-valuenow', String(Math.round((100 * this.fracs[i]) / pair)));
     });
+    this.onApply?.();
   }
 
   save() {
@@ -215,7 +251,7 @@ export class Split {
   /** View ▸ Reset layout: forget every saved layout and restore the defaults. */
   static resetAll() {
     try {
-      for (const k of Object.keys(localStorage)) if (k.startsWith('pips.layout.')) localStorage.removeItem(k);
+      for (const k of Object.keys(localStorage)) if (k.startsWith(scoped('pips.layout.'))) localStorage.removeItem(k);
     } catch { /* storage unavailable */ }
     for (const s of live) s.reset();
   }

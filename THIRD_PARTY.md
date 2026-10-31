@@ -20,3 +20,5 @@ are not dependencies of the repository.
 | Component | Version | Licence | Used in | How | Approved |
 |---|---|---|---|---|---|
 | [Oswald](https://ctan.org/pkg/oswald) (Copyright 2016 The Oswald Project Authors) | 4.100, `oswald` package of 2021-10-17 in MiKTeX | SIL Open Font License 1.1 | `content/branding/*.svg` (from `content/branding/source/risc-vista-logo.tex`) | Outlines of its glyphs in the logo, made by `tools/make-logo.mjs`; no font file is shipped or loaded | Author, 2026-10-27 (logo design A) |
+| [Montserrat](https://github.com/JulietaUla/Montserrat) (Copyright 2024 The Montserrat.Git Project Authors) | 9.000, Medium | SIL Open Font License 1.1 | `logo/mavilera-full.svg` | Outlines of its glyphs in the subtitle; no font file is shipped or loaded | Author, 2026-10-28 (OFL font for the logo labels) |
+| [Inter](https://github.com/rsms/inter) (Copyright 2020 The Inter Project Authors) | 4.001, instance wght 700, opsz 14 | SIL Open Font License 1.1 | `logo/mavilera-full.svg` | Outlines of its glyphs in the instruction and pipeline labels; no font file is shipped or loaded | Author, 2026-10-28 (OFL font for the logo labels) |

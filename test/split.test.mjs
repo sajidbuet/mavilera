@@ -65,6 +65,8 @@ test('the workspace stylesheet styles dividers, folded panes and both themes; th
     assert.ok(css.includes(sel), `theme.css lacks ${sel}`);
   }
   assert.doesNotMatch(css, /@import|url\(\s*["']?https?:/, 'no external fonts or stylesheets');
+  for (const sel of ['.divider-fold', '.fold-v', '.fold-h', '.pane.pane-away']) assert.ok(css.includes(sel), `theme.css lacks ${sel} (D6)`);
+  assert.equal(typeof STRINGS.layout.panes.right, 'string');
   for (const k of ['divider', 'reset', 'view', 'show']) assert.equal(typeof STRINGS.layout[k], 'string');
   assert.equal(typeof STRINGS.layout.collapse('x'), 'string');
 });

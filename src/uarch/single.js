@@ -14,7 +14,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-import { HALT_WORD, decodeMnemonic, immI, immS, immB, immU, immJ } from '../isa/encoding.js';
+import { ECALL_WORD, stopKind, unsupportedEcall, decodeMnemonic, immI, immS, immB, immU, immJ } from '../isa/encoding.js';
 import { WordMemory } from '../core/memory.js';
 import { PROFILES } from '../core/profiles.js';
 
@@ -86,12 +86,13 @@ export class SingleCycle {
    * @param {object} tables content/data/ch06-tables.json
    * @param {{ext?: boolean, historyLimit?: number}} options ext: the "xori and lbu" extension
    */
-  constructor(tables, { ext = false, historyLimit = 100_000 } = {}) {
+  constructor(tables, { ext = false, historyLimit = 100_000, memsys = null } = {}) {
     this.dec = buildDecoders(tables);
+    this.memsys = memsys; // optional memory system (docs/architecture/memory-hierarchy.md)
     this.ext = ext;
     const p = PROFILES.ch06;
     this.isa = ext ? p.subsets.ext : p.isa;
-    this.words = p.words;
+    this.words = this.memsys?.memWords ?? p.words;
     this.historyLimit = historyLimit;
     this.load({ segments: [] });
   }
@@ -106,7 +107,8 @@ export class SingleCycle {
     this.imem = new WordMemory(this.words);
     this.dmem = new WordMemory(this.words);
     for (const seg of this.program.segments) (seg.executable ? this.imem : this.dmem).loadBytes(seg.address, seg.bytes);
-    this.x = new Uint32Array(32);
+    if (this.memsys) ({ I: this.imem, D: this.dmem } = this.memsys.attach(this.imem, this.dmem));
+    this.x =new Uint32Array(32);
     this.pc = 0;
     this.cycle = 0;
     this.halted = false;
@@ -162,7 +164,7 @@ export class SingleCycle {
       cls: m.cls, // main-decoder column (R, I-ALU, lw, sw, branch, jal, jalr, lui, auipc), or null
       rows: { main: m.index, alu: ad.index, branch: s.Branch ? br.index : -1 },
       mnemonic: decodeMnemonic(w),
-      halt: w === HALT_WORD,
+      halt: stopKind(w, this.x[17]) !== null,
     };
     return this.cache;
   }
@@ -178,6 +180,7 @@ export class SingleCycle {
     const c = this.evaluate();
     const s = c.signals;
     if (c.halt) { this.halted = true; return 'halt'; }
+    if (s.instr === ECALL_WORD) { this.error = unsupportedEcall('single-cycle', this.x[17]); return 'error'; }
     if (!c.mnemonic || !this.isa.has(c.mnemonic)) {
       this.error = `instruction ${h8(s.instr)} at ${h8(s.pc)} is not implemented by the single-cycle processor`;
       return 'error';
@@ -187,6 +190,25 @@ export class SingleCycle {
       return 'error';
     }
     const rec = { pc: s.pc, rd: 0, old: 0, mem: -1, memOld: 0 };
+    if (this.memsys?.active) {
+      rec.hold = this.memsys.edge(this.cycle); // also tells the platform devices the time, and keeps their state for a step back
+    }
+    if (this.memsys?.timed) {
+      // "single-cycle with wait states": the clock edge is held until memory is ready (a stretched-clock
+      // educational model, not a conventional fixed-latency design); the CPI becomes 1 + stalls
+      const reqs = { I: { op: 'read', addr: s.pc, size: 4 } };
+      if (s.MemWrite) reqs.D = { op: 'write', addr: s.alu_y, size: 4 };
+      else if (s.ResultSel === 1) reqs.D = { op: 'read', addr: s.alu_y, size: 4 };
+      const cause = this.memsys.waitEdge(reqs);
+      if (cause) {
+        rec.wait = cause;
+        this.cycle += 1;
+        this.remember(rec);
+        this.cache = null;
+        return 'step';
+      }
+    }
+    if (s.ResultSel === 1 && this.memsys?.devices.length) this.dmem.commitRead(s.alu_y, 4); // a device's side effect of a load, once
     if (s.RegWrite && s.rd !== 0) {
       rec.rd = s.rd;
       rec.old = this.x[s.rd];
@@ -198,13 +220,17 @@ export class SingleCycle {
     }
     this.pc = s.pc_next;
     this.cycle += 1;
+    this.remember(rec);
+    this.cache = null;
+    return 'step';
+  }
+
+  remember(rec) {
     this.history.push(rec);
     if (this.history.length > this.historyLimit) {
       this.history.splice(0, this.history.length - this.historyLimit);
       this.dropped += 1;
     }
-    this.cache = null;
-    return 'step';
   }
 
   /** Undo the last clock edge (WS-F-090). Returns false if nothing is left. */
@@ -213,7 +239,9 @@ export class SingleCycle {
     if (this.halted) { this.halted = false; return true; }
     const r = this.history.pop();
     if (!r) return false;
-    if (r.mem >= 0) this.dmem.write(r.mem, 4, r.memOld);
+    if (r.hold) this.memsys.load(r.hold);
+    if (r.wait) { this.cycle -= 1; this.cache = null; return true; } // a wait edge changed nothing else
+    if (r.mem >= 0) this.dmem.restore(r.mem, 4, r.memOld);
     if (r.rd) this.x[r.rd] = r.old;
     this.pc = r.pc;
     this.cycle -= 1;

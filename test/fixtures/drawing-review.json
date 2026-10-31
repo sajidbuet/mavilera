@@ -1,0 +1,82 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
+ "_source": "UPDATE_REVIEW=1 node --test test/schematic.test.mjs; for the book figure generators (WS-F-071)",
+ "ch06": {
+  "collisions": [
+   "control MemWrite through text \"zero, lt, ltu\"",
+   "text \"imm\" across element imm",
+   "text \"pc_plus4\" across element add4",
+   "text \"pc_target\" on text \"ALUCtrl\"",
+   "text \"pc_target\" on text \"TargetSrc\"",
+   "wire alu_rm through text \"MemWrite\"",
+   "wire alu_rm through text \"zero, lt, ltu\"",
+   "wire rd2_dm through text \"imm\"",
+   "wire rd2_dm through text \"pc_plus4\"",
+   "wire rd2_dm through text \"pc_target\"",
+   "wire result_rf through text \"ImmSel\""
+  ],
+  "unmarked": [
+   "pc_next",
+   "target_base",
+   "src_b"
+  ]
+ },
+ "ch07": {
+  "collisions": [
+   "text \"Register file\" across element rs2q",
+   "text \"rd2\" across element rf",
+   "wire res_rf through text \"Register file\"",
+   "wire rs2_mem through text \"AddrSel\"",
+   "wire sb_alu through text \"ALUCtrl\""
+  ],
+  "unmarked": [
+   "pc",
+   "alu_q",
+   "addr",
+   "rs2_q",
+   "rs2_q",
+   "rs1",
+   "rs2",
+   "rd",
+   "rs1_val",
+   "rs2_val",
+   "rs1_q",
+   "src_a",
+   "src_b",
+   "mdr"
+  ]
+ },
+ "ch08": {
+  "collisions": [
+   "control MemWrite_mem through text \"exres\"",
+   "text \"ALUCtrl\" across element xm",
+   "text \"Register file\" across element r2",
+   "text \"ResultSel\" across element r3",
+   "text \"ResultSel\" across element rm",
+   "text \"WB control\" across element r4",
+   "text \"store data\" across element tm",
+   "wire imm_tadd through text \"store data\"",
+   "wire mem_up through text \"fwd_sel_b\"",
+   "wire rd_ex through text \"store data\"",
+   "wire rd_rf through text \"Register file\"",
+   "wire store_r3 through text \"ResultSel\"",
+   "wire tgt_pcm through text \"PCSel\"",
+   "wire tgt_pcm through text \"TargetSrc\""
+  ],
+  "unmarked": [
+   "pc_next",
+   "instr_if",
+   "src_b_ex",
+   "src_a_ex",
+   "target_base_ex",
+   "zero_ex,lt_ex,ltu_ex",
+   "alu_y_ex",
+   "exres_ex",
+   "rdata_mem",
+   "exres_wb",
+   "rdata_wb",
+   "ResultSel_ex",
+   "ResultSel_wb"
+  ]
+ }
+}

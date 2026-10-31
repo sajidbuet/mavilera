@@ -10,6 +10,9 @@ import assert from 'node:assert/strict';
 
 import { completionContext, completions, helpFor, wordAt } from '../src/ui/assist.js';
 import { INSTRUCTIONS } from '../src/isa/encoding.js';
+import { descriptor } from '../src/arch/riscv/index.js';
+
+const E = descriptor.language.editor; // contract v5: the RISC-V words, details and help
 import { PSEUDOS } from '../src/asm/assembler.js';
 
 test('WS-U-021: completion context', () => {
@@ -24,31 +27,31 @@ test('WS-U-021: completion context', () => {
 });
 
 test('WS-U-021: candidates carry their operand syntax or register number', () => {
-  const m = completions({ kind: 'mnemonic', prefix: 'bg' });
+  const m = completions({ kind: 'mnemonic', prefix: 'bg' }, E);
   assert.ok(m.some((c) => c.label === 'bge' && c.detail === 'bge rs1, rs2, label'));
   assert.ok(m.some((c) => c.label === 'bgez' && c.detail === 'bgez rs, label')); // pseudo-instructions too
   assert.ok(m.length <= 8);
-  const r = completions({ kind: 'register', prefix: 'a' });
+  const r = completions({ kind: 'register', prefix: 'a' }, E);
   assert.deepEqual(r.slice(0, 2).map((c) => c.label), ['a0', 'a1']);
   assert.match(r[0].detail, /^x10, argument or result$/);
-  assert.equal(completions({ kind: 'register', prefix: 'g' })[0].detail, 'x3, global pointer');
-  assert.deepEqual(completions(null), []);
+  assert.equal(completions({ kind: 'register', prefix: 'g' }, E)[0].detail, 'x3, global pointer');
+  assert.deepEqual(completions(null, E), []);
 });
 
 test('WS-U-021: hover help for every instruction, pseudo-instruction and register', () => {
   for (const mn of Object.keys(INSTRUCTIONS)) {
-    const h = helpFor(`        ${mn} x1, x2, x3`, 9);
-    assert.equal(h.kind, 'instr', mn);
+    const h = helpFor(`        ${mn} x1, x2, x3`, 9, E);
+    assert.equal(h.kind, 'instruction', mn);
     assert.ok(h.usage && h.format && h.operation, `${mn}: ${JSON.stringify(h)}`);
   }
   for (const mn of PSEUDOS) {
-    const h = helpFor(`        ${mn} a0`, 8);
+    const h = helpFor(`        ${mn} a0`, 8, E);
     assert.equal(h.kind, 'pseudo', mn);
     assert.ok(h.operation, mn);
   }
-  assert.equal(helpFor('        addi sp, sp, -16', 14).text, 'sp = x2: stack pointer');
-  assert.equal(helpFor('        mv   x8, a0', 14).text, 'x8 = s0: saved (callee-saved)');
-  assert.equal(helpFor('        nop  # add', 16), null); // in a comment
-  assert.equal(helpFor('        nop', 2), null); // white space
+  assert.equal(helpFor('        addi sp, sp, -16', 14, E).text, 'sp = x2: stack pointer');
+  assert.equal(helpFor('        mv   x8, a0', 14, E).text, 'x8 = s0: saved (callee-saved)');
+  assert.equal(helpFor('        nop  # add', 16, E), null); // in a comment
+  assert.equal(helpFor('        nop', 2, E), null); // white space
   assert.deepEqual(wordAt('loop: beqz t0, done', 7), { word: 'beqz', from: 6, to: 10 });
 });

@@ -27,7 +27,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-import { HALT_WORD, decodeMnemonic, immB } from '../isa/encoding.js';
+import { HALT_WORD, ECALL_WORD, EBREAK_WORD, stopKind, unsupportedEcall, decodeMnemonic, immB } from '../isa/encoding.js';
 import { WordMemory } from '../core/memory.js';
 import { PROFILES } from '../core/profiles.js';
 import { buildDecoders, ALU_FUNCS, IMM } from './single.js';
@@ -94,7 +94,8 @@ export class Pipeline {
    * @param {{hazard?: string, predictor?: string, entries?: number, checks?: boolean, historyLimit?: number}} options
    *   checks: stop with an error at an instruction the processor does not implement or a misaligned word access in EX
    */
-  constructor(tables, { hazard = 'full', predictor = 'none', entries = 8, early = false, checks = true, historyLimit = 100_000 } = {}) {
+  constructor(tables, { hazard = 'full', predictor = 'none', entries = 8, early = false, checks = true, historyLimit = 100_000, memsys = null } = {}) {
+    this.memsys = memsys; // optional memory system (docs/architecture/memory-hierarchy.md)
     if (!HAZARD_MODES.includes(hazard)) throw new Error(`unknown hazard mode ${hazard}`);
     if (early && hazard !== 'full') throw new Error('early branch resolution needs the complete hazard unit');
     this.dec = buildDecoders(tables);
@@ -104,7 +105,7 @@ export class Pipeline {
     this.checks = checks;
     const p = PROFILES.ch08;
     this.isa = p.isa;
-    this.words = p.words;
+    this.words = this.memsys?.memWords ?? p.words;
     this.historyLimit = historyLimit;
     this.load({ segments: [] });
   }
@@ -119,7 +120,8 @@ export class Pipeline {
     this.imem = new WordMemory(this.words);
     this.dmem = new WordMemory(this.words);
     for (const seg of this.program.segments) (seg.executable ? this.imem : this.dmem).loadBytes(seg.address, seg.bytes);
-    this.x = new Uint32Array(32);
+    if (this.memsys) ({ I: this.imem, D: this.dmem } = this.memsys.attach(this.imem, this.dmem));
+    this.x =new Uint32Array(32);
     this.bp.reset();
     this.pc_if = 0;
     this.ifid = IFID;
@@ -287,7 +289,7 @@ export class Pipeline {
       stale, // sources of the instruction in EX that did not receive the newest value
       rows: { main: m.index, alu: ad.index, branch: s.Branch_ex ? br.index : -1, branchId: s.Branch_id && this.early ? brId.index : -1 },
       bp: { indexIf: this.bp.index(s.pc_if), indexEx: this.bp.index(s.pc_ex), indexId: this.bp.index(s.pc_id) },
-      halt: s.instr_wb === HALT_WORD,
+      halt: stopKind(s.instr_wb, this.x[17]) !== null,
     };
     return this.cache;
   }
@@ -326,9 +328,10 @@ export class Pipeline {
     const c = this.evaluate();
     const s = c.signals;
     if (c.halt) { this.halted = true; return 'halt'; }
+    if (s.instr_wb === ECALL_WORD) { this.error = unsupportedEcall('pipelined', this.x[17]); return 'error'; } // in WB every older instruction has written
     if (this.checks && s.instr_ex !== 0) {
       const mn = decodeMnemonic(s.instr_ex);
-      if (!mn || !this.isa.has(mn)) {
+      if ((!mn || !this.isa.has(mn)) && s.instr_ex !== ECALL_WORD && s.instr_ex !== EBREAK_WORD) { // ecall and ebreak are judged in WB
         this.error = `instruction ${h8(s.instr_ex)} at ${h8(s.pc_ex)} is not implemented by the pipelined processor`;
         return 'error';
       }
@@ -343,13 +346,35 @@ export class Pipeline {
       ifSeq: this.ifSeq, nextSeq: this.nextSeq, haltPc: this.haltPc, stats: { ...this.stats },
       rd: 0, old: 0, mem: -1, memOld: 0, bpIndex: -1, bpOld: 0,
     };
+    if (this.memsys?.active) rec.hold = this.memsys.edge(this.cycle); // also tells the platform devices the time (step back restores them)
+    if (this.memsys?.timed) {
+      // A memory wait is a clock edge on which every pipeline register holds (all stages freeze; the
+      // request is held by the controller, so a waiting cycle issues no second transaction). Simplification
+      // of the design: an instruction-fetch wait also freezes MEM instead of stalling IF alone.
+      const reqs = {};
+      if (!s.stall_if) reqs.I = { op: 'read', addr: s.pc_if, size: 4 };
+      if (s.MemWrite_mem) reqs.D = { op: 'write', addr: s.exres_mem, size: 4 };
+      else if (s.MemRead_mem) reqs.D = { op: 'read', addr: s.exres_mem, size: 4 };
+      const cause = this.memsys.waitEdge(reqs);
+      if (cause) {
+        rec.wait = cause;
+        // no hazard event happens on a wait edge: the diagram shows the stages held
+        this.trace[this.cycle] = { ...this.record(), stall_if: 0, stall_id: 0, flush_id: 0, flush_ex: 0, PCSel_ex: 0,
+          PCSel_id: 0, lwStall: 0, brStall: 0, waitOn: null, stale: false, wait: cause };
+        this.cycle += 1;
+        this.remember(rec);
+        this.cache = null;
+        return 'step';
+      }
+    }
+    if (s.MemRead_mem && this.memsys?.devices.length) this.dmem.commitRead(s.exres_mem, 4); // a device's side effect of a load, once
     this.trace[this.cycle] = this.record();
 
-    if (s.instr_ex === HALT_WORD && this.haltPc === null) this.haltPc = s.pc_ex;
+    if ((s.instr_ex === HALT_WORD || s.instr_ex === ECALL_WORD || s.instr_ex === EBREAK_WORD) && this.haltPc === null) this.haltPc = s.pc_ex;
 
     // statistics (instructions counted once each; the halt is not counted)
     const st = this.stats;
-    const real = (seq, instr) => seq !== 0 && instr !== 0 && instr !== HALT_WORD && this.instances.get(seq)?.kind === 'instr';
+    const real = (seq, instr) => seq !== 0 && instr !== 0 && instr !== HALT_WORD && instr !== ECALL_WORD && instr !== EBREAK_WORD && this.instances.get(seq)?.kind === 'instr';
     if (real(c.seq.WB, s.instr_wb)) st.retired += 1;
     if (this.early && real(c.seq.ID, s.instr_id) && !s.stall_id) { // resolved in ID
       if (s.Branch_id) { st.branches += 1; if (s.BranchTaken_id !== s.pred_id) st.mispredicts += 1; }
@@ -424,13 +449,17 @@ export class Pipeline {
     }
 
     this.cycle += 1;
+    this.remember(rec);
+    this.cache = null;
+    return 'step';
+  }
+
+  remember(rec) {
     this.history.push(rec);
     if (this.history.length > this.historyLimit) {
       this.history.splice(0, this.history.length - this.historyLimit);
       this.dropped += 1;
     }
-    this.cache = null;
-    return 'step';
   }
 
   mark(seq) {
@@ -446,8 +475,10 @@ export class Pipeline {
     if (this.halted) { this.halted = false; return true; }
     const r = this.history.pop();
     if (!r) return false;
+    if (r.hold) this.memsys.load(r.hold);
+    if (r.wait) { this.cycle -= 1; this.cache = null; return true; } // a wait edge changed nothing else
     if (r.bpIndex >= 0) this.bp.table[r.bpIndex] = r.bpOld;
-    if (r.mem >= 0) this.dmem.write(r.mem, 4, r.memOld);
+    if (r.mem >= 0) this.dmem.restore(r.mem, 4, r.memOld);
     if (r.rd) this.x[r.rd] = r.old;
     Object.assign(this, { pc_if: r.pc_if, ifid: r.ifid, idex: r.idex, exmem: r.exmem, memwb: r.memwb,
       ifSeq: r.ifSeq, nextSeq: r.nextSeq, haltPc: r.haltPc, stats: r.stats });

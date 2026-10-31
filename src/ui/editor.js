@@ -8,21 +8,19 @@
 // Linked lines (the counterpart of a line of the generated assembly,
 // WS-F-082) are marked in the gutter and by a background. In assembly,
 // mnemonics and registers are completed from a list under the cursor, and
-// pointing at a mnemonic or register shows its help (WS-U-021, assist.js).
+// pointing at a mnemonic or register shows its help (WS-U-021, assist.js). The words, their help and the
+// comment prefix are the architecture's (contract v5 Language.editor, Language.comment).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
 import { el } from './dom.js';
 import { STRINGS } from './strings.js';
-import { INSTRUCTIONS, ABI_NAMES } from '../isa/encoding.js';
-import { PSEUDOS } from '../asm/assembler.js';
 import { completionContext, completions, helpFor, isComplete } from './assist.js';
 
-const MNEMONICS = new Set([...Object.keys(INSTRUCTIONS), ...PSEUDOS]);
-const REGISTERS = new Set([...ABI_NAMES, 'fp', ...Array.from({ length: 32 }, (_, i) => `x${i}`)]);
 const escape = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
-export function highlightLine(line) {
+/** One line of assembly, highlighted with the language's words `syn` ({mnemonics, registers: Set, comment}). */
+export function highlightLine(line, syn) {
   let out = '';
   let rest = line;
   const hash = (() => {
@@ -30,7 +28,7 @@ export function highlightLine(line) {
     for (let i = 0; i < line.length; i++) {
       const c = line[i];
       if (q) { if (c === q && line[i - 1] !== '\\') q = null; } else if (c === '"' || c === "'") q = c;
-      else if (c === '#') return i;
+      else if (line.startsWith(syn.comment, i)) return i;
     }
     return -1;
   })();
@@ -44,8 +42,8 @@ export function highlightLine(line) {
     if (tok[0] === '"' || tok[0] === "'") cls = 'tok-string';
     else if (head && tok.endsWith(':')) cls = 'tok-label';
     else if (head && tok[0] === '.') { cls = 'tok-directive'; head = false; }
-    else if (head) { cls = MNEMONICS.has(tok.toLowerCase()) ? 'tok-mnemonic' : null; head = false; }
-    else if (REGISTERS.has(tok.toLowerCase())) cls = 'tok-register';
+    else if (head) { cls = syn.mnemonics.has(tok.toLowerCase()) ? 'tok-mnemonic' : null; head = false; }
+    else if (syn.registers.has(tok.toLowerCase())) cls = 'tok-register';
     else if (/^-?\d/.test(tok)) cls = 'tok-immediate';
     else if (tok[0] === '%') cls = 'tok-directive';
     out += cls ? `<span class="${cls}">${escape(tok)}</span>` : escape(tok);
@@ -87,7 +85,10 @@ export function highlightC(line, inComment) {
 }
 
 export class Editor {
-  constructor({ onChange, onCursorLine, onHoverLine = null, onGutterClick = null }) {
+  constructor({ language, onChange, onCursorLine, onHoverLine = null, onGutterClick = null }) {
+    this.words = language.editor; // contract: mnemonics, registers, help, detail
+    this.comment = language.comment;
+    this.syn = { mnemonics: new Set(language.editor.mnemonics), registers: new Set(language.editor.registers), comment: language.comment };
     this.onChange = onChange;
     this.onCursorLine = onCursorLine;
     this.onHoverLine = onHoverLine;
@@ -148,13 +149,13 @@ export class Editor {
     const pos = a.selectionStart;
     const lineStart = a.value.lastIndexOf('\n', pos - 1) + 1;
     const before = a.value.slice(lineStart, pos);
-    const ctx = completionContext(before);
-    const items = completions(ctx);
+    const ctx = completionContext(before, this.comment);
+    const items = completions(ctx, this.words);
     if (!items.length) { this.closeList(); return; }
     this.ctx = { ...ctx, lineStart };
     this.items = items;
     // a whole word typed ("add") keeps Enter and Tab for the text; the arrows choose a longer one ("addi")
-    this.pick = isComplete(ctx) ? -1 : 0;
+    this.pick = isComplete(ctx, this.words) ? -1 : 0;
     this.list.replaceChildren(...items.map((it, i) => el('li', { id: `ed-opt-${i}`, role: 'option', 'aria-selected': String(i === this.pick),
       onmousedown: (e) => { e.preventDefault(); this.insert(i); } }, el('span.mono.ed-opt-label', { text: it.label }), el('span.ed-opt-detail', { text: it.detail }))));
     const { cw, lh, pl, pt } = this.metrics();
@@ -313,7 +314,7 @@ export class Editor {
     const lines = this.area.value.split('\n');
     if (this.lang === 'asm' && this.list.hidden && line >= 1 && line <= lines.length) {
       const col = Math.floor((e.clientX - r.left - pl + this.area.scrollLeft) / cw);
-      const h = col >= 0 ? helpFor(lines[line - 1], col) : null;
+      const h = col >= 0 ? helpFor(lines[line - 1], col, this.words, this.comment) : null;
       const key = h ? `${line}:${h.word}` : null;
       if (key !== this.tipWord) {
         this.showTip(h, e.clientX - r.left + 12, e.clientY - r.top + 16);
@@ -357,7 +358,7 @@ export class Editor {
       const cls = `${this.current === i + 1 ? ' ed-cur' : ''}${this.linked.has(i + 1) ? ' ed-link' : ''}`;
       let html;
       if (this.lang === 'c') [html, inComment] = highlightC(l, inComment);
-      else html = highlightLine(l);
+      else html = highlightLine(l, this.syn);
       return `<span class="ed-line${cls}">${html || ' '}</span>`;
     }).join('\n') + '\n';
     // Error layer: transparent text, the faulty token underlined, the message after the line.

@@ -1,0 +1,107 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148), not taken from a textbook; produced by tools/make-sap1-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "sap-1",
+ "title": "Ten times a number",
+ "task": "Show on OUT ten times the byte at x (modulo 256), then stop. SAP-1 cannot multiply or shift, and an instruction can only add a byte of the memory: count the bytes your program needs, since the memory has sixteen. Keep the label x and its DB line.",
+ "lang": "asm",
+ "starter": "; times-ten -- practice exercise (MAVILERA, SAP-1)\n; Show 10 times x on OUT.\n; Hint: only additions; the program and x must fit the sixteen bytes.\n        HLT           ; replace with your code\n\n        ORG 0FH       ; the data at the end of the memory\nx:      DB 0\n",
+ "tests": [
+  {
+   "name": "10 × 0",
+   "memory": [
+    {
+     "at": "x",
+     "bytes": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     0
+    ],
+    "registers": {
+     "OUT": 0
+    }
+   }
+  },
+  {
+   "name": "10 × 3",
+   "memory": [
+    {
+     "at": "x",
+     "bytes": [
+      3
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     30
+    ],
+    "registers": {
+     "OUT": 30
+    }
+   }
+  },
+  {
+   "name": "10 × 25",
+   "memory": [
+    {
+     "at": "x",
+     "bytes": [
+      25
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     250
+    ],
+    "registers": {
+     "OUT": 250
+    }
+   }
+  },
+  {
+   "name": "10 × 26",
+   "memory": [
+    {
+     "at": "x",
+     "bytes": [
+      26
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     4
+    ],
+    "registers": {
+     "OUT": 4
+    }
+   }
+  },
+  {
+   "name": "10 × 255",
+   "memory": [
+    {
+     "at": "x",
+     "bytes": [
+      255
+     ]
+    }
+   ],
+   "expect": {
+    "outputs": [
+     246
+    ],
+    "registers": {
+     "OUT": 246
+    }
+   }
+  }
+ ]
+}

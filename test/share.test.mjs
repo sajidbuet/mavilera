@@ -9,7 +9,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { encodeFragment, decodeFragment, isShareFragment, settingsFile, readSettingsFile, normalise, ShareError, LINK_LIMIT } from '../src/core/share.js';
+import { isShareFragment, ShareError, LINK_LIMIT } from '../src/shell/share.js';
+import { createShare } from '../src/shell/share.js';
+import { shareSchema } from '../src/shell/share-schema.js';
+import { descriptor as riscvShare } from '../src/arch/riscv/index.js';
+const { encodeFragment, decodeFragment, settingsFile, readSettingsFile, normalise } = createShare(shareSchema(riscvShare)); // the format with the RISC-V schema (contract v5)
 
 const STATE = {
   view: 'pipe', profile: 'ch08', subset: null, lang: 'asm', name: 'loop.s',
@@ -47,6 +51,18 @@ test('WS-F-144: another version or format is refused with a message', async () =
   assert.throws(() => normalise({ ...STATE, view: 'cache' }), (e) => e.code === 'field' && e.data.field === 'view');
   assert.throws(() => normalise({ ...STATE, pipe: { entries: 3 } }), (e) => e.data.field === 'pipe.entries');
   assert.throws(() => normalise({ view: 'isa' }), (e) => e.data.field === 'source');
+});
+
+test('W-D29 decision 4: links and files carry the architecture; none means riscv, another is refused naming it', async () => {
+  assert.equal(normalise(STATE).arch, 'riscv');
+  assert.equal(normalise({ ...STATE, arch: 'riscv' }).arch, 'riscv');
+  // links written by hand, uncompressed: one of before W-D29 (no arch) and one of another architecture
+  const link = (obj) => `#rv1.${Buffer.from(JSON.stringify(obj)).toString('base64url')}`;
+  assert.equal((await decodeFragment(link({ source: 'nop' }))).arch, 'riscv');
+  await assert.rejects(decodeFragment(link({ arch: 'sap1', source: 'x', view: 'bus' })), (e) => e.code === 'arch');
+  assert.ok(settingsFile(STATE).includes('"arch": "riscv"'));
+  assert.throws(() => normalise({ ...STATE, arch: 'sap1' }), (e) => e instanceof ShareError && e.code === 'arch' && e.data.arch === 'sap1' && /sap1/.test(e.message));
+  assert.throws(() => readSettingsFile(JSON.stringify({ format: 'risc-vista-settings', version: 1, arch: 'armv7', source: '' })), (e) => e.code === 'arch' && e.data.arch === 'armv7');
 });
 
 test('WS-N-013: a long program fits a link once compressed; unknown keys are dropped', async () => {

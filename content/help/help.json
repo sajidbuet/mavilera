@@ -1,6 +1,35 @@
 {
-  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). In-app help of the MAVILERA RISC-V Laboratory, written for the application (spec W-D20); shown by the Help dialog (src/ui/help-dialog.js). The detailed documentation is content/help/docs/.",
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). In-app help of the MAVILERA RISC-V Laboratory, written for the application (spec W-D20); shown by the Help dialog (src/ui/help-dialog.js). The detailed documentation is content/help/docs/. The facts of the first section were checked against the sources it links on 2026-10-30.",
   "sections": [
+    {
+      "id": "about",
+      "title": "About RISC-V",
+      "blocks": [
+        { "brand": true },
+        { "p": "RISC-V is an open instruction set architecture (ISA): the instructions, registers and memory model that software sees, which anyone may implement without paying a royalty. This laboratory runs RV32I, the 32-bit base integer instruction set, with the M extension for multiplication and division." },
+        { "p": "Krste Asanović and the graduate students Yunsup Lee and Andrew Waterman started RISC-V in May 2010 in the Parallel Computing Laboratory (Par Lab) of the University of California, Berkeley, which David Patterson directed; the first manual (2011) is by Waterman, Lee, Patterson and Asanović. The RISC-V Foundation was founded in 2015 with 36 founding members, and in March 2020 the RISC-V International Association was incorporated in Switzerland. RISC-V International maintains and ratifies the specifications." },
+        { "p": "Why it matters: an open, royalty-free ISA lets companies, universities and individuals design processors for it and share cores and tools, instead of licensing an instruction set from one company. Its base is small and regular, with standard extensions added as needed, which makes it practical for teaching processor design, as in this laboratory." },
+        { "p": "Where it is used, for example: Espressif's ESP32-C3 and ESP32-C6 microcontrollers have RISC-V processors; Raspberry Pi's RP2350 has two Hazard3 RISC-V cores beside two Arm Cortex-M33 cores; Western Digital announced its open-source SweRV RISC-V core in 2018, with the goal of moving one billion of its processor cores to RISC-V; NVIDIA presented in 2016 its plan to replace its Falcon controller with its own RISC-V core." },
+        { "p": "The architecture is specified in RISC-V International's manuals. They have no DOI; the links are the publishers' own pages." },
+        { "refs": [
+          ["The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA", "https://docs.riscv.org/reference/isa/v20260120/unpriv/unpriv-index.html", "RISC-V International, ratified version 20260120: the instructions this laboratory runs."],
+          ["The RISC-V Instruction Set Manual, Volume II: Privileged Architecture", "https://docs.riscv.org/reference/isa/v20260120/priv/priv-index.html", "Version 20260120: machine mode, CSRs, traps and interrupts."],
+          ["RISC-V ELF psABI", "https://github.com/riscv-non-isa/riscv-elf-psabi-doc", "The calling convention and the register names of the ABI."],
+          ["The RISC-V Instruction Set Manual, Volume I: Base User-Level ISA", "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2011/EECS-2011-62.html", "A. Waterman, Y. Lee, D. A. Patterson, K. Asanović. UC Berkeley, technical report UCB/EECS-2011-62, 2011: the first manual."],
+          ["Design of the RISC-V Instruction Set Architecture", "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-1.html", "A. Waterman. PhD thesis, UC Berkeley, UCB/EECS-2016-1, 2016: the reasons behind the design."]
+        ] },
+        { "p": "Sources of the history and the examples:" },
+        { "refs": [
+          ["About RISC-V International", "https://riscv.org/about/", "History and governance."],
+          ["Espressif ESP32-C3", "https://www.espressif.com/en/products/socs/esp32-c3", null],
+          ["Espressif ESP32-C6", "https://www.espressif.com/en/products/socs/esp32-c6", null],
+          ["Raspberry Pi RP2350", "https://www.raspberrypi.com/products/rp2350/", null],
+          ["Western Digital press release, 4 December 2018", "https://www.westerndigital.com/company/newsroom/press-releases/2018/2018-12-04-western-digital-delivers-new-innovations-to-drive-open-standard-interfaces-and-risc-v-processor-development", null],
+          ["NVIDIA RISC-V Story, 4th RISC-V Workshop, 2016", "https://riscv.org/wp-content/uploads/2024/12/Tue1100_Nvidia_RISCV_Story_V2.pdf", null]
+        ] },
+        { "notice": "RISC-V® is a registered trademark of RISC-V International. MAVILERA is an independent educational project: it uses the name only to identify the instruction set it simulates, uses no RISC-V logo, and is not affiliated with or endorsed by RISC-V International. The RISC-V specifications are published by RISC-V International under the Creative Commons Attribution 4.0 International licence; this laboratory's assembler, simulator, drawings and texts are its own. Espressif, ESP32, Raspberry Pi, Western Digital, NVIDIA, Arm and Cortex are trademarks of their respective owners." }
+      ]
+    },
     {
       "id": "start",
       "title": "Getting started",
@@ -79,6 +108,30 @@
       ]
     },
     {
+      "id": "memory",
+      "title": "Memory and caches",
+      "blocks": [
+        { "p": "The Memory button chooses the memory model: ideal memory, main memory without a cache, or main memory with an instruction cache (L1I) and a data cache (L1D). For a cache you choose the size, block size, number of ways, replacement and write policy. The settings are illustrative designs for teaching, not those of any real processor. Any change restarts the program." },
+        { "p": "The Cache tab of the Memory and cache panel shows the last access of each cache, how the address finds its line, the lines as sets and ways (valid, dirty, tag, words), and the counters of hits and misses. In the instruction-level view the caches show their state at the current instruction (the run is replayed from the start); the button on the tab counts the whole run at once." },
+        { "p": "Under the last access the animation shows the access step by step. Replay plays it again, Next step goes one step at a time and Show all steps shows them together; with reduced motion switched on in the system, all the steps are shown at once." },
+        { "p": "The group Caches and memory in Templates opens short programs that each show one idea; each sets the memory model it needs." }
+      ]
+    },
+    {
+      "id": "devices",
+      "title": "Devices and traps",
+      "blocks": [
+        { "p": "The profile \"ISA with traps and devices\" (Profile list, instruction-level view) adds the laboratory's platform: a GPIO at 0x4000_0000 with eight LEDs, four switches and a push button, a machine timer at 0x4000_1000 and a UART at 0x4000_2000, with Zicsr instructions, traps and interrupts." },
+        { "p": "The Peripherals tab of the Memory and cache panel draws the board: LEDs glow with the GPIO output, the switches and the button are yours to operate with the mouse or the keyboard (Space or Enter), the timer's count fills against its compare value, and the interrupt lines to the processor light while a request is active. Below it are the processor's mode and trap registers, every device register (read without side effects), the UART terminal where you can type bytes for the receiver, a table of the interrupts requested with the cycles from request to handler, and the stimulus script of pin events. Each pin you change is added to the script at the current cycle, so Reset and Step back replay it." },
+        { "dl": [
+          ["Programs", "In this profile ecall is a trap: compiled C programs and the exit and write calls of the plain ISA profile are not available. Use the UART to print."],
+          ["In the processor views", "Switch on Platform devices on the bus in the Memory setting and the single-cycle, multicycle and pipelined views get the same devices and board, polled with lw and sw; traps and interrupts exist only in the profile with traps."],
+          ["Timing", "One cycle per instruction and 3 to take a trap; the UART takes 4 cycles per byte. These are the model's own numbers, not measurements of any real core."],
+          ["Templates", "The group Devices and traps opens short programs: a running light, switches and a button by polling, a button interrupt, the timer, a system call as a trap, and a serial port."]
+        ] }
+      ]
+    },
+    {
       "id": "files",
       "title": "Files, sharing and exports",
       "blocks": [
@@ -97,26 +150,6 @@
       "title": "Offline use and privacy",
       "blocks": [
         { "p": "Every computation runs in your browser. MAVILERA has no account, sends no telemetry and uploads nothing. After a first visit the hosted version also opens without a network connection, and a single-file version can be downloaded for computers that have none." }
-      ]
-    },
-    {
-      "id": "glossary",
-      "title": "Glossary",
-      "blocks": [
-        { "dl": [
-          ["ABI", "The calling convention: which registers carry arguments and results, and which a procedure must keep (s0–s11, sp)."],
-          ["Clock period, T_c", "The time of one clock cycle, set by the slowest path that must finish within it."],
-          ["CPI", "Cycles per instruction: clock cycles divided by instructions completed."],
-          ["Control signal", "An output of the control unit that sets a multiplexer, enables a write or selects an ALU operation."],
-          ["Datapath", "The registers, memories, ALU, adders and multiplexers that hold and move data."],
-          ["Flush", "Discarding instructions fetched on the wrong path after a jump or a mispredicted branch."],
-          ["Forwarding", "Passing a result to a later instruction before it is written to the register file."],
-          ["Hazard", "A situation in a pipeline where the next instruction cannot proceed as normal: a data dependence or a change of control flow."],
-          ["Immediate", "A constant encoded in the instruction word."],
-          ["Pipeline register", "The register between two pipeline stages (IF/ID, ID/EX, EX/MEM, MEM/WB) that carries an instruction's values to the next stage."],
-          ["Pseudo-instruction", "A convenient form that the assembler turns into one or more real instructions."],
-          ["Stall", "Holding an instruction in its stage for a cycle, for example until a loaded value is available."]
-        ] }
       ]
     }
   ]

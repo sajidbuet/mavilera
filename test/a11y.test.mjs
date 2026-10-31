@@ -6,7 +6,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { STRINGS } from '../src/ui/strings.js';
+import { RISCV_STRINGS } from '../src/arch/riscv/strings.js';
 
 const geometry = (p) => JSON.parse(readFileSync(new URL(`../content/geometry/${p}.json`, import.meta.url), 'utf8'));
 
@@ -14,7 +14,7 @@ test('every part drawn without text has an accessible name (WS-U-031)', () => {
   for (const p of ['ch06', 'ch07', 'ch08']) {
     const g = geometry(p);
     const parts = [...g.elements, ...Object.values(g.variants ?? {}).flatMap((v) => v.elements)];
-    const missing = parts.filter((e) => e.id && !e.text && !STRINGS.elementNames[p]?.[e.id]).map((e) => e.id);
+    const missing = parts.filter((e) => e.id && !e.text && !RISCV_STRINGS.elementNames[p]?.[e.id]).map((e) => e.id);
     assert.deepEqual(missing, [], p);
   }
 });

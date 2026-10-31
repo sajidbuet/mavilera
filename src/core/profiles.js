@@ -11,6 +11,7 @@ const RV32I = Object.keys(INSTRUCTIONS).filter((mn) =>
   !['mul', 'mulh', 'mulhsu', 'mulhu', 'div', 'divu', 'rem', 'remu',
     'wfi', 'mret', 'csrrw', 'csrrs', 'csrrc', 'csrrwi', 'csrrsi', 'csrrci'].includes(mn));
 const M_EXT = ['mul', 'mulh', 'mulhsu', 'mulhu', 'div', 'divu', 'rem', 'remu'];
+const PRIV_EXT = ['wfi', 'mret', 'csrrw', 'csrrs', 'csrrc', 'csrrwi', 'csrrsi', 'csrrci'];
 
 // Chapter 6 subset (spec §6): R-type, I-type ALU, lw, sw, six branches, jal, jalr, lui, auipc.
 const CH06 = ['add', 'sub', 'sll', 'slt', 'sltu', 'xor', 'srl', 'sra', 'or', 'and',
@@ -20,6 +21,13 @@ const CH06 = ['add', 'sub', 'sll', 'slt', 'sltu', 'xor', 'srl', 'sra', 'or', 'an
 export const PROFILES = Object.freeze({
   iss: Object.freeze({
     id: 'iss', chapter: null, isa: new Set([...RV32I, ...M_EXT]),
+    textBase: 0x00000000, dataBase: 0x00010000, stackTop: 0x00100000, memory: 'sparse',
+  }),
+  // The instruction-level machine with traps and the platform devices (WS-F-111): Zicsr, mret and wfi
+  // are instructions, ecall and ebreak trap instead of stopping the run, and the GPIO, timer and UART
+  // sit at 0x4000_0000, 0x4000_1000 and 0x4000_2000. Semantics follow `rvsim.py --priv`.
+  'iss-priv': Object.freeze({
+    id: 'iss-priv', chapter: null, isa: new Set([...RV32I, ...M_EXT, ...PRIV_EXT]), priv: true,
     textBase: 0x00000000, dataBase: 0x00010000, stackTop: 0x00100000, memory: 'sparse',
   }),
   ch06: Object.freeze({

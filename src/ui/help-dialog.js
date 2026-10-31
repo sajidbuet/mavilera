@@ -7,29 +7,41 @@
 
 import { el } from './dom.js';
 import { STRINGS } from './strings.js';
+import { icon } from './icons.js';
 
-/** One block of a help section: {p}, {ul}, {ol} or {dl: [[term, text], …]}. */
-function block(b) {
+/** One block of a help section: {p}, {ul}, {ol}, {dl: [[term, text], …]}, {brand: true} (the full logo and the module's
+ *  name), {refs: [[title, url | null, detail], …]} (external documents, opened in a new tab; a document without a
+ *  page online has no url) or {notice} (rights, small print). */
+function block(b, logo) {
   if (b.p) return el('p', { text: b.p });
   if (b.ul) return el('ul', {}, b.ul.map((t) => el('li', { text: t })));
   if (b.ol) return el('ol', {}, b.ol.map((t) => el('li', { text: t })));
   if (b.dl) return el('dl.help-dl', {}, b.dl.flatMap(([t, d]) => [el('dt', { text: t }), el('dd', { text: d })]));
+  if (b.brand) return el('div.help-brand', {}, logo(), el('p.help-brand-name', { text: STRINGS.appFull }));
+  if (b.refs) return el('ul.help-refs', {}, b.refs.map(([t, href, d]) => el('li', {},
+    href ? el('a', { href, target: '_blank', rel: 'noopener', text: t }) : el('cite', { text: t }), d ? el('span', { text: ` ${d}` }) : null)));
+  if (b.notice) return el('p.help-notice', { text: b.notice });
   return null;
 }
 
 export class HelpDialog {
-  /** @param {{base: URL, docsUrl: string, onAbout: () => void}} hooks */
-  constructor({ base, docsUrl, onAbout }) {
-    this.base = base;
+  /** @param {{index: URL | null, docsUrl: string, onAbout: () => void, logo: () => Promise<Element>}} hooks; index, the
+   *  architecture's help (content.help); logo, the full MAVILERA logo of a {brand} block */
+  constructor({ index, docsUrl, onAbout, logo }) {
+    this.index = index;
+    this.logo = el('div.help-logo');
+    logo?.().then((svg) => this.logo.append(svg), () => this.logo.append(el('strong', { text: STRINGS.appName })));
     this.help = null;
     const H = STRINGS.help;
     this.nav = el('nav.help-nav', { 'aria-label': H.sections });
     this.body = el('div.help-body.scroll', { tabindex: '0', 'aria-live': 'polite' }, el('p.note', { text: H.loading }));
     this.root = el('dialog.help-dialog', { 'aria-labelledby': 'help-title' },
-      el('h2', { id: 'help-title', text: H.title }),
+      el('div.help-head', {}, el('h2', { id: 'help-title', text: H.title }),
+        // the × at the top right: closes the dialog (Escape and the Close button below do too)
+        el('button.help-x', { type: 'button', 'aria-label': H.close, title: H.close, onclick: () => this.root.close() }, icon('close', { size: 18 }))),
       el('div.help-main', {}, this.nav, this.body),
       el('div.help-foot', {},
-        el('a.help-docs', { href: docsUrl, target: '_blank', rel: 'noopener', text: H.docs, title: H.docsTitle }),
+        docsUrl ? el('a.help-docs', { href: docsUrl, target: '_blank', rel: 'noopener', text: H.docs, title: H.docsTitle }) : null,
         el('button', { type: 'button', text: STRINGS.aboutTitle, onclick: () => { this.root.close(); onAbout(); } }),
         el('form', { method: 'dialog' }, el('button', { type: 'submit', text: STRINGS.aboutClose }))));
   }
@@ -37,8 +49,9 @@ export class HelpDialog {
   async open() {
     this.root.showModal();
     if (this.help) return;
+    if (!this.index) { this.body.replaceChildren(el('p.note', { text: STRINGS.help.none })); return; }
     try {
-      const r = await fetch(new URL('content/help/help.json', this.base));
+      const r = await fetch(this.index);
       if (!r.ok) throw new Error(`help.json: ${r.status}`);
       this.help = await r.json();
     } catch (e) {
@@ -55,7 +68,9 @@ export class HelpDialog {
   show(i) {
     const s = this.help.sections[i];
     this.buttons.forEach((b, k) => (k === i ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current')));
-    this.body.replaceChildren(el('h3', { text: s.title }), ...s.blocks.map(block));
+    const nodes = s.blocks.map((b) => block(b, () => this.logo));
+    // a section that opens with the logo shows it above its title
+    this.body.replaceChildren(...(s.blocks[0]?.brand ? [nodes.shift()] : []), el('h3', { text: s.title }), ...nodes);
     this.body.scrollTop = 0;
   }
 }

@@ -17,7 +17,14 @@ import { compile } from '../src/cc/compiler.js';
 import { SingleCycle } from '../src/uarch/single.js';
 import { Multicycle } from '../src/uarch/multi.js';
 import { Pipeline } from '../src/uarch/pipe.js';
-import { compare } from '../src/uarch/compare.js';
+import { compare, compareMemory } from '../src/uarch/compare.js';
+import { traceCacheRun } from '../src/mem/trace-cache.js';
+import { descriptor as riscvTrace } from '../src/arch/riscv/index.js';
+/** A run of the trace-driven caches: a fresh RISC-V engine of the program, without history (contract v5). */
+const traceOf = (p, profile) => ({ program: p, harvard: riscvTrace.engine.profiles.find((x) => x.id === profile).memory === 'harvard',
+  create: () => riscvTrace.engine.create({ ...p, profile }, { historyLimit: 1 }) });
+import { readConfig, validateConfig } from '../src/mem/config.js';
+import { parseStimulus } from '../src/mem/platform.js';
 import { classTable, delayMap } from '../src/uarch/timing.js';
 import { ch07 } from './ch07-content.mjs';
 
@@ -145,7 +152,142 @@ const CHECKS = {
     assert.ok(r.rows.filter((x) => x.agrees !== null).every((x) => x.agrees), 'the three processors agree at the halt');
     assert.ok(r.rows.find((x) => x.profile === 'ch08').speedup > 1, 'the pipeline is the fastest');
   },
+  // the cache templates: the counts and cycles their headers state (cache-*.s, memory setting in the index)
+  'cache-spatial': () => {
+    const r = cacheRun('cache-spatial'); const d = r.caches.D.report();
+    assert.equal(exitOf(r.h), 528);
+    assert.deepEqual([d.accesses, d.misses, d.hits, d.compulsory], [32, 8, 24, 8]);
+  },
+  'cache-stride': () => {
+    const r = cacheRun('cache-stride'); const d = r.caches.D.report();
+    assert.equal(exitOf(r.h), 16);
+    assert.deepEqual([d.accesses, d.misses, d.compulsory], [16, 16, 16]);
+    const s4 = cacheRun('cache-stride', { text: src('cache-stride.s').replace('li   s1, 16 ', 'li   s1, 4  ') });
+    assert.equal(exitOf(s4.h), 64, 'the change the header suggests');
+    assert.deepEqual([s4.caches.D.report().accesses, s4.caches.D.report().misses], [64, 16]);
+  },
+  'cache-conflict': () => {
+    const r = cacheRun('cache-conflict'); const d = r.caches.D.report();
+    assert.equal(exitOf(r.h), 396);
+    assert.deepEqual([d.accesses, d.misses, d.compulsory, d.conflict], [16, 16, 4, 12]);
+    const two = cacheRun('cache-conflict', { d: { ways: 2 } }).caches.D.report();
+    assert.deepEqual([two.misses, two.compulsory, two.conflict], [4, 4, 0], 'with a second way only the compulsory misses remain');
+  },
+  'cache-writeback': () => {
+    const r = cacheRun('cache-writeback'); const d = r.caches.D.report();
+    assert.equal(exitOf(r.h), 36);
+    assert.deepEqual([d.writes, d.misses, d.writebacks, d.writeThroughs], [8, 4, 2, 0]);
+    const wt = cacheRun('cache-writeback', { d: { write: 'wt' } }).caches.D.report();
+    assert.deepEqual([wt.writeThroughs, wt.writebacks], [8, 0], 'write-through: no dirty lines');
+  },
+  'cache-replacement': () => {
+    const lru = cacheRun('cache-replacement'); const fifo = cacheRun('cache-replacement', { d: { repl: 'fifo' } });
+    assert.equal(exitOf(lru.h), 42);
+    assert.deepEqual([lru.caches.D.report().accesses, lru.caches.D.report().misses, fifo.caches.D.report().misses], [24, 13, 18]);
+  },
+  'cache-pipe': () => {
+    const rows = memoryRows('cache-pipe.s', 'cache-pipe').rows.filter((x) => x.profile === 'ch08');
+    const [a, b, c] = ['A', 'B', 'C'].map((s) => rows.find((x) => x.scenario === s));
+    assert.ok(rows.every((x) => x.ok && x.sameResult !== false), JSON.stringify(rows));
+    assert.ok(a.cycles < c.cycles && c.cycles < b.cycles, `A ${a.cycles} < C ${c.cycles} < B ${b.cycles}`);
+    assert.ok(b.cycles > 3 * c.cycles, `without a cache: ${b.cycles} against ${c.cycles}`);
+  },
+  'cache-speedup': () => {
+    const { rows, ratios } = memoryRows('cache-speedup.s', 'cache-speedup');
+    assert.ok(rows.every((x) => x.ok && x.sameResult !== false), JSON.stringify(rows));
+    for (const p of ['ch06', 'ch07', 'ch08']) assert.ok(ratios.perProcessor[p].cOverB < 0.5 && ratios.perProcessor[p].cOverA > 1, `${p}: ${JSON.stringify(ratios.perProcessor[p])}`);
+  },
+  // the device templates (profile iss-priv): what their headers say happens, with the template's own stimulus
+  'gpio-leds': () => {
+    const r = priv('gpio-leds');
+    assert.equal(r.h.platform.gpio.out, 0xf5);
+    assert.equal(r.h.traps, 0);
+  },
+  'gpio-switches': () => {
+    const r = priv('gpio-switches');
+    assert.equal(r.h.platform.gpio.out, 0xa, 'the switches at the button press: 1010');
+    assert.ok(r.h.cycle > 300 && r.h.cycle < 400, `ends soon after the button at cycle 300 (${r.h.cycle})`);
+    const none = priv('gpio-switches', { stimulus: '' }, 5000);
+    assert.equal(none.h.halted, false, 'without the button the program polls for ever');
+  },
+  'button-interrupt': () => {
+    const r = priv('button-interrupt');
+    assert.equal(r.x(9), 3);
+    assert.equal(r.h.platform.gpio.out, 3);
+    assert.deepEqual(r.h.report().priv.traps, { '0x8000000b': 3 });
+    const ev = r.h.report().priv.interrupts.button;
+    assert.deepEqual([ev.events, ev.taken, ev.acked], [3, 3, 3]);
+    assert.ok(ev.to_handler.max <= 10, `a short latency to the handler: ${JSON.stringify(ev.to_handler)}`);
+    assert.ok(r.h.idleCycles > 500, 'most of the time is spent in wfi');
+  },
+  'timer-poll': () => {
+    const r = priv('timer-poll');
+    assert.equal(r.x(18), 6);
+    assert.equal(r.h.platform.gpio.out, 0, 'six flips of LED 0');
+    assert.ok(r.h.cycle >= 300, `six delays of 50: ${r.h.cycle} cycles`);
+    assert.equal(r.h.idleCycles, 0, 'polling is busy, not idle');
+  },
+  'timer-interrupt': () => {
+    const r = priv('timer-interrupt');
+    assert.equal(r.x(9), 5);
+    assert.equal(r.h.platform.gpio.out, 1, 'five flips of LED 0');
+    assert.deepEqual(r.h.report().priv.traps, { '0x80000007': 5 });
+    assert.equal(r.h.report().priv.interrupts.timer.events, 5);
+    assert.ok(r.h.idleCycles > 300);
+    assert.ok(r.h.cycle >= 500 && r.h.cycle < 600, `five ticks of 100 cycles: ${r.h.cycle}`);
+  },
+  'ecall-trap': () => {
+    const r = priv('ecall-trap');
+    assert.equal(r.x(9), 42);
+    assert.equal(r.x(18), -1);
+    assert.equal(String.fromCharCode(...r.h.platform.uart.tx), 'Hi');
+    assert.deepEqual(r.h.report().priv.traps, { '0x0000000b': 4 }, 'four ecalls, all from M mode');
+  },
+  'uart-hello': () => {
+    const r = priv('uart-hello');
+    assert.equal(String.fromCharCode(...r.h.platform.uart.tx), 'Hello, UART!\nok');
+    assert.equal(r.h.platform.uart.flags, 0, 'no byte was lost: the program waits for TX ready');
+    const rude = priv('uart-hello', { txCycles: 20, text: src('uart-hello.s').replace('txwait: lw   t1, 8(s0)          # STATUS\n        andi t1, t1, 1          # TX ready?\n        beqz t1, txwait\n', 'txwait:\n') });
+    assert.ok(rude.h.platform.uart.flags & 4, 'without waiting, bytes are lost (TXOVR)');
+    assert.ok(rude.h.platform.uart.tx.length < 13 + 2, 'and the text is cut short');
+  },
 };
+
+/** A device template on the instruction-level machine with traps: its own stimulus unless given; run to the halt (or `limit` steps). */
+function priv(id, { text = null, stimulus = null, txCycles = 4 } = {}, limit = 200_000) {
+  const t = INDEX.templates.find((x) => x.id === id);
+  assert.equal(t.profile, 'iss-priv', `${id} names its profile`);
+  const p = assemble([{ name: t.file, text: text ?? src(t.file) }], { profile: 'iss-priv' });
+  assert.ok(p.ok && !p.profileErrors.length, `${id}: ${[...p.errors, ...p.profileErrors].map((e) => e.message).join('; ')}`);
+  const platformConfig = { stimulus: parseStimulus(stimulus ?? t.stimulus ?? ''), rx: (t.rx ?? []).map((e) => ({ ...e })), mtimeDiv: 1, uart: true, txCycles };
+  const h = new Hart(p, { profile: 'iss-priv', platformConfig });
+  while (!h.halted && h.instret + h.traps < limit) h.stepFast();
+  if (limit === 200_000) assert.ok(h.halted, `${id} halts`);
+  return { h, x: (r) => h.x[r] | 0 };
+}
+
+/** An instruction-level run under the cache setting of the template; `d` or `i` change the cache's fields. */
+function cacheRun(id, { text = null, d = {}, i = {} } = {}) {
+  const t = INDEX.templates.find((x) => x.id === id);
+  const cfg = readConfig(t.mem);
+  Object.assign(cfg.l1d, d);
+  Object.assign(cfg.l1i, i);
+  assert.deepEqual(validateConfig(cfg), [], `${id}: its memory setting is valid`);
+  const p = assemble([{ name: t.file, text: text ?? src(t.file) }], { profile: 'iss' });
+  assert.ok(p.ok, `${id}: ${p.errors.map((e) => e.message).join('; ')}`);
+  const r = traceCacheRun(traceOf(p, 'iss'), cfg);
+  assert.equal(r.stop, 'halt', `${id} halts`);
+  const h = new Hart(p, { profile: 'iss' });
+  while (!h.halted && h.instret < 100_000) h.stepFast();
+  return { ...r, h };
+}
+
+/** The three processors under memory models A, B and C, with the template's setting. */
+function memoryRows(file, id) {
+  const cfg = readConfig(INDEX.templates.find((x) => x.id === id).mem);
+  assert.deepEqual(validateConfig(cfg), [], `${id}: its memory setting is valid`);
+  return compareMemory([{ name: file, text: src(file) }], { t6: T6, delays6: json('content/data/ch06-delays.json'), t7: T7, timing8: json('content/data/ch08-timing.json') }, cfg, { jalr: true });
+}
 
 /** A C template: both translations give the exit code; the register one runs fewer instructions. */
 function cPair(f, exit) {
@@ -160,6 +302,13 @@ function cPair(f, exit) {
   }
   assert.ok(n.register < n.plain, `register ${n.register} < plain ${n.plain}`);
 }
+
+test('the templates are numbered by their place in the index: the device templates are 22 to 28, the cache templates 29 to 35', () => {
+  const at = (id) => INDEX.templates.findIndex((t) => t.id === id) + 1;
+  assert.deepEqual(['gpio-leds', 'gpio-switches', 'button-interrupt', 'timer-poll', 'timer-interrupt', 'ecall-trap', 'uart-hello'].map(at), [22, 23, 24, 25, 26, 27, 28]);
+  assert.deepEqual(['cache-spatial', 'cache-speedup'].map(at), [29, 35]);
+  assert.equal(INDEX.templates.length, 35);
+});
 
 test('every template file is in the index, every entry has a file, a group, a view and a check', () => {
   const files = readdirSync(DIR).filter((f) => f !== 'index.json').sort();

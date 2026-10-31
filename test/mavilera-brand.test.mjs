@@ -1,5 +1,5 @@
-// mavilera-brand.test.mjs -- the final MAVILERA brand assets (logo concept D, W-D25): present, original
-// (no external reference, no raster, no font), in the colours of theme.css, with the licence line.
+// mavilera-brand.test.mjs -- the MAVILERA brand assets (logo of 2026-10-28): present, self-contained
+// (no external reference, no raster, no font or text element), in the colours of theme.css, with the licence line.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIR = join(ROOT, 'content/branding/mavilera');
-const SVGS = ['mavilera-logo.svg', 'mavilera-icon.svg', 'mavilera-icon-small.svg', 'mavilera-light.svg', 'mavilera-dark.svg', 'mavilera-mono.svg'];
+const SVGS = ['mavilera-logo.svg', 'mavilera-full.svg', 'mavilera-lockup.svg', 'mavilera-wordmark.svg', 'mavilera-mark.svg', 'mavilera-icon.svg', 'mavilera-light.svg', 'mavilera-dark.svg', 'mavilera-mono.svg'];
 const theme = readFileSync(join(ROOT, 'src/ui/theme.css'), 'utf8').toLowerCase();
 
 test('every SVG is self-contained, licensed and uses only theme colours (or black/white)', () => {

@@ -62,12 +62,14 @@ export function transform(path, source, { entry = false } = {}) {
   };
 }
 
-/** Every module reachable from `entry` (static and dynamic imports), transformed, in a stable order. */
-export function collect(root, entry) {
+/** Every module reachable from `entry` (static and dynamic imports), transformed, in a stable order.
+ *  `overrides` gives the source of a module in place of its file (one architecture's build, site-files.mjs);
+ *  `prepare(path, text)` the text a release publishes (tools/minify.mjs; default the source). */
+export function collect(root, entry, overrides = {}, prepare = (p, s) => s) {
   const out = new Map();
   const visit = (p) => {
     if (out.has(p)) return;
-    const t = transform(p, readFileSync(join(root, p), 'utf8'), { entry: p === entry });
+    const t = transform(p, prepare(p, overrides[p] ?? readFileSync(join(root, p), 'utf8')), { entry: p === entry });
     out.set(p, t);
     t.deps.forEach(visit);
   };
@@ -124,23 +126,26 @@ const jsonSafe = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 /**
  * The offline page.
  * @param {string} root repository root
- * @param {{files: string[], version: string, date?: string}} o files: the shipped files (content/ text files are inlined)
+ * @param {{files: string[], version: string, overrides?: Record<string, string>, page?: string}} o files: the shipped
+ *   files (content/ text files are inlined); overrides: module sources of one architecture's build; page: its index.html;
+ *   prepare: as for collect()
  * @returns {{html: string, modules: number}}
  */
-export function buildOffline(root, { files, version }) {
-  const main = collect(root, 'src/main.js');
-  const worker = collect(root, 'src/worker/run.js');
+export function buildOffline(root, { files, version, overrides = {}, page, prepare = (p, s) => s }) {
+  const main = collect(root, 'src/main.js', overrides, prepare);
+  const worker = collect(root, 'src/worker/run.js', overrides, prepare);
   const content = Object.fromEntries(files.filter((p) => p.startsWith('content/') && Object.hasOwn(TYPES, p.slice(p.lastIndexOf('.'))))
-    .map((p) => [p, readFileSync(join(root, p), 'utf8')]));
-  const css = readFileSync(join(root, 'src/ui/theme.css'), 'utf8');
-  const icon = readFileSync(join(root, 'content/branding/mavilera/mavilera-icon-small.svg'), 'utf8');
-  const index = readFileSync(join(root, 'index.html'), 'utf8');
+    .map((p) => [p, prepare(p, readFileSync(join(root, p), 'utf8'))]));
+  const css = prepare('src/ui/theme.css', readFileSync(join(root, 'src/ui/theme.css'), 'utf8'));
+  const icon = readFileSync(join(root, 'content/branding/mavilera/mavilera-icon.svg'), 'utf8');
+  const index = page ?? readFileSync(join(root, 'index.html'), 'utf8');
   const body = index.slice(index.indexOf('<body>') + 6, index.lastIndexOf('</body>'));
   const title = index.match(/<title>([^<]*)<\/title>/)[1];
   const description = index.match(/<meta name="description" content="([^"]*)">/)[1];
+  const name = index.match(/<meta name="application-name" content="([^"]*)">/)[1];
   const html = `<!doctype html>
 <!--
-  MAVILERA RISC-V Laboratory ${version}, single-file offline build (spec WS-N-002), made by tools/release.mjs from the
+  ${name} ${version}, single-file offline build (spec WS-N-002), made by tools/release.mjs from the
   sources recorded in web-sim-validation.json. Opens from the local disk; makes no network request.
   Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
   The name and logo are not licensed as trademarks (TRADEMARKS.md).
@@ -151,10 +156,10 @@ export function buildOffline(root, { files, version }) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${title}</title>
   <meta name="description" content="${description}">
-  <meta name="application-name" content="MAVILERA RISC-V Laboratory">
+  <meta name="application-name" content="${name}">
   <meta name="risc-vista-edition" content="release">
   <meta name="risc-vista-version" content="${version}">
-  <meta name="theme-color" content="#145e56">
+  <meta name="theme-color" content="#0b2a55">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,${Buffer.from(icon).toString('base64')}">
   <style>
 ${css}

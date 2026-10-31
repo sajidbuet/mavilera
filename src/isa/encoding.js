@@ -12,6 +12,18 @@ export const OPCODE = Object.freeze({
 });
 
 export const HALT_WORD = 0x0000006f; // jal x0, 0
+export const ECALL_WORD = 0x00000073;
+export const EBREAK_WORD = 0x00100073;
+
+/**
+ * What stops the chapter processors (they have no trap hardware): the halt word, ebreak, and ecall
+ * with a7 = 93 (exit, as in the instruction-level view). `a7` is x17 when the instruction executes.
+ * Returns 'halt' | 'ebreak' | 'exit' | null.
+ */
+export const stopKind = (w, a7) => (w === HALT_WORD ? 'halt' : w === EBREAK_WORD ? 'ebreak' : w === ECALL_WORD && a7 === 93 ? 'exit' : null);
+
+/** The error for an ecall that is not an exit. */
+export const unsupportedEcall = (name, a7) => `ecall with a7 = ${a7 >>> 0} is not implemented by the ${name} processor (it has no trap hardware): only a7 = 93 (exit) and ebreak stop the run`;
 
 export const ABI_NAMES = Object.freeze([
   'zero', 'ra', 'sp', 'gp', 'tp', 't0', 't1', 't2', 's0', 's1',

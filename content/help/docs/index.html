@@ -89,6 +89,7 @@
   <div class="layout">
     <nav class="toc" aria-label="Contents">
       <ol>
+        <li><a href="#about">About RISC-V</a></li>
         <li><a href="#overview">Overview</a></li>
         <li><a href="#start">Getting started</a></li>
         <li><a href="#workspace">The workspace</a></li>
@@ -100,7 +101,9 @@
         <li><a href="#multi">Multicycle processor</a></li>
         <li><a href="#pipe">Pipelined processor</a></li>
         <li><a href="#compare">Comparison</a></li>
-        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#memory">Memory and caches</a></li>
+        <li><a href="#devices">Devices and traps</a></li>
+<li><a href="#exercises">Exercises</a></li>
         <li><a href="#files">Files, sharing and examples</a></li>
         <li><a href="#exports">Exports</a></li>
         <li><a href="#offline">Offline use and privacy</a></li>
@@ -115,6 +118,29 @@
     <main id="main">
       <h1>MAVILERA RISC-V Laboratory: documentation</h1>
       <p class="lead">Interactive Microprocessor Architecture Laboratory: Visualize. Execute. Understand.</p>
+
+      <h2 id="about">About RISC-V</h2>
+      <p>RISC-V is an open instruction set architecture (ISA): the instructions, registers and memory model that software sees, which anyone may implement without paying a royalty. This laboratory runs RV32I, the 32-bit base integer instruction set, with the M extension for multiplication and division.</p>
+      <p>Krste Asanović and the graduate students Yunsup Lee and Andrew Waterman started RISC-V in May 2010 in the Parallel Computing Laboratory (Par Lab) of the University of California, Berkeley, which David Patterson directed; the first manual (2011) is by Waterman, Lee, Patterson and Asanović. The RISC-V Foundation was founded in 2015 with 36 founding members, and in March 2020 the RISC-V International Association was incorporated in Switzerland. RISC-V International maintains and ratifies the specifications.</p>
+      <p>Why it matters: an open, royalty-free ISA lets companies, universities and individuals design processors for it and share cores and tools, instead of licensing an instruction set from one company. Its base is small and regular, with standard extensions added as needed, which makes it practical for teaching processor design, as in this laboratory.</p>
+      <p>Where it is used, for example: Espressif's ESP32-C3 and ESP32-C6 microcontrollers have RISC-V processors; Raspberry Pi's RP2350 has two Hazard3 RISC-V cores beside two Arm Cortex-M33 cores; Western Digital announced its open-source SweRV RISC-V core in 2018, with the goal of moving one billion of its processor cores to RISC-V; NVIDIA presented in 2016 its plan to replace its Falcon controller with its own RISC-V core.</p>
+      <p>The architecture is specified in RISC-V International's manuals. They have no DOI; the links are the publishers' own pages.</p>
+      <ul>
+        <li><a href="https://docs.riscv.org/reference/isa/v20260120/unpriv/unpriv-index.html">The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA</a> RISC-V International, ratified version 20260120: the instructions this laboratory runs.</li>
+        <li><a href="https://docs.riscv.org/reference/isa/v20260120/priv/priv-index.html">The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</a> Version 20260120: machine mode, CSRs, traps and interrupts.</li>
+        <li><a href="https://github.com/riscv-non-isa/riscv-elf-psabi-doc">RISC-V ELF psABI</a> The calling convention and the register names of the ABI.</li>
+        <li><a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/2011/EECS-2011-62.html">The RISC-V Instruction Set Manual, Volume I: Base User-Level ISA</a> A. Waterman, Y. Lee, D. A. Patterson, K. Asanović. UC Berkeley, technical report UCB/EECS-2011-62, 2011: the first manual.</li>
+        <li><a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-1.html">Design of the RISC-V Instruction Set Architecture</a> A. Waterman. PhD thesis, UC Berkeley, UCB/EECS-2016-1, 2016: the reasons behind the design.</li>
+      </ul>
+      <p>Sources of the history and the examples:</p>
+      <ul>
+        <li><a href="https://riscv.org/about/">About RISC-V International</a> History and governance.</li>
+        <li><a href="https://www.espressif.com/en/products/socs/esp32-c3">Espressif ESP32-C3</a></li>
+        <li><a href="https://www.espressif.com/en/products/socs/esp32-c6">Espressif ESP32-C6</a></li>
+        <li><a href="https://www.raspberrypi.com/products/rp2350/">Raspberry Pi RP2350</a></li>
+        <li><a href="https://www.westerndigital.com/company/newsroom/press-releases/2018/2018-12-04-western-digital-delivers-new-innovations-to-drive-open-standard-interfaces-and-risc-v-processor-development">Western Digital press release, 4 December 2018</a></li>
+        <li><a href="https://riscv.org/wp-content/uploads/2024/12/Tue1100_Nvidia_RISCV_Story_V2.pdf">NVIDIA RISC-V Story, 4th RISC-V Workshop, 2016</a></li>
+      </ul>
 
       <h2 id="overview">Overview</h2>
       <p>The RISC-V Laboratory, the first module of MAVILERA, is an assembler, simulator and teaching compiler for the RISC-V base integer instruction set
@@ -383,6 +409,47 @@ main:   la    t0, nums        # address of the array
         the halt agree with the single-cycle run. The pipelined count includes four cycles of pipeline fill. The delays
         are illustrative, not hardware timing.</p>
 
+      <h2 id="memory">Memory and caches</h2>
+      <p>The <em>Memory</em> button chooses the memory model: ideal memory (one cycle per access), main memory without a
+        cache (every access waits), or main memory with an instruction cache (L1I) and a data cache (L1D), each with a size,
+        block size, number of ways, replacement and write policy of your choice. The designs are illustrative, not those of
+        any real processor. Any change restarts the program. The instruction-level view has no clock: its caches show what
+        the program's accesses have done so far, with no timing.</p>
+      <p>The <em>Cache</em> tab of the Memory and cache panel shows the last access of each cache, how the address finds its
+        line, the lines as sets and ways, and the counters. Under the last access an animation shows the access step by step:
+        the address split into tag, index and offset, the set read and its tags compared, then a hit, or a miss followed by
+        the eviction of a line, the write-back of a dirty block and the fill from main memory, and last the word itself.
+        <em>Replay</em>, <em>Next step</em> and <em>Show all steps</em> control it; with reduced motion switched on in the
+        system, all the steps are shown at once.</p>
+      <p>The templates of the group <em>Caches and memory</em> each set the memory model they need: spatial locality,
+        stride, conflict misses, write-back, replacement, the pipeline waiting for memory, and the comparison of the
+        processors under the three memory models.</p>
+
+      <h2 id="devices">Devices and traps</h2>
+      <p>The profile <em>ISA with traps and devices</em> (Profile list, instruction-level view) adds the platform of the
+        laboratory: a GPIO at <code>0x4000_0000</code> with eight LEDs, four switches and a push button, a machine timer at
+        <code>0x4000_1000</code>, and a UART at <code>0x4000_2000</code>. The Zicsr instructions, <code>mret</code> and
+        <code>wfi</code> are instructions; <code>ecall</code>, <code>ebreak</code>, a misaligned or protected access and an
+        illegal instruction raise exceptions; the timer, the button and the UART can interrupt. The rules of the traps, the
+        timer and the GPIO follow <code>rvsim.py --priv</code>, the reference model this laboratory is checked against; the UART, a simple
+        model of this laboratory, is not in it. Compiled C programs and the exit and write calls of the plain ISA profile are
+        not available here, because <code>ecall</code> is a trap.</p>
+      <p>The <em>Peripherals</em> tab of the Memory and cache panel draws the board: the LEDs glow with the GPIO output,
+        the switches and the button can be operated with the mouse or the keyboard (Space or Enter), the timer's count fills
+        against its compare value, and the interrupt lines to the processor light while a request is active. Below are the
+        processor's mode and trap registers, every device register (read without side effects), the UART terminal, a table of
+        the interrupts with the cycles from request to handler, and the stimulus script of pin events; each pin you change is
+        added to the script at the current cycle, so Reset and Step back replay it. The model is abstract: one cycle per
+        instruction, 3 to take a trap, 4 to send a UART byte; these are not measurements of a real core.</p>
+      <p>The pin script, the bytes you send to the UART and the settings are kept with the program: after a reload and in
+        links and settings files. The settings hold the options of the reference model: how often <code>MTIME</code>
+        advances, the cycles to take a trap, <code>mtval</code> always 0, and a trap check that reports an interrupt handler
+        which does not give back every register or returns to the wrong place. With <em>Platform devices on the bus</em>
+        switched on in the Memory setting, the single-cycle, multicycle and pipelined views get the same devices and board;
+        a program polls them with <code>lw</code> and <code>sw</code>, and stepping back restores them. Interrupts and traps
+        exist only in the profile with traps.</p>
+      <p>The templates of the group <em>Devices and traps</em> are a running light, switches and a button by polling, a
+        button interrupt, the timer by polling and by interrupt, a system call as a trap, and a serial port.</p>
       <h2 id="exercises">Exercises</h2>
       <p><em>File ▸ Exercise…</em> lists 14 practice exercises written for MAVILERA — bit counting, Gray code, clamping,
         greatest common divisor, digit sums, Collatz steps, integer square root, reversing an array, palindromes, polynomials,
@@ -525,8 +592,8 @@ main:   la    t0, nums        # address of the array
       <h2 id="rights">Licence</h2>
       <p>© 2026 Sajid Muhaimin Choudhury. MAVILERA, its content (processor
         drawings, tables, help texts, this documentation, example programs) and its logo artwork are licensed under the
-        Apache License, Version 2.0. The names and the logo are not licensed as trademarks. MAVILERA is not affiliated with or endorsed
-        by RISC-V International.</p>
+        Apache License, Version 2.0. The names and the logo are not licensed as trademarks.</p>
+      <p>RISC-V® is a registered trademark of RISC-V International. MAVILERA is an independent educational project: it uses the name only to identify the instruction set it simulates, uses no RISC-V logo, and is not affiliated with or endorsed by RISC-V International. The RISC-V specifications are published by RISC-V International under the Creative Commons Attribution 4.0 International licence; this laboratory's assembler, simulator, drawings and texts are its own. Espressif, ESP32, Raspberry Pi, Western Digital, NVIDIA, Arm and Cortex are trademarks of their respective owners.</p>
 
       <footer>
         <p>MAVILERA RISC-V Laboratory documentation · <a href="../../">MAVILERA Home</a> · <a href="../">Open the application</a></p>
