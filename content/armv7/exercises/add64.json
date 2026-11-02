@@ -1,0 +1,162 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap ARM-A6), not taken from a textbook; produced by tools/armv7/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "armv7",
+ "title": "Add two 64-bit numbers",
+ "task": "a and b are 64-bit numbers, each in two words, the low word first: a at 0x800 and 0x804, b at 0x808 and 0x80C. Store a + b, modulo 2^64, at sum: the low word at 0x810, the high word at 0x814; then end with B . . Add the low words with ADDS and the high words with ADC, which adds the carry. To run it in a processor view, choose \"Extended datapath\" in the instruction-set menu: immediates there are 0 to 255. Keep the .equ lines: the tests write the data at those addresses.",
+ "lang": "asm",
+ "starter": "; add64 -- practice exercise (MAVILERA, ARMv7)\n; Store the 64-bit sum of a and b.\n; Hint: ADDS for the low words, ADC for the high words.\n        .equ  alo, 0x800        ; the tests write and read here\n        .equ  ahi, 0x804        ; the tests write and read here\n        .equ  blo, 0x808        ; the tests write and read here\n        .equ  bhi, 0x80C        ; the tests write and read here\n        .equ  slo, 0x810        ; the tests write and read here\n        .equ  shi, 0x814        ; the tests write and read here\n\ndone:   B     done           ; replace with your code; B . ends the run\n",
+ "tests": [
+  {
+   "name": "0x0:0x1 + 0x0:0x2",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      1,
+      0,
+      2,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2064,
+      "words": [
+       3,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "0x0:0xFFFFFFFF + 0x0:0x1",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      4294967295,
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2064,
+      "words": [
+       0,
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "0xFFFFFFFF:0xFFFFFFFF + 0x0:0x1",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      4294967295,
+      4294967295,
+      1,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2064,
+      "words": [
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "0x1234567:0x89ABCDEF + 0xFEDCBA98:0x76543211",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      2309737967,
+      19088743,
+      1985229329,
+      4275878552
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2064,
+      "words": [
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "0x7FFFFFFF:0x80000000 + 0x0:0x80000000",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      2147483648,
+      2147483647,
+      2147483648,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2064,
+      "words": [
+       0,
+       2147483648
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "0x1:0x0 + 0x0:0xFFFFFFFF",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      0,
+      1,
+      4294967295,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2064,
+      "words": [
+       4294967295,
+       1
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

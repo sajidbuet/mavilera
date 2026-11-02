@@ -1,0 +1,401 @@
+<!doctype html>
+<!--
+  content/armv7/help/docs/index.html -- the detailed documentation of the MAVILERA Armv7 Laboratory, published at
+  /mavilera/armv7/docs/ beside the application (/mavilera/armv7/) by tools/release.mjs (roadmap ARM-A6).
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: content. Apache-2.0.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA Armv7 Laboratory documentation</title>
+  <meta name="description" content="Documentation of the MAVILERA Armv7 Laboratory: the workspace, ARM assembly, the instruction-level model, the single-cycle, multicycle and pipelined processors, exercises, files, exports and offline use.">
+  <meta name="theme-color" content="#0b2a55">
+  <!-- in a release, tools/release.mjs places the icons at the site root, two levels up -->
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../../icon.svg">
+  <style>
+    /* the MAVILERA palette (W-D30): the tokens of src/ui/theme.css */
+    :root {
+      --primary: #1a4f8b; --primary-soft: #e8f1fa; --navy: #0b2a55; --blue: #5b9bd5; --amber: #a85a00;
+      --bg: #f4f7fb; --surface: #ffffff; --border: #d8e1ec; --text: #14243a; --text-2: #5a6b80; --code-bg: #f3f6fa;
+      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #5b9bd5; --primary-soft: #132a45; --navy: #f2f5fa; --blue: #5b9bd5; --amber: #e3a453;
+        --bg: #0d1420; --surface: #141d2b; --border: #2a3648; --text: #e3e9f2; --text-2: #9aa9bd; --code-bg: #182233;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--primary); text-underline-offset: 2px; }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
+    code, kbd, pre { font-family: var(--font-code); font-size: 0.9em; }
+    code { background: var(--code-bg); padding: 0 0.25em; border-radius: 3px; }
+    kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: var(--surface); white-space: nowrap; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.45; }
+    pre code { background: none; padding: 0; }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+    header.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+    header.top .in { max-width: 1180px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .word { font-weight: 800; font-size: 20px; letter-spacing: 0.01em; color: var(--navy); text-decoration: none; }
+    .word span { color: var(--blue); }
+    header.top nav { margin-left: auto; display: flex; gap: 16px; }
+    .layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 230px 1fr; gap: 36px; }
+    .toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 24px 0; font-size: 14px; }
+    .toc ol { list-style: none; margin: 0; padding: 0; }
+    .toc li { margin: 2px 0; }
+    .toc a { color: var(--text); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+    .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+    main { min-width: 0; padding: 24px 0 64px; }
+    h1 { font-size: 30px; margin: 8px 0 6px; line-height: 1.2; }
+    h2 { font-size: 24px; margin: 48px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.25; }
+    h3 { font-size: 18px; margin: 26px 0 6px; }
+    .lead { font-size: 18px; color: var(--text-2); margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 15px; background: var(--surface); }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); }
+    .wrap-table { overflow-x: auto; }
+    .note { border-left: 4px solid var(--primary); background: var(--surface); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+    .small { font-size: 14px; color: var(--text-2); }
+    footer { color: var(--text-2); font-size: 14px; border-top: 1px solid var(--border); margin-top: 48px; padding-top: 16px; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; gap: 0; }
+      .toc { position: static; max-height: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="in">
+      <a class="word" href="../../">MAVILERA<span> Armv7 Laboratory</span></a>
+      <nav aria-label="Site">
+        <a href="../">Open the application</a>
+        <a href="../../">MAVILERA Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#about">About the laboratory</a></li>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#workspace">The workspace</a></li>
+        <li><a href="#assembly">Assembly language</a></li>
+        <li><a href="#sets">Instruction sets of the views</a></li>
+        <li><a href="#debug">Running and debugging</a></li>
+        <li><a href="#single">The single-cycle processor</a></li>
+        <li><a href="#multi">The multicycle processor</a></li>
+        <li><a href="#pipe">The pipelined processor</a></li>
+        <li><a href="#extended">The Extended datapath</a></li>
+        <li><a href="#timing">Timing</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#files">Files, sharing and exports</a></li>
+        <li><a href="#offline">Offline use and privacy</a></li>
+        <li><a href="#keys">Keyboard reference</a></li>
+        <li><a href="#checks">How the models were checked</a></li>
+        <li><a href="#limits">Limits of the model</a></li>
+        <li><a href="#rights">Licence and notices</a></li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <h1>MAVILERA Armv7 Laboratory: documentation</h1>
+      <p class="lead">Interactive Microprocessor Architecture Laboratory: Visualize. Execute. Understand.</p>
+
+      <h2 id="about">About the laboratory</h2>
+      <p>The Armv7 Laboratory assembles and runs programs in the 32-bit ARM instruction set (A32) in the browser. It has
+        four views of the same program: an instruction-level model that runs one instruction per step, and the
+        single-cycle, multicycle and pipelined processors of Sarah L. Harris and David Money Harris's textbook, each drawn
+        as it works, one clock cycle per step.</p>
+      <p>The processors follow the textbook's microarchitecture, with its signal names; the drawings are this
+        application's own layout of them. What every instruction does to the registers, the flags and the memory follows
+        ARM's architecture reference manual.</p>
+      <p>Why it matters: ARM processors are found in most phones and in many embedded systems, and the textbook's
+        processors are small enough to follow signal by signal. Every ARM instruction is conditional, and R15 is the
+        program counter: the laboratory shows what these two features ask of the hardware.</p>
+      <ul>
+        <li><cite>Digital Design and Computer Architecture: ARM Edition</cite>. S. L. Harris, D. M. Harris. Morgan
+          Kaufmann (Elsevier), 2016. ISBN 978-0-12-800056-4. Chapter 6: architecture; Chapter 7: microarchitecture.</li>
+        <li><cite>ARM Architecture Reference Manual ARMv7-A and ARMv7-R edition</cite>. ARM Limited, ARM DDI 0406C.d,
+          2018. Chapter A8: the instructions.</li>
+      </ul>
+
+      <h2 id="start">Getting started</h2>
+      <ol>
+        <li>Open the application. The editor holds a short program that adds the numbers 1 to 10;
+          <strong>Templates</strong> in the toolbar offers others, each with a note at the top on what to try.</li>
+        <li>Press <strong>Assemble</strong> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>). The listing shows each instruction's
+          32-bit word with its address; errors are underlined in the editor and explained in the console.</li>
+        <li>Press <strong>Step</strong> (<kbd>F10</kbd>) a few times. The current instruction is marked, and the
+          registers and the flags N, Z, C and V change. An instruction whose condition fails is shown as skipped.</li>
+        <li>Press <strong>Step back</strong> (<kbd>Shift</kbd>+<kbd>F10</kbd>) to undo a step, or <strong>Run</strong>
+          (<kbd>F5</kbd>) to run to the end or to a breakpoint.</li>
+        <li>Choose <strong>Single-cycle</strong>, <strong>Multicycle</strong> or <strong>Pipelined</strong> at the top to
+          run the same program on a processor, one clock cycle per step.</li>
+      </ol>
+      <p>The example program of a new session:</p>
+<pre><code>        MOV  R0, #0          ; R0 &lt;- 0, the sum
+        MOV  R1, #1          ; R1 &lt;- 1, the next number
+loop:   ADD  R0, R0, R1      ; sum &lt;- sum + number
+        ADD  R1, R1, #1      ; the next number
+        CMP  R1, #10         ; flags of R1 - 10
+        BLE  loop            ; again while R1 &lt;= 10 (signed)
+        STR  R0, [R2, #100]  ; M[R2 + 100] &lt;- 55 (R2 is 0)
+done:   B    done            ; a branch to itself ends the program</code></pre>
+      <p>It uses <code>MOV</code> and <code>CMP</code>, which the textbook's processors do not have: in a processor view,
+        choose <strong>Extended datapath</strong> in the instruction-set menu, or open the template
+        <em>Base instructions only: the sum 1 to 10</em>, written with the textbook's instructions.</p>
+
+      <h2 id="workspace">The workspace</h2>
+      <p>The page is a workspace of panes, as in a code editor.</p>
+      <ul>
+        <li><strong>Header</strong>: the views (Instructions, Single-cycle, Multicycle, Pipelined); the instruction-set
+          menu of a processor view (Base design or Extended datapath); the <em>View</em> menu (show or hide panes, reset the
+          layout); the theme; projector mode; full screen; the keyboard summary; Help.</li>
+        <li><strong>Toolbar</strong>: Assemble, Run/Pause, Step back, Step, Step over, Step out, Run to cursor, Reset, the
+          speed, Templates and the <em>File</em> menu. Each control has a tooltip with its name and key.</li>
+        <li><strong>Editor</strong>: ARM assembly, with completion of mnemonics and registers, help when you point at a
+          mnemonic (its operands and its operation in register-transfer notation), find, and breakpoints in the line
+          numbers.</li>
+        <li><strong>Listing</strong>: each instruction with its address and word, in hexadecimal and binary; the tabs Data
+          and Symbols show the data and the labels.</li>
+        <li><strong>Instruction inspector</strong>: the fields of the selected instruction (Cond, Op, Funct, Rn, Rd and the
+          operand fields) and a scratch line that turns one instruction into its word, or a word into its instruction,
+          without changing the program.</li>
+        <li><strong>Registers, call stack and counters</strong>: R0 to R15 (with SP, LR and PC), the CPSR flags; one frame
+          per open <code>BL</code>; counts of instructions, skipped conditions, loads, stores and branches.</li>
+        <li><strong>Memory and console</strong>: the memory, and the console with the assembler's and the processors'
+          messages.</li>
+      </ul>
+      <p>Drag a divider to resize panes; the sizes are kept in this browser for each view.</p>
+
+      <h2 id="assembly">Assembly language</h2>
+      <p>One instruction or directive per line, with an optional label (ending in <code>:</code>) and an optional comment
+        (after <code>;</code> or <code>//</code>). Mnemonics are not case-sensitive. A condition and S follow the mnemonic:
+        <code>ADDEQ</code>, <code>SUBS</code>, <code>BNE</code>.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Form</th><th>What the assembler accepts</th></tr></thead>
+        <tbody>
+          <tr><td>Data processing</td><td><code>AND EOR SUB RSB ADD ADC SBC RSC TST TEQ CMP CMN ORR MOV BIC MVN</code> and the shifts <code>LSL LSR ASR ROR RRX</code>; the second operand an immediate, a register, or a register shifted by a constant or by a register</td></tr>
+          <tr><td>Memory</td><td><code>LDR STR LDRB STRB</code> with <code>[Rn, #offset]</code>, a register offset, pre-indexing with <code>!</code> and post-indexing; <code>LDR Rd, =value</code> from a literal pool after the code; <code>ADR</code></td></tr>
+          <tr><td>Block transfers</td><td><code>LDM</code> (IA), <code>STM</code> (IA), <code>STMDB</code>, <code>PUSH</code>, <code>POP</code></td></tr>
+          <tr><td>Branches</td><td><code>B</code>, <code>BL</code>; <code>NOP</code>. A branch to itself, <code>B .</code>, ends the program.</td></tr>
+          <tr><td>Immediates</td><td><code>#</code> then a number: an 8-bit value rotated right by an even amount; a constant that cannot be encoded is refused with a hint</td></tr>
+          <tr><td>Directives</td><td><code>.text .data .word .byte .ascii .asciz .space .align .balign .equ .set .global</code></td></tr>
+          <tr><td>Memory map</td><td>The code starts at address 0, <code>.data</code> at <code>0x10000</code>; SP starts at <code>0x100000</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>An instruction that ARM's manual calls UNPREDICTABLE, such as writeback to the base register of a load into the
+        same register, is refused with the rule it breaks. Thumb, the multiply instructions, halfword transfers and the
+        status-register and coprocessor instructions are outside the laboratory's subset.</p>
+
+      <h2 id="sets">Instruction sets of the views</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>View</th><th>Runs</th></tr></thead>
+        <tbody>
+          <tr><td>Instructions</td><td>The whole subset above</td></tr>
+          <tr><td>Processor views, Base design</td><td>The textbook's processor: <code>ADD SUB AND ORR</code> with a register or an immediate, with or without S; <code>LDR</code> and <code>STR</code> with a positive offset; <code>B</code>; each with any condition</td></tr>
+          <tr><td>Processor views, Extended datapath</td><td>Also <code>CMP CMN TST TEQ</code>, <code>MOV</code> and the shifts <code>LSL LSR ASR ROR</code>, register operands shifted by a constant, <code>ADC SBC RSB EOR BIC</code>, <code>BL</code>, <code>LDRB</code> and negative offsets</td></tr>
+        </tbody>
+      </table></div>
+      <p>In the processor views an immediate must have rotation 0 (0 to 255), as in the textbook's processor. The
+        assembler of a processor view refuses an instruction outside its set and names the view that runs it.</p>
+
+      <h2 id="debug">Running and debugging</h2>
+      <ul>
+        <li><strong>Breakpoints</strong>: click a line number in the editor or an address in the listing (<kbd>B</kbd> on a row).</li>
+        <li><strong>Watchpoints</strong>: tick a register's eye to stop when it is written; double-click a memory word, or
+          use <em>Watch</em>, to stop when it is written.</li>
+        <li><strong>Step back</strong> undoes one step at a time, back to the start of the run, in every view.</li>
+        <li><strong>Step over</strong> (<kbd>F11</kbd>) runs a <code>BL</code> to its return; <strong>Step out</strong>
+          (<kbd>Shift</kbd>+<kbd>F11</kbd>) runs to the return of the present subroutine; <strong>Run to cursor</strong>
+          (<kbd>Ctrl</kbd>+<kbd>F10</kbd>) stops at the editor's line. A return is a write of LR to the PC, by
+          <code>MOV PC, LR</code> or <code>POP {…, PC}</code>.</li>
+        <li>The processors stop with a message where the hardware would go wrong: an instruction outside their set, an
+          unaligned word access, or an odd address written to the PC.</li>
+      </ul>
+
+      <h2 id="single">The single-cycle processor</h2>
+      <p>Each step is one clock cycle and one instruction. The drawing highlights the connections the instruction uses,
+        marks the multiplexer inputs it selects and shows the values of the control signals; <em>Class path</em> shows all
+        the connections of one instruction class.</p>
+      <ul>
+        <li>The Condition Check compares the instruction's Cond field with the flags and gives CondEx; AND gates let the
+          decoder's requests PCS, RegW, MemW and FlagW through only when CondEx is 1. An instruction whose condition fails
+          passes through the datapath but writes nothing; the gates are marked <code>CondEx = 0</code>.</li>
+        <li>R15 reads as the instruction's address plus 8 (PCPlus8); a write to R15 goes to the PC.</li>
+        <li>The tabs: <strong>Cycle</strong> (the cycle in register-transfer notation, each line followed by the same line
+          with this cycle's values, and every signal), <strong>Control</strong> (the Main Decoder and ALU Decoder with the
+          rows in use, the PC Logic and the Conditional Logic), <strong>Timing</strong> and <strong>Waveforms</strong>.</li>
+      </ul>
+
+      <h2 id="multi">The multicycle processor</h2>
+      <p>Each step is one clock cycle, one state of the controller's finite-state machine. One memory holds instructions
+        and data, and one ALU also adds 4 to the PC. The registers IR, Data, A, WriteData and ALUOut carry values from
+        one step to the next.</p>
+      <ul>
+        <li>Ten states, S0 Fetch to S9 Branch: <code>B</code> takes 3 cycles, a data-processing instruction and
+          <code>STR</code> 4, <code>LDR</code> 5.</li>
+        <li>The condition reaches the write gates one clock edge late, as CondExDelayed, so that the flags an instruction
+          writes cannot stop its own write-back.</li>
+        <li><strong>Instruction ▶</strong> runs the rest of the instruction, up to the next Fetch; <strong>◀
+          Instruction</strong> steps back to its Fetch. <em>State diagram</em> shows the controller in place of the
+          datapath.</li>
+        <li>The tabs: <strong>Controller</strong> (every state's outputs, the next state, the decoders),
+          <strong>Cycle</strong> (the state in register-transfer notation, with its values), <strong>Registers between
+          steps</strong>, <strong>States over time</strong>, <strong>Timing</strong> and <strong>Waveforms</strong>.</li>
+      </ul>
+
+      <h2 id="pipe">The pipelined processor</h2>
+      <p>Five stages, IF, ID, EX, MEM and WB, each work on their own instruction in every cycle; the strip above the
+        drawing names them, and the drawing highlights the connections each uses. Registers held at the next edge are
+        marked <em>stall</em>, cleared ones <em>flush</em>.</p>
+      <ul>
+        <li>The hazard unit forwards results to EX from MEM (ALUOutM) or WB (ResultW), the newer first; stalls one cycle
+          for an instruction that uses a loaded value at once; removes the two instructions behind a taken branch; and
+          holds the fetch while a write to R15 is on its way to WB.</li>
+        <li><strong>Hazard handling</strong> switches parts of the hazard unit off (Forwarding only, None) to show what goes
+          wrong; <strong>Stop on</strong> stops a run at a stall, a flush or a taken branch.</li>
+        <li>The tabs: <strong>Pipeline diagram</strong> (one row per instruction, one column per cycle), <strong>Stages</strong>
+          (what each stage does this cycle, in register-transfer notation with its values), <strong>Hazards</strong> (this
+          cycle's forwarding, stalls and flushes in words, and the hazard unit's equations), <strong>Lost cycles</strong>
+          (by cause, and the cycles per instruction built as the textbook's Example 7.7 builds them), <strong>Pipeline
+          registers</strong>, <strong>Signals</strong>, <strong>Timing</strong> and <strong>Waveforms</strong>.</li>
+      </ul>
+      <p class="note">One equation of the textbook's hazard unit is changed. As printed, StallF holds the PC while a write
+        to R15 is in ID, EX or MEM, even when a taken branch in EX is loading its target, so a branch followed at once by a
+        write to R15 would lose its target. Here StallF = (LDRstall OR PCWrPendingF) AND NOT BranchTakenE; the view names
+        the cycles where this matters. The textbook's design is otherwise kept as it is, including stalls that no register
+        needs, which the view names.</p>
+
+      <h2 id="extended">The Extended datapath</h2>
+      <p>The textbook's Chapter 7 exercises ask for further instructions on its processors. <em>Extended datapath</em>, in
+        the instruction-set menu of each processor view, shows this application's own design for them, drawn over the
+        textbook's processor with the added parts spread in:</p>
+      <ul>
+        <li>a shifter on the second operand, which also gives the carry of a logical instruction with S;</li>
+        <li>a four-bit ALU control taking the instruction's operation directly, with the flags as an input for
+          <code>ADC</code> and <code>SBC</code>;</li>
+        <li>NoWrite, which keeps <code>CMP</code>, <code>CMN</code>, <code>TST</code> and <code>TEQ</code> from writing a
+          register;</li>
+        <li>a link path for <code>BL</code> (R14 written with the return address), and a byte unit for
+          <code>LDRB</code>;</li>
+        <li>in the multicycle processor two added states for <code>BL</code>, Link and BranchL, drawn dashed.</li>
+      </ul>
+      <p>A badge on each Extended drawing says that it is not the textbook's processor.</p>
+
+      <h2 id="timing">Timing</h2>
+      <p>The <strong>Timing</strong> tab of each processor view computes critical paths from a table of illustrative
+        delays chosen for this application (not the textbook's table), which you can edit: the path of the present
+        instruction, state or stage, the clock period the slowest one sets, and, in the multicycle and pipelined views,
+        the time of the program on all three processors. The numbers show how the designs compare; they do not describe
+        any real chip.</p>
+
+      <h2 id="exercises">Exercises</h2>
+      <p><em>File ▸ Exercise…</em> lists practice exercises written for MAVILERA, in three groups: the base processor's
+        instructions (they also run in all three processor views), the Chapter 7 extensions (for the Extended datapath)
+        and instruction-level forms (for the Instructions view). Each opens with a starter program.</p>
+      <ol>
+        <li>Pick an exercise and read its task; <em>Load the starter program</em> puts it in the editor.</li>
+        <li>Write your program in place of the line <code>done: B done</code>, keeping the data lines the task names: the
+          tests write their inputs there.</li>
+        <li>Press the <strong>Exercise</strong> button in the toolbar, then <em>Run the tests</em>. Each test writes its
+          data into memory, runs your program on the instruction-level model until <code>B .</code>, and shows the
+          expected and actual registers, flags and memory.</li>
+      </ol>
+      <p>No solutions are included. A teacher's exercise file (JSON, with <code>"arch": "armv7"</code>) opens with
+        <em>File ▸ Open</em>; its tests set memory words or bytes and check R0 to R15, the flags and memory.</p>
+
+      <h2 id="files">Files, sharing and exports</h2>
+      <ul>
+        <li>Your work is kept in this browser: after a refresh or a closed tab, the program, its file name, the cursor,
+          breakpoints, watchpoints and the step you had reached come back.</li>
+        <li><em>File ▸ Copy share link</em> puts the program, the view and its settings into a link. They travel in the
+          part after <code>#</code>, which the browser never sends to a server.</li>
+        <li><em>File ▸ Save program and settings…</em> writes a <code>.json</code> file; <em>File ▸ Open</em> reads it back,
+          and also <code>.s</code> files.</li>
+        <li><em>File ▸ Data in and out…</em> loads words into memory before a run, and saves a memory range.</li>
+      </ul>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Export</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td><code>.hex</code>, <code>.bin</code></td><td>The program's words, one per line for <code>$readmemh</code>, or raw bytes. <em>Import .hex/.bin…</em> loads one.</td></tr>
+          <tr><td>Listing</td><td>Addresses, words and source lines</td></tr>
+          <tr><td>Trace (JSON lines, CSV)</td><td>One record per instruction from reset to the end</td></tr>
+          <tr><td>Drawing (SVG, PNG)</td><td>The processor drawing of the present cycle, from the <em>Display</em> menu</td></tr>
+          <tr><td>Waveform, VCD (processor views)</td><td>The signals of the processor, one clock per cycle</td></tr>
+        </tbody>
+      </table></div>
+      <p>The run exports replay the program from reset to its end; the session you are in is not changed.</p>
+
+      <h2 id="offline">Offline use and privacy</h2>
+      <ul>
+        <li>After a first visit, the hosted application opens without a network connection.</li>
+        <li>The single-file version, offered on the home page, is one <code>.html</code> file that opens from the local
+          disk and makes no network request.</li>
+        <li>No account, no tracking, no upload: programs, data files and exports never leave the browser.</li>
+      </ul>
+
+      <h2 id="keys">Keyboard reference</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Keys</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Assemble</td></tr>
+          <tr><td><kbd>F5</kbd></td><td>Run or pause</td></tr>
+          <tr><td><kbd>F10</kbd> / <kbd>Shift</kbd>+<kbd>F10</kbd></td><td>Step / step back (one clock cycle in a processor view)</td></tr>
+          <tr><td><kbd>F11</kbd> / <kbd>Shift</kbd>+<kbd>F11</kbd></td><td>Step over / step out</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F10</kbd></td><td>Run to the editor's line</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find in the editor</td></tr>
+          <tr><td><kbd>Esc</kbd>, then <kbd>Tab</kbd></td><td>Leave the editor (inside it, <kbd>Tab</kbd> indents)</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>Enter</kbd>, <kbd>B</kbd></td><td>In the listing: move, show the fields, set or clear a breakpoint</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>W</kbd></td><td>In the registers: move, watch</td></tr>
+          <tr><td>Arrow keys on a divider</td><td>Resize panes (<kbd>Shift</kbd> for larger steps; <kbd>Enter</kbd> restores)</td></tr>
+          <tr><td><kbd>Enter</kbd> on a drawn element</td><td>Open its details</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="checks">How the models were checked</h2>
+      <ul>
+        <li>The four models (instruction level, single-cycle, multicycle, pipelined, each processor in both designs) were
+          run on 10 000 generated programs and compared at every completed instruction: no difference.</li>
+        <li>The instruction-level model was compared with QEMU's user-mode ARM emulator (8.2.2) on 1 000 of those programs:
+          the registers, flags and memory agreed in all 1 000. The assembler's words were compared with the GNU assembler
+          (binutils 2.42) on 90 948 words: no mismatch; GNU refuses one valid but deprecated form, which the processors
+          stop at run time.</li>
+        <li>The single-cycle processor (base design) was compared signal by signal with the textbook's published hardware
+          description, in a Verilog simulator, on 402 programs: no difference in 416 960 values.</li>
+      </ul>
+      <p class="small">The Extended datapaths are this application's own design: no hardware description of them exists to
+        compare with. Agreement between models and tools is evidence about the models, not about any physical chip.</p>
+
+      <h2 id="limits">Limits of the model</h2>
+      <ul>
+        <li>The laboratory runs the subset of A32 described above, in user mode, with a flat memory: no Thumb, no
+          exceptions or interrupts, no caches, no devices.</li>
+        <li>The processor views are teaching models of the textbook's designs. A simulation shows what the model does; it
+          is not evidence of how a hardware build behaves.</li>
+        <li>Timing uses illustrative delays, not those of a real process.</li>
+      </ul>
+
+      <h2 id="rights">Licence and notices</h2>
+      <p>© 2026 Sajid Muhaimin Choudhury. MAVILERA and its content (drawings, help texts, this documentation, example programs and exercises) are licensed under the Apache License, Version 2.0. The names and the logo are not licensed as trademarks.</p>
+      <p class="small">The textbook <cite>Digital Design and Computer Architecture: ARM Edition</cite> is © 2016 Elsevier Inc.; the <cite>ARM Architecture Reference Manual</cite> is © ARM Limited. MAVILERA reproduces no text or figure of either: its simulator, drawings, help and programs are its own, and its drawings show the textbook's processors in its own layout. It is not affiliated with or endorsed by the authors, the publisher or Arm. Arm is a trademark of Arm Limited or its subsidiaries.</p>
+
+      <footer>
+        <p>MAVILERA Armv7 Laboratory documentation · <a href="../../">MAVILERA Home</a> · <a href="../">Open the application</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

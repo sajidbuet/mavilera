@@ -209,7 +209,8 @@ export class FieldsTable {
   constructor(language, addressBits = 32) {
     this.language = language;
     this.addressBits = addressBits;
-    this.root = el('div.fields', {}, el('p.note', { text: STRINGS.fieldsNone }));
+    // a region that scrolls (ARMv7: twelve fields) is reached with the keyboard (WCAG 2.1.1)
+    this.root = el('div.fields', { tabindex: 0, role: 'region', 'aria-label': STRINGS.fields }, el('p.note', { text: STRINGS.fieldsNone }));
   }
 
   show(l) {

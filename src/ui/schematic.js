@@ -210,11 +210,15 @@ function segmentHits(a, b, bx, m = 0) {
 }
 
 // --- multiplexers ---------------------------------------------------------------------------
-/** Input ports of every multiplexer: id -> [{index, at}], from the shape's input numbers. */
+/**
+ * Input ports of every multiplexer: id -> [{index, at}], from the shape's input numbers. A multiplexer's shape is named
+ * mux<inputs>, with an optional letter for a variant whose inputs are numbered in another order (the ARM multicycle
+ * drawing's mux2f and mux3f).
+ */
 export function muxPorts(geom) {
   const out = new Map();
   for (const e of [...geom.elements, ...Object.values(geom.variants ?? {}).flatMap((v) => v.elements)]) {
-    if (!/^mux\d$/.test(e.type)) continue;
+    if (!/^mux\d[a-z]?$/.test(e.type)) continue;
     const pic = geom.pics[e.type];
     out.set(e.id, pic.labels.map((l) => ({ index: Number(l.text), at: [e.at[0], e.at[1] + l.at[1]] })));
   }

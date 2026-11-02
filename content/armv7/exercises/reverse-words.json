@@ -1,0 +1,258 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap ARM-A6), not taken from a textbook; produced by tools/armv7/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "armv7",
+ "title": "Reverse a list in place",
+ "task": "Reverse, in place, the first n words of list, where n, 0 to 8, is the word at count; the words after them stay as they are. Then end with B . . Take the addresses with LDR Rd, =label, and step a pointer with post-indexing: STR R5, [R2], #4 stores and then adds 4 to R2. It uses instruction-level forms, so it runs in the Instructions view only. Keep the labels count and list and their lines: the tests write there.",
+ "lang": "asm",
+ "starter": "; reverse-words -- practice exercise (MAVILERA, ARMv7)\n; Reverse the first n words of list in place.\n; Hint: one pointer from the front, one from the back, until they meet.\n\ndone:   B     done           ; replace with your code; B . ends the run\n\n        .data                ; the data (the tests write here)\ncount:  .word 0\nlist:   .space 32\n",
+ "tests": [
+  {
+   "name": "n = 0",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      0
+     ]
+    },
+    {
+     "at": "list",
+     "words": [
+      1,
+      2,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "list",
+      "words": [
+       1,
+       2,
+       3,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 1",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": "list",
+     "words": [
+      9,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "list",
+      "words": [
+       9,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 2",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      2
+     ]
+    },
+    {
+     "at": "list",
+     "words": [
+      1,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "list",
+      "words": [
+       2,
+       1,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 5",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      5
+     ]
+    },
+    {
+     "at": "list",
+     "words": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "list",
+      "words": [
+       5,
+       4,
+       3,
+       2,
+       1,
+       6,
+       7,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 8",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      8
+     ]
+    },
+    {
+     "at": "list",
+     "words": [
+      8,
+      7,
+      6,
+      5,
+      4,
+      3,
+      2,
+      1
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "list",
+      "words": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 4",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      4
+     ]
+    },
+    {
+     "at": "list",
+     "words": [
+      4294967295,
+      0,
+      2147483647,
+      5,
+      77,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "list",
+      "words": [
+       5,
+       2147483647,
+       0,
+       4294967295,
+       77,
+       0,
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

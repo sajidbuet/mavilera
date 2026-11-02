@@ -80,6 +80,7 @@ const SVGS = {
   'mavilera-logo.svg': svg('mavilera-riscv-header.svg', 'MAVILERA RISC-V'), // the tool's header: MAVILERA, the microprocessor, RISC-V
   'mavilera-logo-sap-1.svg': svg('mavilera-sap1-header.svg', 'MAVILERA SAP-1'), // the same for the SAP-1 module (content.logo, contract v6)
   'mavilera-logo-sap-2.svg': svg('mavilera-sap2-header.svg', 'MAVILERA SAP-2'), // and for the SAP-2 module
+  'mavilera-logo-armv7.svg': svg('mavilera-armv7-header.svg', 'MAVILERA ARMv7'), // and for the ARMv7 module (W-D35)
   'mavilera-full.svg': svg('mavilera-full.svg', 'MAVILERA'), // the landing page
   'mavilera-lockup.svg': svg('mavilera-lockup.svg', 'MAVILERA'), // the landing page on narrow screens: no subtitle
   'mavilera-wordmark.svg': svg('mavilera-wordmark.svg', 'MAVILERA'),

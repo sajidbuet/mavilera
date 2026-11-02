@@ -1,0 +1,132 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap ARM-A6), not taken from a textbook; produced by tools/armv7/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "armv7",
+ "title": "A recursive sum with PUSH and POP",
+ "task": "Write a recursive subroutine sum that returns 1 + 2 + … + R0 in R0: 0 for R0 = 0, otherwise R0 + sum(R0 − 1). It saves R4 and LR with PUSH {R4, LR} and returns with POP {R4, PC}. The main program loads the word at n (0 to 100), calls sum with BL, stores the result at total and ends with B . . Every PUSH must be undone: the tests also check that SP is back at 0x00100000. It uses instruction-level forms, so it runs in the Instructions view only. Keep the labels n and total and their lines.",
+ "lang": "asm",
+ "starter": "; recursive-sum -- practice exercise (MAVILERA, ARMv7)\n; Store 1 + 2 + ... + n at total, with a recursive subroutine.\n; Hint: MOVS R4, R0 keeps n and sets Z for the case n = 0.\n\ndone:   B     done           ; replace with your code; B . ends the run\n\n        .data                ; the data (the tests write here)\nn:      .word 0\ntotal:  .word 0\n",
+ "tests": [
+  {
+   "name": "n = 0",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "SP": 1048576
+    },
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 1",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      1
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "SP": 1048576
+    },
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 5",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      5
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "SP": 1048576
+    },
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       15
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 10",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      10
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "SP": 1048576
+    },
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       55
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 100",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      100
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "SP": 1048576
+    },
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       5050
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

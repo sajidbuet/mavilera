@@ -1,0 +1,3577 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0).",
+ "_source": {
+  "topology": "Harris and Harris, Digital Design and Computer Architecture: ARM Edition (2015), Fig 7.30 (p. 414), Fig 7.31 (p. 415) and Fig 7.41 (p. 423): the blocks, their connections and the states only; NoWrite after Example 7.2 and the shifter after Example 7.3 (p. 402)",
+  "design": "the Extended datapath variant: MAVILERA's own design (W-D32 C5 ruling, A3-Q3 to A3-Q5), semantics from ARM DDI 0406C.d; see src/arch/armv7/uarch/multi-ext.js",
+  "layout": "the base drawing spread to the right, with parts added and connections replaced",
+  "generated_by": "tools/armv7/make-multi-geometry.mjs",
+  "status": "approved by the author on 2026-11-01 (A3-Q10)"
+ },
+ "profile": "arm-multi",
+ "units": "cm",
+ "y_up": true,
+ "pics": {
+  "mux2": {
+   "outline": [
+    [
+     0,
+     -0.75
+    ],
+    [
+     0.6,
+     -0.45
+    ],
+    [
+     0.6,
+     0.45
+    ],
+    [
+     0,
+     0.75
+    ]
+   ],
+   "anchors": {
+    "in0": [
+     0,
+     0.4
+    ],
+    "in1": [
+     0,
+     -0.4
+    ],
+    "out": [
+     0.6,
+     0
+    ]
+   },
+   "labels": [
+    {
+     "text": "0",
+     "at": [
+      0.02,
+      0.4
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "1",
+     "at": [
+      0.02,
+      -0.4
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  "mux2f": {
+   "outline": [
+    [
+     0,
+     -0.75
+    ],
+    [
+     0.6,
+     -0.45
+    ],
+    [
+     0.6,
+     0.45
+    ],
+    [
+     0,
+     0.75
+    ]
+   ],
+   "anchors": {
+    "in1": [
+     0,
+     0.4
+    ],
+    "in0": [
+     0,
+     -0.4
+    ],
+    "out": [
+     0.6,
+     0
+    ]
+   },
+   "labels": [
+    {
+     "text": "1",
+     "at": [
+      0.02,
+      0.4
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "0",
+     "at": [
+      0.02,
+      -0.4
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  "mux3": {
+   "outline": [
+    [
+     0,
+     -1
+    ],
+    [
+     0.6,
+     -0.7
+    ],
+    [
+     0.6,
+     0.7
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "anchors": {
+    "in0": [
+     0,
+     0.5
+    ],
+    "in1": [
+     0,
+     0
+    ],
+    "in2": [
+     0,
+     -0.5
+    ],
+    "out": [
+     0.6,
+     0
+    ]
+   },
+   "labels": [
+    {
+     "text": "0",
+     "at": [
+      0.02,
+      0.5
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "1",
+     "at": [
+      0.02,
+      0
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "2",
+     "at": [
+      0.02,
+      -0.5
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  "mux3f": {
+   "outline": [
+    [
+     0,
+     -1
+    ],
+    [
+     0.6,
+     -0.7
+    ],
+    [
+     0.6,
+     0.7
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "anchors": {
+    "in2": [
+     0,
+     0.5
+    ],
+    "in1": [
+     0,
+     0
+    ],
+    "in0": [
+     0,
+     -0.5
+    ],
+    "out": [
+     0.6,
+     0
+    ]
+   },
+   "labels": [
+    {
+     "text": "2",
+     "at": [
+      0.02,
+      0.5
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "1",
+     "at": [
+      0.02,
+      0
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "0",
+     "at": [
+      0.02,
+      -0.5
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  "alu": {
+   "outline": [
+    [
+     0,
+     -1.1
+    ],
+    [
+     1,
+     -0.5
+    ],
+    [
+     1,
+     0.5
+    ],
+    [
+     0,
+     1.1
+    ],
+    [
+     0,
+     0.28
+    ],
+    [
+     0.22,
+     0
+    ],
+    [
+     0,
+     -0.28
+    ]
+   ],
+   "anchors": {
+    "a": [
+     0,
+     0.7
+    ],
+    "b": [
+     0,
+     -0.7
+    ],
+    "out": [
+     1,
+     0
+    ],
+    "ctrl": [
+     0.5,
+     -0.8
+    ],
+    "flags": [
+     0.5,
+     0.8
+    ]
+   },
+   "labels": [
+    {
+     "text": "ALU",
+     "at": [
+      0.6,
+      0
+     ],
+     "anchor": "center"
+    }
+   ]
+  },
+  "and2": {
+   "outline": [
+    [
+     0,
+     -0.25
+    ],
+    [
+     0.25,
+     -0.25
+    ],
+    [
+     0.3457,
+     -0.231
+    ],
+    [
+     0.4268,
+     -0.1768
+    ],
+    [
+     0.481,
+     -0.0957
+    ],
+    [
+     0.5,
+     0
+    ],
+    [
+     0.481,
+     0.0957
+    ],
+    [
+     0.4268,
+     0.1768
+    ],
+    [
+     0.3457,
+     0.231
+    ],
+    [
+     0.25,
+     0.25
+    ],
+    [
+     0,
+     0.25
+    ]
+   ],
+   "anchors": {
+    "a": [
+     0,
+     0.12
+    ],
+    "b": [
+     0,
+     -0.12
+    ],
+    "out": [
+     0.5,
+     0
+    ]
+   },
+   "labels": []
+  },
+  "or2": {
+   "outline": [
+    [
+     0.05,
+     -0.25
+    ],
+    [
+     0.3358,
+     -0.1875
+    ],
+    [
+     0.4708,
+     -0.125
+    ],
+    [
+     0.572,
+     -0.0625
+    ],
+    [
+     0.6,
+     0
+    ],
+    [
+     0.572,
+     0.0625
+    ],
+    [
+     0.4708,
+     0.125
+    ],
+    [
+     0.3358,
+     0.1875
+    ],
+    [
+     0.05,
+     0.25
+    ],
+    [
+     0.075,
+     0.125
+    ],
+    [
+     0.1,
+     0
+    ],
+    [
+     0.075,
+     -0.125
+    ]
+   ],
+   "anchors": {
+    "a": [
+     0.06,
+     0.12
+    ],
+    "b": [
+     0.06,
+     -0.12
+    ],
+    "out": [
+     0.6,
+     0
+    ]
+   },
+   "labels": []
+  },
+  "mux4f": {
+   "outline": [
+    [
+     0,
+     -1.25
+    ],
+    [
+     0.6,
+     -0.95
+    ],
+    [
+     0.6,
+     0.95
+    ],
+    [
+     0,
+     1.25
+    ]
+   ],
+   "anchors": {
+    "in3": [
+     0,
+     0.75
+    ],
+    "in2": [
+     0,
+     0.25
+    ],
+    "in1": [
+     0,
+     -0.25
+    ],
+    "in0": [
+     0,
+     -0.75
+    ],
+    "out": [
+     0.6,
+     0
+    ]
+   },
+   "labels": [
+    {
+     "text": "3",
+     "at": [
+      0.02,
+      0.75
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "2",
+     "at": [
+      0.02,
+      0.25
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "1",
+     "at": [
+      0.02,
+      -0.25
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "0",
+     "at": [
+      0.02,
+      -0.75
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  "and3": {
+   "outline": [
+    [
+     0,
+     -0.3
+    ],
+    [
+     0.2,
+     -0.3
+    ],
+    [
+     0.3148,
+     -0.2772
+    ],
+    [
+     0.4121,
+     -0.2121
+    ],
+    [
+     0.4772,
+     -0.1148
+    ],
+    [
+     0.5,
+     0
+    ],
+    [
+     0.4772,
+     0.1148
+    ],
+    [
+     0.4121,
+     0.2121
+    ],
+    [
+     0.3148,
+     0.2772
+    ],
+    [
+     0.2,
+     0.3
+    ],
+    [
+     0,
+     0.3
+    ]
+   ],
+   "anchors": {
+    "a": [
+     0,
+     0.2
+    ],
+    "c": [
+     0,
+     0
+    ],
+    "b": [
+     0,
+     -0.2
+    ],
+    "out": [
+     0.5,
+     0
+    ]
+   },
+   "labels": []
+  },
+  "bubble": {
+   "outline": [
+    [
+     0.05,
+     0
+    ],
+    [
+     0.0433,
+     0.025
+    ],
+    [
+     0.025,
+     0.0433
+    ],
+    [
+     0,
+     0.05
+    ],
+    [
+     -0.025,
+     0.0433
+    ],
+    [
+     -0.0433,
+     0.025
+    ],
+    [
+     -0.05,
+     0
+    ],
+    [
+     -0.0433,
+     -0.025
+    ],
+    [
+     -0.025,
+     -0.0433
+    ],
+    [
+     0,
+     -0.05
+    ],
+    [
+     0.025,
+     -0.0433
+    ],
+    [
+     0.0433,
+     -0.025
+    ]
+   ],
+   "anchors": {},
+   "labels": []
+  }
+ },
+ "elements": [
+  {
+   "id": "pc",
+   "type": "reg",
+   "at": [
+    1,
+    0
+   ],
+   "size": [
+    0.8,
+    1.3
+   ],
+   "text": "PC"
+  },
+  {
+   "id": "am",
+   "type": "mux2",
+   "at": [
+    2.1,
+    -0.4
+   ]
+  },
+  {
+   "id": "mem",
+   "type": "mem",
+   "at": [
+    3.95,
+    -0.4
+   ],
+   "size": [
+    1.9,
+    2.4
+   ],
+   "text": ""
+  },
+  {
+   "id": "ir",
+   "type": "reg",
+   "at": [
+    7.25,
+    0.8
+   ],
+   "size": [
+    0.7,
+    0.8
+   ],
+   "text": "IR"
+  },
+  {
+   "id": "data",
+   "type": "reg",
+   "at": [
+    7.25,
+    -1.6
+   ],
+   "size": [
+    0.7,
+    0.7
+   ],
+   "text": "Data"
+  },
+  {
+   "id": "ra1m",
+   "type": "mux2",
+   "at": [
+    9.1,
+    1.6
+   ]
+  },
+  {
+   "id": "ra2m",
+   "type": "mux2",
+   "at": [
+    9.1,
+    -0.2
+   ]
+  },
+  {
+   "id": "rf",
+   "type": "block",
+   "at": [
+    12.1,
+    -0.3
+   ],
+   "size": [
+    1.8,
+    4.4
+   ],
+   "text": ""
+  },
+  {
+   "id": "ext",
+   "type": "comb",
+   "at": [
+    12.1,
+    -3.4
+   ],
+   "size": [
+    1.4,
+    0.6
+   ],
+   "text": "Extend"
+  },
+  {
+   "id": "areg",
+   "type": "reg",
+   "at": [
+    13.9,
+    1
+   ],
+   "size": [
+    1,
+    0.6
+   ],
+   "text": "A"
+  },
+  {
+   "id": "wdreg",
+   "type": "reg",
+   "at": [
+    13.9,
+    -0.5
+   ],
+   "size": [
+    1,
+    0.6
+   ],
+   "text": "WriteData"
+  },
+  {
+   "id": "sam",
+   "type": "mux2f",
+   "at": [
+    16.1,
+    1.4
+   ]
+  },
+  {
+   "id": "sbm",
+   "type": "mux3",
+   "at": [
+    16.1,
+    -1
+   ]
+  },
+  {
+   "id": "alu",
+   "type": "alu",
+   "at": [
+    17.1,
+    0.2
+   ]
+  },
+  {
+   "id": "aoreg",
+   "type": "reg",
+   "at": [
+    18.9,
+    0.2
+   ],
+   "size": [
+    0.8,
+    0.7
+   ],
+   "text": "ALUOut"
+  },
+  {
+   "id": "rm",
+   "type": "mux4f",
+   "at": [
+    20.3,
+    0.45
+   ]
+  },
+  {
+   "id": "cu",
+   "type": "block",
+   "at": [
+    5.15,
+    7
+   ],
+   "size": [
+    6.7,
+    3.4
+   ],
+   "text": ""
+  },
+  {
+   "id": "flags",
+   "type": "reg",
+   "at": [
+    17.6,
+    4.45
+   ],
+   "size": [
+    0.9,
+    0.7
+   ],
+   "text": "Flags"
+  },
+  {
+   "id": "cc",
+   "type": "comb",
+   "at": [
+    16.1,
+    4.45
+   ],
+   "size": [
+    1,
+    0.7
+   ],
+   "text": "Condition\ncheck"
+  },
+  {
+   "id": "cxd",
+   "type": "reg",
+   "at": [
+    14.3,
+    6.1
+   ],
+   "size": [
+    0.5,
+    0.4
+   ],
+   "text": ""
+  },
+  {
+   "id": "g_flagw",
+   "type": "and2",
+   "at": [
+    15.7,
+    5.6
+   ]
+  },
+  {
+   "id": "g_memw",
+   "type": "and2",
+   "at": [
+    15.7,
+    6.7
+   ]
+  },
+  {
+   "id": "g_regw",
+   "type": "and3",
+   "at": [
+    15.7,
+    7.4
+   ]
+  },
+  {
+   "id": "g_pcs",
+   "type": "and2",
+   "at": [
+    15.7,
+    8.1
+   ]
+  },
+  {
+   "id": "g_pcwrite",
+   "type": "or2",
+   "at": [
+    16.65,
+    8.3
+   ]
+  },
+  {
+   "id": "byte",
+   "type": "comb",
+   "at": [
+    5.7,
+    -2
+   ],
+   "size": [
+    0.8,
+    0.45
+   ],
+   "text": "Byte"
+  },
+  {
+   "id": "dsm",
+   "type": "mux2",
+   "at": [
+    6.2,
+    -1.6
+   ]
+  },
+  {
+   "id": "wa3m",
+   "type": "mux2",
+   "at": [
+    10.1,
+    -2.2
+   ]
+  },
+  {
+   "id": "sh",
+   "type": "comb",
+   "at": [
+    15.2,
+    -0.5
+   ],
+   "size": [
+    0.9,
+    0.6
+   ],
+   "text": "Shift"
+  },
+  {
+   "id": "nw_bub",
+   "type": "bubble",
+   "at": [
+    15.649999999999999,
+    7.4
+   ]
+  }
+ ],
+ "labels": [
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    5.15,
+    8.15
+   ],
+   "anchor": "center",
+   "text": "Control unit"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    4.5058,
+    6
+   ],
+   "anchor": "center",
+   "text": "Main FSM, Instr Decoder,\nALU Decoder, PC Logic"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    3.95,
+    0.3
+   ],
+   "anchor": "center",
+   "text": "Instr / Data\nmemory"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    12.1,
+    -1
+   ],
+   "anchor": "center",
+   "text": "Register\nfile"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    16.2,
+    8.75
+   ],
+   "anchor": "south",
+   "text": "Conditional logic"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    3,
+    -0.4
+   ],
+   "anchor": "west",
+   "text": "A"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    3,
+    -1.2
+   ],
+   "anchor": "west",
+   "text": "WD"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    4.9,
+    -0.4
+   ],
+   "anchor": "east",
+   "text": "RD"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    11.2,
+    1.6
+   ],
+   "anchor": "west",
+   "text": "A1"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    11.2,
+    -0.2
+   ],
+   "anchor": "west",
+   "text": "A2"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    11.2,
+    -1.8
+   ],
+   "anchor": "west",
+   "text": "A3"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    13,
+    1
+   ],
+   "anchor": "east",
+   "text": "RD1"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    13,
+    -0.5
+   ],
+   "anchor": "east",
+   "text": "RD2"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    11.95,
+    1.9
+   ],
+   "anchor": "north",
+   "text": "WD3"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    12.65,
+    1.9
+   ],
+   "anchor": "north",
+   "text": "R15"
+  }
+ ],
+ "wires": [
+  {
+   "id": "pc_out",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     1.4,
+     0
+    ],
+    [
+     1.65,
+     0
+    ]
+   ],
+   "signal": "PC",
+   "labels": []
+  },
+  {
+   "id": "pc_am",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     1.65,
+     0
+    ],
+    [
+     2.1,
+     0
+    ]
+   ],
+   "signal": "PC",
+   "labels": []
+  },
+  {
+   "id": "pc_sa",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     1.65,
+     0
+    ],
+    [
+     1.65,
+     3
+    ],
+    [
+     15.8,
+     3
+    ],
+    [
+     15.8,
+     1.8
+    ],
+    [
+     16.1,
+     1.8
+    ]
+   ],
+   "signal": "PC",
+   "labels": [
+    {
+     "text": "PC",
+     "at": [
+      4.5,
+      3
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "am_mem",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     2.7,
+     -0.4
+    ],
+    [
+     3,
+     -0.4
+    ]
+   ],
+   "signal": "Adr",
+   "labels": []
+  },
+  {
+   "id": "mem_rd",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     4.9,
+     -0.4
+    ],
+    [
+     5.1,
+     -0.4
+    ]
+   ],
+   "signal": "ReadData",
+   "labels": []
+  },
+  {
+   "id": "rd_ir",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     5.1,
+     -0.4
+    ],
+    [
+     5.1,
+     0.8
+    ],
+    [
+     6.9,
+     0.8
+    ]
+   ],
+   "signal": "ReadData",
+   "labels": []
+  },
+  {
+   "id": "ir_bus",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     7.6,
+     0.8
+    ],
+    [
+     8.1,
+     0.8
+    ]
+   ],
+   "signal": "Instr",
+   "labels": []
+  },
+  {
+   "id": "bus_up1",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     8.1,
+     0.8
+    ],
+    [
+     8.1,
+     2
+    ]
+   ],
+   "signal": "Instr",
+   "labels": []
+  },
+  {
+   "id": "bus_up2",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     8.1,
+     2
+    ],
+    [
+     8.1,
+     5
+    ]
+   ],
+   "signal": "Instr",
+   "labels": [
+    {
+     "text": "Instr",
+     "at": [
+      8.1,
+      4.3
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "ins_cond",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.1,
+     5
+    ],
+    [
+     16.1,
+     5
+    ],
+    [
+     16.1,
+     4.8
+    ]
+   ],
+   "signal": "Cond",
+   "labels": [
+    {
+     "text": "Cond 31:28",
+     "at": [
+      11.5,
+      5
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "ins_rn",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.1,
+     2
+    ],
+    [
+     9.1,
+     2
+    ]
+   ],
+   "signal": "Rn",
+   "labels": [
+    {
+     "text": "19:16",
+     "at": [
+      8.55,
+      2
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "c15_ra1m",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.8,
+     1.2
+    ],
+    [
+     9.1,
+     1.2
+    ]
+   ],
+   "signal": "const15",
+   "labels": [
+    {
+     "text": "15",
+     "at": [
+      8.8,
+      1.2
+     ],
+     "place": "left"
+    }
+   ]
+  },
+  {
+   "id": "bus_dn1",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     8.1,
+     0.8
+    ],
+    [
+     8.1,
+     0.2
+    ]
+   ],
+   "signal": "Instr",
+   "labels": []
+  },
+  {
+   "id": "ins_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.1,
+     0.2
+    ],
+    [
+     9.1,
+     0.2
+    ]
+   ],
+   "signal": "Rm",
+   "labels": [
+    {
+     "text": "3:0",
+     "at": [
+      8.55,
+      0.2
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "bus_dn2",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     8.1,
+     0.2
+    ],
+    [
+     8.1,
+     -1.8
+    ]
+   ],
+   "signal": "Instr",
+   "labels": []
+  },
+  {
+   "id": "ins_rd_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     8.1,
+     -1.8
+    ],
+    [
+     8.7,
+     -1.8
+    ]
+   ],
+   "signal": "Rd",
+   "labels": []
+  },
+  {
+   "id": "rd_ra2m",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.7,
+     -1.8
+    ],
+    [
+     8.7,
+     -0.6
+    ],
+    [
+     9.1,
+     -0.6
+    ]
+   ],
+   "signal": "Rd",
+   "labels": []
+  },
+  {
+   "id": "bus_dn3",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     8.1,
+     -1.8
+    ],
+    [
+     8.1,
+     -3.4
+    ]
+   ],
+   "signal": "Instr",
+   "labels": []
+  },
+  {
+   "id": "ins_imm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.1,
+     -3.4
+    ],
+    [
+     11.4,
+     -3.4
+    ]
+   ],
+   "signal": "Imm24",
+   "labels": [
+    {
+     "text": "23:0",
+     "at": [
+      9.1,
+      -3.4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "ra1m_rf",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     9.7,
+     1.6
+    ],
+    [
+     11.2,
+     1.6
+    ]
+   ],
+   "signal": "RA1",
+   "labels": []
+  },
+  {
+   "id": "ra2m_rf",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     9.7,
+     -0.2
+    ],
+    [
+     11.2,
+     -0.2
+    ]
+   ],
+   "signal": "RA2",
+   "labels": []
+  },
+  {
+   "id": "rd1_a",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     13,
+     1
+    ],
+    [
+     13.4,
+     1
+    ]
+   ],
+   "signal": "RD1",
+   "labels": []
+  },
+  {
+   "id": "rd2_wd",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     13,
+     -0.5
+    ],
+    [
+     13.4,
+     -0.5
+    ]
+   ],
+   "signal": "RD2",
+   "labels": []
+  },
+  {
+   "id": "a_sa",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     14.4,
+     1
+    ],
+    [
+     16.1,
+     1
+    ]
+   ],
+   "signal": "A",
+   "labels": []
+  },
+  {
+   "id": "wd_j",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     14.4,
+     -0.5
+    ],
+    [
+     14.5,
+     -0.5
+    ]
+   ],
+   "signal": "WriteData",
+   "labels": []
+  },
+  {
+   "id": "wd_mem",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     14.5,
+     -0.5
+    ],
+    [
+     14.5,
+     -4.8
+    ],
+    [
+     2.85,
+     -4.8
+    ],
+    [
+     2.85,
+     -1.2
+    ],
+    [
+     3,
+     -1.2
+    ]
+   ],
+   "signal": "WriteData",
+   "labels": [
+    {
+     "text": "WriteData",
+     "at": [
+      5,
+      -4.8
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "ext_sb",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     12.8,
+     -3.4
+    ],
+    [
+     15.75,
+     -3.4
+    ],
+    [
+     15.75,
+     -1
+    ],
+    [
+     16.1,
+     -1
+    ]
+   ],
+   "signal": "ExtImm",
+   "labels": [
+    {
+     "text": "ExtImm",
+     "at": [
+      13.6,
+      -3.4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "c4_sb",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     15.95,
+     -1.95
+    ],
+    [
+     15.95,
+     -1.5
+    ],
+    [
+     16.1,
+     -1.5
+    ]
+   ],
+   "signal": "const4",
+   "labels": [
+    {
+     "text": "4",
+     "at": [
+      15.95,
+      -1.95
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "sa_alu",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     16.7,
+     1.4
+    ],
+    [
+     16.9,
+     1.4
+    ],
+    [
+     16.9,
+     0.9
+    ],
+    [
+     17.1,
+     0.9
+    ]
+   ],
+   "signal": "SrcA",
+   "labels": []
+  },
+  {
+   "id": "sb_alu",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     16.7,
+     -1
+    ],
+    [
+     16.9,
+     -1
+    ],
+    [
+     16.9,
+     -0.5
+    ],
+    [
+     17.1,
+     -0.5
+    ]
+   ],
+   "signal": "SrcB",
+   "labels": []
+  },
+  {
+   "id": "alu_j",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     18.1,
+     0.2
+    ],
+    [
+     18.3,
+     0.2
+    ]
+   ],
+   "signal": "ALUResult",
+   "labels": []
+  },
+  {
+   "id": "alu_ao",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     18.3,
+     0.2
+    ],
+    [
+     18.5,
+     0.2
+    ]
+   ],
+   "signal": "ALUResult",
+   "labels": []
+  },
+  {
+   "id": "alu_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     18.3,
+     0.2
+    ],
+    [
+     18.3,
+     0.7
+    ],
+    [
+     20.3,
+     0.7
+    ]
+   ],
+   "signal": "ALUResult",
+   "labels": [
+    {
+     "text": "ALUResult",
+     "at": [
+      19.3,
+      0.7
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "ao_j",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     19.3,
+     0.2
+    ],
+    [
+     19.6,
+     0.2
+    ],
+    [
+     19.6,
+     -0.3
+    ]
+   ],
+   "signal": "ALUOut",
+   "labels": []
+  },
+  {
+   "id": "ao_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     19.6,
+     -0.3
+    ],
+    [
+     20.3,
+     -0.3
+    ]
+   ],
+   "signal": "ALUOut",
+   "labels": []
+  },
+  {
+   "id": "ao_am",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     19.6,
+     -0.3
+    ],
+    [
+     19.6,
+     -5.2
+    ],
+    [
+     1.85,
+     -5.2
+    ],
+    [
+     1.85,
+     -0.8
+    ],
+    [
+     2.1,
+     -0.8
+    ]
+   ],
+   "signal": "ALUOut",
+   "labels": [
+    {
+     "text": "ALUOut",
+     "at": [
+      11.5,
+      -5.2
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "data_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     7.6,
+     -1.6
+    ],
+    [
+     7.8,
+     -1.6
+    ],
+    [
+     7.8,
+     -4.4
+    ],
+    [
+     20,
+     -4.4
+    ],
+    [
+     20,
+     0.2
+    ],
+    [
+     20.3,
+     0.2
+    ]
+   ],
+   "signal": "Data",
+   "labels": [
+    {
+     "text": "Data",
+     "at": [
+      17.5,
+      -4.4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "res_r15",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     12.65,
+     3.6
+    ],
+    [
+     12.65,
+     1.9
+    ]
+   ],
+   "signal": "Result",
+   "labels": []
+  },
+  {
+   "id": "res_a2",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     12.65,
+     3.6
+    ],
+    [
+     11.95,
+     3.6
+    ]
+   ],
+   "signal": "Result",
+   "labels": []
+  },
+  {
+   "id": "res_wd3",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.95,
+     3.6
+    ],
+    [
+     11.95,
+     1.9
+    ]
+   ],
+   "signal": "Result",
+   "labels": []
+  },
+  {
+   "id": "res_pc",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.95,
+     3.6
+    ],
+    [
+     0.3,
+     3.6
+    ],
+    [
+     0.3,
+     0
+    ],
+    [
+     0.6,
+     0
+    ]
+   ],
+   "signal": "Result",
+   "labels": [
+    {
+     "text": "Result",
+     "at": [
+      4.5,
+      3.6
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "alu_flags",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     17.6,
+     1
+    ],
+    [
+     17.6,
+     4.1
+    ]
+   ],
+   "signal": "ALUFlags",
+   "labels": [
+    {
+     "text": "ALUFlags",
+     "at": [
+      17.6,
+      2.3
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "flags_cc",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     17.15,
+     4.45
+    ],
+    [
+     16.6,
+     4.45
+    ]
+   ],
+   "signal": "Flags",
+   "labels": []
+  },
+  {
+   "id": "condex",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     15.6,
+     4.45
+    ],
+    [
+     14.3,
+     4.45
+    ],
+    [
+     14.3,
+     5.4799999999999995
+    ],
+    [
+     15.7,
+     5.4799999999999995
+    ]
+   ],
+   "signal": "CondEx",
+   "labels": [
+    {
+     "text": "CondEx",
+     "at": [
+      14.25,
+      4.6
+     ],
+     "anchor": "east"
+    }
+   ]
+  },
+  {
+   "id": "condex_cxd",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     14.3,
+     5.4799999999999995
+    ],
+    [
+     14.3,
+     5.9
+    ]
+   ],
+   "signal": "CondEx",
+   "labels": []
+  },
+  {
+   "id": "cxd_pcs",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     14.3,
+     6.3
+    ],
+    [
+     14.3,
+     7.9799999999999995
+    ],
+    [
+     15.7,
+     7.9799999999999995
+    ]
+   ],
+   "signal": "CondExDelayed",
+   "labels": [
+    {
+     "text": "CondExDelayed",
+     "at": [
+      14,
+      6.1
+     ],
+     "anchor": "east"
+    }
+   ]
+  },
+  {
+   "id": "cxd_memw",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     14.3,
+     6.58
+    ],
+    [
+     15.7,
+     6.58
+    ]
+   ],
+   "signal": "CondExDelayed",
+   "labels": []
+  },
+  {
+   "id": "cu_flagw",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     8.5,
+     5.72
+    ],
+    [
+     15.7,
+     5.72
+    ]
+   ],
+   "signal": "FlagW",
+   "labels": [
+    {
+     "text": "FlagW",
+     "at": [
+      8.55,
+      5.72
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_memw",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     8.5,
+     6.82
+    ],
+    [
+     15.7,
+     6.82
+    ]
+   ],
+   "signal": "MemW",
+   "labels": [
+    {
+     "text": "MemW",
+     "at": [
+      8.55,
+      6.82
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_pcs",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     8.5,
+     8.219999999999999
+    ],
+    [
+     15.7,
+     8.219999999999999
+    ]
+   ],
+   "signal": "PCS",
+   "labels": [
+    {
+     "text": "PCS",
+     "at": [
+      8.55,
+      8.219999999999999
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_nextpc",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     8.5,
+     8.62
+    ],
+    [
+     16.5,
+     8.62
+    ],
+    [
+     16.5,
+     8.42
+    ],
+    [
+     16.71,
+     8.42
+    ]
+   ],
+   "signal": "NextPC",
+   "labels": [
+    {
+     "text": "NextPC",
+     "at": [
+      8.55,
+      8.62
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "pcs_or",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     16.2,
+     8.1
+    ],
+    [
+     16.45,
+     8.1
+    ],
+    [
+     16.45,
+     8.18
+    ],
+    [
+     16.71,
+     8.18
+    ]
+   ],
+   "signal": "PCSGated",
+   "labels": []
+  },
+  {
+   "id": "rd_dn",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     5.1,
+     -0.4
+    ],
+    [
+     5.1,
+     -1.2
+    ]
+   ],
+   "signal": "ReadData",
+   "labels": []
+  },
+  {
+   "id": "rd_dsm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     5.1,
+     -1.2
+    ],
+    [
+     6.2,
+     -1.2
+    ]
+   ],
+   "signal": "ReadData",
+   "labels": []
+  },
+  {
+   "id": "rd_byte",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     5.1,
+     -1.2
+    ],
+    [
+     5.1,
+     -2
+    ],
+    [
+     5.3,
+     -2
+    ]
+   ],
+   "signal": "ReadData",
+   "labels": []
+  },
+  {
+   "id": "byte_dsm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     6.1,
+     -2
+    ],
+    [
+     6.2,
+     -2
+    ]
+   ],
+   "signal": "ReadByte",
+   "labels": []
+  },
+  {
+   "id": "dsm_data",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     6.8,
+     -1.6
+    ],
+    [
+     6.9,
+     -1.6
+    ]
+   ],
+   "signal": "DataIn",
+   "labels": []
+  },
+  {
+   "id": "ao_byte",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     5.9,
+     -5.2
+    ],
+    [
+     5.9,
+     -2.225
+    ]
+   ],
+   "signal": "ALUOut1:0",
+   "labels": [
+    {
+     "text": "1:0",
+     "at": [
+      5.9,
+      -3.6
+     ],
+     "place": "right"
+    }
+   ]
+  },
+  {
+   "id": "rd_wa3m",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.7,
+     -1.8
+    ],
+    [
+     10.1,
+     -1.8
+    ]
+   ],
+   "signal": "Rd",
+   "labels": [
+    {
+     "text": "15:12",
+     "at": [
+      9.4,
+      -1.8
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "c14_wa3m",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     9.8,
+     -2.6
+    ],
+    [
+     10.1,
+     -2.6
+    ]
+   ],
+   "signal": "const14",
+   "labels": [
+    {
+     "text": "14",
+     "at": [
+      9.8,
+      -2.6
+     ],
+     "place": "left"
+    }
+   ]
+  },
+  {
+   "id": "wa3m_rf",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     10.7,
+     -2.2
+    ],
+    [
+     10.9,
+     -2.2
+    ],
+    [
+     10.9,
+     -1.8
+    ],
+    [
+     11.2,
+     -1.8
+    ]
+   ],
+   "signal": "WA3",
+   "labels": []
+  },
+  {
+   "id": "wd_sh",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     14.5,
+     -0.5
+    ],
+    [
+     14.75,
+     -0.5
+    ]
+   ],
+   "signal": "WriteData",
+   "labels": []
+  },
+  {
+   "id": "sh_sb",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     15.65,
+     -0.5
+    ],
+    [
+     16.1,
+     -0.5
+    ]
+   ],
+   "signal": "ShiftResult",
+   "labels": []
+  },
+  {
+   "id": "shc_alu",
+   "style": "wire",
+   "arrow": true,
+   "points": [
+    [
+     15.45,
+     -0.8
+    ],
+    [
+     15.45,
+     -2.9
+    ],
+    [
+     17.35,
+     -2.9
+    ],
+    [
+     17.35,
+     -0.75
+    ]
+   ],
+   "signal": "ShiftC",
+   "labels": [
+    {
+     "text": "ShiftC",
+     "at": [
+      16.4,
+      -2.9
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "flags_alu",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     17.35,
+     4.1
+    ],
+    [
+     17.35,
+     1.15
+    ]
+   ],
+   "signal": "Flags",
+   "labels": []
+  },
+  {
+   "id": "pc_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     15.8,
+     3
+    ],
+    [
+     19.1,
+     3
+    ],
+    [
+     19.1,
+     1.2
+    ],
+    [
+     20.3,
+     1.2
+    ]
+   ],
+   "signal": "PC",
+   "labels": []
+  },
+  {
+   "id": "rm_res",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     20.9,
+     0.45
+    ],
+    [
+     21.6,
+     0.45
+    ],
+    [
+     21.6,
+     3.6
+    ],
+    [
+     12.65,
+     3.6
+    ]
+   ],
+   "signal": "Result",
+   "labels": []
+  },
+  {
+   "id": "ins_ctl",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.1,
+     5
+    ],
+    [
+     8.1,
+     5.3
+    ]
+   ],
+   "signal": "Op,Funct,Rd,Instr11:5",
+   "labels": []
+  },
+  {
+   "id": "cu_regw3",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     8.5,
+     7.6000000000000005
+    ],
+    [
+     15.7,
+     7.6000000000000005
+    ]
+   ],
+   "signal": "RegW",
+   "labels": [
+    {
+     "text": "RegW",
+     "at": [
+      8.55,
+      7.6000000000000005
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_nowrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     8.5,
+     7.4
+    ],
+    [
+     15.6,
+     7.4
+    ]
+   ],
+   "signal": "NoWrite",
+   "labels": [
+    {
+     "text": "NoWrite",
+     "at": [
+      10,
+      7.4
+     ],
+     "anchor": "north west"
+    }
+   ]
+  },
+  {
+   "id": "cxd_regw3",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     14.3,
+     7.2
+    ],
+    [
+     15.7,
+     7.2
+    ]
+   ],
+   "signal": "CondExDelayed",
+   "labels": []
+  }
+ ],
+ "junctions": [
+  [
+   1.65,
+   0
+  ],
+  [
+   5.1,
+   -0.4
+  ],
+  [
+   8.1,
+   0.8
+  ],
+  [
+   8.1,
+   2
+  ],
+  [
+   8.1,
+   0.2
+  ],
+  [
+   8.1,
+   -1.8
+  ],
+  [
+   8.7,
+   -1.8
+  ],
+  [
+   8.1,
+   5
+  ],
+  [
+   14.5,
+   -0.5
+  ],
+  [
+   18.3,
+   0.2
+  ],
+  [
+   19.6,
+   -0.3
+  ],
+  [
+   12.65,
+   3.6
+  ],
+  [
+   11.95,
+   3.6
+  ],
+  [
+   14.3,
+   5.4799999999999995
+  ],
+  [
+   14.3,
+   6.58
+  ],
+  [
+   5.1,
+   -1.2
+  ],
+  [
+   5.9,
+   -5.2
+  ],
+  [
+   15.8,
+   3
+  ],
+  [
+   14.3,
+   7.2
+  ]
+ ],
+ "control": [
+  {
+   "signal": "PCWrite",
+   "points": [
+    [
+     1,
+     1.1
+    ],
+    [
+     1,
+     0.65
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "AdrSrc",
+   "points": [
+    [
+     2.4,
+     0.65
+    ],
+    [
+     2.4,
+     0.2
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "MemWrite",
+   "points": [
+    [
+     3.95,
+     1.25
+    ],
+    [
+     3.95,
+     0.8
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "IRWrite",
+   "points": [
+    [
+     7.25,
+     1.6
+    ],
+    [
+     7.25,
+     1.2
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "RegSrc",
+   "text": "RegSrc0",
+   "points": [
+    [
+     9.4,
+     2.6
+    ],
+    [
+     9.4,
+     2.2
+    ]
+   ],
+   "anchor": "east"
+  },
+  {
+   "signal": "RegSrc",
+   "text": "RegSrc1",
+   "points": [
+    [
+     9.4,
+     -1.2
+    ],
+    [
+     9.4,
+     -0.8
+    ]
+   ],
+   "place": "below"
+  },
+  {
+   "signal": "RegWrite",
+   "points": [
+    [
+     13.5,
+     1.65
+    ],
+    [
+     13,
+     1.65
+    ]
+   ],
+   "anchor": "west"
+  },
+  {
+   "signal": "ImmSrc",
+   "points": [
+    [
+     12.1,
+     -4.05
+    ],
+    [
+     12.1,
+     -3.7
+    ]
+   ],
+   "anchor": "west"
+  },
+  {
+   "signal": "ALUSrcA",
+   "points": [
+    [
+     16.5,
+     2.45
+    ],
+    [
+     16.5,
+     1.95
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "ALUSrcB",
+   "points": [
+    [
+     16.5,
+     -2.3
+    ],
+    [
+     16.5,
+     -1.8
+    ]
+   ],
+   "place": "below"
+  },
+  {
+   "signal": "FlagWrite",
+   "points": [
+    [
+     18.5,
+     4.45
+    ],
+    [
+     18.05,
+     4.45
+    ]
+   ],
+   "anchor": "west"
+  },
+  {
+   "signal": "PCWrite",
+   "points": [
+    [
+     17.25,
+     8.3
+    ],
+    [
+     17.65,
+     8.3
+    ]
+   ],
+   "label_at": "end",
+   "place": "right"
+  },
+  {
+   "signal": "RegWrite",
+   "points": [
+    [
+     16.2,
+     7.4
+    ],
+    [
+     16.6,
+     7.4
+    ]
+   ],
+   "label_at": "end",
+   "place": "right"
+  },
+  {
+   "signal": "MemWrite",
+   "points": [
+    [
+     16.2,
+     6.7
+    ],
+    [
+     16.6,
+     6.7
+    ]
+   ],
+   "label_at": "end",
+   "place": "right"
+  },
+  {
+   "signal": "FlagWrite",
+   "points": [
+    [
+     16.2,
+     5.6
+    ],
+    [
+     16.6,
+     5.6
+    ]
+   ],
+   "label_at": "end",
+   "place": "right"
+  },
+  {
+   "signal": "ResultSrc",
+   "points": [
+    [
+     20.6,
+     1.95
+    ],
+    [
+     20.6,
+     1.6
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "ALUControl",
+   "points": [
+    [
+     17.6,
+     -1.5
+    ],
+    [
+     17.6,
+     -0.6
+    ]
+   ],
+   "anchor": "north west"
+  },
+  {
+   "signal": "ByteSel",
+   "points": [
+    [
+     6.5,
+     -0.6
+    ],
+    [
+     6.5,
+     -1
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "Link",
+   "points": [
+    [
+     10.4,
+     -3.2
+    ],
+    [
+     10.4,
+     -2.8
+    ]
+   ],
+   "anchor": "east"
+  },
+  {
+   "signal": "ShiftCtl",
+   "points": [
+    [
+     15.2,
+     0.35
+    ],
+    [
+     15.2,
+     -0.2
+    ]
+   ],
+   "place": "above"
+  }
+ ],
+ "figures": {},
+ "alt": "Multicycle ARM datapath. From left to right: the PC register, the address multiplexer choosing the PC or ALUOut as the address Adr, the one memory for instructions and data, and the two registers its read data loads: IR, enabled by IRWrite, and Data. From IR the instruction bus gives the fields Rn, Rm, Rd and Instr23:0 to two register-address multiplexers, the register file and the Extend unit. The register file's outputs load the registers A and WriteData; A or the PC (SrcA multiplexer) and WriteData, ExtImm or the constant 4 (SrcB multiplexer) enter the ALU, whose result loads ALUOut. The Result multiplexer chooses ALUOut, Data or ALUResult; Result returns along the top to the register file's write-data port, its R15 input and the PC. WriteData also goes to the memory's write-data port, Data to the Result multiplexer and ALUOut to the address multiplexer, along the bottom. Above, the controller: the control unit (Main FSM, Instr Decoder, ALU Decoder and PC Logic), which reads Op, Funct and Rd; the Flags register, written from ALUFlags; the Condition Check, which gives CondEx; a register that delays CondEx by one cycle; and the gates: FlagWrite = FlagW AND CondEx, MemWrite = MemW AND CondExDelayed, RegWrite = RegW AND CondExDelayed, and PCWrite = (PCS AND CondExDelayed) OR NextPC. Control signals are dashed stubs. The Extended datapath adds: a Byte unit and a multiplexer (ByteSel) before the Data register, which loads the byte at ALUOut1:0 for LDRB; an A3 multiplexer choosing Rd or 14 (Link); a shifter (Shift) between WriteData and the SrcB multiplexer, driven by ShiftCtl and the C flag, whose carry ShiftC and the flags go to the ALU, which takes a four-bit ALUControl; a fourth Result-multiplexer input, the PC, for the link value; and NoWrite from the control unit, inverted into the RegWrite gate.",
+ "fsm": {
+  "r": 0.85,
+  "states": [
+   {
+    "id": "Fetch",
+    "at": [
+     0,
+     0
+    ],
+    "initial": "above"
+   },
+   {
+    "id": "Decode",
+    "at": [
+     3,
+     0
+    ]
+   },
+   {
+    "id": "MemAdr",
+    "at": [
+     10,
+     3.6
+    ]
+   },
+   {
+    "id": "ExecuteR",
+    "at": [
+     10,
+     1.2
+    ]
+   },
+   {
+    "id": "ExecuteI",
+    "at": [
+     10,
+     -1.2
+    ]
+   },
+   {
+    "id": "Branch",
+    "at": [
+     10,
+     -3.6
+    ]
+   },
+   {
+    "id": "MemRead",
+    "at": [
+     13.2,
+     4.6
+    ]
+   },
+   {
+    "id": "MemWrite",
+    "at": [
+     13.2,
+     2.6
+    ]
+   },
+   {
+    "id": "ALUWB",
+    "at": [
+     13.2,
+     0
+    ]
+   },
+   {
+    "id": "MemWB",
+    "at": [
+     16.4,
+     4.6
+    ]
+   },
+   {
+    "id": "Link",
+    "at": [
+     6.6,
+     -6.2
+    ],
+    "selfstudy": true
+   },
+   {
+    "id": "BranchL",
+    "at": [
+     10,
+     -6.2
+    ],
+    "selfstudy": true
+   }
+  ],
+  "arcs": [
+   {
+    "from": "Fetch",
+    "to": "Decode",
+    "points": [
+     [
+      0.85,
+      0
+     ],
+     [
+      2.15,
+      0
+     ]
+    ]
+   },
+   {
+    "from": "Decode",
+    "to": "MemAdr",
+    "points": [
+     [
+      3.7559,
+      0.3887
+     ],
+     [
+      9.2441,
+      3.2113
+     ]
+    ],
+    "label": {
+     "text": "Op = 01",
+     "at": [
+      6.5,
+      1.8
+     ],
+     "anchor": "south east"
+    }
+   },
+   {
+    "from": "Decode",
+    "to": "ExecuteR",
+    "points": [
+     [
+      3.8378,
+      0.1436
+     ],
+     [
+      9.1622,
+      1.0564
+     ]
+    ],
+    "label": {
+     "text": "Op = 00, Funct5 = 0",
+     "at": [
+      8.8,
+      0.9943
+     ],
+     "anchor": "south east"
+    }
+   },
+   {
+    "from": "Decode",
+    "to": "ExecuteI",
+    "points": [
+     [
+      3.8378,
+      -0.1436
+     ],
+     [
+      9.1622,
+      -1.0564
+     ]
+    ],
+    "label": {
+     "text": "Op = 00, Funct5 = 1",
+     "at": [
+      8.8,
+      -0.9943
+     ],
+     "anchor": "north east"
+    }
+   },
+   {
+    "from": "Decode",
+    "to": "Branch",
+    "points": [
+     [
+      3.7559,
+      -0.3887
+     ],
+     [
+      9.2441,
+      -3.2113
+     ]
+    ],
+    "label": {
+     "text": "Op = 10, Funct4 = 0",
+     "at": [
+      7.5976,
+      -2.3645
+     ],
+     "anchor": "north east"
+    }
+   },
+   {
+    "from": "Decode",
+    "to": "Link",
+    "points": [
+     [
+      3.4268,
+      -0.7351
+     ],
+     [
+      6.1732,
+      -5.4649
+     ]
+    ],
+    "label": {
+     "text": "Op = 10, Funct4 = 1",
+     "at": [
+      4.9373,
+      -3.3365
+     ],
+     "anchor": "east"
+    }
+   },
+   {
+    "from": "Link",
+    "to": "BranchL",
+    "points": [
+     [
+      7.45,
+      -6.2
+     ],
+     [
+      9.15,
+      -6.2
+     ]
+    ]
+   },
+   {
+    "from": "MemAdr",
+    "to": "MemRead",
+    "points": [
+     [
+      10.8113,
+      3.8535
+     ],
+     [
+      12.3887,
+      4.3465
+     ]
+    ],
+    "label": {
+     "text": "Funct0 = 1",
+     "at": [
+      11.6789,
+      4.1246
+     ],
+     "anchor": "south"
+    }
+   },
+   {
+    "from": "MemAdr",
+    "to": "MemWrite",
+    "points": [
+     [
+      10.8113,
+      3.3465
+     ],
+     [
+      12.3887,
+      2.8535
+     ]
+    ],
+    "label": {
+     "text": "Funct0 = 0",
+     "at": [
+      11.6789,
+      3.0753
+     ],
+     "anchor": "north"
+    }
+   },
+   {
+    "from": "MemRead",
+    "to": "MemWB",
+    "points": [
+     [
+      14.05,
+      4.6
+     ],
+     [
+      15.55,
+      4.6
+     ]
+    ]
+   },
+   {
+    "from": "ExecuteR",
+    "to": "ALUWB",
+    "points": [
+     [
+      10.7959,
+      0.9015
+     ],
+     [
+      12.4041,
+      0.2985
+     ]
+    ]
+   },
+   {
+    "from": "ExecuteI",
+    "to": "ALUWB",
+    "points": [
+     [
+      10.7959,
+      -0.9015
+     ],
+     [
+      12.4041,
+      -0.2985
+     ]
+    ]
+   },
+   {
+    "from": "MemWB",
+    "to": "Fetch",
+    "return": true,
+    "points": [
+     [
+      17.25,
+      4.6
+     ],
+     [
+      18,
+      4.6
+     ],
+     [
+      18,
+      -7.8
+     ],
+     [
+      0,
+      -7.8
+     ],
+     [
+      0,
+      -0.85
+     ]
+    ]
+   },
+   {
+    "from": "MemWrite",
+    "to": "Fetch",
+    "return": true,
+    "points": [
+     [
+      14.049999999999999,
+      2.6
+     ],
+     [
+      14.8,
+      2.6
+     ],
+     [
+      14.8,
+      -7.8
+     ],
+     [
+      0,
+      -7.8
+     ],
+     [
+      0,
+      -0.85
+     ]
+    ]
+   },
+   {
+    "from": "ALUWB",
+    "to": "Fetch",
+    "return": true,
+    "points": [
+     [
+      14.049999999999999,
+      0
+     ],
+     [
+      14.8,
+      0
+     ],
+     [
+      14.8,
+      -7.8
+     ],
+     [
+      0,
+      -7.8
+     ],
+     [
+      0,
+      -0.85
+     ]
+    ]
+   },
+   {
+    "from": "Branch",
+    "to": "Fetch",
+    "return": true,
+    "points": [
+     [
+      10.85,
+      -3.6
+     ],
+     [
+      14.8,
+      -3.6
+     ],
+     [
+      14.8,
+      -7.8
+     ],
+     [
+      0,
+      -7.8
+     ],
+     [
+      0,
+      -0.85
+     ]
+    ]
+   },
+   {
+    "from": "BranchL",
+    "to": "Fetch",
+    "return": true,
+    "points": [
+     [
+      10,
+      -7.05
+     ],
+     [
+      10,
+      -7.8
+     ],
+     [
+      0,
+      -7.8
+     ],
+     [
+      0,
+      -0.85
+     ]
+    ],
+    "arrow": true
+   }
+  ],
+  "junctions": [
+   [
+    14.8,
+    0
+   ],
+   [
+    14.8,
+    -3.6
+   ],
+   [
+    14.8,
+    -7.8
+   ],
+   [
+    10,
+    -7.8
+   ]
+  ],
+  "labels": [
+   {
+    "text": "reset",
+    "at": [
+     0,
+     1.7
+    ],
+    "anchor": "south"
+   }
+  ]
+ }
+}

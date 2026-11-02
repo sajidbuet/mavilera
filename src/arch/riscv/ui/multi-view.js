@@ -16,7 +16,7 @@
 import { el, hex8, download, menu, store } from '../../../ui/dom.js';
 import { STRINGS } from '../../../ui/strings.js';
 import { DatapathView, flowControl, flowOrder } from '../../../ui/datapath.js';
-import { FsmView } from './fsm.js';
+import { FsmView } from '../../../ui/fsm.js';
 import { Multicycle } from '../../../uarch/multi.js';
 import { multiPaths } from '../../../uarch/multi-paths.js';
 import { withJalr, fetchJalr } from '../../../uarch/ch07-jalr.js';

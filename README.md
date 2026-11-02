@@ -18,7 +18,8 @@ registered trademark (see [`TRADEMARKS.md`](TRADEMARKS.md)).
 | **RISC-V Laboratory** | available | `https://sajidlab.org/mavilera/riscv/` |
 | **SAP-1 Laboratory** | available | `https://sajidlab.org/mavilera/sap-1/` |
 | **SAP-2 Laboratory** | available | `https://sajidlab.org/mavilera/sap-2/` |
-| MOS 6502, Intel 8086, Armv7, MIPS | planned, not built | — |
+| **Armv7 Laboratory** | available (from 1.1.0) | `https://sajidlab.org/mavilera/armv7/` |
+| MOS 6502, Intel 8086, MIPS | planned, not built | — |
 
 The landing page is `https://sajidlab.org/mavilera/`. Each simulator is
 independent: its own execution engine, tests, build and address. See

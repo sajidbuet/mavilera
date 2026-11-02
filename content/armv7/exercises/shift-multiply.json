@@ -1,0 +1,144 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap ARM-A6), not taken from a textbook; produced by tools/armv7/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "armv7",
+ "title": "Multiply by shifting and adding",
+ "task": "The words at a (0x800) and b (0x804) are unsigned, each 0 to 65535. Store a × b at product (0x808), then end with B . . There is no multiply instruction: for each bit of b, from the lowest, add a shifted left by the bit's position when the bit is 1. LSRS R1, R1, #1 shifts the lowest bit of b into C and sets Z when no 1 bits are left; ADDCS adds only when that bit was 1. To run it in a processor view, choose \"Extended datapath\" in the instruction-set menu: immediates there are 0 to 255. Keep the .equ lines: the tests write the data at those addresses.",
+ "lang": "asm",
+ "starter": "; shift-multiply -- practice exercise (MAVILERA, ARMv7)\n; Store a × b by shift and add.\n; Hint: LSRS, ADDCS, LSL, and BNE while bits are left.\n        .equ  a, 0x800          ; the tests write and read here\n        .equ  b, 0x804          ; the tests write and read here\n        .equ  product, 0x808    ; the tests write and read here\n\ndone:   B     done           ; replace with your code; B . ends the run\n",
+ "tests": [
+  {
+   "name": "0 × 5",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      0,
+      5
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2056,
+      "words": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "5 × 0",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      5,
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2056,
+      "words": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "3 × 4",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      3,
+      4
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2056,
+      "words": [
+       12
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "1234 × 1",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      1234,
+      1
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2056,
+      "words": [
+       1234
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "255 × 257",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      255,
+      257
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2056,
+      "words": [
+       65535
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "65535 × 65535",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      65535,
+      65535
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2056,
+      "words": [
+       4294836225
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

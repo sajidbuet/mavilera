@@ -1,0 +1,108 @@
+<!doctype html>
+<!-- Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: code. -->
+<!-- preview-multi.html -- the draft drawing of the ARM multicycle processor and its state diagram (roadmap ARM-A3), for
+     the author's review before it is wired into the application (spec W-D32 Q8). Served by `npm run dev`: open
+     /tools/armv7/preview-multi.html?case=0 (cases below; &fsm=1 for the state diagram). Development only. -->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARM multicycle drawing preview</title>
+<link rel="stylesheet" href="../../src/ui/theme.css">
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 12px 16px; background: Canvas; color: CanvasText; font: 14px system-ui, sans-serif; }
+  .dp-wrap, .fsm-wrap { width: 100%; }
+  .dp-wrap svg, .fsm-wrap svg { width: 100%; height: auto; }
+  .fsm-wrap svg { max-height: 640px; }
+  h1 { font-size: 15px; margin: 0 0 6px; }
+  p { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<h1 id="title"></h1>
+<p id="note" class="mono"></p>
+<div id="host"></div>
+<script type="module">
+import { DatapathView } from '../../src/ui/datapath.js';
+import { FsmView } from '../../src/ui/fsm.js';
+import { MULTI_INFO, MULTI_SIGNALS, MULTI_EXT_INFO, MULTI_EXT_SIGNALS, binary } from '../../src/arch/armv7/uarch/signals.js';
+import { ArmMulti, STATES } from '../../src/arch/armv7/uarch/multi.js';
+import { ArmMultiExt, STATES_EXT } from '../../src/arch/armv7/uarch/multi-ext.js';
+import { multiPath } from '../../src/arch/armv7/uarch/multi-paths.js';
+import { assemble, disassemble } from '../../src/arch/armv7/language.js';
+
+const EXT = new URLSearchParams(location.search).get('ext') === '1';
+const PROGRAM = EXT
+  ? 'MOV R4, #0x80\nMOV R1, #3\nMOV R2, #5\nBL f\nLDRB R5, [R4, #1]\nADDS R3, R1, R2, LSL #2\nCMP R3, #0\nB .\nf: STR R2, [R4, #-4]\nMOV PC, LR'
+  : 'ADD R1, R1, #5\nADD R2, R2, #7\nADD R3, R1, R2\nLDR R5, [R12, #0x100]\nSTR R1, [R12, #0x104]\n'
+  + 'SUBS R4, R1, #5\nBEQ t\nADD R0, R0, #1\nt: ADDNE R6, R6, #1\nB .';
+const CASES_EXT = [
+  ['Link (BL f): R14 ← PC (address + 4) through ResultSrc 11 and A3 = 14; ALUOut ← A + ExtImm, the target', 14],
+  ['BranchL: PC ← ALUOut', 15],
+  ['MemWrite (STR R2, [R4, #-4]): the address A − ExtImm (U = 0)', 19],
+  ['MemRead (LDRB R5, [R4, #1]): Data ← the byte at ALUOut1:0 (ByteSel)', 27],
+  ['ExecuteR (ADDS R3, R1, R2, LSL #2): the shifter on WriteData; ShiftC and the flags into the ALU', 31],
+  ['ALUWB (CMP R3, #0): NoWrite holds RegWrite at 0', 36],
+  ['The complete Extended datapath (no instruction)', null],
+];
+// [title, cycles to run before the shown one]
+const CASES = EXT ? CASES_EXT : [
+  ['Fetch (ADD R3, R1, R2): IR ← Mem[PC]; PC ← PC + 4', 8],
+  ['Decode: R15 = PC + 8 through Result; A ← R1, WriteData ← R2; ALUOut ← PC + 4', 9],
+  ['ExecuteR: ALUOut ← A + WriteData', 10],
+  ['ALUWB: R3 ← ALUOut', 11],
+  ['MemAdr (LDR R5, [R12, #0x100]): ALUOut ← A + ExtImm', 14],
+  ['MemRead: Data ← Mem[ALUOut]', 15],
+  ['MemWB: R5 ← Data', 16],
+  ['MemWrite (STR R1, [R12, #0x104]): Mem[ALUOut] ← WriteData', 20],
+  ['ExecuteI with S (SUBS R4, R1, #5): flags written', 23],
+  ['Branch (BEQ t, taken): PC ← A + ExtImm', 27],
+  ['ALUWB, condition failed (ADDNE R6, R6, #1 with Z = 1): RegWrite = 0', 31],
+  ['The complete datapath (no instruction)', null],
+];
+const q = new URLSearchParams(location.search);
+const k = Number(q.get('case') ?? 0);
+const showFsm = q.get('fsm') === '1';
+const [title, before] = CASES[k];
+const geom = await (await fetch(`../../content/armv7/geometry/multi${EXT ? '-extended' : ''}.json`)).json();
+document.getElementById('title').textContent = `${EXT ? 'Extended, c' : 'C'}ase ${k}${showFsm ? ' (state diagram)' : ''}: ${title}`;
+const m = EXT ? new ArmMultiExt() : new ArmMulti();
+const NAMES = EXT ? STATES_EXT : STATES;
+const SIGS = EXT ? MULTI_EXT_SIGNALS : MULTI_SIGNALS;
+let s = null;
+if (before !== null) {
+  const p = assemble([{ name: 'p.s', text: PROGRAM }], { profile: 'arm-multi', subset: EXT ? 'extended' : null });
+  if (!p.ok) throw new Error(JSON.stringify(p.diagnostics));
+  m.load(p);
+  for (let i = 0; i < before; i++) m.step();
+  s = m.evaluate().signals;
+}
+if (showFsm) {
+  const f = new FsmView(geom.fsm, { title: 'ARM multicycle Main FSM' });
+  document.getElementById('host').append(f.root);
+  if (s) f.show(NAMES[s.state], m.last?.state ?? null, NAMES[s.next], '');
+} else {
+  const dp = new DatapathView(geom, { title: 'ARM multicycle datapath', description: geom.alt, info: EXT ? MULTI_EXT_INFO : MULTI_INFO });
+  document.getElementById('host').append(dp.root);
+  if (s) {
+    const sigs = new Map();
+    const ctls = new Map();
+    for (const d of SIGS) {
+      const v = s[d.name];
+      const hex = (v >>> 0).toString(16).padStart(8, '0');
+      (d.kind === 'control' ? ctls : sigs).set(d.name, { text: d.width === 32 ? `0x${hex}` : binary(v, d.width), tag: d.width === 32 ? hex : null, tip: `${d.name} = ${binary(v, d.width)}` });
+    }
+    dp.setValues(sigs, ctls);
+    dp.setPath(multiPath(s, EXT));
+    dp.setBadge('cu', NAMES[s.state]);
+  }
+}
+if (s) {
+  document.getElementById('note').textContent = `cycle ${m.cycle} · ${NAMES[s.state]} → ${NAMES[s.next]} · ${disassemble(s.Instr, m.instrAddress)}  `
+    + `CondEx=${s.CondEx} CondExDelayed=${s.CondExDelayed} PCWrite=${s.PCWrite} RegWrite=${s.RegWrite} MemWrite=${s.MemWrite} FlagWrite=${binary(s.FlagWrite, 2)}`;
+}
+document.body.dataset.ready = '1';
+</script>
+</body>
+</html>

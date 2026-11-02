@@ -12,10 +12,17 @@ FONTS = os.environ.get('MAVILERA_FONTS', os.path.join(HERE, 'fonts'))  # not com
 NAVY, LIGHT, PALE, NEAR_WHITE = '#0B2A55', '#5B9BD5', '#C8E1F4', '#F2F5FA'
 SUBTITLE = 'MICROPROCESSOR ARCHITECTURE VISUALIZER FOR INTERACTIVE LEARNING, EXECUTION, AND RUNTIME ANALYSIS'
 SOURCE_SUBTITLE = 'MULTIARCHITECTURE VISUAL INTERACTIVE LEARNING AND EDUCATIONAL RESEARCH ASSISTANT'
-bold = Font(os.path.join(FONTS, 'Montserrat-Bold.ttf'))
-semi = Font(os.path.join(FONTS, 'Montserrat-SemiBold.ttf'))
-medium = Font(os.path.join(FONTS, 'Montserrat-Medium.ttf'))
-inter = Font(os.path.join(FONTS, 'Inter-700.ttf'))
+class LazyFont:
+    """A Font opened on first use, so that the header lockups (letters drawn, no font) build without the fonts."""
+    def __init__(self, file): self._file, self._font = file, None
+    def __getattr__(self, k):
+        if self._font is None: self._font = Font(self._file)
+        return getattr(self._font, k)
+
+bold = LazyFont(os.path.join(FONTS, 'Montserrat-Bold.ttf'))
+semi = LazyFont(os.path.join(FONTS, 'Montserrat-SemiBold.ttf'))
+medium = LazyFont(os.path.join(FONTS, 'Montserrat-Medium.ttf'))
+inter = LazyFont(os.path.join(FONTS, 'Inter-700.ttf'))
 LCAP, LTRK = 20.5, -1.5
 
 # ---------------------------------------------------------------- wordmark
@@ -177,6 +184,29 @@ def sap1_header(x):
     H = hyphen(x); x += 72 + 22
     one = digit_1(x); x += 100.5
     return union([S, A, P, H, one]), x
+
+XH = 0.72          # the x-height of a lower-case letter, as a fraction of the cap height (the v of ARMv7)
+
+def letter_v_small(x0):
+    """v: the V's construction scaled to the x-height about the baseline (stroke widths scaled with it)."""
+    c = 706.8; top = B - XH * (B - T)
+    pts = [(c - 130.9, T), (c - 72.3, T), (c, 611.5), (c + 72.3, T), (c + 130.9, T), (c + 20.3, B), (c - 20.3, B)]
+    return poly([(x0 + XH * (x - (c - 130.9)), B - XH * (B - y)) for x, y in pts]), x0 + XH * 261.8
+
+def digit_7(x0):
+    """7, 150 wide: a top bar as thick as the E's arms (47) and a stem as wide as the I (50.5) slanting to the
+    baseline."""
+    return poly([(x0, T), (x0 + 150, T), (x0 + 150, T + 47), (x0 + 96, B), (x0 + 45.5, B), (x0 + 98.5, T + 47), (x0, T + 47)])
+
+def armv7_header(x):
+    """'ARMv7' in the wordmark's construction from x; returns (path, right edge). The A is the wordmark's first A
+    with its triangle, in one colour; the v is lower case, as ARM writes the name."""
+    A = union([letter_A1(x + 130.4 - 516.3), tri_A1(x + 130.4 - 516.3)]); x += 260.8 + 18
+    R = letter_R(x - 1276); x += 169.8 + 22
+    M = letter_M(x - 106); x += 269.5 + 22
+    v, x = letter_v_small(x); x += 20
+    seven = digit_7(x); x += 150
+    return union([A, R, M, v, seven]), x
 
 def wordmark():
     navy = union([letter_M(), letter_A1(), letter_V(), letter_I(), letter_L(), letter_E(), letter_R(), letter_A2()])
@@ -341,8 +371,27 @@ def padded(b, pad, square=False):
         return (cx - s / 2 - pad, cy - s / 2 - pad, s + 2 * pad, s + 2 * pad)
     return (x0 - pad, y0 - pad, w + 2 * pad, h + 2 * pad)
 
+def module_headers(only):
+    """The tool-header lockups of the modules named in `only` (no fonts needed): {file name: svg}."""
+    wn, wl = wordmark()
+    cx0 = 1671.8 + 60; body, core = chip(cx0)
+    x = cx0 + 2 * PIN + (B - T - 2 * PIN) + 60
+    make = {'armv7': (lambda: armv7_header(x)[0], 'mavilera-armv7-header', 'MAVILERA ARMv7')}  # ARM-A2 (W-D35)
+    files = {}
+    for key in only:
+        build, name, title = make[key]
+        h = build()
+        for dark in (False, True):
+            files['%s%s.svg' % (name, '-dark' if dark else '')] = svg([('n', union([wn, core])), ('l', union([wl, body, h]))],
+                                                                    padded(bounds([wn, body, h]), 12), title, dark)
+    return files
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    if '--only' in sys.argv:  # python -I make_logo.py OUT --only armv7: those header lockups alone
+        for k, v in module_headers(sys.argv[sys.argv.index('--only') + 1].split(',')).items():
+            open(os.path.join(OUT, k), 'w', encoding='utf-8', newline='\n').write(v)
+        return
     wn, wl = wordmark()
     mn, ml = mark_shapes()
     ltn, ltl = left_traces()

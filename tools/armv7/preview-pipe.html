@@ -1,0 +1,108 @@
+<!doctype html>
+<!-- Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: code. -->
+<!-- preview-pipe.html -- the draft drawing of the ARM pipelined processor (roadmap ARM-A4), for the author's review before
+     it is wired into the application (spec W-D32 Q8): values, the active paths and the stall and flush marks of one
+     cycle. Served by `npm run dev`: open /tools/armv7/preview-pipe.html?case=0 (cases below). Development only. -->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARM pipelined drawing preview</title>
+<link rel="stylesheet" href="../../src/ui/theme.css">
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 12px 16px; background: Canvas; color: CanvasText; font: 14px system-ui, sans-serif; }
+  .dp-wrap { width: 100%; }
+  .dp-wrap svg { width: 100%; height: auto; }
+  h1 { font-size: 15px; margin: 0 0 6px; }
+  p { margin: 0 0 4px; }
+</style>
+</head>
+<body>
+<h1 id="title"></h1>
+<p id="stages" class="mono"></p>
+<p id="note" class="mono"></p>
+<div id="host"></div>
+<script type="module">
+import { DatapathView } from '../../src/ui/datapath.js';
+import { PIPE_SIGNALS, PIPE_INFO, PIPE_EXT_SIGNALS, PIPE_EXT_INFO, binary } from '../../src/arch/armv7/uarch/signals.js';
+import { ArmPipe } from '../../src/arch/armv7/uarch/pipe.js';
+import { ArmPipeExt } from '../../src/arch/armv7/uarch/pipe-ext.js';
+import { pipePaths } from '../../src/arch/armv7/uarch/pipe-paths.js';
+import { assemble, disassemble } from '../../src/arch/armv7/language.js';
+
+// [title, program, the instruction's address and stage that the shown cycle is chosen by]
+const CASES = [
+  ['Forwarding: ADD R3, R1, R2 in EX takes R1 from MEM (10) and R2 from WB (01)', 'ADD R2, R2, #7\nADD R1, R1, #5\nADD R3, R1, R2\nB .', [8, 'EX']],
+  ['Load-use stall: LDR R1 in EX, ADD R2, R1, R3 held in ID (StallF, StallD, FlushE)', 'LDR R1, [R0, #0x100]\nADD R2, R1, R3\nB .', [0, 'EX']],
+  ['After the stall: R1 forwarded from WB (01) to ADD in EX; a bubble in MEM', 'LDR R1, [R0, #0x100]\nADD R2, R1, R3\nB .', [4, 'EX']],
+  ['Taken branch: BEQ in EX, BranchTakenE loads ALUResultE into the PC; FlushD, FlushE', 'SUBS R0, R0, #0\nBEQ t\nADD R0, R0, #1\nADD R1, R1, #1\nt: B t', [4, 'EX']],
+  ['Condition fails: ADDNE R6 in EX (Z = 1), its writes muted', 'SUBS R0, R0, #0\nADDNE R6, R6, #1\nADD R1, R1, #1\nB .', [4, 'EX']],
+  ['A write to R15 in WB: ResultW to the PC (PCSrcW), FlushD', 'ADD R15, R15, #0\nADD R0, R0, #1\nADD R1, R1, #1\nB .', [0, 'WB']],
+  ['STR R7, [R3, #84] in MEM, LDR in EX (Fig 7.60)', null, [0x3c, 'MEM']],
+  ['The complete drawing (no instruction)', '', null],
+];
+// the Extended drawing (?ext=1)
+const CASES_EXT = [
+  ['Shifted operand: ADD R4, R4, R3, LSL #4 in EX, R3 forwarded from MEM, then shifted', 'MOV R3, #3\nADD R4, R4, R3, LSL #4\nB .', [4, 'EX']],
+  ['ADC R2, R2, #5 in EX takes C from FlagsE, written by ADDS ahead of it', 'MOV R0, #0\nSUB R0, R0, #1\nADDS R1, R0, #1\nADC R2, R2, #5\nB .', [12, 'EX']],
+  ['CMP R3, #5 in EX: NoWrite holds RegWrite at 0', 'MOV R3, #5\nCMP R3, #5\nB .', [4, 'EX']],
+  ['BL in EX: taken; R14 is written in WB with PCPlus4', 'MOV R0, #1\nBL f\nB .\nf: MOV PC, LR', [4, 'EX']],
+  ['BL in WB: ResultSrcW = 11 writes PCPlus4W to R14 (A3 = 14)', 'MOV R0, #1\nBL f\nB .\nf: MOV PC, LR', [4, 'WB']],
+  ['LDRB R3, [R1, #1] in WB: the Byte unit (ResultSrcW = 10)', 'MOV R1, #0x80\nMOV R2, #0x42\nLSL R2, R2, #8\nSTR R2, [R1, #0]\nLDRB R3, [R1, #1]\nB .', [16, 'WB']],
+  ['STR R5, [R4, #-4] in EX: a negative offset subtracts', 'MOV R4, #0x80\nMOV R5, #9\nSTR R5, [R4, #-4]\nB .', [8, 'EX']],
+  ['The complete Extended drawing (no instruction)', '', null],
+];
+const FIG = await (await fetch('../../content/armv7/templates/fig-7-60.s')).text();
+const q = new URLSearchParams(location.search);
+const k = Number(q.get('case') ?? 0);
+const ext = q.get('ext') === '1';
+const [title, text0, at] = (ext ? CASES_EXT : CASES)[k];
+const text = text0 ?? FIG;
+const geom = await (await fetch(`../../content/armv7/geometry/${ext ? 'pipe-extended' : 'pipe'}.json`)).json();
+const x = (id) => geom.elements.find((e) => e.id === id).at[0];
+const bands = [['fd', 'de'], ['em', 'mw']].map(([a, b]) => ({ left: x(a), right: x(b) }));
+const dp = new DatapathView(geom, { title: 'ARM pipelined processor', description: geom.alt, info: ext ? PIPE_EXT_INFO : PIPE_INFO, labelBounds: true, bands });
+document.getElementById('host').append(dp.root);
+document.getElementById('title').textContent = `Case ${k}${ext ? ' (Extended)' : ''}: ${title}`;
+if (at) {
+  const p = assemble([{ name: 'p.s', text }], { profile: 'arm-pipe', subset: ext ? 'extended' : null });
+  if (!p.ok) throw new Error(JSON.stringify(p.diagnostics));
+  const m = ext ? new ArmPipeExt() : new ArmPipe();
+  m.load(p);
+  for (let i = 0; i < 300; i++) {
+    const c = m.evaluate();
+    const seq = c.seq[at[1]];
+    if (c.live[at[1]] && m.instance(seq)?.pc === at[0]) break;
+    m.step();
+  }
+  const c = m.evaluate();
+  const s = c.signals;
+  const sigs = new Map();
+  const ctls = new Map();
+  for (const d of ext ? PIPE_EXT_SIGNALS : PIPE_SIGNALS) {
+    const v = s[d.name];
+    const hex = (v >>> 0).toString(16).padStart(8, '0');
+    (d.kind === 'control' ? ctls : sigs).set(d.name, { text: d.width === 32 ? `0x${hex}` : binary(v, d.width), tag: d.width === 32 ? hex : null, tip: `${d.name} = ${binary(v, d.width)}` });
+  }
+  dp.setValues(sigs, ctls);
+  dp.setPath(pipePaths(c, ext));
+  const marks = [];
+  if (s.StallF) marks.push({ id: 'pc', kind: 'hold', text: 'stall' });
+  if (s.FlushD && !s.StallD) marks.push({ id: 'fd', kind: 'clear', text: 'flush' });
+  else if (s.StallD) marks.push({ id: 'fd', kind: 'hold', text: 'stall' });
+  if (s.FlushE) marks.push({ id: 'de', kind: 'clear', text: 'flush' });
+  dp.setMarks(marks);
+  const who = (st) => {
+    const i = m.instance(c.seq[st]);
+    if (!c.live[st] || !i) return `${st}: —`;
+    return i.kind === 'bubble' ? `${st}: bubble` : `${st}: ${disassemble(i.instr, i.pc)}`;
+  };
+  document.getElementById('stages').textContent = ['IF', 'ID', 'EX', 'MEM', 'WB'].map(who).join('   |   ');
+  document.getElementById('note').textContent = `cycle ${m.cycle}  ForwardAE=${binary(s.ForwardAE, 2)} ForwardBE=${binary(s.ForwardBE, 2)} `
+    + `StallF=${s.StallF} StallD=${s.StallD} FlushD=${s.FlushD} FlushE=${s.FlushE} CondExE=${s.CondExE} BranchTakenE=${s.BranchTakenE} PCSrcW=${s.PCSrcW}`;
+}
+document.body.dataset.ready = '1';
+</script>
+</body>
+</html>

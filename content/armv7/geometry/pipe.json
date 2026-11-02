@@ -1,0 +1,3474 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0).",
+ "_source": {
+  "topology": "Harris and Harris, Digital Design and Computer Architecture: ARM Edition (2015), Figs 7.45-7.47 (pp. 429-430), 7.51 (p. 434), 7.54 (p. 437), 7.57 (p. 439) and 7.58 (p. 441): the blocks and their connections only",
+  "layout": "MAVILERA's own (spec W-D32 Q8); not traced from the figures",
+  "generated_by": "tools/armv7/make-pipe-geometry.mjs",
+  "status": "approved by the author on 2026-11-01 (A4-Q4)"
+ },
+ "profile": "arm-pipe",
+ "units": "cm",
+ "y_up": true,
+ "pics": {
+  "mux2": {
+   "outline": [
+    [
+     0,
+     -0.75
+    ],
+    [
+     0.6,
+     -0.45
+    ],
+    [
+     0.6,
+     0.45
+    ],
+    [
+     0,
+     0.75
+    ]
+   ],
+   "anchors": {
+    "in0": [
+     0,
+     0.4
+    ],
+    "in1": [
+     0,
+     -0.4
+    ],
+    "out": [
+     0.6,
+     0
+    ],
+    "sel": [
+     0.3,
+     -0.6
+    ]
+   },
+   "labels": [
+    {
+     "text": "0",
+     "at": [
+      0.02,
+      0.4
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "1",
+     "at": [
+      0.02,
+      -0.4
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  "mux3": {
+   "outline": [
+    [
+     0,
+     -1
+    ],
+    [
+     0.6,
+     -0.65
+    ],
+    [
+     0.6,
+     0.65
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "anchors": {
+    "in0": [
+     0,
+     0.6
+    ],
+    "in1": [
+     0,
+     0
+    ],
+    "in2": [
+     0,
+     -0.6
+    ],
+    "out": [
+     0.6,
+     0
+    ],
+    "selTop": [
+     0.3,
+     0.825
+    ],
+    "selBottom": [
+     0.3,
+     -0.825
+    ]
+   },
+   "labels": [
+    {
+     "text": "00",
+     "at": [
+      0.02,
+      0.6
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "01",
+     "at": [
+      0.02,
+      0
+     ],
+     "anchor": "west"
+    },
+    {
+     "text": "10",
+     "at": [
+      0.02,
+      -0.6
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  "alu": {
+   "outline": [
+    [
+     0,
+     -1.1
+    ],
+    [
+     1,
+     -0.5
+    ],
+    [
+     1,
+     0.5
+    ],
+    [
+     0,
+     1.1
+    ],
+    [
+     0,
+     0.28
+    ],
+    [
+     0.22,
+     0
+    ],
+    [
+     0,
+     -0.28
+    ]
+   ],
+   "anchors": {
+    "a": [
+     0,
+     0.7
+    ],
+    "b": [
+     0,
+     -0.7
+    ],
+    "out": [
+     1,
+     0
+    ],
+    "ctrl": [
+     0.5,
+     -0.8
+    ],
+    "flags": [
+     0.5,
+     0.8
+    ]
+   },
+   "labels": [
+    {
+     "text": "ALU",
+     "at": [
+      0.6,
+      0
+     ],
+     "anchor": "center"
+    }
+   ]
+  },
+  "and2": {
+   "outline": [
+    [
+     0,
+     -0.2
+    ],
+    [
+     0.3,
+     -0.2
+    ],
+    [
+     0.3765,
+     -0.1848
+    ],
+    [
+     0.4414,
+     -0.1414
+    ],
+    [
+     0.4848,
+     -0.0765
+    ],
+    [
+     0.5,
+     0
+    ],
+    [
+     0.4848,
+     0.0765
+    ],
+    [
+     0.4414,
+     0.1414
+    ],
+    [
+     0.3765,
+     0.1848
+    ],
+    [
+     0.3,
+     0.2
+    ],
+    [
+     0,
+     0.2
+    ]
+   ],
+   "anchors": {
+    "a": [
+     0,
+     0.1
+    ],
+    "b": [
+     0,
+     -0.1
+    ],
+    "out": [
+     0.5,
+     0
+    ]
+   },
+   "labels": []
+  }
+ },
+ "elements": [
+  {
+   "id": "pcm",
+   "type": "mux2",
+   "at": [
+    -2.6,
+    0.4
+   ]
+  },
+  {
+   "id": "brm",
+   "type": "mux2",
+   "at": [
+    -1.6,
+    0
+   ]
+  },
+  {
+   "id": "pc",
+   "type": "reg",
+   "at": [
+    -0.3,
+    0
+   ],
+   "size": [
+    0.7,
+    1.3
+   ],
+   "text": "PC"
+  },
+  {
+   "id": "add4",
+   "type": "comb",
+   "at": [
+    0.95,
+    3.4
+   ],
+   "size": [
+    0.8,
+    0.6
+   ],
+   "text": "+4"
+  },
+  {
+   "id": "imem",
+   "type": "mem",
+   "at": [
+    1.9,
+    0
+   ],
+   "size": [
+    1.4,
+    2
+   ],
+   "text": ""
+  },
+  {
+   "id": "fd",
+   "type": "reg",
+   "at": [
+    3.6,
+    0
+   ],
+   "size": [
+    0.35,
+    1.8
+   ],
+   "text": ""
+  },
+  {
+   "id": "cu",
+   "type": "block",
+   "at": [
+    6.3,
+    6.05
+   ],
+   "size": [
+    1.8,
+    3.9
+   ],
+   "text": "Control\nunit"
+  },
+  {
+   "id": "ra1m",
+   "type": "mux2",
+   "at": [
+    5.4,
+    1.3
+   ]
+  },
+  {
+   "id": "ra2m",
+   "type": "mux2",
+   "at": [
+    5.4,
+    -0.4
+   ]
+  },
+  {
+   "id": "rf",
+   "type": "block",
+   "at": [
+    7.3,
+    -0.85
+   ],
+   "size": [
+    1.8,
+    5.7
+   ],
+   "text": ""
+  },
+  {
+   "id": "ext",
+   "type": "comb",
+   "at": [
+    7.3,
+    -4.6
+   ],
+   "size": [
+    1.4,
+    0.6
+   ],
+   "text": "Extend"
+  },
+  {
+   "id": "de_c",
+   "type": "reg",
+   "at": [
+    11,
+    5.875
+   ],
+   "size": [
+    0.35,
+    4.25
+   ],
+   "text": ""
+  },
+  {
+   "id": "de",
+   "type": "reg",
+   "at": [
+    11,
+    -1.55
+   ],
+   "size": [
+    0.35,
+    7.1
+   ],
+   "text": ""
+  },
+  {
+   "id": "fam",
+   "type": "mux3",
+   "at": [
+    12,
+    0.75
+   ]
+  },
+  {
+   "id": "fbm",
+   "type": "mux3",
+   "at": [
+    12,
+    -1.35
+   ]
+  },
+  {
+   "id": "bm",
+   "type": "mux2",
+   "at": [
+    13.6,
+    -0.65
+   ]
+  },
+  {
+   "id": "alu",
+   "type": "alu",
+   "at": [
+    14.8,
+    0.05
+   ]
+  },
+  {
+   "id": "flags",
+   "type": "reg",
+   "at": [
+    13.9,
+    2.9
+   ],
+   "size": [
+    0.9,
+    0.7
+   ],
+   "text": "Flags"
+  },
+  {
+   "id": "cond",
+   "type": "comb",
+   "at": [
+    15.7,
+    2.9
+   ],
+   "size": [
+    1.4,
+    0.9
+   ],
+   "text": "Cond\nUnit"
+  },
+  {
+   "id": "g_pcsrc",
+   "type": "and2",
+   "at": [
+    17.725,
+    7.5
+   ]
+  },
+  {
+   "id": "g_regw",
+   "type": "and2",
+   "at": [
+    17.725,
+    7.05
+   ]
+  },
+  {
+   "id": "g_memw",
+   "type": "and2",
+   "at": [
+    17.725,
+    6.15
+   ]
+  },
+  {
+   "id": "g_branch",
+   "type": "and2",
+   "at": [
+    17.2,
+    4.8
+   ]
+  },
+  {
+   "id": "em_c",
+   "type": "reg",
+   "at": [
+    18.4,
+    6.975
+   ],
+   "size": [
+    0.35,
+    2.05
+   ],
+   "text": ""
+  },
+  {
+   "id": "em",
+   "type": "reg",
+   "at": [
+    18.4,
+    -1.55
+   ],
+   "size": [
+    0.35,
+    7.1
+   ],
+   "text": ""
+  },
+  {
+   "id": "dm",
+   "type": "mem",
+   "at": [
+    20.4,
+    -0.25
+   ],
+   "size": [
+    1.5,
+    2
+   ],
+   "text": ""
+  },
+  {
+   "id": "mw_c",
+   "type": "reg",
+   "at": [
+    22.8,
+    7.225
+   ],
+   "size": [
+    0.35,
+    1.55
+   ],
+   "text": ""
+  },
+  {
+   "id": "mw",
+   "type": "reg",
+   "at": [
+    22.8,
+    -1.55
+   ],
+   "size": [
+    0.35,
+    7.1
+   ],
+   "text": ""
+  },
+  {
+   "id": "rm",
+   "type": "mux2",
+   "at": [
+    23.4,
+    -0.45
+   ]
+  },
+  {
+   "id": "hz",
+   "type": "block",
+   "at": [
+    11.25,
+    -8.5
+   ],
+   "size": [
+    17.5,
+    0.8
+   ],
+   "text": "Hazard Unit"
+  }
+ ],
+ "labels": [
+  {
+   "type": "label",
+   "style": "figtitle",
+   "at": [
+    0,
+    9
+   ],
+   "text": "IF"
+  },
+  {
+   "type": "label",
+   "style": "figtitle",
+   "at": [
+    7.3,
+    9
+   ],
+   "text": "ID"
+  },
+  {
+   "type": "label",
+   "style": "figtitle",
+   "at": [
+    14.7,
+    9
+   ],
+   "text": "EX"
+  },
+  {
+   "type": "label",
+   "style": "figtitle",
+   "at": [
+    20.6,
+    9
+   ],
+   "text": "MEM"
+  },
+  {
+   "type": "label",
+   "style": "figtitle",
+   "at": [
+    24.3,
+    9
+   ],
+   "text": "WB"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    3.6,
+    8.45
+   ],
+   "text": "IF/ID"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    11,
+    8.45
+   ],
+   "text": "ID/EX"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    18.4,
+    8.45
+   ],
+   "text": "EX/MEM"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    22.8,
+    8.45
+   ],
+   "text": "MEM/WB"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    1.9,
+    -1.05
+   ],
+   "anchor": "north",
+   "text": "Instruction\nmemory"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    7.3,
+    -1.5
+   ],
+   "anchor": "center",
+   "text": "Register\nfile"
+  },
+  {
+   "type": "label",
+   "style": "figlabel",
+   "at": [
+    20.4,
+    -1.3
+   ],
+   "anchor": "north",
+   "text": "Data\nmemory"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    1.2,
+    0
+   ],
+   "anchor": "west",
+   "text": "A"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    2.6,
+    0
+   ],
+   "anchor": "east",
+   "text": "RD"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    6.4,
+    1.3
+   ],
+   "anchor": "west",
+   "text": "A1"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    6.4,
+    -0.4
+   ],
+   "anchor": "west",
+   "text": "A2"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    6.4,
+    -2.6
+   ],
+   "anchor": "west",
+   "text": "A3"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    6.4,
+    -3.4
+   ],
+   "anchor": "west",
+   "text": "WD3"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    8.2,
+    1.35
+   ],
+   "anchor": "east",
+   "text": "RD1"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    8.2,
+    -0.75
+   ],
+   "anchor": "east",
+   "text": "RD2"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    7.6,
+    2
+   ],
+   "anchor": "north",
+   "text": "R15"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    6.75,
+    2
+   ],
+   "anchor": "north",
+   "text": "WE3"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    19.65,
+    0.05
+   ],
+   "anchor": "west",
+   "text": "A"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    19.65,
+    -0.95
+   ],
+   "anchor": "west",
+   "text": "WD"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    21.15,
+    -0.85
+   ],
+   "anchor": "east",
+   "text": "RD"
+  },
+  {
+   "type": "label",
+   "style": "sig",
+   "at": [
+    20.4,
+    0.75
+   ],
+   "anchor": "north",
+   "text": "WE"
+  }
+ ],
+ "wires": [
+  {
+   "id": "pcm_brm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     -2,
+     0.4
+    ],
+    [
+     -1.6,
+     0.4
+    ]
+   ],
+   "signal": "PCMuxF",
+   "labels": []
+  },
+  {
+   "id": "brm_pc",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     -1,
+     0
+    ],
+    [
+     -0.65,
+     0
+    ]
+   ],
+   "signal": "PCNext",
+   "labels": []
+  },
+  {
+   "id": "pc_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     0.05,
+     0
+    ],
+    [
+     0.35,
+     0
+    ]
+   ],
+   "signal": "PCF",
+   "labels": []
+  },
+  {
+   "id": "pc_imem",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     0.35,
+     0
+    ],
+    [
+     1.2,
+     0
+    ]
+   ],
+   "signal": "PCF",
+   "labels": []
+  },
+  {
+   "id": "pc_add4",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     0.35,
+     0
+    ],
+    [
+     0.35,
+     3.4
+    ],
+    [
+     0.55,
+     3.4
+    ]
+   ],
+   "signal": "PCF",
+   "labels": []
+  },
+  {
+   "id": "add4_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     1.35,
+     3.4
+    ],
+    [
+     1.75,
+     3.4
+    ]
+   ],
+   "signal": "PCPlus4F",
+   "labels": []
+  },
+  {
+   "id": "pc4_pcm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     1.75,
+     3.4
+    ],
+    [
+     1.75,
+     3.8
+    ],
+    [
+     -3,
+     3.8
+    ],
+    [
+     -3,
+     0.8
+    ],
+    [
+     -2.6,
+     0.8
+    ]
+   ],
+   "signal": "PCPlus4F",
+   "labels": [
+    {
+     "text": "PCPlus4F",
+     "at": [
+      -0.6,
+      3.8
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "pc4_b",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     1.75,
+     3.4
+    ],
+    [
+     3.6,
+     3.4
+    ]
+   ],
+   "signal": "PCPlus4F",
+   "labels": []
+  },
+  {
+   "id": "pc8_rf",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     3.6,
+     3.4
+    ],
+    [
+     7.6,
+     3.4
+    ],
+    [
+     7.6,
+     2
+    ]
+   ],
+   "signal": "PCPlus8D",
+   "labels": [
+    {
+     "text": "PCPlus8D",
+     "at": [
+      6.2,
+      3.4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "imem_fd",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     2.6,
+     0
+    ],
+    [
+     3.425,
+     0
+    ]
+   ],
+   "signal": "InstrF",
+   "labels": []
+  },
+  {
+   "id": "fd_bus",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     3.775,
+     0
+    ],
+    [
+     4.4,
+     0
+    ]
+   ],
+   "signal": "InstrD",
+   "labels": []
+  },
+  {
+   "id": "bus_up1",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     4.4,
+     0
+    ],
+    [
+     4.4,
+     1.7
+    ]
+   ],
+   "signal": "InstrD",
+   "labels": []
+  },
+  {
+   "id": "bus_up2",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     4.4,
+     1.7
+    ],
+    [
+     4.4,
+     4
+    ]
+   ],
+   "signal": "InstrD",
+   "labels": []
+  },
+  {
+   "id": "bus_dn1",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     4.4,
+     0
+    ],
+    [
+     4.4,
+     -2.6
+    ]
+   ],
+   "signal": "InstrD",
+   "labels": []
+  },
+  {
+   "id": "bus_dn2",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     4.4,
+     -2.6
+    ],
+    [
+     4.4,
+     -4.6
+    ]
+   ],
+   "signal": "InstrD",
+   "labels": []
+  },
+  {
+   "id": "ins_cu",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     4.4,
+     4
+    ],
+    [
+     4.4,
+     5
+    ],
+    [
+     5.4,
+     5
+    ]
+   ],
+   "signal": "Op,Funct,Rd",
+   "labels": []
+  },
+  {
+   "id": "ins_cond",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     4.4,
+     4
+    ],
+    [
+     10.825,
+     4
+    ]
+   ],
+   "signal": "Cond",
+   "labels": [
+    {
+     "text": "Cond 31:28",
+     "at": [
+      9,
+      4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "ins_rn",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     4.4,
+     1.7
+    ],
+    [
+     5.4,
+     1.7
+    ]
+   ],
+   "signal": "Rn",
+   "labels": [
+    {
+     "text": "19:16",
+     "at": [
+      4.45,
+      1.7
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "c15_ra1m",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     5.1,
+     0.9
+    ],
+    [
+     5.4,
+     0.9
+    ]
+   ],
+   "signal": "const15",
+   "labels": [
+    {
+     "text": "15",
+     "at": [
+      5.1,
+      0.9
+     ],
+     "place": "left"
+    }
+   ]
+  },
+  {
+   "id": "ins_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     4.4,
+     0
+    ],
+    [
+     5.4,
+     0
+    ]
+   ],
+   "signal": "Rm",
+   "labels": [
+    {
+     "text": "3:0",
+     "at": [
+      4.45,
+      0
+     ],
+     "anchor": "north west"
+    }
+   ]
+  },
+  {
+   "id": "ins_rd_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     4.4,
+     -2.6
+    ],
+    [
+     4.8,
+     -2.6
+    ]
+   ],
+   "signal": "Rd",
+   "labels": []
+  },
+  {
+   "id": "rd_ra2m",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     4.8,
+     -2.6
+    ],
+    [
+     4.8,
+     -0.8
+    ],
+    [
+     5.4,
+     -0.8
+    ]
+   ],
+   "signal": "Rd",
+   "labels": []
+  },
+  {
+   "id": "wa3d",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     4.8,
+     -2.6
+    ],
+    [
+     4.8,
+     -4
+    ],
+    [
+     10.825,
+     -4
+    ]
+   ],
+   "signal": "WA3D",
+   "labels": [
+    {
+     "text": "15:12",
+     "at": [
+      5.3,
+      -4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "ins_imm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     4.4,
+     -4.6
+    ],
+    [
+     6.6,
+     -4.6
+    ]
+   ],
+   "signal": "Imm24",
+   "labels": [
+    {
+     "text": "23:0",
+     "at": [
+      5.3,
+      -4.6
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "ra1m_rf",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     6,
+     1.3
+    ],
+    [
+     6.4,
+     1.3
+    ]
+   ],
+   "signal": "RA1D",
+   "labels": []
+  },
+  {
+   "id": "ra2m_rf",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     6,
+     -0.4
+    ],
+    [
+     6.4,
+     -0.4
+    ]
+   ],
+   "signal": "RA2D",
+   "labels": []
+  },
+  {
+   "id": "rd1_de",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.2,
+     1.35
+    ],
+    [
+     10.825,
+     1.35
+    ]
+   ],
+   "signal": "RD1D",
+   "labels": []
+  },
+  {
+   "id": "rd2_de",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8.2,
+     -0.75
+    ],
+    [
+     10.825,
+     -0.75
+    ]
+   ],
+   "signal": "RD2D",
+   "labels": []
+  },
+  {
+   "id": "ext_de",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     8,
+     -4.6
+    ],
+    [
+     10.825,
+     -4.6
+    ]
+   ],
+   "signal": "ExtImmD",
+   "labels": []
+  },
+  {
+   "id": "cu_PCSrc",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     7.6
+    ],
+    [
+     10.825,
+     7.6
+    ]
+   ],
+   "signal": "PCSrcD",
+   "labels": [
+    {
+     "text": "PCSrcD",
+     "at": [
+      7.25,
+      7.6
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_RegWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     7.15
+    ],
+    [
+     10.825,
+     7.15
+    ]
+   ],
+   "signal": "RegWriteD",
+   "labels": [
+    {
+     "text": "RegWriteD",
+     "at": [
+      7.25,
+      7.15
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_MemtoReg",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     6.7
+    ],
+    [
+     10.825,
+     6.7
+    ]
+   ],
+   "signal": "MemtoRegD",
+   "labels": [
+    {
+     "text": "MemtoRegD",
+     "at": [
+      7.25,
+      6.7
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_MemWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     6.25
+    ],
+    [
+     10.825,
+     6.25
+    ]
+   ],
+   "signal": "MemWriteD",
+   "labels": [
+    {
+     "text": "MemWriteD",
+     "at": [
+      7.25,
+      6.25
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_ALUControl",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     5.8
+    ],
+    [
+     10.825,
+     5.8
+    ]
+   ],
+   "signal": "ALUControlD",
+   "labels": [
+    {
+     "text": "ALUControlD",
+     "at": [
+      7.25,
+      5.8
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_ALUSrc",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     5.35
+    ],
+    [
+     10.825,
+     5.35
+    ]
+   ],
+   "signal": "ALUSrcD",
+   "labels": [
+    {
+     "text": "ALUSrcD",
+     "at": [
+      7.25,
+      5.35
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_Branch",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     4.9
+    ],
+    [
+     10.825,
+     4.9
+    ]
+   ],
+   "signal": "BranchD",
+   "labels": [
+    {
+     "text": "BranchD",
+     "at": [
+      7.25,
+      4.9
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "cu_FlagWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     7.2,
+     4.45
+    ],
+    [
+     10.825,
+     4.45
+    ]
+   ],
+   "signal": "FlagWriteD",
+   "labels": [
+    {
+     "text": "FlagWriteD",
+     "at": [
+      7.25,
+      4.45
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "rd1e_fam",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     1.35
+    ],
+    [
+     12,
+     1.35
+    ]
+   ],
+   "signal": "RD1E",
+   "labels": []
+  },
+  {
+   "id": "rd2e_fbm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     -0.75
+    ],
+    [
+     12,
+     -0.75
+    ]
+   ],
+   "signal": "RD2E",
+   "labels": []
+  },
+  {
+   "id": "fam_alu",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     12.6,
+     0.75
+    ],
+    [
+     14.8,
+     0.75
+    ]
+   ],
+   "signal": "SrcAE",
+   "labels": [
+    {
+     "text": "SrcAE",
+     "at": [
+      13.7,
+      0.75
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "fbm_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     12.6,
+     -1.35
+    ],
+    [
+     12.9,
+     -1.35
+    ]
+   ],
+   "signal": "WriteDataE",
+   "labels": []
+  },
+  {
+   "id": "wd_bm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     12.9,
+     -1.35
+    ],
+    [
+     12.9,
+     -0.25
+    ],
+    [
+     13.6,
+     -0.25
+    ]
+   ],
+   "signal": "WriteDataE",
+   "labels": []
+  },
+  {
+   "id": "wd_em",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     12.9,
+     -1.35
+    ],
+    [
+     12.9,
+     -3
+    ],
+    [
+     18.225,
+     -3
+    ]
+   ],
+   "signal": "WriteDataE",
+   "labels": [
+    {
+     "text": "WriteDataE",
+     "at": [
+      15.1,
+      -3
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "ext_bm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     -4.6
+    ],
+    [
+     13.3,
+     -4.6
+    ],
+    [
+     13.3,
+     -1.05
+    ],
+    [
+     13.6,
+     -1.05
+    ]
+   ],
+   "signal": "ExtImmE",
+   "labels": []
+  },
+  {
+   "id": "bm_alu",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     14.2,
+     -0.65
+    ],
+    [
+     14.8,
+     -0.65
+    ]
+   ],
+   "signal": "SrcBE",
+   "labels": []
+  },
+  {
+   "id": "alu_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     15.8,
+     0.05
+    ],
+    [
+     16.3,
+     0.05
+    ]
+   ],
+   "signal": "ALUResultE",
+   "labels": []
+  },
+  {
+   "id": "alu_em",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     16.3,
+     0.05
+    ],
+    [
+     18.225,
+     0.05
+    ]
+   ],
+   "signal": "ALUResultE",
+   "labels": []
+  },
+  {
+   "id": "alu_brm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     16.3,
+     0.05
+    ],
+    [
+     16.3,
+     -7.4
+    ],
+    [
+     -2,
+     -7.4
+    ],
+    [
+     -2,
+     -0.4
+    ],
+    [
+     -1.6,
+     -0.4
+    ]
+   ],
+   "signal": "ALUResultE",
+   "labels": [
+    {
+     "text": "ALUResultE",
+     "at": [
+      1,
+      -7.4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "alu_flags",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     15.3,
+     0.85
+    ],
+    [
+     15.3,
+     2.45
+    ]
+   ],
+   "signal": "ALUFlags",
+   "labels": [
+    {
+     "text": "ALUFlags",
+     "at": [
+      15.3,
+      1.65
+     ],
+     "place": "right"
+    }
+   ]
+  },
+  {
+   "id": "flags_cond",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     14.35,
+     2.9
+    ],
+    [
+     15,
+     2.9
+    ]
+   ],
+   "signal": "FlagsE",
+   "labels": []
+  },
+  {
+   "id": "cond_flags",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     15.15,
+     3.35
+    ],
+    [
+     15.15,
+     3.65
+    ],
+    [
+     13.2,
+     3.65
+    ],
+    [
+     13.2,
+     2.9
+    ],
+    [
+     13.45,
+     2.9
+    ]
+   ],
+   "signal": "FlagsNextE",
+   "labels": [
+    {
+     "text": "Flags′",
+     "at": [
+      14.2,
+      3.65
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "de_cond",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     4
+    ],
+    [
+     15.6,
+     4
+    ],
+    [
+     15.6,
+     3.35
+    ]
+   ],
+   "signal": "CondE",
+   "labels": []
+  },
+  {
+   "id": "de_flagw",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     4.45
+    ],
+    [
+     16.2,
+     4.45
+    ],
+    [
+     16.2,
+     3.35
+    ]
+   ],
+   "signal": "FlagWriteE",
+   "labels": [
+    {
+     "text": "FlagWriteE",
+     "at": [
+      11.225000000000001,
+      4.45
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "de_alucontrol",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     5.8
+    ],
+    [
+     11.9,
+     5.8
+    ]
+   ],
+   "signal": "ALUControlE",
+   "labels": [
+    {
+     "text": "ALUControlE",
+     "at": [
+      11.95,
+      5.8
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "de_alusrc",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     5.35
+    ],
+    [
+     11.9,
+     5.35
+    ]
+   ],
+   "signal": "ALUSrcE",
+   "labels": [
+    {
+     "text": "ALUSrcE",
+     "at": [
+      11.95,
+      5.35
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "condex",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     16.4,
+     2.9
+    ],
+    [
+     16.9,
+     2.9
+    ],
+    [
+     16.9,
+     7.4
+    ],
+    [
+     17.725,
+     7.4
+    ]
+   ],
+   "signal": "CondExE",
+   "labels": [
+    {
+     "text": "CondExE",
+     "at": [
+      16.95,
+      2.9
+     ],
+     "anchor": "north west"
+    }
+   ]
+  },
+  {
+   "id": "condex_RegWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     16.9,
+     6.95
+    ],
+    [
+     17.725,
+     6.95
+    ]
+   ],
+   "signal": "CondExE",
+   "labels": []
+  },
+  {
+   "id": "condex_MemWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     16.9,
+     6.050000000000001
+    ],
+    [
+     17.725,
+     6.050000000000001
+    ]
+   ],
+   "signal": "CondExE",
+   "labels": []
+  },
+  {
+   "id": "condex_branch",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     16.9,
+     4.7
+    ],
+    [
+     17.2,
+     4.7
+    ]
+   ],
+   "signal": "CondExE",
+   "labels": []
+  },
+  {
+   "id": "de_PCSrc",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     7.6
+    ],
+    [
+     17.725,
+     7.6
+    ]
+   ],
+   "signal": "PCSrcE",
+   "labels": [
+    {
+     "text": "PCSrcE",
+     "at": [
+      11.225000000000001,
+      7.6
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "de_RegWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     7.15
+    ],
+    [
+     17.725,
+     7.15
+    ]
+   ],
+   "signal": "RegWriteE",
+   "labels": [
+    {
+     "text": "RegWriteE",
+     "at": [
+      11.225000000000001,
+      7.15
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "de_MemWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     6.25
+    ],
+    [
+     17.725,
+     6.25
+    ]
+   ],
+   "signal": "MemWriteE",
+   "labels": [
+    {
+     "text": "MemWriteE",
+     "at": [
+      11.225000000000001,
+      6.25
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "de_branch",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     4.9
+    ],
+    [
+     17.2,
+     4.9
+    ]
+   ],
+   "signal": "BranchE",
+   "labels": [
+    {
+     "text": "BranchE",
+     "at": [
+      13.4,
+      4.9
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "de_memtoreg",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     6.7
+    ],
+    [
+     18.225,
+     6.7
+    ]
+   ],
+   "signal": "MemtoRegE",
+   "labels": [
+    {
+     "text": "MemtoRegE",
+     "at": [
+      11.225000000000001,
+      6.7
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "aom_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     18.575,
+     0.05
+    ],
+    [
+     19,
+     0.05
+    ]
+   ],
+   "signal": "ALUOutM",
+   "labels": []
+  },
+  {
+   "id": "aom_dm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     19,
+     0.05
+    ],
+    [
+     19.65,
+     0.05
+    ]
+   ],
+   "signal": "ALUOutM",
+   "labels": []
+  },
+  {
+   "id": "aom_mw",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     19,
+     0.05
+    ],
+    [
+     19,
+     1.4
+    ],
+    [
+     22.625,
+     1.4
+    ]
+   ],
+   "signal": "ALUOutM",
+   "labels": [
+    {
+     "text": "ALUOutM",
+     "at": [
+      21,
+      1.4
+     ],
+     "place": "above"
+    }
+   ]
+  },
+  {
+   "id": "aom_fwd",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     19,
+     0.05
+    ],
+    [
+     19,
+     -5.6
+    ],
+    [
+     11.55,
+     -5.6
+    ],
+    [
+     11.55,
+     -1.95
+    ]
+   ],
+   "signal": "ALUOutM",
+   "labels": [
+    {
+     "text": "ALUOutM",
+     "at": [
+      15.1,
+      -5.6
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "aom_fbm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.55,
+     -1.95
+    ],
+    [
+     12,
+     -1.95
+    ]
+   ],
+   "signal": "ALUOutM",
+   "labels": []
+  },
+  {
+   "id": "aom_fam",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.55,
+     -1.95
+    ],
+    [
+     11.55,
+     0.15
+    ],
+    [
+     12,
+     0.15
+    ]
+   ],
+   "signal": "ALUOutM",
+   "labels": []
+  },
+  {
+   "id": "wdm_dm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     18.575,
+     -3
+    ],
+    [
+     19.3,
+     -3
+    ],
+    [
+     19.3,
+     -0.95
+    ],
+    [
+     19.65,
+     -0.95
+    ]
+   ],
+   "signal": "WriteDataM",
+   "labels": []
+  },
+  {
+   "id": "dm_mw",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     21.15,
+     -0.85
+    ],
+    [
+     22.625,
+     -0.85
+    ]
+   ],
+   "signal": "ReadDataM",
+   "labels": []
+  },
+  {
+   "id": "em_PCSrc",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     18.575,
+     7.6
+    ],
+    [
+     22.625,
+     7.6
+    ]
+   ],
+   "signal": "PCSrcM",
+   "labels": [
+    {
+     "text": "PCSrcM",
+     "at": [
+      18.625,
+      7.6
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "em_RegWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     18.575,
+     7.15
+    ],
+    [
+     22.625,
+     7.15
+    ]
+   ],
+   "signal": "RegWriteM",
+   "labels": [
+    {
+     "text": "RegWriteM",
+     "at": [
+      18.625,
+      7.15
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "em_MemtoReg",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     18.575,
+     6.7
+    ],
+    [
+     22.625,
+     6.7
+    ]
+   ],
+   "signal": "MemtoRegM",
+   "labels": [
+    {
+     "text": "MemtoRegM",
+     "at": [
+      18.625,
+      6.7
+     ],
+     "anchor": "south west"
+    }
+   ]
+  },
+  {
+   "id": "em_memwrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     18.575,
+     6.25
+    ],
+    [
+     19.3,
+     6.25
+    ]
+   ],
+   "signal": "MemWriteM",
+   "labels": [
+    {
+     "text": "MemWriteM",
+     "at": [
+      19.35,
+      6.25
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "aow_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     22.975,
+     1.4
+    ],
+    [
+     23.2,
+     1.4
+    ],
+    [
+     23.2,
+     -0.05
+    ],
+    [
+     23.4,
+     -0.05
+    ]
+   ],
+   "signal": "ALUOutW",
+   "labels": []
+  },
+  {
+   "id": "rdw_rm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     22.975,
+     -0.85
+    ],
+    [
+     23.4,
+     -0.85
+    ]
+   ],
+   "signal": "ReadDataW",
+   "labels": []
+  },
+  {
+   "id": "mw_PCSrc",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     22.975,
+     7.6
+    ],
+    [
+     23.7,
+     7.6
+    ]
+   ],
+   "signal": "PCSrcW",
+   "labels": [
+    {
+     "text": "PCSrcW",
+     "at": [
+      23.75,
+      7.6
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "mw_RegWrite",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     22.975,
+     7.15
+    ],
+    [
+     23.7,
+     7.15
+    ]
+   ],
+   "signal": "RegWriteW",
+   "labels": [
+    {
+     "text": "RegWriteW",
+     "at": [
+      23.75,
+      7.15
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "mw_MemtoReg",
+   "style": "ctrl",
+   "arrow": true,
+   "points": [
+    [
+     22.975,
+     6.7
+    ],
+    [
+     23.7,
+     6.7
+    ]
+   ],
+   "signal": "MemtoRegW",
+   "labels": [
+    {
+     "text": "MemtoRegW",
+     "at": [
+      23.75,
+      6.7
+     ],
+     "anchor": "west"
+    }
+   ]
+  },
+  {
+   "id": "res_a",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     24,
+     -0.45
+    ],
+    [
+     25.5,
+     -0.45
+    ],
+    [
+     25.5,
+     -6.9
+    ],
+    [
+     11.35,
+     -6.9
+    ]
+   ],
+   "signal": "ResultW",
+   "labels": [
+    {
+     "text": "ResultW",
+     "at": [
+      20,
+      -6.9
+     ],
+     "place": "below"
+    }
+   ]
+  },
+  {
+   "id": "res_b",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     11.35,
+     -6.9
+    ],
+    [
+     6.2,
+     -6.9
+    ]
+   ],
+   "signal": "ResultW",
+   "labels": []
+  },
+  {
+   "id": "res_pcm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     6.2,
+     -6.9
+    ],
+    [
+     -3.4,
+     -6.9
+    ],
+    [
+     -3.4,
+     0
+    ],
+    [
+     -2.6,
+     0
+    ]
+   ],
+   "signal": "ResultW",
+   "labels": []
+  },
+  {
+   "id": "res_rf",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     6.2,
+     -6.9
+    ],
+    [
+     6.2,
+     -3.4
+    ],
+    [
+     6.4,
+     -3.4
+    ]
+   ],
+   "signal": "ResultW",
+   "labels": []
+  },
+  {
+   "id": "res_up",
+   "style": "bus",
+   "arrow": false,
+   "points": [
+    [
+     11.35,
+     -6.9
+    ],
+    [
+     11.35,
+     -1.35
+    ]
+   ],
+   "signal": "ResultW",
+   "labels": []
+  },
+  {
+   "id": "res_fbm",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.35,
+     -1.35
+    ],
+    [
+     12,
+     -1.35
+    ]
+   ],
+   "signal": "ResultW",
+   "labels": []
+  },
+  {
+   "id": "res_fam",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.35,
+     -1.35
+    ],
+    [
+     11.35,
+     0.75
+    ],
+    [
+     12,
+     0.75
+    ]
+   ],
+   "signal": "ResultW",
+   "labels": []
+  },
+  {
+   "id": "wa3e",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     11.175,
+     -4
+    ],
+    [
+     18.225,
+     -4
+    ]
+   ],
+   "signal": "WA3E",
+   "labels": []
+  },
+  {
+   "id": "wa3m",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     18.575,
+     -4
+    ],
+    [
+     22.625,
+     -4
+    ]
+   ],
+   "signal": "WA3M",
+   "labels": []
+  },
+  {
+   "id": "wa3w",
+   "style": "bus",
+   "arrow": true,
+   "points": [
+    [
+     22.975,
+     -4
+    ],
+    [
+     23.6,
+     -4
+    ],
+    [
+     23.6,
+     -6.3
+    ],
+    [
+     6,
+     -6.3
+    ],
+    [
+     6,
+     -2.6
+    ],
+    [
+     6.4,
+     -2.6
+    ]
+   ],
+   "signal": "WA3W",
+   "labels": [
+    {
+     "text": "WA3W",
+     "at": [
+      20,
+      -6.3
+     ],
+     "place": "below"
+    }
+   ]
+  }
+ ],
+ "junctions": [
+  [
+   0.35,
+   0
+  ],
+  [
+   1.75,
+   3.4
+  ],
+  [
+   4.4,
+   0
+  ],
+  [
+   4.4,
+   1.7
+  ],
+  [
+   4.4,
+   4
+  ],
+  [
+   4.4,
+   -2.6
+  ],
+  [
+   4.8,
+   -2.6
+  ],
+  [
+   12.9,
+   -1.35
+  ],
+  [
+   16.3,
+   0.05
+  ],
+  [
+   19,
+   0.05
+  ],
+  [
+   11.55,
+   -1.95
+  ],
+  [
+   11.35,
+   -6.9
+  ],
+  [
+   6.2,
+   -6.9
+  ],
+  [
+   11.35,
+   -1.35
+  ],
+  [
+   16.9,
+   6.95
+  ],
+  [
+   16.9,
+   6.050000000000001
+  ],
+  [
+   16.9,
+   4.7
+  ]
+ ],
+ "control": [
+  {
+   "signal": "PCSrcW",
+   "points": [
+    [
+     -2.3,
+     -0.7
+    ],
+    [
+     -2.3,
+     -0.2
+    ]
+   ],
+   "place": null,
+   "anchor": "north east"
+  },
+  {
+   "signal": "BranchTakenE",
+   "points": [
+    [
+     -1.3,
+     -1.4
+    ],
+    [
+     -1.3,
+     -0.6
+    ]
+   ],
+   "place": null,
+   "anchor": "north west"
+  },
+  {
+   "signal": "StallF",
+   "points": [
+    [
+     -0.3,
+     1.15
+    ],
+    [
+     -0.3,
+     0.65
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "StallD",
+   "points": [
+    [
+     3.6,
+     1.4
+    ],
+    [
+     3.6,
+     0.9
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "FlushD",
+   "points": [
+    [
+     3.6,
+     -1.4
+    ],
+    [
+     3.6,
+     -0.9
+    ]
+   ],
+   "place": "below"
+  },
+  {
+   "signal": "RegSrcD",
+   "points": [
+    [
+     5.65,
+     2.35
+    ],
+    [
+     5.65,
+     1.93
+    ]
+   ],
+   "place": "above",
+   "text": "RegSrcD0"
+  },
+  {
+   "signal": "RegSrcD",
+   "points": [
+    [
+     5.65,
+     -1.6
+    ],
+    [
+     5.65,
+     -1.03
+    ]
+   ],
+   "place": "below",
+   "text": "RegSrcD1"
+  },
+  {
+   "signal": "RegWriteW",
+   "points": [
+    [
+     6.75,
+     2.75
+    ],
+    [
+     6.75,
+     2
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "ImmSrcD",
+   "points": [
+    [
+     7.3,
+     -5.25
+    ],
+    [
+     7.3,
+     -4.9
+    ]
+   ],
+   "place": "below"
+  },
+  {
+   "signal": "FlushE",
+   "points": [
+    [
+     11,
+     -5.55
+    ],
+    [
+     11,
+     -5.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "ForwardAE",
+   "points": [
+    [
+     12.35,
+     1.95
+    ],
+    [
+     12.35,
+     1.55
+    ]
+   ],
+   "place": "above"
+  },
+  {
+   "signal": "ForwardBE",
+   "points": [
+    [
+     12.35,
+     -3.4
+    ],
+    [
+     12.35,
+     -2.15
+    ]
+   ],
+   "place": "below"
+  },
+  {
+   "signal": "ALUSrcE",
+   "points": [
+    [
+     13.9,
+     -1.85
+    ],
+    [
+     13.9,
+     -1.25
+    ]
+   ],
+   "place": null,
+   "anchor": "west"
+  },
+  {
+   "signal": "ALUControlE",
+   "points": [
+    [
+     15.3,
+     -2.5
+    ],
+    [
+     15.3,
+     -0.75
+    ]
+   ],
+   "place": "below"
+  },
+  {
+   "signal": "BranchTakenE",
+   "points": [
+    [
+     17.7,
+     4.8
+    ],
+    [
+     18.05,
+     4.8
+    ]
+   ],
+   "place": "right",
+   "label_at": "end"
+  },
+  {
+   "signal": "MemWriteM",
+   "points": [
+    [
+     20.4,
+     1.15
+    ],
+    [
+     20.4,
+     0.75
+    ]
+   ],
+   "place": null,
+   "anchor": "west"
+  },
+  {
+   "signal": "MemtoRegW",
+   "points": [
+    [
+     23.7,
+     -1.55
+    ],
+    [
+     23.7,
+     -1.05
+    ]
+   ],
+   "place": null,
+   "anchor": "north west"
+  },
+  {
+   "signal": "Match_1E_M,Match_1E_W,Match_2E_M,Match_2E_W,Match_12D_E",
+   "points": [
+    [
+     3.9,
+     -7.6499999999999995
+    ],
+    [
+     3.9,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east",
+   "text": "Match"
+  },
+  {
+   "signal": "PCSrcD",
+   "points": [
+    [
+     5.6,
+     -7.6499999999999995
+    ],
+    [
+     5.6,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "MemtoRegE",
+   "points": [
+    [
+     8,
+     -7.6499999999999995
+    ],
+    [
+     8,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "PCSrcE",
+   "points": [
+    [
+     9.6,
+     -7.6499999999999995
+    ],
+    [
+     9.6,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "BranchTakenE",
+   "points": [
+    [
+     12,
+     -7.6499999999999995
+    ],
+    [
+     12,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "PCSrcM",
+   "points": [
+    [
+     13.6,
+     -7.6499999999999995
+    ],
+    [
+     13.6,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "RegWriteM",
+   "points": [
+    [
+     15.6,
+     -7.6499999999999995
+    ],
+    [
+     15.6,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "PCSrcW",
+   "points": [
+    [
+     17.2,
+     -7.6499999999999995
+    ],
+    [
+     17.2,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "RegWriteW",
+   "points": [
+    [
+     19.2,
+     -7.6499999999999995
+    ],
+    [
+     19.2,
+     -8.1
+    ]
+   ],
+   "place": null,
+   "anchor": "east"
+  },
+  {
+   "signal": "StallF",
+   "points": [
+    [
+     4,
+     -8.9
+    ],
+    [
+     4,
+     -9.35
+    ]
+   ],
+   "place": "below",
+   "label_at": "end"
+  },
+  {
+   "signal": "StallD",
+   "points": [
+    [
+     6.5,
+     -8.9
+    ],
+    [
+     6.5,
+     -9.35
+    ]
+   ],
+   "place": "below",
+   "label_at": "end"
+  },
+  {
+   "signal": "FlushD",
+   "points": [
+    [
+     9,
+     -8.9
+    ],
+    [
+     9,
+     -9.35
+    ]
+   ],
+   "place": "below",
+   "label_at": "end"
+  },
+  {
+   "signal": "FlushE",
+   "points": [
+    [
+     11.5,
+     -8.9
+    ],
+    [
+     11.5,
+     -9.35
+    ]
+   ],
+   "place": "below",
+   "label_at": "end"
+  },
+  {
+   "signal": "ForwardAE",
+   "points": [
+    [
+     14,
+     -8.9
+    ],
+    [
+     14,
+     -9.35
+    ]
+   ],
+   "place": "below",
+   "label_at": "end"
+  },
+  {
+   "signal": "ForwardBE",
+   "points": [
+    [
+     16.8,
+     -8.9
+    ],
+    [
+     16.8,
+     -9.35
+    ]
+   ],
+   "place": "below",
+   "label_at": "end"
+  }
+ ],
+ "figures": {},
+ "alt": "Pipelined ARM processor with full hazard handling, in five stages separated by pipeline registers. Fetch (IF): two next-PC multiplexers, the first choosing PCPlus4F or ResultW by PCSrcW, the second that or the branch target ALUResultE by BranchTakenE; the PC register, enabled unless StallF; a + 4 adder; the instruction memory. The Fetch/Decode register holds the instruction only, enabled unless StallD and cleared by FlushD; PCPlus4F passes it and enters the register file as PCPlus8D, its R15 input. Decode (ID): the fields Rn, Rm, Rd and Instr23:0 branch to the register-address multiplexers, the register file and Extend; Op, Funct and Rd go to the Control Unit, whose signals run along the top through the pipeline registers; Rd goes on as WA3D, the register a result will be written to. Execute (EX): two forwarding multiplexers choose each operand from the register file (00), ResultW (01) or ALUOutM (10) by ForwardAE and ForwardBE; the ALU source multiplexer; the ALU; above it the Cond Unit with the flags register FlagsE, which computes CondExE from CondE and the flags and writes the new flags back; four AND gates let PCSrcE, RegWriteE, MemWriteE and BranchE through only when CondExE is 1; the last gives BranchTakenE. Memory (MEM): the data memory. Writeback (WB): the result multiplexer, by MemtoRegW. Along the bottom, ResultW returns to the register file, the forwarding multiplexers and the PC; WA3W to the register file; ALUOutM to the forwarding multiplexers; ALUResultE to the PC. Below them, the Hazard Unit takes the match signals, MemtoRegE, BranchTakenE, PCSrcD to PCSrcW, RegWriteM and RegWriteW, and gives StallF, StallD, FlushD, FlushE, ForwardAE and ForwardBE. Control signals are dashed."
+}

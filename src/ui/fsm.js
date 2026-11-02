@@ -1,6 +1,8 @@
-// fsm.js -- SVG rendering of the Chapter 7 state diagram from its geometry
-// (content/geometry/ch07.json, `fsm`: FIG-0072 with the Guided Self-study
-// states added; spec WS-F-041). States are circles named in the code face;
+// fsm.js -- SVG rendering of a state diagram from its geometry: the RISC-V
+// Chapter 7 diagram (content/geometry/ch07.json, `fsm`: FIG-0072 with the
+// Guided Self-study states added; spec WS-F-041) and the ARM multicycle
+// controller (ARM-A3; moved here from src/arch/riscv/ui/ by the author's
+// decision A3-Q1, CROSS-ARCHITECTURE-REUSE.md §5.2). States are circles named in the code face;
 // arcs are lines or the bent curve of FIG-0072, labelled with the class that
 // selects them. The current state is filled in the highlight colour, the
 // transition taken into it drawn heavy and the one the controller takes next
@@ -9,7 +11,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-import { groupRole } from '../../../ui/datapath.js';
+import { groupRole } from './datapath.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const SCALE = 40;
@@ -56,8 +58,9 @@ export class FsmView {
     this.gOver = svg('g', { class: 'fsm-over' }); // the taken and next arcs, drawn again on top
     this.gStates = svg('g', { class: 'fsm-states' });
     this.gLabels = svg('g', { class: 'fsm-labels' });
-    // The core return paths share their segments; as in the book, one arrow (LOADWB's) ends them at FETCH.
-    const arrow = (a) => !a.return || a.selfstudy || a.from === 'LOADWB';
+    // The core return paths share their segments; as in the book, one arrow (LOADWB's) ends them at FETCH. Another
+    // diagram marks the return arc that carries the arrow with `arrow: true` (the ARM multicycle controller).
+    const arrow = (a) => !a.return || a.selfstudy || a.arrow === true || a.from === 'LOADWB';
     this.arcs = fsm.arcs.map((a) => {
       const g = svg('g', { class: 'fsm-arc' }, svg('path', { d: pathD(a), class: 'fsm-line', 'marker-end': arrow(a) ? 'url(#fsm-arrow-normal)' : null }));
       this.gArcs.append(g);

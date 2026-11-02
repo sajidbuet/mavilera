@@ -805,6 +805,8 @@ tr:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
 .reg-table td.reg-dec { color: var(--ui-text-2); text-align: right; }
 .reg-table tr.reg-zero td { color: var(--ui-text-2); }
 .reg-table tr.changed td { background: var(--changed-bg); }
+/* --ui-text-2 on the dark --changed-bg is below 4.5:1 (WCAG 1.4.3): a changed row's names in the main text colour */
+.reg-table tr.changed td.reg-x, .reg-table tr.changed td.reg-abi, .reg-table tr.changed td.reg-dec { color: var(--ui-text); }
 .reg-table tr.changed td.reg-val { font-weight: 700; }
 .reg-table tr.changed.flash-change td { animation: reg-flash 1.1s ease-out 1; }
 @keyframes reg-flash { from { background: var(--changed-flash); } to { background: var(--changed-bg); } }

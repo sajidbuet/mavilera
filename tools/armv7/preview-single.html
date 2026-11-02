@@ -1,0 +1,84 @@
+<!doctype html>
+<!-- Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: code. -->
+<!-- preview-single.html -- the draft drawing of the ARM single-cycle processor (roadmap ARM-A2), for the author's review
+     before it is wired into the application (spec W-D32 Q8). Served by `npm run dev`: open
+     /tools/armv7/preview-single.html?case=0 (cases below). Development only. -->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARM single-cycle drawing preview</title>
+<link rel="stylesheet" href="../../src/ui/theme.css">
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 12px 16px; background: Canvas; color: CanvasText; font: 14px system-ui, sans-serif; }
+  .dp-wrap { width: 100%; }
+  .dp-wrap svg { width: 100%; height: auto; }
+  h1 { font-size: 15px; margin: 0 0 6px; }
+  p { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<h1 id="title"></h1>
+<p id="note" class="mono"></p>
+<div id="host"></div>
+<script type="module">
+import { DatapathView } from '../../src/ui/datapath.js';
+import { SIGNAL_INFO, SINGLE_SIGNALS, SIGNAL_INFO_EXT, SINGLE_EXT_SIGNALS, binary } from '../../src/arch/armv7/uarch/signals.js';
+import { ArmSingleExt } from '../../src/arch/armv7/uarch/single-ext.js';
+import { ArmSingle } from '../../src/arch/armv7/uarch/single.js';
+import { activePath, activePathExt } from '../../src/arch/armv7/uarch/single-paths.js';
+import { assemble, disassemble } from '../../src/arch/armv7/language.js';
+
+// [title, program, cycles to run before the shown one]
+const CASES = [
+  ['Data-processing, register: ADD R3, R1, R2', 'ADD R1, R1, #5\nADD R2, R2, #7\nADD R3, R1, R2\nB .', 2],
+  ['Data-processing, immediate, S: SUBS R4, R1, #5', 'ADD R1, R1, #5\nSUBS R4, R1, #5\nB .', 1],
+  ['LDR R5, [R12, #0x100]', 'LDR R5, [R12, #0x100]\nB .', 0],
+  ['STR R1, [R12, #0x104]', 'ADD R1, R1, #9\nSTR R1, [R12, #0x104]\nB .', 1],
+  ['B (taken): BEQ target', 'SUBS R0, R0, #0\nBEQ t\nADD R0, R0, #1\nt: B t', 1],
+  ['Condition fails: ADDNE R6, R6, #1 (Z = 1)', 'SUBS R0, R0, #0\nADDNE R6, R6, #1\nB .', 1],
+  ['A write to R15: ADD R15, R15, R0', 'ADD R15, R15, R0\nADD R0, R0, #1\nB .', 0],
+  ['The complete datapath (no instruction)', null, 0],
+];
+// the Extended datapath (?ext=1)
+const CASES_EXT = [
+  ['Shifted register operand, S: ANDS R3, R1, R2, LSR #1', 'MOV R1, #6\nMOV R2, #3\nANDS R3, R1, R2, LSR #1\nB .', 2],
+  ['ADC R4, R1, #7 (carry in)', 'MOV R1, #1\nCMP R1, #0\nADC R4, R1, #7\nB .', 2],
+  ['CMP R1, R2 (NoWrite)', 'MOV R1, #6\nMOV R2, #3\nCMP R1, R2\nB .', 2],
+  ['LDRB R5, [R12, #-3]', 'MOV R12, #16\nLDRB R5, [R12, #-3]\nB .', 1],
+  ['STR R1, [R12, #-4]', 'MOV R12, #16\nSTR R1, [R12, #-4]\nB .', 1],
+  ['BL sub (link)', 'BL sub\nB .\nsub: MOV PC, LR', 0],
+  ['MOV PC, LR (return)', 'BL sub\nB .\nsub: MOV PC, LR', 1],
+  ['The complete Extended datapath (no instruction)', null, 0],
+];
+const q = new URLSearchParams(location.search);
+const k = Number(q.get('case') ?? 0);
+const ext = q.get('ext') === '1';
+const [title, text, before] = (ext ? CASES_EXT : CASES)[k];
+const geom = await (await fetch(`../../content/armv7/geometry/${ext ? 'single-extended' : 'single'}.json`)).json();
+const dp = new DatapathView(geom, { title: 'ARM single-cycle datapath', description: geom.alt, info: ext ? SIGNAL_INFO_EXT : SIGNAL_INFO });
+document.getElementById('host').append(dp.root);
+document.getElementById('title').textContent = `Case ${k}${ext ? ' (Extended)' : ''}: ${title}`;
+if (text) {
+  const p = assemble([{ name: 'p.s', text }], { profile: 'arm-single', subset: ext ? 'extended' : null });
+  if (!p.ok) throw new Error(JSON.stringify(p.diagnostics));
+  const m = ext ? new ArmSingleExt() : new ArmSingle();
+  m.load(p);
+  for (let i = 0; i < before; i++) m.step();
+  const s = m.evaluate().signals;
+  const sigs = new Map();
+  const ctls = new Map();
+  for (const d of ext ? SINGLE_EXT_SIGNALS : SINGLE_SIGNALS) {
+    const v = s[d.name];
+    const hex = (v >>> 0).toString(16).padStart(8, '0');
+    (d.kind === 'control' ? ctls : sigs).set(d.name, { text: d.width === 32 ? `0x${hex}` : binary(v, d.width), tag: d.width === 32 ? hex : null, tip: `${d.name} = ${binary(v, d.width)}` });
+  }
+  dp.setValues(sigs, ctls);
+  dp.setPath(ext ? activePathExt(s) : activePath(s));
+  document.getElementById('note').textContent = `${disassemble(s.Instr, s.PC)}  CondEx=${s.CondEx} RegWrite=${s.RegWrite} MemWrite=${s.MemWrite} PCSrc=${s.PCSrc} FlagWrite=${binary(s.FlagWrite, 2)}`;
+}
+document.body.dataset.ready = '1';
+</script>
+</body>
+</html>

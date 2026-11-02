@@ -1,0 +1,144 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap ARM-A6), not taken from a textbook; produced by tools/armv7/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "armv7",
+ "title": "Round to a multiple of 16",
+ "task": "The word at x (0x800) is unsigned. Store x rounded down to a multiple of 16 at down (0x804), and x rounded up to a multiple of 16 at up (0x808), modulo 2^32; then end with B . . Use only the base processor's instructions (ADD, SUB, AND, ORR, LDR, STR and B, each with a condition and with S) and immediates 0 to 255, so that the program also runs in the three processor views in the base design. x AND 15 is what lies above the multiple below x; the base processor has no BIC, so subtract it. Keep the .equ lines: the tests write the data at those addresses.",
+ "lang": "asm",
+ "starter": "; round-16 -- practice exercise (MAVILERA, ARMv7)\n; Store x rounded down and up to a multiple of 16.\n; Hint: AND with 15, SUB, then a conditional ADD.\n        .equ  x, 0x800          ; the tests write and read here\n        .equ  down, 0x804       ; the tests write and read here\n        .equ  up, 0x808         ; the tests write and read here\n\ndone:   B     done           ; replace with your code; B . ends the run\n",
+ "tests": [
+  {
+   "name": "x = 0x0",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "x = 0x10",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      16
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       16,
+       16
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "x = 0x11",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      17
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       16,
+       32
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "x = 0x1F",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      31
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       16,
+       32
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "x = 0x12345678",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      305419896
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       305419888,
+       305419904
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "x = 0xFFFFFFF1",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      4294967281
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       4294967280,
+       0
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

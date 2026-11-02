@@ -1,0 +1,84 @@
+{
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). ARMv7 teaching templates written for the application (roadmap ARM-A1); what each one shows is checked by test/armv7-templates.test.mjs.",
+  "groups": {
+    "base": "The base processor's instructions",
+    "isa": "Instruction-level extensions"
+  },
+  "templates": [
+    {
+      "id": "fig-7-60",
+      "file": "fig-7-60.s",
+      "group": "base",
+      "view": "isa",
+      "lang": "asm",
+      "title": "The processor test program (Harris and Harris, Fig. 7.60)"
+    },
+    {
+      "id": "base-sum",
+      "file": "base-sum.s",
+      "group": "base",
+      "view": "single",
+      "profile": "arm-single",
+      "lang": "asm",
+      "title": "Base instructions only: the sum 1 to 10 (Single-cycle view)"
+    },
+    {
+      "id": "base-sum-multi",
+      "file": "base-sum.s",
+      "group": "base",
+      "view": "multi",
+      "profile": "arm-multi",
+      "lang": "asm",
+      "title": "Base instructions only: the sum 1 to 10 (Multicycle view)"
+    },
+    {
+      "id": "base-sum-pipe",
+      "file": "base-sum.s",
+      "group": "base",
+      "view": "pipe",
+      "profile": "arm-pipe",
+      "lang": "asm",
+      "title": "Base instructions only: the sum 1 to 10 (Pipelined view)"
+    },
+    {
+      "id": "gcd",
+      "file": "gcd.s",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "Conditional execution: greatest common divisor"
+    },
+    {
+      "id": "flags",
+      "file": "flags.s",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "Carry and overflow: N, Z, C and V"
+    },
+    {
+      "id": "factorial",
+      "file": "factorial.s",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "A recursive function: BL, PUSH and POP"
+    },
+    {
+      "id": "strlen",
+      "file": "strlen.s",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "Bytes and post-indexing: the length of a string"
+    },
+    {
+      "id": "block-copy",
+      "file": "block-copy.s",
+      "group": "isa",
+      "view": "isa",
+      "lang": "asm",
+      "title": "LDM and STM: copy four words"
+    }
+  ]
+}

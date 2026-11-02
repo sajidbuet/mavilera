@@ -1,0 +1,194 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap ARM-A6), not taken from a textbook; produced by tools/armv7/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "armv7",
+ "title": "The sum of n words",
+ "task": "Store at total (0x804) the sum, modulo 2^32, of the first n words of list (0x810), where n, 0 to 8, is the word at count (0x800); then end with B . . For n = 0 the sum is 0. Use only the base processor's instructions (ADD, SUB, AND, ORR, LDR, STR and B, each with a condition and with S) and immediates 0 to 255, so that the program also runs in the three processor views in the base design. An immediate operand of ADD is at most 255 there, but the offset of LDR reaches 4095: step an index register by 4 and load with LDR Rd, [Rindex, #list]. Keep the .equ lines: the tests write the data at those addresses.",
+ "lang": "asm",
+ "starter": "; sum-words -- practice exercise (MAVILERA, ARMv7)\n; Store the sum of the first n words of list at total.\n; Hint: count n down with SUBS; leave the loop with a conditional B.\n        .equ  count, 0x800      ; the tests write and read here\n        .equ  total, 0x804      ; the tests write and read here\n        .equ  list, 0x810       ; the tests write and read here\n\ndone:   B     done           ; replace with your code; B . ends the run\n",
+ "tests": [
+  {
+   "name": "n = 0",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      0
+     ]
+    },
+    {
+     "at": 2064,
+     "words": [
+      5,
+      6,
+      7
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 1",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": 2064,
+     "words": [
+      42
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       42
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 4",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      4
+     ]
+    },
+    {
+     "at": 2064,
+     "words": [
+      10,
+      4294967293,
+      7,
+      100
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       114
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 2",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      2
+     ]
+    },
+    {
+     "at": 2064,
+     "words": [
+      4294967295,
+      2
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 8",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      8
+     ]
+    },
+    {
+     "at": 2064,
+     "words": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       36
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "n = 8",
+   "memory": [
+    {
+     "at": 2048,
+     "words": [
+      8
+     ]
+    },
+    {
+     "at": 2064,
+     "words": [
+      2147483648,
+      2147483648,
+      1,
+      0,
+      0,
+      0,
+      0,
+      9
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": 2052,
+      "words": [
+       10
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

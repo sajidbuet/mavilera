@@ -23,5 +23,8 @@ python -I tools/logo/finish.py $env:TEMP/logo-raw $env:TEMP/logo-min logo
 node tools/make-mavilera-brand.mjs
 ```
 
+A module's header lockup alone, without the fonts (its letters are drawn): `python -I tools/logo/make_logo.py
+$env:TEMP/logo-raw --only armv7`, then steps 2's SVGO and `finish.py` on that folder, and step 3.
+
 `finish.py` checks each SVG (view box, no `<image>`/`<text>`/fonts/strokes, copyright line, < 30 KB) and that SVGO
 changed no rendered pixel. Step 1 rewrites `mark.json` without its `_copyright` field; add it back.

@@ -18,13 +18,21 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const read = (p) => readFileSync(join(ROOT, p), 'utf8');
 const registry = JSON.parse(read('site/architectures.json')).architectures;
 
-test('the switcher lists the available modules, in the registry order, each with a logo file that exists', () => {
+test('the switcher lists the available modules, in the registry order, each with a logo file that exists; a planned module only as a preview', () => {
   const available = registry.filter((a) => a.status === 'available');
-  assert.deepEqual(PLATFORM_ARCHS.map((a) => a.id), available.map((a) => a.id));
-  assert.deepEqual(PLATFORM_ARCHS.map((a) => a.name), available.map((a) => a.name));
+  const listed = PLATFORM_ARCHS.filter((a) => !a.preview);
+  assert.deepEqual(listed.map((a) => a.id), available.map((a) => a.id));
+  assert.deepEqual(listed.map((a) => a.name), available.map((a) => a.name));
   assert.equal(PLATFORM_ARCHS[0].id, 'riscv', 'RISC-V stays on top');
   for (const a of PLATFORM_ARCHS) assert.ok(existsSync(join(ROOT, 'content/branding/mavilera', a.logo)), a.logo);
-  assert.ok(!PLATFORM_ARCHS.some((a) => registry.find((r) => r.id === a.id)?.status === 'planned'));
+  assert.ok(!listed.some((a) => registry.find((r) => r.id === a.id)?.status === 'planned'));
+  // ARMv7: a preview on the development page until ARM-A6, available from 1.1.0 (author, 2026-11-02); no preview now
+  assert.deepEqual(PLATFORM_ARCHS.filter((a) => a.preview).map((a) => a.id), []);
+  assert.equal(registry.find((r) => r.id === 'armv7').status, 'available');
+  // a preview entry is still kept from a release page and the offline file
+  const list = [...PLATFORM_ARCHS, { id: 'x', name: 'X', logo: 'x.svg', preview: true }];
+  assert.ok(switchTargets('riscv', { protocol: 'https:', href: 'https://sajidlab.org/mavilera/riscv/', release: true }, list).every((t) => t.id !== 'x'));
+  assert.ok(switchTargets('riscv', { protocol: 'http:', href: 'http://127.0.0.1:8000/', release: false }, list).some((t) => t.id === 'x'));
 });
 
 test('addresses: a release page links to its siblings, the offline file to the site, the development page to ?arch=', () => {
@@ -41,9 +49,15 @@ test('addresses: a release page links to its siblings, the offline file to the s
 
 test('the targets leave out the current architecture and keep the order', () => {
   const dev = { protocol: 'http:', href: 'http://127.0.0.1:8000/', release: false };
-  assert.deepEqual(switchTargets('riscv', dev).map((t) => t.id), ['sap-1', 'sap-2']);
-  assert.deepEqual(switchTargets('sap-2', dev).map((t) => t.id), ['riscv', 'sap-1']);
-  assert.deepEqual(switchTargets('sap-1', dev).map((t) => t.url), ['?arch=riscv', '?arch=sap-2']);
+  assert.deepEqual(switchTargets('riscv', dev).map((t) => t.id), ['sap-1', 'sap-2', 'armv7']);
+  assert.deepEqual(switchTargets('sap-2', dev).map((t) => t.id), ['riscv', 'sap-1', 'armv7']);
+  assert.deepEqual(switchTargets('sap-1', dev).map((t) => t.url), ['?arch=riscv', '?arch=sap-2', '?arch=armv7']);
+  assert.deepEqual(switchTargets('armv7', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2']);
+  // a release page and the offline file offer the same modules
+  const rel = { protocol: 'https:', href: 'https://sajidlab.org/mavilera/riscv/', release: true };
+  assert.deepEqual(switchTargets('riscv', rel).map((t) => t.id), ['sap-1', 'sap-2', 'armv7']);
+  assert.deepEqual(switchTargets('sap-1', { protocol: 'file:', href: 'file:///x.html', release: true }).map((t) => t.id), ['riscv', 'sap-2', 'armv7']);
+  assert.ok(switchTargets('riscv', dev).every((t) => !('preview' in t)));
 });
 
 test('strings: the switcher\'s labels are British English text in the shell strings, and the old home link is gone', () => {

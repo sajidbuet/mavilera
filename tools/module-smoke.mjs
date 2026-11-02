@@ -157,6 +157,41 @@ async function checks(b, base) {
   });
 
   const axe = readFileSync(AXE_PATH, 'utf8');
+  const axeIn = (sel) => `axe.run({ include: [[${JSON.stringify(sel)}]] }, { runOnly: { type: 'tag', values: ${JSON.stringify(AXE_TAGS)} }, resultTypes: ['violations'] })
+    .then((r) => r.violations.map((v) => \`\${v.id} (\${v.impact}, \${v.nodes.length})\`))`;
+
+  // the practice exercises of a module that has them (WS-F-148): the list, the first exercise and its starter, whose
+  // tests run and do not all pass; the dialog in both states passes the axe-core scan
+  if (arch.capabilities.exercises === true && arch.content?.exercises) {
+    await check('practice exercises: the list opens, the first loads its starter, its tests run and fail on it; the dialog passes axe-core (WS-F-148)', async () => {
+      const p = await fresh();
+      await p.eval(axe);
+      const click = (sel, text) => p.eval(`(() => { const b = [...document.querySelectorAll(${JSON.stringify(sel)})].find((x) => x.textContent.trim() === ${JSON.stringify(text)});
+        if (!b) return false; b.click(); return true; })()`);
+      if (!await click('button', STRINGS.exercise.menu)) throw new Error('no Exercise… menu item');
+      await p.waitFor(`document.querySelector('.exercise-dialog[open] .ex-item')`);
+      const n = await p.eval(`document.querySelectorAll('.exercise-dialog .ex-item').length`);
+      const listViolations = await p.eval(axeIn('.exercise-dialog'));
+      if (listViolations.length) throw new Error(`the list: ${listViolations.join('; ')}`);
+      await p.eval(`document.querySelector('.exercise-dialog .ex-item').click(); true`);
+      await p.waitFor(`document.querySelector('.exercise-dialog .exd-task')`);
+      const title = await p.eval(`document.querySelector('.exercise-dialog h2, .exercise-dialog .exd-title')?.textContent ?? ''`);
+      if (!await click('.exercise-dialog button', STRINGS.exercise.starter)) throw new Error('no starter button');
+      await p.waitFor(`!document.querySelector('.exercise-dialog[open]')`);
+      if (!await click('.toolbar button', STRINGS.exercise.button)) throw new Error('no Exercise button in the toolbar');
+      await p.waitFor(`document.querySelector('.exercise-dialog[open]')`);
+      await click('.exercise-dialog button', STRINGS.exercise.run);
+      await p.waitFor(`document.querySelector('.exercise-dialog .exd-summary')`, 30000);
+      const summary = await p.eval(`document.querySelector('.exercise-dialog .exd-summary').textContent`);
+      if (await p.eval(`document.querySelector('.exercise-dialog .exd-summary').classList.contains('ok')`)) throw new Error(`the starter passes: ${summary}`);
+      const v = await p.eval(axeIn('.exercise-dialog'));
+      if (v.length) throw new Error(`the results: ${v.join('; ')}`);
+      if (p.errors.length) throw new Error(p.errors.join('; '));
+      await p.close();
+      return `${n} exercises; ${title.trim() || 'the first'}: the starter gives "${summary}"`;
+    });
+  }
+
   const scans = [];
   for (const scheme of ['light', 'dark']) {
     for (const projector of [false, true]) {

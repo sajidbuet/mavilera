@@ -28,8 +28,8 @@ test('registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-
     }
   }
   // updated deliberately (docs/ADDING-SIMULATORS.md): SAP-1 since phase 6 of the architecture contract (W-D29), SAP-2 since step 6 of its plan
-  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2']);
-  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', '6502', '8086', 'armv7', 'mips']);
+  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7']);
+  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', '6502', '8086', 'mips']);
 });
 
 test('landing page: the required wording, the card slot, no claims for planned modules, no old name', () => {

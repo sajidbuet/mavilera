@@ -28,9 +28,17 @@
       "docs": "sap-2/docs/",
       "content": ["content/sap-2/"]
     },
+    {
+      "id": "armv7",
+      "name": "Armv7",
+      "description": "The 32-bit ARM instruction set of Harris and Harris's ARM edition: assembler and instruction-level simulator, and the textbook's single-cycle, multicycle and pipelined processors animated on their datapaths, each with an Extended datapath for the Chapter 7 exercise extensions.",
+      "path": "armv7/",
+      "status": "available",
+      "docs": "armv7/docs/",
+      "content": ["content/armv7/"]
+    },
     { "id": "6502", "name": "MOS 6502", "path": "6502/", "status": "planned" },
     { "id": "8086", "name": "Intel 8086", "path": "8086/", "status": "planned" },
-    { "id": "armv7", "name": "Armv7", "path": "armv7/", "status": "planned" },
     { "id": "mips", "name": "MIPS", "path": "mips/", "status": "planned" }
   ]
 }
