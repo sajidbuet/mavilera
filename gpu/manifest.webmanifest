@@ -1,0 +1,41 @@
+{
+  "name": "MAVILERA: GPU Laboratory",
+  "short_name": "MAVILERA",
+  "description": "A SIMT core: four or eight lanes run one stream of a seven-instruction micro-ISA, with an active mask and a two-deep mask stack for divergent branches; assembler and instruction-level simulator with the lanes' registers. A preview: the core's views come in later releases.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f7",
+  "theme_color": "#145e56",
+  "categories": [
+    "education",
+    "developer"
+  ],
+  "icons": [
+    {
+      "src": "assets/23124a34ccd8/content/branding/mavilera/mavilera-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/23124a34ccd8/content/branding/mavilera/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/23124a34ccd8/content/branding/mavilera/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/23124a34ccd8/content/branding/mavilera/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

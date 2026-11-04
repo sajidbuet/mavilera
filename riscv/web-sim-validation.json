@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-02T13:42:44.341Z",
- "version": "1.1.0",
+ "date": "2026-11-04T16:04:08.661Z",
+ "version": "1.2.0",
  "pass": true,
  "summary": {
-  "checks": 1039,
-  "passed": 1039,
+  "checks": 1179,
+  "passed": 1179,
   "failed": 0,
   "skipped": 0,
-  "seconds": 1443,
+  "seconds": 1189,
   "smoke": "pass"
  },
  "environment": {
@@ -22,10 +22,10 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "1e436b0e5be35ae1c2e604f9062ea4d88d460ce6",
-  "uncommitted": 30,
+  "commit": "8e1d12d4393c57b188fea1dab19446190a1d7cd6",
+  "uncommitted": 0,
   "sources": {
-   "sha256": "eb2abc0def070046342b379f8b5345027fed2b4141bacef05ce4147fb7861f72",
+   "sha256": "1296919647035fafab501f18a8ef4c37ca309d588491914741ab13d0961d75f7",
    "files": {
     "index.html": "32df75d62e0daa89b93c863d9e4272a2bc75a6caf1b738686bd5e5d256555da9",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
@@ -54,18 +54,29 @@
     "src/arch/armv7/ui/pipe-view.js": "0964e8175d3dc524c1f80c1bef713b1055ec9fa06901b8b2b36ae4103a3d9936",
     "src/arch/armv7/ui/single-view.js": "7ec7bcb88f4008b9969c9051b85f63174e198252ee7d1ed0300b613707838bef",
     "src/arch/contract.js": "e69656893212525f3a63d9bd478e2c4b16d8841627192de9e0daed19128b41b4",
-    "src/arch/registry.js": "c34c73f3cecc5c7a898c6efdcb38b0fbbc12f0a3221312368309b97f73bef582",
+    "src/arch/gpu/engine.js": "9651b980853dfec368b49eea21843893442fccd47ac6632234b45fde4eb5e829",
+    "src/arch/gpu/exports.js": "a63519ccc0f40aa87664fde8c4797893a078161e4d158ae4106bee0b4aac8208",
+    "src/arch/gpu/index.js": "03c68ed55f6000e1909f5b87cc1abb5797f76a96a4f89e1b3490f6b0c49abfdf",
+    "src/arch/gpu/language.js": "74260227c7064bf0f2fc208b2b7284fc2362b63155941579dd3d65bc128ca789",
+    "src/arch/gpu/strings.js": "192f6f06ed69b6c079fb4f98a7441a2af2e64941534ed80f98e3a74df36593a5",
+    "src/arch/gpu/ui/lanes-panel.js": "f75bed21926494d071443902ffcd04a40c9a0a1928ac24d27465fa94e36ccc0e",
+    "src/arch/registry.js": "d7bee8a0a51803513471ba5bd19147a3881af06b01f7deef2313394dd26c3a99",
     "src/arch/riscv/default-source.js": "8ecff07b0098dd95613081fca760b4cefa3d15f193994391682b75957ff52a4f",
     "src/arch/riscv/editor.js": "488b716a271edc5fd850a1aecfe6ae7e28415a7da337176495eba9b1805a7b8d",
     "src/arch/riscv/immediate.js": "2320ca94fd840d43ccd5e6fdee2581dc366a4bcf2739174e5d80d5117e8d5ca6",
-    "src/arch/riscv/index.js": "dd6c5a7afdfb6a4d3f3215df90d1ad5c6839d01d8117fa822a3de4ae40ed5103",
+    "src/arch/riscv/index.js": "a79d9d5a16faeb8b7712c8cb276358eaa354f2fa8a6975ca3a37def2a2979aaf",
     "src/arch/riscv/inspector.js": "69c5343a430faa14b83fbb78b6603977aa86e774253e51bbb1bf0bfb5aee5dde",
-    "src/arch/riscv/strings.js": "539523543a7b6fb5bd0e48353a2663dc0f91fce55198007a759fb9e691709f85",
+    "src/arch/riscv/lab-compare.js": "77865a289f1274d5cdb1e6a906636fa0fe35cd8756391ca02d9d14315fe87be3",
+    "src/arch/riscv/lab-rows.js": "911cd9803318c53fdcee06b80a9f02538174dc7219e74ca9bef641cb342a01e0",
+    "src/arch/riscv/npu-datapath.js": "b4544599470c89c60543a3d75321ae9f5bb4c8c91611ce0e671384197300303f",
+    "src/arch/riscv/offload.js": "8439d31401dc3656442cce210b35dc76b5681499218e649488884241f0c5d4b5",
+    "src/arch/riscv/strings.js": "f897c179971c6bde5c174c58fd2b38113dfe213caa96f3b94b5a40a4d32acba2",
+    "src/arch/riscv/ui/analysis-view.js": "c5e40ea1c35c8ac21679a0a48a88c61af76567cd3d8f4305e75c3f3bb3514a05",
     "src/arch/riscv/ui/compare-view.js": "80804effa6cfa5dec425a8cd0819f0ce10a9cc76161630b66d05b15fa2e4f75e",
-    "src/arch/riscv/ui/multi-view.js": "61102dd2d431344b898f9a587916d104bd90b3732200c68b929396670b8df6f4",
-    "src/arch/riscv/ui/pipe-view.js": "6fd8021e9953dbaa0a09bc27bd94bd89de4505c18360ed1bbe37a5cabaac24fe",
-    "src/arch/riscv/ui/single-view.js": "b78f10d6cb36dcca297d27f0a011005b70b4294981dca6be43ba1d352dd13c92",
-    "src/arch/riscv/views.js": "e10f158eb3f79f3de68b85d4ce57535d996ae0c30a3fab2e0131bfa89b64b785",
+    "src/arch/riscv/ui/multi-view.js": "646fb49b43f8c48eb2ba68c02dbda3628da72a9202c9751430fbab4f0ffb9903",
+    "src/arch/riscv/ui/pipe-view.js": "01dc3a226ca2b590ee93eb71204d4fbc08223baf2c92f25c4a3adc1c5266d11a",
+    "src/arch/riscv/ui/single-view.js": "f512b0f9861d5a3fd43ae950e1cc3208ad8e508dd11d6f752775234794b18314",
+    "src/arch/riscv/views.js": "a9e60cd3d318d8240c17ba315e317c40faaeae0976c077e9566017e71d74b739",
     "src/arch/sap-1/bus-model.js": "970bfc2b6e1b8b35488b982a682c4e2a814de2b9a8f1fe74af7d95184cb9bba6",
     "src/arch/sap-1/engine.js": "72e315b6d2fa6e548fe69a1159fdc97bd13d1cfa0f715fac052d979c20852e2e",
     "src/arch/sap-1/exercise.js": "e1d726e651aacc641f2cb56b7f341d29bd93ec38b182285ac44dcd2ca931294a",
@@ -97,34 +108,37 @@
     "src/cc/preprocess.js": "611260b45b8a2efd92bbbf797fbba19c6b699343d047fa25f3aa271650f1bed9",
     "src/cc/runtime.js": "3dc1a3bbf2de871f8dd129948dbe43d393941d153306e5518913407be932fe28",
     "src/cc/types.js": "a5aab3e43f9119e080c00cd14878b68889732be95e62b599e8da5d2a5ee8425e",
+    "src/core/analytic.js": "7ecdff99de1528c7529b5fb3dbb8a497431ad5c9406a8ca59c8aa8a4ca174f56",
     "src/core/callstack.js": "12b4e3a029fc888fc13a3cbd9335bc11daf7af9a0057732cae0ab063d14819e2",
-    "src/core/exercise.js": "978bac74a37cf8a701eac2bdbb41982a25513747f6e0e00fcdbff4786adea49b",
+    "src/core/exercise.js": "f5b87e2155194c659289c17f30f726741fa4dbd3e76929c114d77b9b95b27433",
     "src/core/exports.js": "4a09a3886b1ad9e5941eec8727dd89f8054bb82ecdeac020a842bdad66910fd6",
-    "src/core/history.js": "bf6ff9cd2d3836c62ee21c0fb1b524a0ac5a02afec274da00adad3db613f1d15",
-    "src/core/iss.js": "df80e3d03b88b34bea6a4645f6ca138f34e0070fef586513cf8cf6abe85734f1",
+    "src/core/history.js": "047ced65bb169a7a3eabac6d54b942bba7b8fd135488f2d467630c0eed265420",
+    "src/core/iss.js": "4fb36f31cea46d1b8c4063bce7218d846191c274e8cc54979e2eb5e4cc10e7a8",
     "src/core/memory.js": "68f9597a4e6e57a7c2301a4c148a6b11147c8590b2f05be0364c28834267af27",
     "src/core/priv.js": "3ab4cd020d8e00a3173128601319ce86b027ac895769fcf36e751d5be8fd4abb",
-    "src/core/profiles.js": "3c10d9e2fa7a9132ee290cbe570f1fc20f71f8d1f5f8e21b0c244e9b753ac74f",
-    "src/core/session.js": "e21c7cb269eafcc335d89ff1454c2a08a9eb2f33150df0389e2e5fb44fc288e3",
+    "src/core/profiles.js": "6b9efa63c8e8f66ca741af04b68f7fea0c7ecf06b7ea757f0c3530fc82cc145d",
+    "src/core/session.js": "4bf27eff7ec112bb7e6d936e19ed983e33827095c076b277d29db02b4d507e20",
     "src/isa/encoding.js": "4cabfb9181bfa1898eb7097fd6dd1c7b63ff89d68b1e794c6a4da8e5d2d7dc06",
-    "src/main.js": "fc343ddef83cc627d14db44b50788eab879291610196f8e8f8d2ed21cfcfd893",
+    "src/main.js": "0aadb0a93a331e6805caec9e725b7216a2de2aecfad709f86dadeff4a02f188f",
     "src/mem/bus.js": "fd0d6af266303d5b5bc043fac4f117571f663b021b51a15f982dae1d3e3d4edb",
     "src/mem/cache.js": "a4b8e994fc7ee9a415005b761d0401369c01a076890af3241dfcd649a793aedc",
     "src/mem/config.js": "4f58325d2625ca445c4c6b5b516b0c26aea920360d3a5b083cbdae69a2448db2",
     "src/mem/controller.js": "d72ba67c8ad35c6f92a458250adc7cdd215de5c4e1f5a1cc7db8c68feb6c27cb",
-    "src/mem/device.js": "a30969fb77bc7974dba53769238df62d378d2b8af2a55a535de432da3da7dbe9",
-    "src/mem/devices.js": "513b7b70a07e42c70607070bf1055b4ff742d171bbc5287d3b4616f7086f16f3",
-    "src/mem/platform.js": "0f9162587cb9d5334f240661577d827b92178d33d2c2527b94a62b8ecb39b4a1",
-    "src/mem/system.js": "a57ae816261ddd0bc316022fa76e3f592193d27750b7640152d434010ef56b54",
+    "src/mem/device.js": "b467ed8aaae599f6740f3720c7f536aa389db023f59e2720443412f0b9888d53",
+    "src/mem/devices.js": "e60b584c4d70284de5b96320552429fe802d88c2a4236bb7c4d057b379c76e55",
+    "src/mem/npu-wave.js": "0a0bbc5661121c6b9d6fe245d3bd9de2b8876dcd15ed85fc20aae138bb160c80",
+    "src/mem/npu.js": "c4363ca366eee835b9aaba79da5b22c3df2f98dd937949c3a4e5dd06ccdc7b45",
+    "src/mem/platform.js": "d775a3741046522f57d1d13b400c5910755ae688654d84da507028e3554afb33",
+    "src/mem/system.js": "65cac375a95eb57a985b2ce3e9ab0ec1d791934acdd832e4676560e73b12b374",
     "src/mem/timing.js": "cf2fae0a2dc7c2f401e69e3797b460870c3a41c56c0b7c3f6289510b18ba174a",
     "src/mem/trace-cache.js": "4a3a21f140c904243cd18109a03a76ad5bb0ff1b4c0153636bf5038b38dc0cda",
     "src/shell/arch-id.js": "9e8b4c7457323f3b81850f98165bb0fde456df0d9f958c493a0ede055f6d6669",
     "src/shell/capabilities.js": "eb50d55c4e5230acd406832d07a7b9a632062161d0d750d65881f2536dddb047",
-    "src/shell/data-io.js": "6105fac5e31d2a7bd36b2c930922aac8f31dfe0a18128fae93e6a896b874fee1",
-    "src/shell/platform-archs.js": "56e8fff410c6b6195e15d4aee15b98f0e8868e4f158e7d99e803e2ff8aec34c2",
+    "src/shell/data-io.js": "385d6c613b270b944992ee605c0c0ab283ece5711e41dbc69576f50de50fc1bd",
+    "src/shell/platform-archs.js": "f931299b21649b0ab39b3b4450e8a36f42c36f1271a906203120b24bddab1030",
     "src/shell/share-schema.js": "a896a4e6fd9081521435b669552ebfb881c083b1d5d852ed6a0ae31f8a43c6de",
-    "src/shell/share.js": "6e7c0497a57e9135a944116a884b9062a952b23a9e5f7ba5768c32a16d4cff57",
-    "src/shell/vcd.js": "5e93c8e11753b29cd85ebdb40ade4e829ffcd9864de91f00b4525ec1976e4801",
+    "src/shell/share.js": "df2cf1e6d2b54ea7c0778abe5174d9ba89bb7a290dadc44800339f2edea59978",
+    "src/shell/vcd.js": "f4d018c7e87f564da50ea8bece641b08abbdbbb7b74eb4d124d30e075aaef18f",
     "src/uarch/ch07-jalr.js": "752fc9a893e2e29c8452ac6ae43d899ee089438495173d86f2ee69dd9e71949b",
     "src/uarch/compare.js": "bbe493ca5df11665154a5e668e665efd46f4453f0c98292c891c73f17b7f6606",
     "src/uarch/multi-paths.js": "e426ae7596043586ea44e03ac18e2cd6c1c000001c2cc3605bdd696bc7c3fef2",
@@ -134,39 +148,44 @@
     "src/uarch/pipe.js": "6a1f6acb50b2f3f99f082475ca0341a267d1e4b1f06ee62d733d793b6d90bce3",
     "src/uarch/signals.js": "f858b4e01be333f4406a5237bb8cfc5062221fe7958efdd7b3cff68b7bd5fe56",
     "src/uarch/single-paths.js": "f564511d62573058ac72aa076174fb5e633a2703301788c0c0898f59a3cb23c8",
-    "src/uarch/single.js": "93c5eedf0d79d13f3a81f00685a60816b3b360d7df166790910bbfbd8d32f7c7",
+    "src/uarch/single.js": "7ff1464eabe6dad25ded2084c32384c6b2c75262e7fe1b504cc4a7069bd83a0e",
     "src/uarch/timing.js": "8289df5cf5ba5cf1389c0cfa623b5a81950b8534fb111e8c0a85c016918c1393",
-    "src/ui/arch-switcher.js": "a45c12c75d8e2548bb30c434dd3a374bda1a65bea41c737694015b9b2d0997fd",
+    "src/ui/analytic-panels.js": "a481262d210708100ddbfa58aeea4ddf45042197de8c36354d381b30bb34cfcb",
+    "src/ui/arch-switcher.js": "b82d00f2e7b7459db4641ef1f7bcbbe2983b89f966283b7180e5fa29d841c852",
     "src/ui/assist.js": "db64986d6b396abcad2b636a57adc6eed2ff168b1ac3a16eb324300b1c421f2e",
     "src/ui/boot.js": "781bf65dd97e756d75e69352f4605771ec52cdab448cf75ca1e2de1679d8b938",
     "src/ui/cache-anim-model.js": "afe2ae3677a1d4f6487dca1915722d3c9f60704e631c11946362df566525f79d",
     "src/ui/cache-anim.js": "94790809307fb41bfb16d3a20398413c3d6981ca9296b64827444b0fbea4899d",
     "src/ui/cache-view.js": "b46669beefc5d442afc68d4a8c0db73360b886b5ea947238768a9ec55e5bdd85",
-    "src/ui/data-dialog.js": "e9360e0743780a05d81b3fbf289c17ef8c783608353ace759514e304e4fb55b4",
-    "src/ui/datapath.js": "9f6bf5ac4df0056d12353f12776f74e59cb86342e0c49eb522566e7fbe229591",
-    "src/ui/dom.js": "89f201e793ffba34be8fe701b30a6c0c1e7438c02940071779e9baf3cf484ab4",
+    "src/ui/data-dialog.js": "50b1ceff636fdc4cc6c58ce338f91d79403b19d6fda0eae912ae60784e6e6353",
+    "src/ui/datapath.js": "2856afe6126f9f71d11eca99dac95d7c50e98438e7d0581e60dde6f7bbaad930",
+    "src/ui/dock.js": "2951c152bd3db24b01e7cbc8019fb072c0a2704e02e83720a5f45bca79ec6bc9",
+    "src/ui/dom.js": "b16ee24cb871ceccfbc08e6d8f5c11e639b137878164a9b56504841650e17c3b",
     "src/ui/editor.js": "08bf0c367f5712c0669bc232150189fd84ec78e071a5d8da65a979ba4281df9d",
     "src/ui/examples-dialog.js": "dbde1771fd8e26d4188851b987a6b591740c4305b0706a77ec43892400e9e3cb",
     "src/ui/exercise-dialog.js": "de3a647833768e51ef6cbc3d7cffa164daa5de6c12f560077c1a112195e1c3d9",
     "src/ui/fsm.js": "8a24b73230c381e7ce17008d71abaee609b2025fd8c0c55b993d593d757b31dc",
     "src/ui/help-dialog.js": "aa70355f4bbd9e582ef5cd2a276870741ba8c50a2c3fe39ad835b6ca251a6ffb",
-    "src/ui/icons.js": "e865a7758356b059b14f680051a525521871b713f2a8270bd042712de8355e08",
+    "src/ui/icons.js": "2776db164c2999d759719a4d0945f82b42de966373e7445e2f6a6118699aeb52",
+    "src/ui/info-button.js": "dd9de96b23a02fdc6f2bf5d29b8373cdcb6cc790c1c608d7cfe126a021665e40",
     "src/ui/listing.js": "468a65dcb1360bd92bad7c46fd8ff4d1c3311627d881eeae5135b3a23af08e2c",
     "src/ui/mem-ui.js": "833f2aeb6ad15690aa4ded08a5c02b7486825e50423e9ae3d76ab0c07d293383",
     "src/ui/mem-viewmodel.js": "a8aa106965c6b794b9b2365f6302777f19912fd66af7830b0444846da72c2fd7",
-    "src/ui/overflow.js": "c26b1ab4e12917a948ab4c53793aa48701103450620fac7c8459626bf1179289",
-    "src/ui/pan-zoom.js": "7908e9dc577dc094d6e5069a9d407ea5a0e15fa543e0b24584e17832766999f1",
+    "src/ui/npu-view.js": "5dfb125be50c12933bf9b751afd4a80ba11efea74c733a5e94273cc7956d4912",
+    "src/ui/overflow.js": "3e9ca5cea48758807c9ef60e1cab8883b30ebbe76f772941f35e11669e0d9e30",
+    "src/ui/pan-zoom.js": "1d4525ca1a15b5526e98659f2dc121e5c0f22113b772740d96df38e6ec4a2c0a",
     "src/ui/platform-figure.js": "f8dcf3ec1cda6ed527ac214764c67970244ccb03126f99741ce7c55453b2473c",
     "src/ui/platform-view.js": "0a1a2db40910cbe4eb77bd5a6b1e4947a9bb1f1871ee2a2b71b753a91aa20086",
     "src/ui/schematic.js": "fc3f966784612656b7f35da1d3b331721197e683889f616b40afec48ea06b894",
     "src/ui/split-math.js": "e0edce05f827d405f27fc4a13f225652b7b44ca3773a4d47c4162cf86f99054a",
     "src/ui/split.js": "ea902fd6f182c5eca158625effc1c1f136ff97e789a114817b5144aa38c8783d",
-    "src/ui/state-panels.js": "69017ea7db04a793b35e71b7d8584d0e16a8f6aad29a54e01993341bfa8408ba",
-    "src/ui/strings.js": "292b3e144d32b87dee25e516ef7fd7f25bdac372b167e5ce59ec1749607762b9",
-    "src/ui/theme.css": "5ca771fa6cfb0dc42ed33d4b5e9aaf4b306d7e32fe51bd2973ca0775563d350c",
-    "src/ui/waveform.js": "fe4a2910f3b4944d707d449b93a95d1d9ee6aa4c2d2bf4f665553c1b662474f0",
+    "src/ui/state-panels.js": "806309285b257eb4bdbc89e0c04463c2c6f61557158deb34cf04c11c9f87d61e",
+    "src/ui/strings.js": "b4176a59a3622067d2b441ef3ec74f8cbd291505f458d0417afa157409605063",
+    "src/ui/theme.css": "e29ae6a39e11de1d3a25a2e5d4f150ede0ea4754c0230f24b17e845c956ca68c",
+    "src/ui/view-mode.js": "f4f703b6888cc419a12303595941decd730fad34332b8bc0898a050a58a07b1a",
+    "src/ui/waveform.js": "5368ec558e8e00689a44710e89d9c31fa15b61bdc6345b7d4fa943e95714d3ad",
     "src/ui/wire-colours.js": "8b9e402a48835295370b5c888b2da6135bd6122c19452dfbea55122ddf05bac4",
-    "src/ui/workspaces.js": "e97b498b47642c3c2fe85adeb6e6b70819dad8d4d15a4682cfa27af33d732baf",
+    "src/ui/workspaces.js": "a9320a9dd53338e9692133897cb37a045b9de9e5a79aa39b87adbe1b2a3f2ace",
     "src/worker/run.js": "47c4e5624010c71bb1fcb44bc408bed3b5649f8b0f3d5089b51bc287b41c965d",
     "content/armv7/data/single-delays.json": "32bf024aa47df44b3008d629c3873ee493266325c9ef5802811e7f6ec1d5cdb5",
     "content/armv7/exercises/add64.json": "0def460790652be2ea88b174e47ff697cab19aaaa4404a7e6736ae1a1f603b6b",
@@ -209,18 +228,27 @@
     "content/branding/mavilera/mavilera-light.svg": "2fdc52b90d7857b673425f05c7b74595d6a5ca689c9866c1d57eb17b0ce0d982",
     "content/branding/mavilera/mavilera-lockup.svg": "2edb9fe4ab16b1cc3063195e6b890c6410a48aad3ae0f94cd5d70e0c05e8a5e4",
     "content/branding/mavilera/mavilera-logo-armv7.svg": "94326f9f514b533e088cfdc5926a5d31e7dc6f41aa6a704d34d802ff18204d6c",
+    "content/branding/mavilera/mavilera-logo-gpu.svg": "17b8e22a68d80dfe4ed50c769f6a3f2d1c923455fdd6c037709def69572ee097",
+    "content/branding/mavilera/mavilera-logo-npu.svg": "42e66255e07a396c95736864340706ded4fe2a75b25a471499ce46571acb5663",
     "content/branding/mavilera/mavilera-logo-sap-1.svg": "b22df4048e2c097437aa33ce51cd5a4eabf996419068de5ad9d382800a663680",
     "content/branding/mavilera/mavilera-logo-sap-2.svg": "6ce4c01ab8882354e0f8a41299cfe3424249959361bf3b1474263d9fd29499ca",
     "content/branding/mavilera/mavilera-logo.svg": "7a3473b77953a5d55fae2072f2fc69f0cfa9a8ce1e091c467ceb8a80937937a0",
     "content/branding/mavilera/mavilera-mark.svg": "35f1d0b46f9af5bf10812b69f6cf9d9b1008196259f1924ce46745a8bdf8495b",
     "content/branding/mavilera/mavilera-mono.svg": "c34d32599cb51ab5287ff17baf1c930c0a88f13905070234d937dc54abb0448e",
+    "content/branding/mavilera/mavilera-name-armv7.svg": "6bbde62f6c2070ed6ae1e4bc2ddd27230488125439a1dfa49a41fd72eefd0a04",
+    "content/branding/mavilera/mavilera-name-gpu.svg": "0e51e6a713c137cc23d2a1b6d1770b5a7134d31931f81071e88dc6f9f1febe23",
+    "content/branding/mavilera/mavilera-name-npu.svg": "901fc0d03d9e328bbbf68e537aa33601a5a0675d2777de9d0806737c3013a027",
+    "content/branding/mavilera/mavilera-name-riscv.svg": "1f96a24fa485ad928c0152e915660e47d18f7624cff30342666cc17f92bdae71",
+    "content/branding/mavilera/mavilera-name-sap-1.svg": "9633da4d7ab655658fa6fed24e8a9252bb7f458b0eee744e07a929839f14f89b",
+    "content/branding/mavilera/mavilera-name-sap-2.svg": "9a2232663b94bbe399bcfdd80c1bcbf061d20ec6fe4a5011294dd5efd2c00f80",
     "content/branding/mavilera/mavilera-wordmark.svg": "290d63559947db1f61462686f2753f1d227a5b640ed38984b85c6a84c972a881",
     "content/branding/mavilera/social-preview.png": "6dcb1b185723c3b61e23e81d9f409e438c6a55acb31edd2bb3f98c154c5a2504",
-    "content/data/ch06-delays.json": "373f9daf6eb638a9c15c553aa1a7d2f04e834c0ba954dc82b82bc2c028c0f053",
-    "content/data/ch06-tables.json": "eb6eb84d017a2a7a4121e304289bee1b48e38742ab182e040a8fc05d2d255c98",
-    "content/data/ch07-jalr.json": "21895cf89209750eaa59227833f919c8f9c2b3632f42e3333a603321ac9d5fae",
-    "content/data/ch07-tables.json": "d239927afa5e77e6650b2d4c111d516917d40315a2464c22b85849ceb87ba5ae",
-    "content/data/ch08-timing.json": "8d25a7ad7ea35138610cc0fdf4097023e14f5606c70e8fa8003d508d96abb953",
+    "content/data/ch06-delays.json": "6c08e4af8b81f1faad9c0fb32c71cd8812f609d0c32d5081f25edfef4b733969",
+    "content/data/ch06-tables.json": "c61ebbdba0f4ee09e86ca3b5c42a7b1944223b6a6b6422f21e2a0636ea9c1382",
+    "content/data/ch07-jalr.json": "bb99824733578ad071bcb217ce546c12f3a63ee83775c9b6b90df64f96683e5e",
+    "content/data/ch07-tables.json": "604b28688666d50feaf98aed0a2062fa1e15ba8155393c3180c31bf4510d46c2",
+    "content/data/ch08-timing.json": "3ece5661af3d812b2e83a744618a7529d8b9fd2e4c85cff1fb755c79d3b977fd",
+    "content/data/ch11-tables.json": "802675ef46d2b8b34b24663e1846d9d37339bf73b7058ce0ad21026d28b1c867",
     "content/examples/basics-array.s": "d92f4cf701d0752873899c9e581d9b63d09708baba56ad8c86b1fb8ac9d295d0",
     "content/examples/basics-bitfield.s": "f6c399bc0211d8569bd5ef302fdb46fbb69cc5b279f61b1b09abb2d801589ca7",
     "content/examples/basics-const.s": "e28337ff65f51beb5d3271ba65b3989cc9b237729b6fe57a03266860bded19db",
@@ -266,17 +294,25 @@
     "content/exercises/gcd.json": "5d2e7e4481da5d0ab1cbb97c4bc45c1d2476c8f16131b7d0202a88e847eded0b",
     "content/exercises/gray.json": "723144effd8a0026af457b0b2815a29b845f7f129eeae38e2b4b31bb38c73626",
     "content/exercises/horner.json": "c34fdc9f282058265dd2ebfa691dcdf2230532a38989b8bd8fb513816ae1606e",
-    "content/exercises/index.json": "a27c81c6abdf7755d9f716b77ebd4df07c100a793fe3f5e5a0c8777f2795cc90",
+    "content/exercises/index.json": "147c77fd6aad87dbbfa7673d09e743de879722036302564d9b2dfda2ef6a6449",
     "content/exercises/isqrt.json": "84968d3556159c9833b00304ef02b5ffc30dd07473c233e220d03868e7fbe849",
+    "content/exercises/npu-accumulate.json": "18f27912afa3bb282ce34e832022b35b07b29ce693c89f097a54c2ddef483115",
+    "content/exercises/npu-two-layers.json": "df38ffbc93efce46af170f125b7ab99b6725f074059940e637764f7c7ff2ab3e",
     "content/exercises/palindrome.json": "4b7e5edb88de96f0371c5d3b27fc8b2a44667a5aab12d7523b492f6b8a5aaf1b",
     "content/exercises/popcount.json": "a01b8776f4df946555ff738858e63df4c70d273240e0550f7bc051e49b503ff9",
     "content/exercises/print-number.json": "ac13f65e1b8866c6c51bdb373f2eba573c5628b732b3b85e7aa313d4beab54a9",
     "content/exercises/reverse.json": "498c4676831682e547bb39d90a0ff69f8b0647fb9b6b6ba7da4010ac1ccd7479",
-    "content/geometry/ch06.json": "3e0ee6940559825b7fb6cac4b2f309efa37d3a93361f9cd2eb052ed6ec171169",
-    "content/geometry/ch07.json": "cef435e4b17fe914d52b7ec190a2cb3468c8c23bcc96a12e8c09250d16d22109",
-    "content/geometry/ch08.json": "8222c264af93f3aafaa30c04c91334d42a35d8644c50aba7fceff7718f23d9fe",
+    "content/geometry/ch06.json": "fd6a3eff8561b950d2bc5d7504201604c5f08870a6744699b93bb2752d4251a8",
+    "content/geometry/ch07.json": "cc0d9a7bcdec06218df0b84829a36be538c1f94a2131a55746cbe6d2ff8bc33c",
+    "content/geometry/ch08.json": "d47680ae5c94e8000cbf8c586bafe76d7370b44aaa942885637af4041d895fb7",
+    "content/geometry/ch11-npu.json": "0f7dc9d671814f8f6b3573094c4d872b2cf607bd7657a69008d2705d9ab83c7b",
+    "content/gpu/templates/abs.simt": "f20de54cc4a71f3f7eb2fdc7c5f33024f372e61574f20ffcd75230766c334746",
+    "content/gpu/templates/clamp8.simt": "6827b3d646bf54154f59e73be1b0e48501a37cb3b54d1b0fd214fa6d6855d168",
+    "content/gpu/templates/index.json": "987262d4fe2ad72eb15bb20d6bc2807e594f51dbfe863e664a12c4153830ac93",
+    "content/gpu/templates/nested.simt": "4f7ac856a4fbe4b2179005fd006b1159cfae8625722dcd0d2b83fedaa6189ef5",
+    "content/gpu/templates/straight.simt": "3577f7143561e5c2a50d6d87748eab66630a39911cd1efd409e5fc1004a04c1b",
     "content/help/docs/index.html": "a4a780df00ac421ac93018830e29ab5678bc43b0e2a93cbb220abfa082359190",
-    "content/help/help.json": "42050b419cf58e3b61fa06986314aaf4b5813500d913b1678dfb84031b5d89d1",
+    "content/help/help.json": "791cb0260c768eec635158b6357b2f11722945d07f15909f08c5b2c0986feee9",
     "content/help/narrative-ch06.json": "612026b34976e25ec309b125a1a2de5d116598fa77cceaa5dcd86805733bad6a",
     "content/help/narrative-ch07.json": "9006e11087d7edae8e4c4714a373b7e52d6da745e8f00bc82d537fb77491a933",
     "content/sap-1/exercises/both-differences.json": "9e3f5095dcabd9caf4c76ccfea51f1b00f3d54a656a61b75ce1fa70a9bda5664",
@@ -332,10 +368,11 @@
     "content/templates/gpio-switches.s": "4dbf70697b5b3d2cdad5c0c2625e2724fe60927045e2e2f5ff077bde5517ece6",
     "content/templates/hazard-unit-steps.s": "af7206fd48461708fedec5b862c823f39f583fe1e4455d993472c1f58922b4c8",
     "content/templates/hello.s": "31195e602a43470a33bd0967b300d780c2a91871bdc698a4656113ddbca73b7f",
-    "content/templates/index.json": "9d44e0a5cae6fa9ee98850055d8499b91c7fcc60718755152dfe9d64c40b2336",
+    "content/templates/index.json": "40d7b2ce74ad205cfd45f5a0a59ece8f8f6b16bd1308a0fb6aadefe396a97f00",
     "content/templates/jumps.s": "c95fcced197df11b545c6cd14a387b43020fcda489a082ac0859cbf293d9187e",
     "content/templates/load-use.s": "3f42560f210e163f149caf4c381bd0ff402142aa5a2568397eb3ccd1b9dd1a22",
     "content/templates/mispredict-pattern.s": "3415e72ee3dba5f0a152c08a01ddefbf27b09a3b5829475a1f88faa664e4d7bd",
+    "content/templates/npu-mv.s": "b8498bc3d7ec999293ccb296e48895b8054042342cff80af96602b57a28946f8",
     "content/templates/overflow.s": "470127288aae07f46e607ae964a65c0bd05f527064a1aa0c35e57b6a7c9f76cd",
     "content/templates/plain-vs-register.c": "30e21675ba32fcfabafa3abb14d4f527842100c3a0cab514e14ef4b91dd396a2",
     "content/templates/pointers.c": "f2fdcee046fa24061ab6e839fac557872d47ba86695b59606a3dd5c60d18456d",
@@ -344,6 +381,8 @@
     "content/templates/recursion.s": "ca753082a2c63974daaddb17dcd5166dc6a90003f43f138e02e01fe828a21c7e",
     "content/templates/speedup.s": "a35d78384ad7c9cd83fa20b0bd8f146867ad48a248de04ef2d6dc23860311b5e",
     "content/templates/sum-loop.s": "b7e4bebc96208baf45b3aa5838f60f22ae67aad223984d29431fdd2920696456",
+    "content/templates/sw-mv-m.s": "5725aeefab0b604dff5b6789ceffe3135fba362ba61ae4da5b8462c6801ce87c",
+    "content/templates/sw-mv.s": "7c4461052827b19b7b81f76fbf4ae391af2fe8b402fffc12c69d15779c34ba25",
     "content/templates/timer-interrupt.s": "4ae18ec1ec20a81aa1f7c0c511ba061276e8ebfbf196b57b7dadb576dedbb59a",
     "content/templates/timer-poll.s": "d779bb16006c1156c6e14fdf1c2890dd83e4dbc0d0c8d87e566b2d8fb2754352",
     "content/templates/uart-hello.s": "97e3b093491ccdfef1175e6c4a5a181448edfb59c9f2386b46ca5bef6fa9f1fd",
@@ -351,12 +390,12 @@
    }
   },
   "corpus": {
-   "sha256": "584a8771e0e736ab8bbec23b642f9a41519af51818bde752e619d5cb8141e0d2",
+   "sha256": "34d4989c49a1bae1fef542e607f911001ee5e195dcbe5fc00cb4cc5578b52565",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
     "test/arch-contract.test.mjs": "13f524e678a203b5caeef29e006b1c406b49e2865c2601ba6b0a0c6d8b0b575a",
     "test/arch-riscv.test.mjs": "e5d2c2e2ee4652fe9fde85cb0362ca22af2c283e194c5bb050db48d7c7957369",
-    "test/arch-switcher.test.mjs": "1b4b071e7680580ed1203eda8d025db7c6e196dee53296f8c2c9bf9f3601a29a",
+    "test/arch-switcher.test.mjs": "791f7459b15fcd3e8c385612f5b55800d4b5f9d4e55d356751c43dc4b320cd5a",
     "test/armv7-engine.test.mjs": "1b39155e1328969cca9a0643235c0706a8a17933e15dd7d0cb265be4ecf0cd76",
     "test/armv7-equivalence.test.mjs": "aa4880cc750ec6580a90b3461083f1322fd5ecb91b39f01d225ef8afb4bb372b",
     "test/armv7-gnu-oracle.test.mjs": "a3c1006add7d634db8ab34d22b7b5e69b31bc1e63af4753355021ab9e24d9f87",
@@ -385,14 +424,15 @@
     "test/ch07-content.mjs": "17bd83ee475efd32d55748506eb848b28ea85727c51aaa6f83e517dcfaa29487",
     "test/compare-memory.test.mjs": "6b46bd74b52f98c2290ed39138ab5a7e28191d13cf11bc112a217b37a68e1e72",
     "test/data-io.test.mjs": "b92820292d425cc50b2a0859433d7283427e346d796870c849ff575bf8094268",
-    "test/devices.test.mjs": "f196dd142bd6238a71405498faca19b4884619b7f7ea4fb66f9e025f45e63cd4",
+    "test/devices.test.mjs": "85f711a8810aba9c1cee0acab0ec7c38d2453746ac396f395f4f478b3200e057",
     "test/diagnostics.test.mjs": "05ffdd1a56ba760afed070654432e6d786d0498e29476114d96ce2ccef18a6ec",
+    "test/dock.test.mjs": "4b9a44ead4e31ceccdd36f75dd1a74e5867d0da8c60de99d33e142a767cff864",
     "test/examples.test.mjs": "99fc38ca3f760c3d5b8993674ff4a1c56dc3bde0b39d7600d310e663b89d27a6",
     "test/exercise.test.mjs": "a5d8324226b32f1d5712e339518cbabe6a16bc2ac7b5b73504a151f3939822bd",
     "test/exports.test.mjs": "ed16579a3249e06ea7c3cc08cb6494732bd8ec09b05474ebc66702a6ed4eca39",
     "test/fields.test.mjs": "d6eabc49998748ab762e546d07f8131c30cf9acdf45b71c57f813f018a16ae88",
     "test/fixtures/arch/acc4/index.js": "d9314ecf1b7c7f9fa6fed51e32a1d54f1d08271601d81a0b84fe9f18ecd79cf3",
-    "test/fixtures/dom-snapshot.json": "c2a5ccc68734e4dbfd4f6f1af0e5c0cfdb774f9776730c5ae2927266ec3f46f5",
+    "test/fixtures/dom-snapshot.json": "e904d550903aacea0f8cb0b927b190160204a0cce7831b69d469e230313e5158",
     "test/fixtures/drawing-review.json": "84458b7cd332e5455eef99a02796e9ef4e2913e65ac4ff72a30bb774af9af975",
     "test/fixtures/exercise/sum.json": "086fa0c5dc7322ce10c2c1f4c53d6919dfbd74c2cb9422a0a7c1a954b51eb363",
     "test/fixtures/gcc/README.md": "aa0fd9f856c08c2c00acc7eb94ce17b3ee3eb6cd706e6989b4bddc9ec833c1a9",
@@ -403,6 +443,24 @@
     "test/fixtures/gcc/sum-O1-rv32i.s": "35a682b940713c0023532707abcb41243e1c31e2f625684df251c1ff3b0a2c64",
     "test/fixtures/gcc/sum-O2-rv32im.s": "21e33ff7fb6fc17bf0b022d416ad40e9b9b384fe796e3ec49870e9a2339cb0b1",
     "test/fixtures/gcc/sum.c": "ec33232dda504bc4bd2093a9176f2cab2fd41aebd58e62254eeff59c046b92d9",
+    "test/fixtures/gpu/README.md": "19e74601a4c9fcd1db4965a6c5f5da548bbd5504b34a6e04d5398a71002a4c81",
+    "test/fixtures/gpu/simt_tests.hex": "af47e1e69c2c458f2371e6f9daffa2bbdecb4b0632afa4eb8aaca59a445d454a",
+    "test/fixtures/npu/README.md": "02d721638d9950e97137bdf714a9ca9e7c7db663fb0fe0b4cf3a8c3358b39e4e",
+    "test/fixtures/npu/ch11/data/v1/data.hex": "98730230c57381b60cb8939bf941d696287e0a51f8f31ff4da971eec4132d3fb",
+    "test/fixtures/npu/ch11/data/v16/data.hex": "1e8a40769cb6130950c4b9e90ba0a0e128b8b8e9afee285a463e493e64c95c96",
+    "test/fixtures/npu/ch11/data/v4/data.hex": "f75f122ded4359d1fd62b85c1bdaaacb12fc4a32d901deb34228585808bfd44b",
+    "test/fixtures/npu/ch11/programs/npu_mv/prog.hex": "6287a8cbdb329c4919415293e4d7ee9adfbb2047f52d3b15597eee6af6ab4466",
+    "test/fixtures/npu/ch11/programs/npu_mv/prog.s": "0d59dea8c5d4a9b1024c18345829067449d290ffd763917d054be50cc9b03312",
+    "test/fixtures/npu/ch11/programs/npu_mv/v1/golden.hex": "a2a8ba015da10860b3672ea8bb3c12b0484f44d93c17af5f31b29a17616dabbc",
+    "test/fixtures/npu/ch11/programs/npu_mv/v16/golden.hex": "64ad33d36ec9fd20363e675b525e70da26bdc612c950be695741b114ab8181d5",
+    "test/fixtures/npu/ch11/programs/npu_mv/v4/golden.hex": "54938293f4198292519a2a6f055a8f9e15cde19f5b291683fb2526cc1ff265ec",
+    "test/fixtures/npu/ch11/programs/sw_mv/prog.hex": "d23bc944378f8ab5fb31e525d1c61c644c7457553b7f21b1417081e92d2a722a",
+    "test/fixtures/npu/ch11/programs/sw_mv/prog.s": "a7320c5aeb9477e8d915afb2c14585de4236d7795c742935404d35a3bbf5c424",
+    "test/fixtures/npu/ch11/programs/sw_mv/v1/golden.hex": "54ea3e3641708c0bcf29b3b855732a06843f59d44c72a6c51963390b4ac808f3",
+    "test/fixtures/npu/ch11/programs/sw_mv/v16/golden.hex": "8b3adc46a2538e3b7aa9ebfedc3ceb0df491753c432cde6b18fc2c8f7907ba00",
+    "test/fixtures/npu/ch11/programs/sw_mv/v4/golden.hex": "36252bd3dc94697809bb21d9a949872ddb6475a80d76d4e1327b12f2bebcd3b8",
+    "test/fixtures/npu/ch11/programs/sw_mv_m/prog.s": "34b8f7b137d611805e6302e60757582adcb7bff9e85f27c6855b02b7bf10a8bc",
+    "test/fixtures/npu/mac_vectors.hex": "86221ccaee9f11473754c5489c9f36d86de495834da2c792010281e653c4d3ed",
     "test/fixtures/priv/bad-handler.s": "1cb8b9289a11cc3544728e6a5c6bbedf0e934d7b1040482c315afa3ba4c62e55",
     "test/fixtures/priv/button-irq.irq": "d24a808658e82c31fc6c15535fe7cf900d5102ff7d3b2e5ab2deb0b5db0563ed",
     "test/fixtures/priv/button-irq.s": "38aba483b935f9b1c247f39cba8b280358334befa917e3ce84afabdbc608d621",
@@ -410,6 +468,10 @@
     "test/fixtures/priv/gpio-regs.s": "60282d03ebc30ffad20e06750c3ce0a88db8ca7d7a27979fad55f08719174fbb",
     "test/fixtures/priv/timer-vectored.s": "34e42ef69253b2fe62c579a2784e29d8fbd4024222c071f3fb76cc73bab25178",
     "test/gcc-import.test.mjs": "d174834d4d140132f7f26446412da021086dd5ec54e341ad3075ec1d5dadfead",
+    "test/gpu-engine.test.mjs": "6e25800712d30dbf38eb96d288cc95cdef271dff3599bf85290473bf609a431c",
+    "test/gpu-fixtures.mjs": "bf74e8308e5b655bb4d6119876ce41945f2fdc6f0edaadffff0eb7d2e0d98d69",
+    "test/gpu-language.test.mjs": "9dcc7fc85d9edae08c679ee8ca083570a1e5caa57d22473f524783d6ecc12c95",
+    "test/gpu-templates.test.mjs": "d6af5dc0ab942e132d301568d53e90d9a82e3807f55d73e3f1c29a4d5ed2bfe3",
     "test/history.test.mjs": "b0e55fa95c9e632b9003a00f89198e65bad5c6d3f8f3e0e0a9e28e483ae4e4be",
     "test/layout.test.mjs": "ed13e30a4af564e795047935bb1d3f4b57771bc760e1f48583c32e9ff7ca1740",
     "test/mavilera-brand.test.mjs": "a74a504072e55a37175a7a92f82ab57411afd371993f404c50209246f1976c4a",
@@ -422,17 +484,25 @@
     "test/minify.test.mjs": "50c808af5fdb637e29196c2b6455fded7d0ba603a0f3cd38e1dbed1a38fe05db",
     "test/multi-paths.test.mjs": "721cd0eb19583a1e0a3637529cad71a742256adcd0e1a257f7b5d59fb2525cb7",
     "test/multi.test.mjs": "ee176bd4b4f4b7ea70910ba483f76d2f2c2d040d878aa2967fa6f08d063d3a39",
+    "test/npu-array.test.mjs": "01b813ad46e8672e85a7920216cfc452f161bdf0636df789a111ed9ec66d501f",
+    "test/npu-curriculum.test.mjs": "777e03fcc3220c721f5e0433a8390641d0e75418cdaa9f183a50935b507ac7ba",
+    "test/npu-datapath.test.mjs": "3ece9b41e9e90ba5c88c77af09b62f3738fd64acff89918cd79d43f85260715a",
+    "test/npu-device.test.mjs": "b84fd2ddbb8893ed98fe1b6aa175dfa92a4cf980c9236841fdca76a3f6076a87",
+    "test/npu-fixtures.mjs": "b4c044ae414470fcc4a884a98b6429d22c7e82bab6c2ec37369b76c2b6eb7762",
+    "test/npu-lab.test.mjs": "9c9a31c7855e97dbd0dd5276923d76ff1515059e510f5aad48c95e88fca69f78",
+    "test/npu-views.test.mjs": "2df39682ca6fe31d485bb65aa4aa58b66eb9422903c018c6e8834f67f4e43f7e",
+    "test/npu-wave.test.mjs": "64a82ec3d0c22f759bb55243aded0cb3f0c960318aa804266140a3273d9f08e6",
     "test/output-cap.test.mjs": "d431af9e8b9a25aa297ca6e8f6b19f91748a79bc9929ed9e8346e778d7c0fa5f",
-    "test/pan-zoom.test.mjs": "b17b223188da906244545323f144e15ce8a66752bee457c9839e417c98baff41",
+    "test/pan-zoom.test.mjs": "735ff1fa587f2dff99e6f69db7c913462da58f6090d3be12207cbfe67368bb4e",
     "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
     "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
     "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
-    "test/platform.test.mjs": "9cb4dc6832ea581047ef433220f64b477fb7fb51d278ecde6bd9ac80b72ba15c",
+    "test/platform.test.mjs": "0955378fb87d172af350f85fda3925629f844b89b883d72cca8950936e8d0e7f",
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
     "test/random.test.mjs": "2c3f27c2a76ac3cb9bbda309ea3d0f42fed3ae3c9f4d3e4a01e8dd6152c6514e",
-    "test/release.test.mjs": "4520bd4e5ae30798759f2d4379184053dfebbddf0f92ee048832428912808f5d",
+    "test/release.test.mjs": "d96fd56d7dade8f195f7987f27ff7012a2b2665677d2a3396567bc2ebf8fb9ca",
     "test/sap1-bus-model.test.mjs": "1913ce4c7182278de219f52d06c958f68eed155fe7f433de9fd849df8417b841",
     "test/sap1-engine.test.mjs": "11d8227fda92d105613f0a2c05679b14aa18a4b113b4709c92f1c31292f71eaa",
     "test/sap1-extras.test.mjs": "8b0e7cbdab16c97c8d073fb72cb0a398d00f961cebce4d5f8755014cd76c9a20",
@@ -454,19 +524,21 @@
     "test/single.test.mjs": "5e814551e3fe2fa48e252181f93333d9655219e2a6f57f2153c67792d43f8a02",
     "test/split.test.mjs": "7eb2aa046e3b1f6c8afc2fadca721a510de8973ee5da40c3af6cdf03624ee482",
     "test/strings-merge.test.mjs": "27a604b4f4e70e64fc5b8cf2f035be00dee066c3f15b14d713a62c2bd01549dd",
-    "test/templates.test.mjs": "385e9bb51667503dfa20bbfe0fa7d30d24b16fd2497ae6eb0bdf49f62f9b676f",
+    "test/templates.test.mjs": "11daca7ff7311a3c419a54b570daa0962162d2021e0e3e341ad4bc1871fe97f7",
     "test/timing.test.mjs": "2f2707cda7d36d16df28ba8bcab6c1f106777b0bcda7e1174b51ca8bcdc743b9",
     "test/uarch-ecall.test.mjs": "bb9cbd1e59249083493e0383513650a5c04394523cdef486c1be213f411a583e",
     "test/uninit.test.mjs": "7703a40cd13f36bbcb96384d60a633b7c713cb962a00ae2bb5210b6e179bc234",
+    "test/view-mode.test.mjs": "71efd4ef3157af058ce6068eb7a964f1fbdaab173293d82ebd539d4390cdeebe",
     "test/wire-colours.test.mjs": "ab8c01ea4d3a9bb40e8c800203ba4b19b80354411b0bc6bfabbf1251d959e673",
     "test/workspaces.test.mjs": "59903c7db8c97d4c83e9d4963a8d4750e2165e73467a6f559690d56c8d8baa40",
-    "(not published: tests that need the private book repository or hold exercise solutions)": "42 files, sha256 2b4a5ef9eb082920d6da7fdbbe3ab517b0d3a09350e933677135ed985c9d94fd"
+    "(not published: tests that need the private book repository or hold exercise solutions)": "45 files, sha256 5e3dba2ff95ea4279387ea983b0eedd437d84871ccb33024b2bf27fb4976d53c"
    }
   },
   "tools": {
-   "sha256": "647b5d6645ba83faf18c12691a1c4b20e7b82d255aeea652990fc5664e5bf304",
+   "sha256": "1e765c3c807c9f82266b2804fc3fe93ba91d47f7c934a3c6371de1e0edc79625",
    "files": {
-    "tools/README.md": "9aa93b09bf0b4ca0199dfd1ec282556b1acf36c156bda5680925ed25c0051dec",
+    "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
+    "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
     "tools/arch-coupling.mjs": "5a8a07afb00d10a0a28304d495205edf5aa55b1e15ceac7b68ff362d12bb0fc0",
     "tools/armv7/check-geometry.mjs": "ce73d72b9b20d9c82ce6404925e310ad5ebcb03c0c58c0d24edeea1091a9e3cc",
     "tools/armv7/equivalence.mjs": "42c1477ad807eac19c7d210c13dc28e41ce6944f1417d31fe3bfdf983718f40f",
@@ -486,37 +558,42 @@
     "tools/armv7/single-smoke.mjs": "5b25e4c9a04ecc83d6e56d8123042bf0a12ade6f4709bc82f544704f8eadafb1",
     "tools/browser-smoke.mjs": "60243c34143fe98e25c024c69bef581dec91756e49cafe0d57ea0e6a1c160f6f",
     "tools/browser.mjs": "bdfb9016c4e657546371a233980d41ba41264f99b1f3add9bdfcbc664175018d",
+    "tools/dock-smoke.mjs": "284e1d6da94633addcb394f5c46dae2420f8a861887b675ef96a7b537c914bb7",
     "tools/header-smoke.mjs": "edd8f6d526fb18a78accd98589c041175fa3b17753c09e61a59304648ba6d6cd",
-    "tools/logo/README.md": "d02bc27fac1c3153919bbf53929d6ac03e068e26baf39daf5d41270eced5ad31",
+    "tools/logo/README.md": "67ccec66ea403acafbecdde7b5e97c16092adeebb6d92000db7fc363536289a9",
     "tools/logo/finish.py": "30d3d97a717dc07acd3be71d7ea86630b3797213c53b37a69ac6385c757f7e05",
     "tools/logo/fitlib.py": "e4e23d6ed99d0ba7292eb2ef3984a516e5b3ecd522d4f77804793b50f6821abc",
     "tools/logo/geom.py": "849fdbab03ba21665659b00da867d8b136e2a55c8e962abebe136f8ee0d2e4ed",
-    "tools/logo/make_logo.py": "c8bdbf6ed5eeb3b9e75058a5960c95401e972d61317979f032e9233011590c18",
+    "tools/logo/make_logo.py": "6777d1fb05e7f75308a6db329dc168366db3d2702ed6b71636f63a1b3719c8ee",
     "tools/logo/mark.json": "7cda5546946400fcc89ffd6fac072265e57c27ddec00fd2a554d76a81923a496",
     "tools/logo/markfit.py": "3aaae38a8ce17fd4e8520c835e4d719c79e0666a5af9971a6138b4df1014acad",
     "tools/logo/seg.py": "966e267dabda7f2e49bd60296c0e4f3f712526d1160e2143c504b6fbd2ac76bf",
     "tools/logo/svgo.config.mjs": "5c03a29148d1674b45a3dad2a3459ed5c2fead60121a95dd1518a8541249c60b",
     "tools/make-boot-screen.mjs": "cb4b3e7ea17b03eab321e7359765412c66f01ac876bd082cf50d9a23fd282177",
-    "tools/make-exercises.mjs": "e2e010a60d2ea3011ab11a121f80dcd67eb93dc399d9e645eb03ca28328a8b36",
-    "tools/make-mavilera-brand.mjs": "b102534f31431de105fa740ac5f7a190558b7f1a112758a439e9cb5268b84120",
+    "tools/make-exercises.mjs": "24c89b6c8e6e4ced0191adc15a3ce7f902ab55a18c8ffddae9910fa03b8a4f1b",
+    "tools/make-mavilera-brand.mjs": "6fd62add66b082ec613453df1ce0438a4fefe01cfb24788d8e745e9ef9034817",
     "tools/make-sap1-exercises.mjs": "e8c754b46ecf83398bf030f48b2ba2f40a34dee52d03e40fdf49ba19845d57bc",
     "tools/make-sap2-exercises.mjs": "b25aa4d90efcbf7ebe72cac3fc277653619fb8205213f3b22784afeda471d401",
-    "tools/minify.mjs": "bc242bb728410a8f26c80784f5205ce63d96c3761382b1bfda1bbb3d79d233d5",
-    "tools/mobile-smoke.mjs": "9b8158d47cf21ad74587dc85d753c7da300a14f35206d2ff9d91b548a432ffc2",
-    "tools/module-smoke.mjs": "3f3ccd1b3a4807eb72c8c08e3b1ad56c712e5a30cca5b3c09286178f52127b2d",
+    "tools/minify.mjs": "d4d8ce86001274c36ca7f0ecfbb605a433fe8ba0c56774149b6473efecf09ca2",
+    "tools/mobile-smoke.mjs": "fdfc238c5059141782f3adbc1afafdc46cc47d14216f4a070efa9db4644893a4",
+    "tools/module-smoke.mjs": "84c9573b35ddf5b2d932f1b49459597a7be95f91aadcbdce61540e30cf519942",
+    "tools/npu-smoke.mjs": "b5222b10c53fb196dd89a965bd3bda1d5320a356c9b64c620ac83bd4b4ba9acf",
+    "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
+    "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
-    "tools/release.mjs": "ce13fb0dab5c31ba99e16933939c685aa8a08083d1e64e2de8c347bd9fe0477c",
+    "tools/release.mjs": "cf165a359eb46a2316e49912bd1456edba48a8a65ec6e7bd07c61424eb7b776c",
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
     "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
-    "tools/site-files.mjs": "ceca3e9a7d102a402cf478323a2334cae9792f1719dcff7ecf2a4e3dde66106d",
-    "(not published: scripts that read the private book repository, and the publication scripts)": "14 files, sha256 aa303dcc8516114d7329406c465ccff628337438d01f1b74276de16bb3f301f1"
+    "tools/site-files.mjs": "96838dcdde03af9accfe0361c5328596f5614da8ca80d3b015e0ebf123134ea9",
+    "tools/view-mode-smoke.mjs": "90f72bc0e92b337ea622d7f82a7f67f1a338892e228ed617571e84aac10377d3",
+    "(not published: scripts that read the private book repository, and the publication scripts)": "16 files, sha256 6de41b6619a410916365b3c5b240ea0067080c4b2a5c32919b3eeee4ba3eaabd"
    }
   }
  },
  "reference": {
   "repository": "book repository (private; paths not listed)",
-  "commit": "619994959fff0788e5cc1ec3fec1f44a7dba822c",
+  "commit": "c2dc4c4892163ae96951a8584bf5b9ce7e55b490",
   "uncommitted": 0,
   "groups": {
    "chapter 6 reference RTL and model": {
@@ -530,6 +607,10 @@
    "chapter 8 reference RTL, stages and model": {
     "files": 10,
     "sha256": "ceae6c507496d1becbe976307d849a2630a39c64a560c7e6f2a47c86b6712d65"
+   },
+   "chapter 11 system-on-chip and reference NPU (with the chapter 6 and 10 modules it reuses)": {
+    "files": 32,
+    "sha256": "e849c9bb35c2e3652637ed4dba1f736760514a5c4389877d723208b69295ba45"
    },
    "example sources of chapters 3 and 4": {
     "files": 68,
@@ -545,14 +626,14 @@
    },
    "ISA reference model, its tests and the student-facing programs": {
     "files": 85,
-    "sha256": "e0feff091ff12917543579e4b7466c36abb5c30fbdca26024a7210ff02cb8743"
+    "sha256": "840a89347d707545976a9adf24bec0c5cf99a839e64591c3f53c37be48d3769c"
    }
   }
  },
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1043,\"pass\":1043,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1005,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1185,\"pass\":1185,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1149,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -673,6 +754,61 @@
   {
    "file": "test/arch-contract.test.mjs",
    "name": "armv7: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
    "ok": true
   },
   {
@@ -977,6 +1113,16 @@
   },
   {
    "file": "test/arch-switcher.test.mjs",
+   "name": "the current tool: the module, or a tool of it named by tool=",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "the entries line up with the header: the name lockups begin where the header lockups have their chip",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
    "name": "the header lockup is split where the files have their gap (MAVILERA ends at 1578, the chip begins at 1637 of 192 high)",
    "ok": true
   },
@@ -987,12 +1133,17 @@
   },
   {
    "file": "test/arch-switcher.test.mjs",
-   "name": "the switcher lists the available modules, in the registry order, each with a logo file that exists; a planned module only as a preview",
+   "name": "the switcher lists the available modules, in the registry order, then the NPU and GPU, each with a name lockup that exists; a planned module only as a preview",
    "ok": true
   },
   {
    "file": "test/arch-switcher.test.mjs",
-   "name": "the targets leave out the current architecture and keep the order",
+   "name": "the targets leave out the current tool and keep the order; the NPU opens the RISC-V module with tool=npu",
+   "ok": true
+  },
+  {
+   "file": "test/arch-switcher.test.mjs",
+   "name": "the views a tool shows: RISC-V its five, the NPU tool ISA, its single-cycle view and NPU (no multicycle, pipelined or comparison)",
    "ok": true
   },
   {
@@ -2696,6 +2847,26 @@
    "ok": true
   },
   {
+   "file": "test/dock.test.mjs",
+   "name": "a menu of the column opens toward the drawing, level with its button, inside the window",
+   "ok": true
+  },
+  {
+   "file": "test/dock.test.mjs",
+   "name": "a narrow screen shows the row on top whatever was chosen; a wide one shows the choice",
+   "ok": true
+  },
+  {
+   "file": "test/dock.test.mjs",
+   "name": "the choice is one for every architecture (a shared storage key)",
+   "ok": true
+  },
+  {
+   "file": "test/dock.test.mjs",
+   "name": "the places: top (the default), left and right; anything else read from storage is the default",
+   "ok": true
+  },
+  {
    "file": "test/examples.test.mjs",
    "name": "WS-F-123: basics-array assembles in iss and runs to its halt",
    "ok": true
@@ -3123,6 +3294,116 @@
   {
    "file": "test/gcc-import.test.mjs",
    "name": "WS-F-085: the report lists what was filtered and added",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "G1-G3: simt_tests.hex through the core's ports, driven as tb_simt_core drives it",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "G1-G3: the same programs on the contract engine (image loaded, inputs given), with the specification's values",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "G5: at start r0 = lane index, r1 = din, r2 = r3 = 0; mask and stack all ones; busy",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "G6: one nested IFLT works; a third push, and ELSE or ENDIF with no IFLT, stop with an error and change nothing",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "G7: an instruction issued with no lane active still takes a cycle; every lane counts as idle",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "G8: the core refuses program writes and start while busy, with an error, and changes nothing",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "G8: the PC wraps at sixteen words; a program without HALT runs on to the run limit; the counters are 16-bit",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "initialState and the record: a step lists the lane writes, then the core registers it changed",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "step back restores every register and the output, exactly, through 300 random programs",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "the engine agrees with the per-lane reference on 3000 random programs, 4 and 8 lanes",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-engine.test.mjs",
+   "name": "the history ring grows past its first chunk, drops the oldest beyond its limit, and the snapshot carries it",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "G4: every 16-bit word disassembles, and assembles back to the word without the bits its operation ignores",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "G4: LDI sign-extends its eight bits; -128 to 255 are accepted; op 7 is reserved, shown as .word",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "G4: the fields cover bits 15 to 0 once; rt [8:7] and imm [7:0] share bit 7, so LDI shows imm and no rt",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "G4: the programs of simt_tests.hex disassemble to the specification's table and assemble back to the same words",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "images: .hex of sixteen four-digit words and .bin of 32 bytes load back; the fixture's eight-digit words are read",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "the dialect: comments, case, spacing; .din per lane, missing inputs 0; the lanes from the profile",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "the dialect's errors, each marked at its token",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-language.test.mjs",
+   "name": "the scratch line decodes a word and encodes one instruction",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-templates.test.mjs",
+   "name": "each template runs to HALT with the outputs, cycles and idle lane-slots its comment gives",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-templates.test.mjs",
+   "name": "the index lists every template once, in a group, a view and a profile of the descriptor",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-templates.test.mjs",
+   "name": "the Lanes panel's matrix: one column per lane of the profile, registers signed, mask and stack bits",
    "ok": true
   },
   {
@@ -4001,6 +4282,411 @@
    "ok": true
   },
   {
+   "file": "test/npu-array.test.mjs",
+   "name": "array explorer: N = 2, 3, 4 against W x; after a run every activation and partial-sum register is 0 again",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "N1 PE arithmetic, exhaustive: every INT8 weight and activation, partial sums at 0 and the 32-bit edges",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "N2 sign extension: negative products extend with ones (PRB-0201)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "N3 registered partial sums: all -128, N = 4, gives y0 = 0x10000 in step 4 (PRB-0200)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "N4 Worked Example 11.6: the 2 x 2 trace equals Table 11.2 and the PSUM header of FIG-0113",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "N5 the array against mac_vectors.hex: every case, y_c in step N + c",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "N6 skew: x_r enters row r in step r and in no other step",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "N7 weight mapping: identity W gives y = x; a non-symmetric W detects a transposed mapping",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "streaming: B skewed vectors finish in B + 2N - 1 steps; vector b leaves column c in step b + N + c",
+   "ok": true
+  },
+  {
+   "file": "test/npu-array.test.mjs",
+   "name": "the array update is two-phase: a step never sees a value registered in the same step",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "ch11-tables.json is what tools/npu/ch11-tables.mjs writes (data sets rebuilt from the fixtures)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "classification rules on a hand-made trace: a value used as an address is control, a value only stored is its store's class",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "exercise format: the laboratory profile (ch11) and a cycle budget; unknown profiles and C on ch11 refused",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "FIG-0112 and WE 11.5: MACs of a layer, accumulator width of INT8 products",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "operand use: data versus address registers",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "Table 11.5 and FIG-0116 from MAVILERA's runs of the three templates: every cycle count and speed-up equal",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "the data sets v1, v4, v16 rebuilt from the table equal the book's data.hex",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "the exported book values: Table 11.3, FIG-0115 kernels, FIG-0106 fractions, Table 11.5",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "the quantisation example: S = 4/255, Z = -64, 1.0 stored as 0, representing 1.004",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "WE 11.1 and FIG-0106: parallel Amdahl, f = 0.95 on 4, 64, 1024 lanes; the curves at 1024 lanes",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "WE 11.8: vector addition and the 256 x 256 INT8 matrix-vector product on the CPU and the NPU of Table 11.3",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "WE 11.9 (b): the classification gives 9 send/start + 12 polling + 8 copy + 5 loop control, 13 NPU transactions, 4 polls",
+   "ok": true
+  },
+  {
+   "file": "test/npu-curriculum.test.mjs",
+   "name": "WE 11.9 (c): an infinitely fast array leaves 25 cycles per vector, a speed-up of only 1.36; NPU accesses 17, 56, 212",
+   "ok": true
+  },
+  {
+   "file": "test/npu-datapath.test.mjs",
+   "name": "the active path follows the data access: stores and loads of the NPU reach the NPU block, RAM loads the data memory",
+   "ok": true
+  },
+  {
+   "file": "test/npu-datapath.test.mjs",
+   "name": "the extended drawing keeps the book's geometry: every element, wire and control line, unchanged left of the data memory",
+   "ok": true
+  },
+  {
+   "file": "test/npu-datapath.test.mjs",
+   "name": "the extended drawing: every wire and control line carries a signal of the model or of the extension",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "G5 on the bus: the NPU at 0x5000_0000 takes whole words; a byte or half-word access is a bus fault; no fetch",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "G5: a RESULT read while busy returns the partial value with a non-fatal diagnostic; the optional stop is a flag",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "multicycle and pipelined hosts, ideal and timed memory: y = W x, STATUS busy then done, step back over every edge (Ext: no book cycle counts)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N10 busy interval: after CTRL = 3, STATUS reads 0x1 for 1..9 cycles, 0x2 at 10; RESULT = W x",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N11 + N12: a second start without clear accumulates (2y); WEIGHT, ACT and CTRL writes while busy are ignored",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N12 a start while busy is ignored: the run ends at its own time, no second run is counted",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N13 + N14: CTRL = 2 alone clears RESULT and done; RESULT is read-only; the second tb_npu case polled",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N15 call-order independence: a store delivered before the tick, after it, or after the next tick gives identical traces",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N15 out-of-order deliveries the device refuses: an old stamp, two writes in one cycle (also when one comes late)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N15 the edge is a function of the state before it and the request: no call-order state hidden in the device",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N16 back-step: run 20 cycles across a start, step back to before the start, the state is identical; the rerun too",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N8 reset values: STATUS 0, RESULT 0, CTRL reads 0, an unused offset reads 0",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "N9 read-back: WEIGHT returns the word written; ACT keeps bits 7..0 and reads them sign-extended",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "on the ISS (iss-priv, platform with the NPU): the same values as the single-cycle host; step back over every step",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "on the single-cycle host: a program writes the buffers, starts, reads STATUS ten times and the results",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "the device against mac_vectors.hex: clear and start for every case gives RESULT = y",
+   "ok": true
+  },
+  {
+   "file": "test/npu-device.test.mjs",
+   "name": "timeline of one run (NPU_ARCHITECTURE §4): LOADW, RUN steps 0..7, RESULT[c] added at the end of step 4 + c",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "back-step on the instruction level (ch11): npu_mv v1 stepped to the halt and back gives every state again",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N17-N22: npu_mv v1 gives golden.hex on the instruction level (ch11) and on the single-cycle host",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N17-N22: npu_mv v16 gives golden.hex on the instruction level (ch11) and on the single-cycle host",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N17-N22: npu_mv v4 gives golden.hex on the instruction level (ch11) and on the single-cycle host",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N17-N22: sw_mv v1 gives golden.hex on the instruction level (ch11) and on the single-cycle host",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N17-N22: sw_mv v16 gives golden.hex on the instruction level (ch11) and on the single-cycle host",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N17-N22: sw_mv v4 gives golden.hex on the instruction level (ch11) and on the single-cycle host",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N23: sw_mv_m (mul) on the instruction level: marker spans 209, 818 and 3254 (Table 11.5, the book's simulator)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N24: WE 11.9 offload breakdown of npu_mv v4: 9 + 12 + 8 + 5 = 34 cycles per vector, 13 NPU transactions, 4 polls",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N25: MAVILERA assembles the book's sw_mv/prog.s and npu_mv/prog.s to the words of prog.hex",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N26: a byte store to the NPU is a bus fault \"the NPU takes whole words\" (decision G5)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N27: the address map with the NPU: GPIO, TIMER, UART and NPU at their slots on every host with the devices",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "N28: a RESULT read while busy returns the partial value with a non-fatal diagnostic; the optional stop (G5)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "Table 11.5: the cycles between the markers, shift-and-add and NPU (Icarus Verilog runs in the book)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "the fixtures: fourteen files, each with the hash of its README row",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "the npu-mv template: the book's instructions, the NPU at the address of decision G1",
+   "ok": true
+  },
+  {
+   "file": "test/npu-lab.test.mjs",
+   "name": "the three laboratory templates are what tools/npu/lab-templates.mjs writes from the fixtures",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "array explorer: N = 3 and N = 4, batches, and the input check",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "array explorer: the 2 x 2 example reproduces the PSUM line, the highlighted PEs and the outputs of the step panels",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "bus log: every access in order, ignored writes marked, and a restore goes back to the saved length",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU geometry: equal to a fresh export from the book's generator (when the book repository is present)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU geometry: every drawn wire carries a signal of the model's dictionary (no visual-only connection)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU geometry: the book generator's export, with its source recorded",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU-5 both accesses of a cycle: the coming access is drawn dashed and becomes, one cycle later, the completed transfer it announced",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU-5 register boundaries: N - 1 between the columns, N - 1 between the rows, one above the outputs; each link crosses exactly one, none crosses a PE",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU-5 system flow: a store from the processor out to the device, a load back, on either side of the tap",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU-5 transfers inside a PE: the weight in LOADW, the multiply-add in its step, the registered outputs in the step after",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "NPU-5 transfers: every write, read, LOADW and RUN step of npu-mv moves its data along its path, in order, to the right destination",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "processing element: psum_in + product during a cycle is psum_out of the next (every PE, laboratory run)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "signals of a cycle: the connections the drawing highlights follow the controller and the bus (laboratory run)",
+   "ok": true
+  },
+  {
+   "file": "test/npu-views.test.mjs",
+   "name": "subsystem regions (small screens): each holds its elements whole, lies inside the drawing, and is narrower than it",
+   "ok": true
+  },
+  {
+   "file": "test/npu-wave.test.mjs",
+   "name": "multi, short: every NPU bus access in the frame of its cycle, the controller one edge later, the processor unchanged",
+   "ok": true
+  },
+  {
+   "file": "test/npu-wave.test.mjs",
+   "name": "pipe, short: every NPU bus access in the frame of its cycle, the controller one edge later, the processor unchanged",
+   "ok": true
+  },
+  {
+   "file": "test/npu-wave.test.mjs",
+   "name": "pipe, template: every NPU bus access in the frame of its cycle, the controller one edge later, the processor unchanged",
+   "ok": true
+  },
+  {
+   "file": "test/npu-wave.test.mjs",
+   "name": "single, short: every NPU bus access in the frame of its cycle, the controller one edge later, the processor unchanged",
+   "ok": true
+  },
+  {
+   "file": "test/npu-wave.test.mjs",
+   "name": "single, template: every NPU bus access in the frame of its cycle, the controller one edge later, the processor unchanged",
+   "ok": true
+  },
+  {
+   "file": "test/npu-wave.test.mjs",
+   "name": "the VCD file: the NPU in the scope npu, its accesses as value changes",
+   "ok": true
+  },
+  {
+   "file": "test/npu-wave.test.mjs",
+   "name": "without an NPU the export model is unchanged",
+   "ok": true
+  },
+  {
    "file": "test/output-cap.test.mjs",
    "name": "RISC-V engine: write ecalls past the cap; the state converts a million characters",
    "ok": true
@@ -4013,6 +4699,16 @@
   {
    "file": "test/output-cap.test.mjs",
    "name": "SAP-1 engine: the output is capped, the count adds up, step back works within and past the cap",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "a resize keeps a manual view: the same zoom, the same drawing point at the centre",
+   "ok": true
+  },
+  {
+   "file": "test/pan-zoom.test.mjs",
+   "name": "fit to height: the drawing fills the pane's height, one scale on both axes, centred; to width likewise",
    "ok": true
   },
   {
@@ -4267,6 +4963,16 @@
   },
   {
    "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise npu-accumulate: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
+   "name": "practice exercise npu-two-layers: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/practice-exercises.test.mjs",
    "name": "practice exercise palindrome: the starter fails, a model solution passes every test",
    "ok": true
   },
@@ -4433,6 +5139,26 @@
   {
    "file": "test/rtl-multi.test.mjs",
    "name": "WS-V-021: chapter07/we71, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-npu.test.mjs",
+   "name": "L4: npu_mv v1, the NPU's controller, registers, PEs and bus transactions equal the reference RTL in every cycle",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-npu.test.mjs",
+   "name": "L4: npu_mv v16, the NPU's controller, registers, PEs and bus transactions equal the reference RTL in every cycle",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-npu.test.mjs",
+   "name": "L4: npu_mv v4, the NPU's controller, registers, PEs and bus transactions equal the reference RTL in every cycle",
+   "ok": true
+  },
+  {
+   "file": "test/rtl-npu.test.mjs",
+   "name": "L4: start with clear, an ignored write and a partial read while busy, a second run that adds, a clear alone: equal to the reference RTL in every cycle",
    "ok": true
   },
   {
@@ -5497,6 +6223,11 @@
   },
   {
    "file": "test/templates.test.mjs",
+   "name": "template npu-mv: y = W x on the NPU: weights, activations, start, poll",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
    "name": "template overflow: Signed and unsigned, overflow, division by zero",
    "ok": true
   },
@@ -5533,6 +6264,16 @@
   {
    "file": "test/templates.test.mjs",
    "name": "template sum-loop: A counted loop over an array",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template sw-mv-m: y = W x in software with mul (instruction level only)",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template sw-mv: y = W x in software: the baseline (shift-and-add)",
    "ok": true
   },
   {
@@ -5683,6 +6424,46 @@
   {
    "file": "test/uninit.test.mjs",
    "name": "WS-F-147: the ISA templates and the compiled C templates give no warning",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "a choice keeps the base mode for full screen and leaves full screen for Normal or Focus",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "a refused or unavailable full screen changes nothing and is reported",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "F toggles the focus, and leaves full screen",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "rapid requests are taken in order, one at a time; the last one holds",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "the browser leaving full screen (Esc, its own controls) returns the page to its base mode",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "the compact layout shows a column: a chosen Top at the left, Left and Right as chosen; a narrow screen the row",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "three modes; full screen is shown over either base mode, and both it and focus are compact",
+   "ok": true
+  },
+  {
+   "file": "test/view-mode.test.mjs",
+   "name": "transitions: Normal, Focus and Full screen in every order; leaving full screen returns to the mode before it",
    "ok": true
   },
   {
@@ -6256,6 +7037,74 @@
        },
        {
         "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 28 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     }
+    ]
+   },
+   "gpu": {
+    "axeCore": "4.14.0",
+    "exitStatus": 0,
+    "browsers": [
+     {
+      "name": "chrome",
+      "version": "Chrome/156.0.8078.79",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: GPU Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 4 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     },
+     {
+      "name": "edge",
+      "version": "Edg/151.0.4129.78",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: GPU Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 4 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
         "ok": true
        }
       ]

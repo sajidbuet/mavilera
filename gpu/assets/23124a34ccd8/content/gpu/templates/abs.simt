@@ -1,0 +1,13 @@
+; abs.simt -- SIMT core, four lanes: the absolute value of each lane's input
+; Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+; Rights class: content (Apache-2.0).
+; (test 0 of the Chapter 11 laboratory's simt_tests.hex, written as source)
+;
+        .din  5, -3, 0, -7    ; r1 of lanes 0 to 3 at start (r0 = lane index)
+        LDI   r3, 0           ; every lane: r3 <- 0
+        IFLT  r1, r3          ; push the mask; lanes with r1 < 0 stay active
+        SUB   r2, r3, r1      ;   those lanes: r2 <- 0 - r1
+        ELSE                  ; the other lanes of the pushed mask
+        ADD   r2, r1, r3      ;   those lanes: r2 <- r1 + 0
+        ENDIF                 ; pop: all four lanes active again
+        HALT                  ; dout (r2) = 5, 3, 0, 7 after 7 cycles, 4 idle lane-slots

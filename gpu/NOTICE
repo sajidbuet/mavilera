@@ -1,0 +1,15 @@
+MAVILERA (RISC-V Laboratory; formerly RISC-VISTA)
+Copyright (c) 2026 Sajid Muhaimin Choudhury
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The names MAVILERA and RISC-VISTA, the MAVILERA logo and the icons are
+project identifiers. The licence grants no rights to use them as trademarks
+(Apache License 2.0, section 6); see TRADEMARKS.md.
+
+Pip, the mascot of the author's book, is not part of this licence: the
+author reserves the copyright in Pip's design and drawings (content/pip/).
+
+This project is independent of, and not endorsed by, RISC-V International,
+Arm, Intel or any other owner of an architecture name mentioned in it.
+Third-party components are listed in THIRD_PARTY.md.

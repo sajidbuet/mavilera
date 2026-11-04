@@ -113,11 +113,27 @@
     .btn-disabled { background: transparent; color: var(--text-2); border: 1px dashed var(--border); cursor: not-allowed; }
     .path { margin: 0; color: var(--text-2); font-size: 14px; }
     .hero-logo { margin: 0; }
-    .hero-logo img { width: min(820px, 100%); height: auto; }
-    /* on narrow screens the logo drops its subtitle, which is then set as text */
-    .hero-expansion { display: none; margin: 8px 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
-                      text-transform: uppercase; color: var(--text-2); }
-    @media (max-width: 600px) { .hero-expansion { display: block; } }
+    .hero-logo img { width: min(640px, 100%); height: auto; }
+    /* the full form of the name, as text after it (author, 2026-11-04): the logo is the lockup without its subtitle */
+    .hero-expansion { margin: 10px 0 0; font-size: 18px; font-weight: 600; letter-spacing: 0.01em; color: var(--text-2); max-width: 40em; }
+    .hero-expansion b { color: var(--primary); font-weight: 700; }
+    @media (max-width: 600px) { .hero-expansion { font-size: 15px; } }
+    /* the header logo: a light sweeps across it on hover or focus; it lifts a little (no movement under reduced motion) */
+    .top .brand { position: relative; display: inline-block; overflow: hidden; border-radius: 4px; }
+    .top .brand img { display: block; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
+    .top .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+                         background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat;
+                         background-size: 250% 100%; }
+    .top .brand:hover img, .top .brand:focus-visible img { filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25)); }
+    @media (prefers-reduced-motion: no-preference) {
+      .top .brand:hover img, .top .brand:focus-visible img { transform: translateY(-1px); }
+      .top .brand:hover::after, .top .brand:focus-visible::after { animation: mv-shine 0.9s ease-out; }
+    }
+    @keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
+    /* the module logos on the cards (name lockups: chip and name) */
+    .card-logo { display: block; align-self: flex-start; height: 34px; width: auto; max-width: 100%; margin: 0 0 4px; }
+    .status.preview { color: var(--insight); border-color: var(--insight); }
+    .arch.tool { border-left: 4px solid var(--primary); }
     .descriptor { margin: 10px 0 0; font-size: 22px; color: var(--text); }
     footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
     footer p { margin: 4px 0; }
@@ -140,18 +156,19 @@
 
   <main id="main">
     <div class="wrap hero">
-      <h1 class="hero-logo"><picture><source media="(max-width: 600px)" srcset="brand/mavilera-lockup.svg" width="1614" height="588"><img src="brand/mavilera-full.svg" width="1615" height="682"
-          alt="MAVILERA: Microprocessor Architecture Visualizer for Interactive Learning, Execution, and Runtime Analysis"></picture></h1>
-      <p class="hero-expansion" aria-hidden="true">Microprocessor Architecture Visualizer for Interactive Learning, Execution, and Runtime Analysis</p>
+      <h1 class="hero-logo"><img src="brand/mavilera-lockup.svg" width="1614" height="588" alt="MAVILERA"></h1>
+      <p class="hero-expansion"><b>M</b>icroprocessor <b>A</b>rchitecture <b>V</b>isualizer for <b>I</b>nteractive <b>L</b>earning, <b>E</b>xecution, and <b>R</b>untime <b>A</b>nalysis</p>
       <p class="descriptor">Interactive Microprocessor Architecture Laboratory</p>
       <p class="tagline">Visualize. Execute. Understand.</p>
       <p class="lead">MAVILERA is an open-source educational platform for exploring microprocessor architecture through
         interactive simulation, visualization, and instruction execution.</p>
       <div class="actions">
         <a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a>
+        <a class="btn btn-secondary" href="riscv/?tool=npu">Launch NPU Laboratory</a>
         <a class="btn btn-secondary" href="sap-1/">Launch SAP-1 Laboratory</a>
         <a class="btn btn-secondary" href="sap-2/">Launch SAP-2 Laboratory</a>
         <a class="btn btn-secondary" href="armv7/">Launch Armv7 Laboratory</a>
+        <a class="btn btn-secondary" href="gpu/">Launch GPU Laboratory (preview)</a>
         <a class="btn btn-secondary" href="#architectures">Explore Architectures</a>
       </div>
       <p class="note">Runs entirely in your browser: no account, no installation, and no program or data is uploaded.</p>
@@ -171,18 +188,24 @@
         <h2 id="h-arch">Architectures</h2>
         <p class="note" style="margin-bottom:16px">Each architecture is a separate simulator with its own address. Only the available ones can be launched.</p>
         <div class="grid">
-          <article class="card arch available"><h3>RISC-V<span class="status ok">Available</span></h3><p>RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths.</p>
+          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-riscv.svg" alt="" width="1233" height="192"><h3>RISC-V<span class="status ok">Available</span></h3><p>RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths. With the NPU tool: a 4 × 4 systolic-array accelerator on the bus, shown from the system down to one processing element.</p>
             <p class="path">Address: <code>/mavilera/riscv/</code></p>
             <div class="actions"><a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a><a class="btn btn-secondary" href="riscv/docs/">Documentation</a></div></article>
-          <article class="card arch available"><h3>SAP-1<span class="status ok">Available</span></h3><p>The simple-as-possible computer: five instructions, sixteen bytes of memory, an accumulator and an adder-subtracter on one bus, each instruction stepped through its six timing states on a drawing of the bus and its controller.</p>
+          <article class="card arch available tool"><img class="card-logo" src="brand/mavilera-name-npu.svg" alt="" width="840" height="192"><h3>NPU<span class="status ok">Available</span></h3><p>A 4 × 4 weight-stationary systolic array of INT8 processing elements on the RISC-V processor's bus: the subsystem, the systolic array, one processing element and the system, with each cycle's transfers animated, an RTL-checked cycle model, and an analysis of offload, roofline and Amdahl's law.</p>
+            <p class="path">Address: <code>/mavilera/riscv/?tool=npu</code> (a tool of the RISC-V Laboratory)</p>
+            <div class="actions"><a class="btn btn-primary" href="riscv/?tool=npu">Launch NPU Laboratory</a></div></article>
+          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-sap-1.svg" alt="" width="1096" height="192"><h3>SAP-1<span class="status ok">Available</span></h3><p>The simple-as-possible computer: five instructions, sixteen bytes of memory, an accumulator and an adder-subtracter on one bus, each instruction stepped through its six timing states on a drawing of the bus and its controller.</p>
             <p class="path">Address: <code>/mavilera/sap-1/</code></p>
             <div class="actions"><a class="btn btn-primary" href="sap-1/">Launch SAP-1 Laboratory</a><a class="btn btn-secondary" href="sap-1/docs/">Documentation</a></div></article>
-          <article class="card arch available"><h3>SAP-2<span class="status ok">Available</span></h3><p>The simple-as-possible computer, version 2: 43 instructions, 64K bytes of memory, a flag pair, CALL and RET, and input and output ports with a keys-and-serial panel; each instruction stepped through its timing states on a drawing of the bus and its controller.</p>
+          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-sap-2.svg" alt="" width="1145" height="192"><h3>SAP-2<span class="status ok">Available</span></h3><p>The simple-as-possible computer, version 2: 43 instructions, 64K bytes of memory, a flag pair, CALL and RET, and input and output ports with a keys-and-serial panel; each instruction stepped through its timing states on a drawing of the bus and its controller.</p>
             <p class="path">Address: <code>/mavilera/sap-2/</code></p>
             <div class="actions"><a class="btn btn-primary" href="sap-2/">Launch SAP-2 Laboratory</a><a class="btn btn-secondary" href="sap-2/docs/">Documentation</a></div></article>
-          <article class="card arch available"><h3>Armv7<span class="status ok">Available</span></h3><p>The 32-bit ARM instruction set of Harris and Harris's ARM edition: assembler and instruction-level simulator, and the textbook's single-cycle, multicycle and pipelined processors animated on their datapaths, each with an Extended datapath for the Chapter 7 exercise extensions.</p>
+          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-armv7.svg" alt="" width="1373" height="192"><h3>Armv7<span class="status ok">Available</span></h3><p>The 32-bit ARM instruction set of Harris and Harris's ARM edition: assembler and instruction-level simulator, and the textbook's single-cycle, multicycle and pipelined processors animated on their datapaths, each with an Extended datapath for the Chapter 7 exercise extensions.</p>
             <p class="path">Address: <code>/mavilera/armv7/</code></p>
             <div class="actions"><a class="btn btn-primary" href="armv7/">Launch Armv7 Laboratory</a><a class="btn btn-secondary" href="armv7/docs/">Documentation</a></div></article>
+          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-gpu.svg" alt="" width="820" height="192"><h3>GPU<span class="status preview">Preview</span></h3><p>A SIMT core: four or eight lanes run one stream of a seven-instruction micro-ISA, with an active mask and a two-deep mask stack for divergent branches; assembler and instruction-level simulator with the lanes' registers. A preview: the core's views come in later releases.</p>
+            <p class="path">Address: <code>/mavilera/gpu/</code></p>
+            <div class="actions"><a class="btn btn-primary" href="gpu/">Launch GPU Laboratory</a></div></article>
           <article class="card arch planned"><h3>MOS 6502<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
             <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>
           <article class="card arch planned"><h3>Intel 8086<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
@@ -228,10 +251,11 @@
         </div>
         <p class="note" style="margin-top:16px">A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.
           Tested browsers for this release: Chrome 156, Edge 151. Only the browsers listed were tested.</p>
-        <p style="margin-top:12px"><a href="riscv/mavilera-riscv-1.1.0.html" download>Download the single-file offline version of the RISC-V Laboratory (1740 kB)</a> ·
-          <a href="sap-1/mavilera-sap-1-1.1.0.html" download>Download the single-file offline version of the SAP-1 Laboratory (706 kB)</a> ·
-          <a href="sap-2/mavilera-sap-2-1.1.0.html" download>Download the single-file offline version of the SAP-2 Laboratory (751 kB)</a> ·
-          <a href="armv7/mavilera-armv7-1.1.0.html" download>Download the single-file offline version of the Armv7 Laboratory (1449 kB)</a> ·
+        <p style="margin-top:12px"><a href="riscv/mavilera-riscv-1.2.0.html" download>Download the single-file offline version of the RISC-V Laboratory (2101 kB)</a> ·
+          <a href="sap-1/mavilera-sap-1-1.2.0.html" download>Download the single-file offline version of the SAP-1 Laboratory (778 kB)</a> ·
+          <a href="sap-2/mavilera-sap-2-1.2.0.html" download>Download the single-file offline version of the SAP-2 Laboratory (823 kB)</a> ·
+          <a href="armv7/mavilera-armv7-1.2.0.html" download>Download the single-file offline version of the Armv7 Laboratory (1538 kB)</a> ·
+          <a href="gpu/mavilera-gpu-1.2.0.html" download>Download the single-file offline version of the GPU Laboratory (668 kB)</a> ·
           <a href="riscv/web-sim-validation.json">validation record</a></p>
       </div>
     </section>
@@ -251,7 +275,7 @@
 
   <footer>
     <div class="wrap">
-      <p><strong>MAVILERA</strong> · Interactive Microprocessor Architecture Laboratory · release 1.1.0, 2026-11-02: RISC-V Laboratory, SAP-1 Laboratory, SAP-2 Laboratory, Armv7 Laboratory</p>
+      <p><strong>MAVILERA</strong> · Interactive Microprocessor Architecture Laboratory · release 1.2.0, 2026-11-04: RISC-V Laboratory, SAP-1 Laboratory, SAP-2 Laboratory, Armv7 Laboratory, GPU Laboratory</p>
       <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="riscv/docs/">RISC-V documentation</a> · <a href="https://github.com/sajidbuet/mavilera">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
       <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
     </div>
