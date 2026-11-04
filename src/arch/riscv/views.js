@@ -8,7 +8,12 @@
 import { STOP } from '../contract.js';
 import { STRINGS } from '../../ui/strings.js';
 import { RISCV_STRINGS as RV } from './strings.js';
-import { hex8 } from '../../ui/dom.js';
+import { el, hex8 } from '../../ui/dom.js';
+import { infoButton } from '../../ui/info-button.js';
+import { labRows } from './lab-rows.js';
+import { buildMemsys, defaultConfig } from '../../mem/config.js';
+import { Platform } from '../../mem/platform.js';
+import { withNpuSignals } from '../../mem/npu-wave.js';
 
 const REG_IDS = Array.from({ length: 32 }, (_, i) => `x${i}`);
 const PROFILE = { single: 'ch06', multi: 'ch07', pipe: 'ch08' };
@@ -33,9 +38,22 @@ function target(t) {
 function dataAccess(id, m) {
   const c = m.evaluate();
   const s = c.signals;
-  if (id === 'single') return s.MemWrite || s.ResultSel === 1 ? { address: s.alu_y >>> 0, size: 4 } : null;
+  if (id === 'single') return s.MemWrite || s.ResultSel === 1 ? { address: s.alu_y >>> 0, size: 4, write: Boolean(s.MemWrite), value: (s.MemWrite ? s.rs2_val : s.rdata) >>> 0 } : null;
   if (id === 'multi') return c.state === 'MEMRD' || s.MemWrite ? { address: s.addr >>> 0, size: 4 } : null;
   return s.MemWrite_mem || s.MemRead_mem ? { address: s.exres_mem >>> 0, size: 4 } : null;
+}
+
+/**
+ * The view's export model (golden, VCD, waveforms). With the platform devices on, a fresh memory system of the same
+ * setting and a fresh platform with the view's pin script and received bytes, so that a program that uses a device
+ * replays as in the view, and the NPU's signals join the frames (NPU-3); otherwise ideal memory, as before.
+ */
+function exportModel(v, memsys, ctx) {
+  const pl = memsys?.platform;
+  if (!pl) return v.exportModel();
+  const platform = new Platform({ ...pl.config, stimulus: pl.gpio.stim, rx: pl.uart?.rxStim ?? pl.config.rx });
+  const fresh = buildMemsys(ctx.memConfig?.() ?? { ...defaultConfig(), devices: true }, { platform }).memsys;
+  return withNpuSignals(v.exportModel(fresh), platform);
 }
 
 /**
@@ -56,7 +74,12 @@ function datapath(id, v, ctx, { title, infoTitle, tabs, memoryTab, format = null
       if (id === 'single') v.load(p, p?.subset ?? null); else v.load(p);
     },
     reset: () => v.reset(),
-    step: () => stopOf(v.step()),
+    step: () => {
+      const r = stopOf(v.step());
+      const npu = m().memsys?.platform?.npu;
+      if (r === STOP.NONE && npu?.stopRequested) { npu.stopRequested = false; return STOP.WATCH; } // RESULT read while busy (G5)
+      return r;
+    },
     back: () => v.back(),
     render: () => v.render(),
     state: () => {
@@ -82,7 +105,8 @@ function datapath(id, v, ctx, { title, infoTitle, tabs, memoryTab, format = null
     counters: () => {
       const R = RV.pipe.cpiRows;
       const s = m().stats;
-      return id === 'pipe' ? [[R.stalls, s.loadUse], [R.redirects, s.redirects], [R.mispredicts, s.mispredicts]] : [];
+      return [...(id === 'pipe' ? [[R.stalls, s.loadUse], [R.redirects, s.redirects], [R.mispredicts, s.mispredicts]] : []),
+        ...labRows(m().memsys?.platform)]; // the Chapter 11 laboratory measurement (NPU-2)
     },
     dataAccess: () => {
       try {
@@ -95,7 +119,7 @@ function datapath(id, v, ctx, { title, infoTitle, tabs, memoryTab, format = null
     ...(v.breakAt ? { breakAt: () => v.breakAt() } : {}), // multicycle: only at a FETCH
     ...(v.stopReason ? { event: () => v.stopReason() } : {}), // pipelined: a stall, flush or misprediction (WS-F-091)
     ...(v.stepInstruction ? { unit: { label: RV.multi.stepInstr, step: () => stopOf(v.stepInstruction()), back: () => v.backInstruction() } } : {}),
-    exportModel: () => v.exportModel(),
+    exportModel: () => exportModel(v, m().memsys, ctx),
     waveform: { defaults: WAVE_DEFAULTS[id], ...(format ? { format } : {}) },
     revision: () => `${JSON.stringify(v.options ?? null)}|${v.jalr ?? ''}|${v.early ?? ''}|${program?.subset ?? ''}`,
     ...(v.applyOptions ? { options: { get: () => v.options, apply: (o) => v.applyOptions(o) } } : {}),
@@ -121,6 +145,74 @@ export function pipe(v, ctx) {
   return datapath('pipe', v, ctx, { title: P.panel, infoTitle: P.info, memoryTab: RV.single.tabMemory,
     tabs: [[P.tabDiagram, v.diagramBox], [P.tabHazards, v.hazardsBox], [P.tabSummary, v.summaryBox], [P.tabRegisters, v.registersBox],
       [P.tabPredictor, v.predictorBox], [P.tabCpi, v.cpiBox], [P.tabSignals, v.signalsBox]] });
+}
+
+const NPU_WAVE_DEFAULTS = ['pc', 'instr', 'MemWrite', 'npu.sel_acc', 'npu.d_addr', 'npu.busy', 'npu.w_load', 'npu.run', 'npu.step'];
+
+/**
+ * A memory system with the platform devices for the NPU tool's views: the shell's when it has them, else one of the
+ * same setting with a default platform (ViewContext.memConfig: a view that builds its own models).
+ */
+function withDevices(ms, ctx) {
+  if (ms?.platform) return ms;
+  const cfg = { ...(ctx.memConfig?.() ?? defaultConfig()), devices: true };
+  return buildMemsys(cfg, { platform: new Platform() }).memsys;
+}
+
+/**
+ * The NPU tool's single-cycle view (NPU-3): the single-cycle view of Chapter 6, always with the platform devices, its
+ * drawing extended by the NPU on the data bus (`sv` built with npu-datapath.js), the NPU signals among the waveforms'.
+ */
+export function npuSingle(sv, ctx) {
+  sv.setMemsys(withDevices(null, ctx));
+  const x = single(sv, ctx);
+  // the NPU block opens the NPU view (the shell's command `view:<id>`)
+  sv.dp.setLinks({ npu: true }, () => ctx.command?.('view:npu'), { npu: RV.npuView.npuName });
+  return { ...x, title: RV.npuView.singlePanel, setMemsys: (ms) => sv.setMemsys(withDevices(ms, ctx)), waveform: { defaults: NPU_WAVE_DEFAULTS } };
+}
+
+/**
+ * The NPU tool's NPU view (NPU-3): the main pane shows the platform's NPU at its four levels (`nv`, src/ui/npu-view.js);
+ * the single-cycle processor `sv` runs the program behind it (stepping, registers, counters, waveforms, exports as in
+ * the single-cycle view), always with the platform devices.
+ */
+export function npu(sv, nv, ctx) {
+  const N = RV.npuView;
+  const S = RV.single;
+  sv.setMemsys(withDevices(null, ctx));
+  const d = datapath('single', sv, ctx, { title: N.panel, infoTitle: N.info, memoryTab: S.tabMemory,
+    tabs: [[S.tabCycle, sv.cycleBox], [S.tabControl, sv.controlBox]] });
+  const root = el('div.npu-main.scroll', {}, nv.root);
+  // what drives the view, behind an information button in the heading (a hover shows it; a press opens it)
+  const info = infoButton([N.note], N.about);
+  const render = () => {
+    sv.render();
+    const a = d.dataAccess();
+    // both of the cycle shown: the access its instruction makes, and the one the edge into it completed (NPU-5)
+    const last = sv.loaded ? sv.model.last : null;
+    nv.update({ dev: { platform: sv.model.memsys?.platform ?? null }, accessed: a ? { addr: a.address, size: a.size, write: a.write, value: a.value } : null,
+      completed: last && !last.wait && last.acc ? { ...last.acc, size: 4 } : null });
+  };
+  // the heading: the note behind the i button, and the NPU drawings' flow speed (NPU-5)
+  const headerTools = el('span.npu-htools', {}, info, nv.flow.root);
+  return {
+    ...d, root, diagrams: [], render, headerTools, // the hidden processor's Display menu does not apply here
+    setMemsys: (ms) => sv.setMemsys(withDevices(ms, ctx)),
+    waveform: { defaults: NPU_WAVE_DEFAULTS },
+  };
+}
+
+/**
+ * The NPU tool's Analysis view (NPU-4): Chapter 11's offload breakdown, comparison and analytical panels
+ * (ui/analysis-view.js); it measures the session's assembled program itself (profile ch11), nothing to step.
+ */
+export function analysis(v) {
+  const none = () => STOP.NONE;
+  return {
+    root: v.root, title: RV.analysis.panel, infoTitle: '', tabs: [],
+    load: (p) => v.load(p ?? null),
+    step: none, back: () => false, state: () => null, render: () => {},
+  };
 }
 
 /** The comparison of the three processors (WS-F-060): it assembles the program's files for each itself. */

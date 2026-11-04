@@ -259,7 +259,7 @@ try {
       must(sameSet(pane, ['datapath', 'info']), `shows ${pane}`);
       const box = await p.eval(`(() => { const r = document.querySelector('.pz-view').getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height, bar: document.querySelectorAll('.pz-bar .pz-btn').length }; })()`);
       must(box.w > 300 && box.h > 150, `the drawing is ${box.w} x ${box.h}`);
-      must(box.bar === 5, `${box.bar} view buttons`);
+      must(box.bar === 7, `${box.bar} view buttons`); // zoom out, level, zoom in, fit, fit width, fit height, pan
       const level = () => p.eval(`document.querySelector('.pz-level').textContent`);
       const fit = await level();
       await p.eval(`document.querySelectorAll('.pz-bar .pz-btn')[2].click(), true`);

@@ -132,6 +132,84 @@
       ]
     },
     {
+      "id": "npu",
+      "title": "The NPU",
+      "blocks": [
+        {
+          "p": "The NPU tool (the switcher's NPU entry) is a laboratory system: a 4 × 4 weight-stationary systolic array of INT8 processing elements with 32-bit accumulators, a memory-mapped peripheral at 0x5000_0000 beside the GPIO, the timer and the UART. The processor reaches it with lw and sw only. Its views are ISA, Single-cycle (the single-cycle datapath with the NPU on the data bus), NPU (the peripheral at four levels: subsystem, systolic array, processing element, system) and Analysis."
+        },
+        {
+          "dl": [
+            [
+              "0x00 CTRL (write)",
+              "Bit 0 starts, bit 1 clears the accumulators and done; both bits: clear, then start."
+            ],
+            [
+              "0x04 STATUS (read)",
+              "Bit 0 busy, bit 1 done."
+            ],
+            [
+              "0x10–0x1C WEIGHT[i]",
+              "Row i of W: W[i][j] in bits 8j+7 to 8j."
+            ],
+            [
+              "0x20–0x2C ACT[j]",
+              "x[j] in bits 7 to 0; the higher bits are ignored; a read gives the value sign-extended."
+            ],
+            [
+              "0x30–0x3C RESULT[i] (read)",
+              "The INT32 accumulator: each start adds y[i] = Σ W[i][j] x[j]."
+            ]
+          ]
+        },
+        {
+          "ul": [
+            "A start keeps the NPU busy for 2N + 1 = 9 cycles: one to copy the weights into the processing elements, eight for the array. Writes to CTRL, WEIGHT and ACT while it is busy are ignored (the NPU view marks them); a program learns that the run has finished only by reading STATUS.","The controller's step counts 0 to 7 during the run and keeps its last value while the NPU is idle, until the next run starts.","The systolic-array level's Register boundaries option draws where each processing element registers its activation and partial sum: a value crosses one dashed line per step.","In the NPU view only the blocks a cycle uses stay lit: the subsystem shows each transfer on its path (a store through the register interface into WEIGHT, ACT or CTRL; a load of STATUS or RESULT back to the processor; the weights into the PEs in LOADW; x[r] into row r, the multiply-adds and the column sums into RESULT in RUN), with a tag at its destination and the same in words below the drawing; the processing element shows its own step. The subsystem and the system both show two accesses of the cycle: the transfer just completed, whose data the registers now hold (solid, marked Completed), and the access of the instruction executing in the cycle (dashed, its tag marked next, its words This cycle). Signal flow, in the panel heading, animates them (off when the system asks for reduced motion).",
+            "Other offsets read 0 and ignore writes. The NPU takes whole words: a byte or half-word access is a bus fault (the simulator's choice).",
+            "A read of RESULT while the NPU is busy returns the partly accumulated value and gives a warning; the run may stop there (the simulator's choice)."
+          ]
+        },
+        {
+          "p": "The Analysis view measures the program in the editor on the laboratory profile (RV32IM with the devices, one cycle per instruction, as on the single-cycle processor), on its own data or on the laboratory data sets of 1, 4 and 16 vectors placed at address 0. Its tabs:"
+        },
+        {
+          "dl": [
+            [
+              "Offload",
+              "Every executed instruction in one class (send the weights, send x and start, poll STATUS, copy the results, markers, loop control and other), counted over the run, between the GPIO markers and per vector, between two starts. The rules are given under the table; they look at what each instruction does, not at the program's name."
+            ],
+            [
+              "Compare",
+              "The cycles of the three laboratory templates (shift-and-add, with mul, NPU) and of your program, for 1, 4 and 16 vectors, with the speed-ups and the cycles per vector."
+            ],
+            [
+              "Roofline",
+              "Three illustrative machines (editable), three example kernels and a kernel of yours given by operations and bytes; below, a roof for the laboratory system (one 32-bit word per cycle on the bus, 32 operations per cycle for the array) with the point of your run, and what was counted to place it."
+            ],
+            [
+              "Amdahl, Layer, Accumulator, Quantisation",
+              "Calculators for Amdahl's law over many lanes, the MACs of a fully connected layer or a 3 × 3 convolution, the accumulator width of INT8 products and the scale and zero point of a quantised range."
+            ]
+          ]
+        },
+        {
+          "p": "Practice exercises for the NPU (the group NPU (laboratory profile) of the practice exercises) run on the laboratory profile; their tests check the words your program stores. No solutions are shipped."
+        },
+        {
+          "p": "What is not modelled:"
+        },
+        {
+          "ul": [
+            "Wait states: the bus moves one word per cycle with no delay, as in the laboratory.",
+            "Interrupts from the NPU, DMA, double buffering, packed activations and results requantised to INT8; an array size other than 4 on the bus (the systolic-array level explores N = 2, 3 and 4 on its own).",
+            "Output-stationary or row-stationary dataflows and tensor cores.",
+            "The NPU on the multicycle and pipelined processors: the NPU tool times it on the instruction level and the single-cycle processor only.",
+            "Hardware: the signals of the waveforms and the VCD file are the simulator's model, not nets of a hardware description, and simulated cycles are not FPGA measurements."
+          ]
+        }
+      ]
+    },
+    {
       "id": "files",
       "title": "Files, sharing and exports",
       "blocks": [

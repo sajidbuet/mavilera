@@ -1,5 +1,6 @@
 // profiles.js -- machine profiles: ISA subset, memory map and halting rule
-// (spec §6, WS-F-001 to WS-F-004). `memory` names the memory organisation:
+// (spec §6, WS-F-001 to WS-F-004). `priv`: traps and the platform devices; `devices`:
+// the platform devices alone. `memory` names the memory organisation:
 // 'sparse' (one byte-addressed memory), 'harvard' (instruction and data
 // memories of `words` words each) or 'unified' (one memory of `words` words).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
@@ -48,5 +49,13 @@ export const PROFILES = Object.freeze({
   ch08: Object.freeze({
     id: 'ch08', chapter: 8, processor: 'pipelined processor', isa: new Set(CH06),
     textBase: 0x00000000, dataBase: 0x00000000, stackTop: null, memory: 'harvard', words: 256,
+  }),
+  // The Chapter 11 laboratory on the instruction level (NPU-2): the SoC's Harvard memories (RAM of 1024 words, as
+  // soc_npu.sv) and the platform devices at their slots, the NPU at 0x5000_0000 (decision G1); one instruction is one
+  // cycle, as on the laboratory's single-cycle core, and no traps (`devices` without `priv`). RV32I + M, as the book's
+  // simulator, which runs sw_mv_m (Table 11.5); the single-cycle view keeps the Chapter 6 instructions.
+  ch11: Object.freeze({
+    id: 'ch11', chapter: 11, processor: 'laboratory processor', isa: new Set([...RV32I, ...M_EXT]), devices: true,
+    textBase: 0x00000000, dataBase: 0x00000000, stackTop: null, memory: 'harvard', words: 1024,
   }),
 });

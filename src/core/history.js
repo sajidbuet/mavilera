@@ -56,8 +56,8 @@ export class History {
       this.size += 1;
     }
     let info = h.d_cls | (h.d_rd << RD_SHIFT) | (h.d_memSize << MEM_SHIFT) | (h.d_halt ? HALT_BIT : 0);
-    // iss-priv: the state saved before the step, a step that did not take one cycle, a trap step
-    const priv = Boolean(h.priv) && (h.d_priv !== null || h.d_dcyc !== 1);
+    // iss-priv and ch11: the state saved before the step, a step that did not take one cycle, a trap step
+    const priv = Boolean(h.platform) && (h.d_priv !== null || h.d_dcyc !== 1);
     if (h.d_outLen || h.d_spChanged || h.d_abiChanged || priv) {
       info |= EXTRA_BIT;
       const e = {
@@ -107,7 +107,7 @@ export class History {
         if (e.priv) h.restorePriv(e.priv);
       }
     }
-    if (h.priv) h.cycle -= dcyc;
+    if (h.platform) h.cycle -= dcyc;
     return true;
   }
 

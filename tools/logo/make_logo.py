@@ -208,6 +208,50 @@ def armv7_header(x):
     seven = digit_7(x); x += 150
     return union([A, R, M, v, seven]), x
 
+def letter_N(x0):
+    """N, 200 wide: stems as wide as the M's (51.25) with its flat tops (58), and a diagonal of the same slant at both
+    ends (point-symmetric), about 52 thick at right angles, as heavy as the M's diagonals."""
+    w, st, top = 200.0, 51.25, 58.0
+    s = 1.087                                  # dy/dx of the diagonal: (B - T) - s (w - 2 top) = 52 sqrt(1 + s^2)
+    ya = T + s * (w - st - top); yb = B - s * (w - st - top)
+    return poly([(x0, T), (x0 + top, T), (x0 + w - st, ya), (x0 + w - st, T), (x0 + w, T), (x0 + w, B),
+                 (x0 + w - top, B), (x0 + st, yb), (x0 + st, B), (x0, B)])
+
+def letter_U(x0):
+    """U, 170 wide, in the C's construction: stems 51 wide, a bottom bar as thick as the C's (46), outer corners of
+    radius 52.5 and inner corners of 8.5."""
+    xr = x0 + 170; ro, ri = 52.5, 8.5
+    b = Builder()
+    b.M((x0, T)).L((x0, B - ro)).A((x0 + ro, B - ro), ro, math.pi, math.pi / 2)
+    b.L((xr - ro, B)).A((xr - ro, B - ro), ro, math.pi / 2, 0)
+    b.L((xr, T)).L((xr - 51, T)).L((xr - 51, 628 - ri)).A((xr - 51 - ri, 628 - ri), ri, 0, math.pi / 2)
+    b.L((x0 + 51 + ri, 628)).A((x0 + 51 + ri, 628 - ri), ri, math.pi / 2, math.pi)
+    b.L((x0 + 51, T)).Z()
+    return b.path
+
+def letter_G(x0):
+    """G, 180 wide: the C's top bar and left bowl, a bottom-right corner like the U's rising to a crossbar at the
+    height and thickness of the E's middle arm (570 to 610), 80 long."""
+    xr = x0 + 180; ro, ri = 52.5, 8.5
+    b = Builder()
+    b.M((xr, T)).L((x0 + ro, T)).A((x0 + ro, T + ro), ro, -math.pi / 2, -math.pi)
+    b.L((x0, B - ro)).A((x0 + ro, B - ro), ro, math.pi, math.pi / 2)
+    b.L((xr - ro, B)).A((xr - ro, B - ro), ro, math.pi / 2, 0)
+    b.L((xr, 570)).L((xr - 80, 570)).L((xr - 80, 610)).L((xr - 51, 610)).L((xr - 51, 628 - ri))
+    b.A((xr - 51 - ri, 628 - ri), ri, 0, math.pi / 2)
+    b.L((x0 + 59.5, 628)).A((x0 + 59.5, 628 - ri), ri, math.pi / 2, math.pi)
+    b.L((x0 + 51, 552 + ri)).A((x0 + 59.5, 552 + ri), ri, math.pi, 1.5 * math.pi)
+    b.L((xr, 552)).Z()
+    return b.path
+
+def accel_header(x, first):
+    """'NPU' or 'GPU' (first = 'N' or 'G') in the wordmark's construction from x; returns (path, right edge)."""
+    if first == 'N': F = letter_N(x); x += 200 + 22
+    else: F = letter_G(x); x += 180 + 22
+    P = letter_P(x); x += 174 + 22
+    U = letter_U(x); x += 170
+    return union([F, P, U]), x
+
 def wordmark():
     navy = union([letter_M(), letter_A1(), letter_V(), letter_I(), letter_L(), letter_E(), letter_R(), letter_A2()])
     light = union([tri_A1(), tri_A2()])
@@ -371,19 +415,33 @@ def padded(b, pad, square=False):
         return (cx - s / 2 - pad, cy - s / 2 - pad, s + 2 * pad, s + 2 * pad)
     return (x0 - pad, y0 - pad, w + 2 * pad, h + 2 * pad)
 
+TOOL_NAMES = {  # key: (the name after the chip, as built from its left end x; its title)
+    'riscv': (lambda x: riscv_header(x)[0], 'RISC-V'), 'sap1': (lambda x: sap1_header(x)[0], 'SAP-1'),
+    'sap2': (lambda x: sap_header(x, 2)[0], 'SAP-2'), 'armv7': (lambda x: armv7_header(x)[0], 'ARMv7'),
+    'npu': (lambda x: accel_header(x, 'N')[0], 'NPU'), 'gpu': (lambda x: accel_header(x, 'G')[0], 'GPU'),
+}
+
 def module_headers(only):
-    """The tool-header lockups of the modules named in `only` (no fonts needed): {file name: svg}."""
+    """The tool-header lockups (MAVILERA, chip, name) of the modules named in `only`, and with the key 'names' the
+    name lockups of all tools (chip and name alone, at the header's coordinates: the switcher's entries); no fonts
+    needed. {file name: svg}."""
     wn, wl = wordmark()
     cx0 = 1671.8 + 60; body, core = chip(cx0)
     x = cx0 + 2 * PIN + (B - T - 2 * PIN) + 60
-    make = {'armv7': (lambda: armv7_header(x)[0], 'mavilera-armv7-header', 'MAVILERA ARMv7')}  # ARM-A2 (W-D35)
     files = {}
     for key in only:
-        build, name, title = make[key]
-        h = build()
+        if key == 'names':
+            for k, (build, title) in TOOL_NAMES.items():
+                h = build(x)
+                for dark in (False, True):
+                    files['mavilera-%s-name%s.svg' % (k, '-dark' if dark else '')] = svg(
+                        [('n', core), ('l', union([body, h]))], padded(bounds([body, h]), 12), title, dark)
+            continue
+        build, title = TOOL_NAMES[key]  # armv7: ARM-A2 (W-D35); npu, gpu: 2026-11-04
+        h = build(x)
         for dark in (False, True):
-            files['%s%s.svg' % (name, '-dark' if dark else '')] = svg([('n', union([wn, core])), ('l', union([wl, body, h]))],
-                                                                    padded(bounds([wn, body, h]), 12), title, dark)
+            files['mavilera-%s-header%s.svg' % (key, '-dark' if dark else '')] = svg(
+                [('n', union([wn, core])), ('l', union([wl, body, h]))], padded(bounds([wn, body, h]), 12), 'MAVILERA ' + title, dark)
     return files
 
 def main():
@@ -446,6 +504,8 @@ def main():
         sfx = '-dark' if dark else ''
         files['mavilera-sap2-header%s.svg' % sfx] = svg([('n', union([wn, core])), ('l', union([wl, body, s2h]))],
                                                        padded(bounds([wn, body, s2h]), 12), 'MAVILERA SAP-2', dark)
+    # the accelerators' header lockups and every tool's name lockup (the switcher's entries)
+    files.update(module_headers(['npu', 'gpu', 'names']))
     # application icon: the microprocessor symbol of the header lockup (square, legible at 16 px)
     ib = padded(bounds([body]), 6, square=True)
     for dark in (False, True):

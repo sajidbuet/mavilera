@@ -32,7 +32,7 @@ import { buildOffline } from './offline.mjs';
 import { minify } from './minify.mjs';
 
 const DIST = join(ROOT, 'dist');
-const SIZE_LIMIT = 1310720; // WS-N-004 as raised by W-D31 (2026-10-31): 1.25 MB per application, without examples
+const SIZE_LIMIT = 2097152; // WS-N-004 as raised by W-D38 (draft, 2026-11-04; 1.25 MB by W-D31): 2 MB per application, without examples
 const BASE = process.env.BASE_PATH ?? '/mavilera/';
 const SITE_URL = `${process.env.SITE_ORIGIN ?? 'https://sajidlab.org'}${BASE}`;
 const REPO_URL = 'https://github.com/sajidbuet/mavilera';
@@ -172,7 +172,7 @@ self.addEventListener('fetch', (e) => {
   b.bytes = listFiles(APP, APP).filter((p) => !/\/content\/(?:[\w-]+\/)?(?:examples|templates)\//.test(p)
     && !p.startsWith('docs/') && p !== b.offlineFile && !['web-sim-validation.json', 'LICENSE', 'NOTICE'].includes(p))
     .reduce((n, p) => n + statSync(join(APP, p)).size, 0);
-  if (b.bytes >= SIZE_LIMIT) gates.push(`${a.id}: application ${b.bytes} bytes without examples, over 1.25 MB (WS-N-004, W-D31)`);
+  if (b.bytes >= SIZE_LIMIT) gates.push(`${a.id}: application ${b.bytes} bytes without examples, over 2 MB (WS-N-004, W-D38)`);
   headers.push(`/${a.path}assets/*\n  Cache-Control: public, max-age=31556952, immutable\n/${a.path}sw.js\n  Cache-Control: no-cache\n/${a.path}index.html\n  Cache-Control: no-cache\n`);
 }
 
@@ -190,18 +190,29 @@ for (const p of listFiles(join(ROOT, 'content/branding/mavilera'))) {
 // the architecture registry (site/architectures.json) is the source of the cards; a module is linked
 // only when it is available and its build is present, and a planned one must not have a route
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+// each card shows its module's name lockup (chip and name) where one exists (author, 2026-11-04); the name stays text
+const logoOf = (id) => (existsSync(join(ROOT, 'content/branding/mavilera', `mavilera-name-${id}.svg`))
+  ? `<img class="card-logo" src="brand/mavilera-name-${id}.svg" alt="" width="${(/viewBox="0 0 (\d+) 192"/.exec(read(`content/branding/mavilera/mavilera-name-${id}.svg`)) ?? [0, 820])[1]}" height="192">` : '');
+// a tool inside a module (the NPU in RISC-V): its card follows its module's and links into it; it is not built on its own
+const tools = JSON.parse(read('site/architectures.json')).tools ?? [];
+const toolCard = (t) => `          <article class="card arch available tool">${logoOf(t.id)}<h3>${esc(t.name)}<span class="status ok">Available</span></h3><p>${esc(t.description)}</p>
+            <p class="path">Address: <code>${BASE}${esc(t.path)}</code> (a tool of the ${esc(registry().find((a) => a.id === t.module)?.name ?? t.module)} Laboratory)</p>
+            <div class="actions"><a class="btn btn-primary" href="${esc(t.path)}">Launch ${esc(t.name)} Laboratory</a></div></article>`;
 const cards = registry().map((a) => {
   const built = existsSync(join(DIST, a.path, 'index.html'));
   if (a.status === 'available' && !built) gates.push(`registry: ${a.id} is available but ${a.path}index.html is not built`);
   if (a.status !== 'available' && built) gates.push(`registry: ${a.id} is ${a.status} but its build is present`);
+  const own = tools.filter((t) => t.module === a.id && a.status === 'available').map(toolCard);
   if (a.status === 'available') {
-    return `          <article class="card arch available"><h3>${esc(a.name)}<span class="status ok">Available</span></h3><p>${esc(a.description ?? '')}</p>
+    const badge = a.preview ? '<span class="status preview">Preview</span>' : '<span class="status ok">Available</span>';
+    return [`          <article class="card arch available">${logoOf(a.id)}<h3>${esc(a.name)}${badge}</h3><p>${esc(a.description ?? '')}</p>
             <p class="path">Address: <code>${BASE}${a.path}</code></p>
-            <div class="actions"><a class="btn btn-primary" href="${a.path}">Launch ${esc(a.name)} Laboratory</a>${a.docs ? `<a class="btn btn-secondary" href="${a.docs}">Documentation</a>` : ''}</div></article>`;
+            <div class="actions"><a class="btn btn-primary" href="${a.path}">Launch ${esc(a.name)} Laboratory</a>${a.docs ? `<a class="btn btn-secondary" href="${a.docs}">Documentation</a>` : ''}</div></article>`, ...own].join('\n');
   }
   return `          <article class="card arch planned"><h3>${esc(a.name)}<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
             <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>`;
 }).join('\n');
+for (const t of tools) if (registry().find((a) => a.id === t.module)?.status !== 'available') gates.push(`registry: the tool ${t.id} lives in ${t.module}, which is not available`);
 // the landing page names every available module (author, 2026-10-29): RISC-V's launch button is the template's own,
 // the others' follow it; one offline download per module; the footer lists the modules of the release
 const unfilled = '[not built]';
@@ -213,8 +224,8 @@ const fields = {
   REPO_URL,
   DATE: conf.date ?? unfilled,
   BROWSERS: browsers.length ? browsers.join(', ') : unfilled,
-  LAUNCH_OTHERS: builds.filter((b) => b.entry.id !== 'riscv')
-    .map((b) => `        <a class="btn btn-secondary" href="${b.entry.path}">Launch ${lab(b)}</a>`).join('\n'),
+  LAUNCH_OTHERS: [...tools.map((t) => `        <a class="btn btn-secondary" href="${esc(t.path)}">Launch ${esc(t.name)} Laboratory</a>`),
+    ...builds.filter((b) => b.entry.id !== 'riscv').map((b) => `        <a class="btn btn-secondary" href="${b.entry.path}">Launch ${lab(b)}${b.entry.preview ? ' (preview)' : ''}</a>`)].join('\n'),
   DOWNLOADS: builds.map((b) => `<a href="${b.entry.path}${b.offlineFile}" download>Download the single-file offline version of the ${lab(b)} `
     + `(${Math.round(Buffer.byteLength(b.offline.html) / 1024)} kB)</a>`).join(' ·\n          '),
   MODULES: builds.map((b) => lab(b)).join(', '),

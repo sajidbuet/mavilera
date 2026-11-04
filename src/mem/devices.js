@@ -62,6 +62,9 @@ export class Gpio extends Base {
     this.out = 0; this.dir = 0; this.inp = 0; this.irqEn = 0; this.irqPend = 0;
     this.si = 0;
     this.now = 0;
+    // The markers of a measurement (Chapter 11 laboratory, tb_npu_soc): every change of OUT, with the cycle of the
+    // store that made it (the store arrives one cycle later) and the new value. Its length is part of the saved state.
+    this.changes = [];
   }
 
   static source(bit) { return bit === BUTTON_BIT ? 'button' : `gpio${bit}`; }
@@ -83,6 +86,7 @@ export class Gpio extends Base {
   write(offset, size, value, ctx) {
     const v = value >>> 0;
     this.touch();
+    const was = this.out;
     switch (offset) {
       case 0x00: this.out = v; break;
       case 0x08: this.dir = v; break;
@@ -103,6 +107,7 @@ export class Gpio extends Base {
       }
       default: break; // IN and the unused offsets ignore writes
     }
+    if (this.out !== was) this.changes.push({ cycle: ctx.cycle - 1, out: this.out });
     this.emit();
   }
 
@@ -136,9 +141,12 @@ export class Gpio extends Base {
 
   nextEvent() { return this.si < this.stim.length ? this.stim[this.si].cycle : null; }
 
-  snapshot() { return { out: this.out, dir: this.dir, inp: this.inp, irqEn: this.irqEn, irqPend: this.irqPend, si: this.si }; }
+  snapshot() { return { out: this.out, dir: this.dir, inp: this.inp, irqEn: this.irqEn, irqPend: this.irqPend, si: this.si, nChanges: this.changes.length }; }
 
-  restore(s) { Object.assign(this, s); }
+  restore({ nChanges, ...s }) {
+    Object.assign(this, s);
+    this.changes.length = nChanges ?? this.changes.length;
+  }
 }
 
 export class Timer extends Base {

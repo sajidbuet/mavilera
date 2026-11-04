@@ -78,6 +78,7 @@ export function normalisePlatform(p) {
     stimulus: events(p.stimulus, ['mask', 'value']), rx: events(p.rx, ['byte']).map((e) => ({ ...e, byte: e.byte & 0xff })),
     mtimeDiv: int(p.mtimeDiv, 1, 1_000_000, 1), trapEntry: int(p.trapEntry, 0, 1000, 3),
     mtvalZero: Boolean(p.mtvalZero), trapCheck: Boolean(p.trapCheck), uart: p.uart !== false, txCycles: int(p.txCycles, 1, 1000, 4),
+    npu: p.npu !== false, npuStop: Boolean(p.npuStop), // the Chapter 11 NPU at 0x5000_0000 (decisions G1, G5)
   };
 }
 

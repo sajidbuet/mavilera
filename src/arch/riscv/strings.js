@@ -11,7 +11,7 @@ const orList = (xs) => {
 };
 
 // The processor of a datapath profile, by its number (profiles.js `chapter`), for messages.
-const PROCESSOR = Object.freeze({ 6: 'single-cycle', 7: 'multicycle', 8: 'pipelined' });
+const PROCESSOR = Object.freeze({ 6: 'single-cycle', 7: 'multicycle', 8: 'pipelined', 11: 'laboratory' });
 
 export const RISCV_STRINGS = Object.freeze({
   appFull: 'RISC-V Laboratory',
@@ -490,6 +490,7 @@ export const RISCV_STRINGS = Object.freeze({
   capability: Object.freeze({
     trapsNeedPriv: 'Traps and privileged state need the profile "ISA with traps and devices".',
     privNoWorker: 'On the profile with traps and devices a run stays on this page, so that the devices can be watched.',
+    devicesNoWorker: 'On the laboratory profile a run stays on this page, so that the devices can be watched.',
   }),
   tools: Object.freeze({ zero: 'x0 is hard-wired to zero', colAlias: 'ABI' }),
   colValue: 'Word value',
@@ -526,7 +527,8 @@ export const RISCV_STRINGS = Object.freeze({
     },
   }),
 
-  profileNames: { iss: 'ISA (RV32I + M)', 'iss-priv': 'ISA with traps and devices', ch06: 'Single-cycle processor', ch07: 'Multicycle processor', ch08: 'Pipelined processor' },
+  profileNames: { iss: 'ISA (RV32I + M)', 'iss-priv': 'ISA with traps and devices', ch06: 'Single-cycle processor', ch07: 'Multicycle processor', ch08: 'Pipelined processor',
+    ch11: 'Laboratory SoC with the NPU' },
 
   memGoSp: 'Show the memory at the stack pointer (sp = x2)',
 
@@ -534,6 +536,14 @@ export const RISCV_STRINGS = Object.freeze({
     jump: 'Jump', mul: 'Multiply', div: 'Divide', system: 'System' },
 
   stackUse: 'Deepest stack use (bytes)',
+
+  // the Chapter 11 laboratory measurement (NPU-2): GPIO OUT markers and the NPU's counters
+  lab: Object.freeze({
+    span: (a, b) => `Cycles from marker ${a} to ${b}`,
+    npuAccesses: 'NPU accesses', statusReads: 'NPU STATUS reads', runs: 'NPU runs started',
+    ignoredWrites: 'NPU writes ignored (busy)',
+    diagnostic: (msg, cycle) => `NPU, cycle ${cycle}: ${msg}.`,
+  }),
 
   profileError: (mn, ch) => `${mn} is not implemented by the ${PROCESSOR[ch]} processor.`,
 
@@ -571,6 +581,79 @@ export const RISCV_STRINGS = Object.freeze({
   viewPipe: 'Pipelined',
 
   viewCompare: 'Compare',
+  viewNpu: 'NPU',
+
+  // the NPU view (NPU-3): the Chapter 11 NPU drawn in the main pane, the program run by the single-cycle processor
+  npuView: {
+    panel: 'NPU on the single-cycle processor',
+    singlePanel: 'Single-cycle datapath with the NPU on the data bus',
+    info: 'Cycle details',
+    note: 'The program runs on the single-cycle processor with the platform devices on the bus (GPIO, timer, UART, NPU at 0x5000_0000), whatever the Memory setting; one step is one clock cycle and one edge of the NPU.',
+    about: 'About this view',
+    npuName: 'the NPU view',
+  },
+  viewAnalysis: 'Analysis',
+
+  // the NPU tool's Analysis view (NPU-4): measured and analytical panels (ui/analysis-view.js). The tool names no
+  // book or chapter (author, 2026-11-04); explanations stand behind each panel's i button.
+  analysis: {
+    panel: 'Analysis: offload, comparison, roofline, Amdahl and the NPU arithmetic',
+    tabsLabel: 'Analysis panels',
+    tabs: { offload: 'Offload', compare: 'Compare', roofline: 'Roofline', amdahl: 'Amdahl', layer: 'Layer', accumulator: 'Accumulator', quant: 'Quantisation' },
+    dataSet: 'Data', dataSetTitle: 'The data the program runs on here: its own, or one of the laboratory data sets placed at address 0 (NV, W from 0x010, the vectors from 0x040)',
+    ownData: 'the program’s own', bookSet: (n) => `laboratory set, ${n} vector${n === 1 ? '' : 's'}`,
+    empty: 'Assemble a program to measure it. The laboratory templates (Templates ▸ the NPU group) are ready to run.',
+    runFailed: (m) => `The program could not be measured: ${m}`,
+    about: (t) => `About: ${t}`,
+    offload: {
+      title: 'Where the cycles go',
+      info: [
+        'Every executed instruction is put in one class by what it does for the NPU, and counted over the run, between the GPIO markers and between two consecutive starts of the NPU (one vector of the loop). One instruction is one cycle here: the laboratory profile, as on the single-cycle processor.',
+        'Rules: stores to WEIGHT are “send the weights”; stores to ACT and CTRL “send x and start”; loads of STATUS and every instruction computing from that value “poll”; loads of RESULT and every instruction computing from or storing that value “copy”; stores to the GPIO “markers”. An instruction whose value only feeds one of the store classes, as data, takes its class; a value used as an address is loop control. The rest is loop control and other.',
+        'If the array took no time, the polling loop would run once per vector: the last rows give that per-vector count and the ratio of the measured count to it.',
+      ],
+      caption: 'Cycles by class',
+      colClass: 'Class', colRun: 'Whole run', colSpan: (a, b) => `Marker ${a} to ${b}`, colVector: 'Per vector',
+      classes: { weights: 'Send the weights', send: 'Send x and start', poll: 'Poll STATUS', copy: 'Copy the results', marker: 'Markers', control: 'Loop control and other' },
+      total: 'Total',
+      factsCaption: 'Bus transactions with the NPU',
+      starts: 'Starts (CTRL writes with bit 0)', accesses: 'NPU accesses, whole run', statusReads: 'STATUS reads, whole run',
+      vecAccesses: 'NPU accesses per vector', vecPolls: 'STATUS reads per vector', busy: 'Cycles the NPU is busy per start (2N + 1)',
+      ideal: 'Per vector if the array took no time (the polling loop once)', idealRatio: 'Per-vector cycles over those',
+      oneVector: 'One start only: the per-vector column needs at least two.',
+      unequal: 'The intervals between starts differ, so no single per-vector column is shown.',
+      noNpu: 'The program does not use the NPU: everything it does is computation and control on the core.',
+    },
+    compare: {
+      title: 'CPU and NPU compared',
+      info: [
+        'Cycles from the first to the last GPIO marker for y = W x with a 4 × 4 INT8 matrix, on 1, 4 and 16 vectors: the three laboratory templates (RV32I with shift-and-add products, the same with mul, the NPU with every transfer and the polling) and the program in the editor, all run here at one cycle per instruction.',
+        'Cycles per vector: the difference between 16 and 4 vectors, divided by 12, so that the fixed cost of loading the weights drops out. Simulated cycles, not FPGA measurements.',
+      ],
+      caption: (n) => `${n} vector${n === 1 ? '' : 's'}`,
+      colProgram: 'Program', colPer: 'Per vector',
+      shiftAdd: 'RV32I, shift-and-add', mul: 'With mul', npu: 'NPU, transfers and polling included',
+      speedupShiftAdd: 'Speed-up of the NPU over shift-and-add', speedupMul: 'Speed-up of the NPU over mul',
+      yours: 'Your program',
+      perCaption: 'Cycles from the first to the last marker; per vector between 4 and 16 vectors',
+    },
+    bus: {
+      title: 'The laboratory on a bus roof',
+      info: (p, b) => [
+        `A roof for the laboratory system: the bus moves one 32-bit word per cycle (${b} B/cycle), and the 4 × 4 array could at best finish one vector per cycle (16 MACs, ${p} operations per cycle).`,
+        'Counted here: every bus access to the NPU, polls included, as 4 bytes; the operations of the array only; the cycles of the measured region. Other choices of what to count give other points.',
+      ],
+      roofName: 'bus roof',
+      noRun: 'Run a program that starts the NPU to place its point.',
+      caption: 'The program’s point',
+      ops: 'Operations (2 × 16 per start)', bytes: 'Bytes over the bus to and from the NPU (4 per access)',
+      cycles: 'Cycles, first to last marker', cyclesRun: 'Cycles, whole run (no markers)',
+      I: 'Intensity I (op/B)', P: 'Attained P (op/cycle)',
+      point: 'your run', pointTip: (i, p) => `I = ${i} op/B, P = ${p} op/cycle`,
+      plotTitle: 'The laboratory bus roof on logarithmic axes, with the measured point of the run',
+      xLabel: 'intensity I (operations per byte over the bus)', yLabel: 'P (operations per cycle)',
+    },
+  },
 
   // the C-subset compiler (spec §10.1, WS-F-080 to WS-F-084)
   cc: Object.freeze({
@@ -643,7 +726,7 @@ int main(void)
     // the Peripherals tab
     periphNote: 'The address map below is what the processor sees. The devices (GPIO, timer, UART) are modelled in the profile "ISA with traps and devices"; choose it in the Profile list of the instruction-level view.',
     periphNoteDevices: 'The address map below is what the processor sees: the platform devices sit in the window 0x4000_0000 to 0x4FFF_FFFF.',
-    idealMap: 'Ideal memory: the chapter processors’ own memory, wrapping over the whole address space.',
+    idealMap: 'Ideal memory: the processors’ own memory, wrapping over the whole address space.',
     // the comparison under the memory models (compare mode, D9)
     cmp: Object.freeze({
       title: 'Memory models compared',

@@ -94,6 +94,8 @@ export class Session {
     this.history.pushFrom(h);
     this.runCount += 1;
     if (h.halted) return STOP.HALT;
+    const npu = h.platform?.npu;
+    if (npu?.stopRequested) { npu.stopRequested = false; return STOP.WATCH; } // a RESULT read while busy, with the stop on (G5)
     if (this.watchRegs.size && h.d_rd && this.watchRegs.has(h.d_rd)) return STOP.WATCH;
     if (this.watchWords.size && h.d_memSize) {
       const first = (h.d_memAddr & ~3) >>> 0;
@@ -172,8 +174,8 @@ export class Session {
 
   // --- Worker support ---------------------------------------------------------------
   /** Everything a Worker needs to continue this session. */
-  /** The profile iss-priv keeps devices and privileged state that a Worker does not carry: it runs in slices on the page. */
-  get workerCapable() { return !this.hart?.priv; }
+  /** The profiles iss-priv and ch11 keep devices (and privileged state) that a Worker does not carry: they run in slices on the page. */
+  get workerCapable() { return !this.hart?.platform; }
 
   workerRequest(opts) {
     return {

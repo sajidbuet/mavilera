@@ -318,6 +318,7 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
 .about .about-tag { margin: 0 0 0.6rem; color: var(--primary); font-weight: 600; }
 .about p { font-size: 0.86rem; margin: 0.4rem 0; }
 .about .about-meta { color: var(--ui-text-2); font-size: 0.78rem; }
+.about .about-expansion { margin: 0 0 0.4rem; color: var(--ui-text-2); font-size: 0.8rem; }
 .about form { display: flex; justify-content: flex-end; margin-top: 0.8rem; }
 /* data in and out (WS-F-145) and the example library (WS-F-123): dialogs like About */
 .data-dialog, .examples-dialog { max-width: min(40rem, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); padding: 1rem 1.3rem;
@@ -460,9 +461,10 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
 /* the utilities: quiet icon buttons, outlined only on hover, while pressed or open */
 .header-tools { display: flex; align-items: center; gap: 0.15rem; margin-left: auto; }
 .mode-nav + .header-tools { margin-left: 0; }
-.header-tools:empty { display: none; } /* every utility in the More menu (only their places, comments, are left) */
+/* every utility in the More menu (only their places, comments, are left) or hidden (Dock on a narrow screen) */
+.header-tools:not(:has(> :not([hidden]))) { display: none; }
 .app-header > .ovf { margin-left: auto; } /* at the right edge, so that its list (right-aligned) stays in the window */
-.header-tools:not(:empty) + .ovf { margin-left: 0; }
+.header-tools:has(> :not([hidden])) + .ovf { margin-left: 0; }
 .header-tools > .tool, .header-tools > .menu > summary, .header-tools > .keys > summary, .app-header > .ovf > summary.ovf-btn { border-color: transparent; background: transparent; }
 .header-tools > .tool:hover, .header-tools > .menu > summary:hover, .header-tools > .keys > summary:hover, .app-header > .ovf > summary.ovf-btn:hover { background: var(--surface-2); border-color: var(--border); }
 .header-tools > .tool[aria-pressed="true"] { color: var(--primary); background: var(--primary-soft); }
@@ -536,6 +538,76 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
   .app-header select, .toolbar select { min-height: 40px; }
   .ovf-body > .tool, .ovf-body > .menu > summary.tool, .ovf-body > .keys > summary.tool, .ovf-body .mode-btn { min-height: 44px; }
 }
+
+/* the toolbar docked as a column at the left or right of the workspace (dock.js; header Dock menu): the same controls
+   as icons with their tooltips, the groups one under another with a rule between them, the program's tools at the
+   foot; the speed and the Architecture open as menus beside the column, toward the drawing (placed by dock.js); on a
+   short screen the column scrolls, Assemble, Run and the steps first. The run status stays for screen readers. */
+.app-main[data-dock] { flex-direction: row; }
+.app-main[data-dock] > .workspace { flex: 1 1 0; min-width: 0; }
+.app-main[data-dock] > .toolbar {
+  flex-direction: column; align-items: center; width: 54px; min-height: 0; gap: 0.3rem; padding: 0.45rem 0;
+  border-bottom: 0; border-right: 1px solid var(--border); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+}
+.app-main[data-dock="right"] > .toolbar { order: 2; border-right: 0; border-left: 1px solid var(--border); }
+.app-main[data-dock] > .toolbar .tb-group { flex-direction: column; gap: 3px; }
+.app-main[data-dock] > .toolbar .tb-group:has(> :not([hidden])) ~ .tb-group:has(> :not([hidden])) { border-left: 0; padding-left: 0; border-top: 1px solid var(--border); padding-top: 0.35rem; }
+.app-main[data-dock] > .toolbar .sep { flex: 1 0 0.1rem; width: 100%; }
+.app-main[data-dock] > .toolbar .tool, .app-main[data-dock] > .toolbar .tb-group > .menu > summary.tool {
+  width: 40px; height: 36px; min-height: 36px; min-width: 0; padding: 0; gap: 0; justify-content: center; }
+.app-main[data-dock] > .toolbar .tool-label { display: none !important; }
+.app-main[data-dock] > .toolbar .run-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* the secondary commands are quiet (outlined on hover, while open or active); Assemble and Run keep their colours */
+.app-main[data-dock] > .toolbar .tb-group > .tool:not(.tool-run):not(.tool-build):not(.tool-active), .app-main[data-dock] > .toolbar .tb-group > .menu:not([open]) > summary.tool {
+  border-color: transparent; background: transparent; }
+.app-main[data-dock] > .toolbar .tb-group > .tool:not(.tool-run):not(.tool-build):not(:disabled):hover, .app-main[data-dock] > .toolbar .tb-group > .menu:not([open]) > summary.tool:hover {
+  background: var(--surface-2); border-color: var(--border); }
+.dock-fly > .menu-list { min-width: 12rem; padding: 0.5rem 0.6rem; gap: 0.4rem; }
+.dock-fly .tool-field { display: flex; flex-direction: column; align-items: stretch; gap: 0.2rem; }
+.dock-fly .tool-field select, .dock-fly .arch-ctx select { max-width: 16rem; }
+.dock-fly .arch-ctx { flex-direction: column; align-items: stretch; margin: 0; }
+.dock-opt .icon { color: var(--ui-text-2); }
+.dock-opt:has(input:checked) .icon { color: var(--primary); }
+@media (pointer: coarse) {
+  .app-main[data-dock] > .toolbar { width: 58px; }
+  .app-main[data-dock] > .toolbar .tool, .app-main[data-dock] > .toolbar .tb-group > .menu > summary.tool { width: 44px; height: 44px; min-height: 44px; min-width: 44px; }
+}
+
+/* the workspace's presentation (view-mode.js). Focus and Full screen: one compact header row (the brand, the open view
+   and the mode, the View and Dock menus, Exit); the execution controls as a column (dock.js); the middle column's main
+   pane (the drawing with its stage strip, the listing, the comparison) takes the workspace while the other panes wait,
+   hidden but not folded, so that the splits keep their sizes and folds. A narrow screen keeps its workspaces. */
+.app-header.hb-focus { min-height: 38px; padding-top: 0.1rem; padding-bottom: 0.1rem; gap: 0.6rem; --brand-h: 16px; }
+.app-header.hb-focus > .mode-nav, .app-header.hb-focus > .ovf { display: none !important; }
+.app-header.hb-focus > .header-tools { margin-left: auto; }
+.app-header.hb-focus > .header-tools > :not(.view-menu-top):not(.dock-menu) { display: none !important; }
+.app-header.hb-focus .header-tools > .menu > summary.tool, .app-header.hb-focus > .focus-exit { min-height: 30px; }
+.app-header > .focus-crumb { flex-shrink: 1; }
+.focus-crumb { display: inline-flex; align-items: center; gap: 0.5rem; min-width: 0; overflow: hidden; white-space: nowrap; font-size: 0.86rem; color: var(--ui-text-2); }
+.focus-view { font-weight: 600; color: var(--ui-text); overflow: hidden; text-overflow: ellipsis; }
+.focus-view::before { content: "·"; margin-right: 0.5rem; color: var(--ui-text-2); font-weight: 400; }
+.focus-badge { flex: none; font-size: 0.72rem; font-weight: 650; padding: 0.05rem 0.5rem; border-radius: 999px; background: var(--primary-soft); color: var(--primary); }
+.focus-exit { border-color: var(--primary); color: var(--primary); }
+@media (max-width: 640px) {
+  .app-header.hb-focus { padding-left: 0.5rem; padding-right: 0.5rem; gap: 0.35rem; --brand-h: 14px; }
+  .app-header.hb-focus .tool > .tool-label, .app-header.hb-focus .menu > summary.tool > .tool-label { display: none !important; }
+  .app-header.hb-focus .focus-badge { display: none; }
+}
+/* a narrow screen in focus: its Datapath workspace is the drawing alone (the details wait in the Listing workspace) */
+.workspace.focus.ws-mobile[data-ws="datapath"] [data-split="mid"] > :not(:first-child), .workspace.focus.ws-mobile .p-datapath .col > .note { display: none !important; }
+.workspace.focus.ws-mobile[data-ws="datapath"] [data-split="mid"] > :first-child { flex: 1 1 0px !important; }
+.workspace.focus:not(.ws-mobile) { padding: 0.3rem; }
+.workspace.focus:not(.ws-mobile) [data-split="root"] > :not([data-pane="work"]),
+.workspace.focus:not(.ws-mobile) [data-split="work"] > :not([data-pane="mid"]),
+.workspace.focus:not(.ws-mobile) [data-split="mid"] > :not(:first-child),
+.workspace.focus .zoom-btn, .workspace.focus:not(.ws-mobile) .p-datapath .col > .note, .workspace.focus .pp-ext { display: none !important; }
+.workspace.focus:not(.ws-mobile) [data-split="root"] > [data-pane="work"], .workspace.focus:not(.ws-mobile) [data-split="work"] > [data-pane="mid"],
+.workspace.focus:not(.ws-mobile) [data-split="mid"] > :first-child { flex: 1 1 0px !important; }
+.vm-group { display: flex; flex-direction: column; }
+.vm-opt, .dock-opt { min-height: 30px; } /* radios 30 px apart: targets of 24 px do not touch (WCAG 2.5.8) */
+.vm-opt .icon { color: var(--ui-text-2); }
+.vm-opt:has(input:checked) .icon { color: var(--primary); }
+.vm-opt:has(input:disabled) { opacity: 0.55; cursor: default; }
 
 /* menus (File, View): a details element whose list floats */
 .menu { position: relative; }
@@ -1329,8 +1401,25 @@ html.ws-mobile.kb-open .ws-strip { display: none; }
 .brand-arch:hover .brand-caret { border-top-color: var(--primary); }
 .is-open .brand-caret { transform: rotate(180deg); }
 @media (pointer: coarse) { .brand-home, .brand-arch { height: 44px; } }
+/* MAVILERA on hover or focus (author, 2026-11-04): the lockup lifts a little and a light sweeps across the word once;
+   under reduced motion only the lift's shadow, without movement */
+.brand-switch > .brand-logo-img { transition: transform 0.2s ease-out, filter 0.2s ease-out; }
+.brand-switch::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: var(--split); z-index: 2; pointer-events: none; opacity: 0;
+  background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat; background-size: 250% 100%;
+}
+.brand-switch:has(> .brand-home:hover) > .brand-logo-img, .brand-switch:has(> .brand-home:focus-visible) > .brand-logo-img {
+  transform: translateY(-1px); filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .brand-switch:has(> .brand-home:hover)::after, .brand-switch:has(> .brand-home:focus-visible)::after { animation: mv-shine 0.9s ease-out; }
+}
+@media (prefers-reduced-motion: reduce) { .brand-switch:has(> .brand-home:hover) > .brand-logo-img { transform: none; } }
+@keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
+/* the entries are name lockups (chip and name): the list stands under the header's chip, whose name lockup begins at 8.468
+   times the lockup's height (platform-archs.js NAME_AT), less the list's border, padding and the entry's padding (17px) */
 .switch-list {
-  position: absolute; top: calc(100% + 14px); left: -8px; z-index: 40; margin: 0; padding: 6px; list-style: none; display: flex; flex-direction: column;
+  position: absolute; top: calc(100% + 14px); left: calc(var(--brand-h) * 8.468 - 17px); z-index: 40; margin: 0; padding: 6px; list-style: none; display: flex; flex-direction: column;
   gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-pop);
 }
 .switch-item { display: flex; align-items: center; padding: 9px 10px; border-radius: var(--radius-sm); color: inherit; text-decoration: none; }
@@ -1368,3 +1457,112 @@ html.ws-mobile.kb-open .ws-strip { display: none; }
   .boot-logo { animation: none; }
   .boot-logo path { animation: none; fill-opacity: 1; stroke: none; stroke-dasharray: none; stroke-dashoffset: 0; }
 }
+
+/* --- the NPU tab (NPU-3) ------------------------------------------------------------------------- */
+.dp-tsig { fill: var(--text); font-family: var(--font-code); font-size: 9.84px; paint-order: stroke; stroke: var(--bg); stroke-width: 2.5px; stroke-linejoin: round; }
+.dp-small { fill: var(--text); font-size: 9.84px; paint-order: stroke; stroke: var(--bg); stroke-width: 2.5px; stroke-linejoin: round; }
+.dp-muted .dp-tsig { stroke: none; }
+.dp-boundary .dp-shape { fill: none; stroke: var(--muted); stroke-width: 0.84; stroke-dasharray: 4 2.5; }
+.dp-pe .dp-eltext, .dp-decoder .dp-eltext, .dp-boundary .dp-eltext { font-size: 9.84px; }
+.npu-tab { padding: 0.4rem 0.6rem; }
+.npu-view { max-width: 52rem; }
+.npu-view h4 { margin: 0.9rem 0 0.3rem; font-size: 0.85rem; }
+/* the level buttons, and at the row's end the level's i button and zoom toolbar (they wrap below on a narrow pane) */
+.npu-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.6rem; margin-bottom: 0.4rem; }
+.npu-levels { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.npu-slot { display: flex; align-items: center; gap: 0.4rem; margin-left: auto; }
+.npu-slot:empty { display: none; }
+.npu-slot > .pz-bar { position: static; }
+.npu-levels button[aria-pressed="true"] { background: var(--primary-soft); border-color: var(--primary); font-weight: 600; }
+.npu-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.7rem; margin: 0.35rem 0; }
+.npu-tools input[type="range"] { flex: 1 1 8rem; min-width: 6rem; }
+.npu-inputs { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.npu-inputs label { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.85rem; }
+.npu-text { font-family: var(--font-code); font-size: 0.85rem; min-width: 9rem; max-width: 100%; resize: vertical; }
+.npu-err { color: var(--ui-error); min-height: 1em; }
+.npu-panels { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.npu-panel { width: 100%; max-width: 16rem; height: auto; }
+.npu-panels:has(.npu-panel + .npu-panel) .npu-panel { max-width: 12rem; }
+.npu-pe .dp-shape { fill: var(--fig-fill); }
+.npu-act .dp-shape { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.55; }
+.npu-petext { fill: var(--text); font-size: 9.84px; }
+.npu-link { fill: none; stroke: var(--text); stroke-width: 0.84; }
+.npu-htools { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 400; }
+.npu-moves { margin: 0.2rem 0 0; padding-left: 1.1rem; }
+/* the access about to happen (NPU-5): its connections dashed until the edge; the completed ones solid */
+.dp-next .dp-line { stroke-dasharray: 7 4; }
+.npu-moves li.npu-done strong { color: var(--muted); }
+.npu-moves li + li { margin-top: 0.1rem; }
+.npu-bound { stroke: var(--accent); stroke-width: 1.4; stroke-dasharray: 4 3; fill: none; pointer-events: none; }
+:root[data-projector] .npu-bound { stroke-width: 2.2; }
+.npu-out { margin: 0.3rem 0; padding-left: 1.1rem; font-size: 0.85rem; }
+.npu-steptext { font-size: 0.85rem; }
+.npu-view tr.npu-warn td { background: var(--changed-bg); }
+.npu-view .dp-wrap { flex: none; display: block; min-height: 0; }
+.npu-view .dp-wrap svg.dp { position: static; width: 100%; height: auto; }
+.npu-panel.dp { position: static; }
+.npu-sub .dp-eltext, .npu-sub .dp-sig { font-size: 9.84px; }
+.npu-small { max-width: 30rem; }
+.npu-mm { margin-left: auto; height: 3rem; }
+.npu-mm[hidden] { display: block !important; visibility: hidden; } /* its place kept in the tools row (npu-view.js) */
+/* the NPU tool's NPU view (main pane): the NPU at its levels */
+.npu-main { flex: 1 1 auto; min-height: 0; height: 100%; overflow: auto; padding: 0.3rem 0.5rem; }
+/* an information button (src/ui/info-button.js): the text as a tooltip, and in a pop-up on a press */
+.info-wrap { display: inline-flex; flex: none; }
+.info-btn { flex: none; width: 1.6rem; height: 1.6rem; min-height: 0; padding: 0; border-radius: 50%; font: italic 600 0.9rem/1 Georgia, 'Times New Roman', serif; cursor: help; }
+.info-btn[aria-expanded="true"] { background: var(--primary-soft); border-color: var(--primary); }
+@media (pointer: coarse) { .info-btn { width: 2.2rem; height: 2.2rem; } }
+.info-pop { position: fixed; inset: auto; margin: 0; max-width: min(24rem, calc(100vw - 16px)); padding: 0.55rem 0.75rem;
+  background: var(--surface); color: var(--ui-text); border: 1px solid var(--border-strong); border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); font-size: 0.85rem; line-height: 1.4; }
+.info-pop p { margin: 0; }
+.info-pop p + p { margin-top: 0.45rem; }
+/* pan and zoom on the NPU drawings: the box has the drawing's height (set by npu-view.js), the svg fills it; the
+   toolbar stands in the row of the level buttons (.npu-slot) */
+.npu-view .dp-wrap.npu-zoom { display: block; position: relative; }
+.npu-view .pz-view > svg.pz-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.npu-minimap { display: block; height: 100%; width: auto; cursor: pointer; }
+.npu-mm-el { fill: var(--fig-fill); stroke: var(--muted); stroke-width: 2; }
+.npu-mm-frame { fill: var(--primary-soft); fill-opacity: 0.35; stroke: var(--primary); stroke-width: 6; }
+.npu-view .mem-table td:last-child { white-space: normal; }
+
+/* the analytical panels of Chapter 11 (NPU-4; src/ui/analytic-panels.js, the NPU tool's Analysis view) */
+.an-view { min-height: 0; height: 100%; }
+.an-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); }
+.an-tab { font: inherit; font-size: 0.85rem; padding: 0.25rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface-2); color: var(--ui-text); cursor: pointer; }
+.an-tab[aria-selected="true"] { background: var(--primary-soft); border-color: var(--primary); font-weight: 650; }
+.an-tab:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.an-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 0.4rem 0.6rem 1rem; }
+.an-box h3 { font-size: 1rem; margin: 0.4rem 0 0.2rem; }
+.an-box h4 { font-size: 0.92rem; margin: 1rem 0 0.2rem; }
+.an-form { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: flex-end; margin: 0.4rem 0; }
+.an-machines { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: flex-end; width: 100%; }
+.an-field { display: flex; flex-direction: column; font-size: 0.8rem; color: var(--ui-text-2); gap: 0.1rem; }
+.an-in { width: 8.5rem; max-width: 100%; font: inherit; font-size: 0.85rem; color: var(--ui-text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 0.15rem 0.3rem; }
+select.an-in { width: auto; }
+table.listing.an-table { margin: 0.5rem 0; width: auto; max-width: 100%; }
+table.listing.an-table td, table.listing.an-table th { padding-right: 1.2rem; }
+.an-table caption { text-align: left; font-weight: 650; font-size: 0.85rem; padding-bottom: 0.15rem; }
+.an-table th[scope="row"] { text-align: left; font-weight: 500; }
+.an-table .an-total th, .an-table .an-total td { font-weight: 650; border-top: 1px solid var(--border-strong); }
+.an-error { color: var(--ui-error); }
+.an-plot { display: block; width: 100%; max-width: 40rem; height: auto; margin: 0.5rem 0; }
+.an-grid { stroke: var(--border); stroke-width: 1; }
+.an-axis { fill: none; stroke: var(--ui-text-2); stroke-width: 1; }
+.an-tick, .an-note, .an-direct { fill: var(--ui-text-2); font-size: 11px; }
+.an-label { fill: var(--ui-text); font-size: 12px; }
+.an-direct { fill: var(--ui-text); font-weight: 600; }
+.an-line { fill: none; stroke: var(--text); stroke-width: 2; stroke-linejoin: round; }
+.an-dashed { stroke-dasharray: 7 4; }
+.an-dotted { stroke-dasharray: 2 4; stroke-linecap: round; }
+.an-accent { stroke: var(--accent); stroke-width: 3; }
+.an-line.an-accent { stroke-width: 3; }
+.an-accent-text { fill: var(--accent); font-weight: 650; }
+.an-ref { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 4 3; }
+.an-kernel { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 1.5 3; }
+.an-kernel.an-accent { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 4 3; }
+.an-mark { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+@media (forced-colors: active) { .an-line, .an-kernel, .an-axis { stroke: CanvasText; } .an-mark { fill: Highlight; } }
+.an-head { display: flex; align-items: center; gap: 0.4rem; margin: 0.4rem 0 0.2rem; }
+.an-head h3, .an-head h4 { margin: 0; }

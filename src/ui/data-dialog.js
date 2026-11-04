@@ -7,7 +7,7 @@
 
 import { el, hex8 } from './dom.js';
 import { STRINGS } from './strings.js';
-import { SIZES, parseNumbers, dataArrays, readRange, saveCsv, saveBin } from '../shell/data-io.js';
+import { SIZES, parseNumbers, parseHexWords, dataArrays, readRange, saveCsv, saveBin } from '../shell/data-io.js';
 
 const D = () => STRINGS.dataIo;
 
@@ -25,7 +25,7 @@ export class DataDialog {
     this.array = el('select', { 'aria-label': T.array });
     this.loadSize = sizeSel();
     this.loadSize.setAttribute('aria-label', T.element);
-    this.file = el('input', { type: 'file', accept: '.csv,.txt,.bin', 'aria-label': T.file });
+    this.file = el('input', { type: 'file', accept: '.csv,.txt,.bin,.hex', 'aria-label': T.file });
     this.loadStatus = el('p.note', { role: 'status' });
     this.loadList = el('ul.data-loads');
     this.from = el('input.mono', { type: 'text', size: 12, 'aria-label': T.from, placeholder: T.fromHint });
@@ -77,7 +77,11 @@ export class DataDialog {
     if (!label) { this.loadStatus.textContent = T.noArrays; return; }
     if (!f) { this.loadStatus.textContent = T.noFile; return; }
     try {
-      const bytes = f.name.toLowerCase().endsWith('.bin') ? new Uint8Array(await f.arrayBuffer()) : parseNumbers(await f.text(), SIZES[this.loadSize.value]);
+      const name = f.name.toLowerCase();
+      const size = SIZES[this.loadSize.value];
+      const bytes = name.endsWith('.bin') ? new Uint8Array(await f.arrayBuffer())
+        : name.endsWith('.hex') ? parseHexWords(await f.text(), size) // $readmemh words, as the book's data.hex
+          : parseNumbers(await f.text(), size);
       this.hooks.onLoad(label, bytes, f.name);
       this.loadStatus.textContent = T.loadedNow(f.name, label, bytes.length);
       this.fill();

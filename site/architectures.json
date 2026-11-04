@@ -4,7 +4,7 @@
     {
       "id": "riscv",
       "name": "RISC-V",
-      "description": "RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths.",
+      "description": "RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths. With the NPU tool: a 4 × 4 systolic-array accelerator on the bus, shown from the system down to one processing element.",
       "path": "riscv/",
       "status": "available",
       "docs": "riscv/docs/",
@@ -37,8 +37,28 @@
       "docs": "armv7/docs/",
       "content": ["content/armv7/"]
     },
+    {
+      "id": "gpu",
+      "name": "GPU",
+      "description": "A SIMT core: four or eight lanes run one stream of a seven-instruction micro-ISA, with an active mask and a two-deep mask stack for divergent branches; assembler and instruction-level simulator with the lanes' registers. A preview: the core's views come in later releases.",
+      "path": "gpu/",
+      "status": "available",
+      "preview": true,
+      "content": ["content/gpu/"]
+    },
     { "id": "6502", "name": "MOS 6502", "path": "6502/", "status": "planned" },
     { "id": "8086", "name": "Intel 8086", "path": "8086/", "status": "planned" },
     { "id": "mips", "name": "MIPS", "path": "mips/", "status": "planned" }
+  ],
+  "_tools": "Tools inside a module (src/shell/platform-archs.js): a card after their module's, linking into it; not built on their own.",
+  "tools": [
+    {
+      "id": "npu",
+      "name": "NPU",
+      "module": "riscv",
+      "description": "A 4 × 4 weight-stationary systolic array of INT8 processing elements on the RISC-V processor's bus: the subsystem, the systolic array, one processing element and the system, with each cycle's transfers animated, an RTL-checked cycle model, and an analysis of offload, roofline and Amdahl's law.",
+      "path": "riscv/?tool=npu",
+      "since": "1.2.0"
+    }
   ]
 }

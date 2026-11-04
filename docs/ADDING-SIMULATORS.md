@@ -39,7 +39,7 @@ for another processor. A shell change that only one architecture needs is a cont
    then builds it into `dist/<path>`: page and manifest named after `appFull`, its own service worker and cache, a
    single-file offline build `mavilera-<id>-<version>.html`, and only the modules reached from the page with a
    one-entry registry. It refuses a registry that says `available` for a module it did not build, or `planned`
-   for one whose build is present, and a module over 1.25 MB without examples (WS-N-004, W-D31), counted as published: the
+   for one whose build is present, and a module over 2 MB without examples (WS-N-004, W-D38), counted as published: the
    JavaScript, CSS and JSON without comments and indentation (`tools/minify.mjs`), and of the logo files only
    those the page, the manifest or a module names. Write code that the minifier keeps working: no statement that
    relies on its indentation, and nothing the offline bundler reads (`export`, `import`) in a comment.
@@ -60,5 +60,5 @@ valid in meaning.
 
 ## Reserved paths
 
-`riscv`, `sap-1`, `sap-2`, `6502`, `8086`, `armv7`, `mips`. Planned modules have no page, no link and no
+`riscv`, `sap-1`, `sap-2`, `6502`, `8086`, `armv7`, `mips`, `gpu`. Planned modules have no page, no link and no
 route until built.

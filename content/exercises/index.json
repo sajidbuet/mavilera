@@ -6,7 +6,8 @@
   "loops": "Loops and arithmetic",
   "memory": "Arrays and strings",
   "output": "Output",
-  "c": "C"
+  "c": "C",
+  "npu": "NPU (laboratory profile)"
  },
  "exercises": [
   {
@@ -106,6 +107,20 @@
    "group": "c",
    "title": "C: longest run of equal values",
    "lang": "c"
+  },
+  {
+   "id": "npu-accumulate",
+   "file": "npu-accumulate.json",
+   "group": "npu",
+   "title": "NPU: add two products in the accumulators",
+   "lang": "asm"
+  },
+  {
+   "id": "npu-two-layers",
+   "file": "npu-two-layers.json",
+   "group": "npu",
+   "title": "NPU: two layers in a row",
+   "lang": "asm"
   }
  ]
 }

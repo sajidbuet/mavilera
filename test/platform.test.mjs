@@ -28,8 +28,13 @@ test('registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-
     }
   }
   // updated deliberately (docs/ADDING-SIMULATORS.md): SAP-1 since phase 6 of the architecture contract (W-D29), SAP-2 since step 6 of its plan
-  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7']);
-  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', '6502', '8086', 'mips']);
+  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu']);
+  // `gpu` reserved as planned at GPU-0 (DECISIONS.md G9), published as a preview from 1.2.0 (author, 2026-11-04)
+  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu', '6502', '8086', 'mips']);
+  assert.deepEqual(registry.filter((a) => a.preview).map((a) => a.id), ['gpu']);
+  // a tool inside a module: its card links into the module (the NPU in RISC-V, decision G2)
+  const tools = JSON.parse(read('site/architectures.json')).tools;
+  assert.deepEqual(tools.map((t) => [t.id, t.module, t.path]), [['npu', 'riscv', 'riscv/?tool=npu']]);
 });
 
 test('landing page: the required wording, the card slot, no claims for planned modules, no old name', () => {

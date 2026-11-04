@@ -174,8 +174,8 @@ export class MultiView {
   }
 
   /** For the exports (core/exports.js): a fresh model with this view's options and program, its signals and RTL module. */
-  exportModel() {
-    const m = new Multicycle(this.t6, this.t7, { jalr: this.jalr, historyLimit: 0 });
+  exportModel(memsys = null) {
+    const m = new Multicycle(this.t6, this.t7, { jalr: this.jalr, historyLimit: 0, memsys }); // memsys: a fresh one with the platform devices (NPU-3), else ideal memory
     m.load(this.program ?? { segments: [] });
     return { model: m, signals: MULTI_SIGNALS, module: 'rv32i_multi', label: this.jalr ? 'ch07 + JALR' : 'ch07', retired: (x) => x.retired };
   }

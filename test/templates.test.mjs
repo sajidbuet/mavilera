@@ -24,7 +24,8 @@ import { descriptor as riscvTrace } from '../src/arch/riscv/index.js';
 const traceOf = (p, profile) => ({ program: p, harvard: riscvTrace.engine.profiles.find((x) => x.id === profile).memory === 'harvard',
   create: () => riscvTrace.engine.create({ ...p, profile }, { historyLimit: 1 }) });
 import { readConfig, validateConfig } from '../src/mem/config.js';
-import { parseStimulus } from '../src/mem/platform.js';
+import { parseStimulus, Platform } from '../src/mem/platform.js';
+import { buildMemsys } from '../src/mem/config.js';
 import { classTable, delayMap } from '../src/uarch/timing.js';
 import { ch07 } from './ch07-content.mjs';
 
@@ -251,6 +252,23 @@ const CHECKS = {
     assert.ok(rude.h.platform.uart.flags & 4, 'without waiting, bytes are lost (TXOVR)');
     assert.ok(rude.h.platform.uart.tx.length < 13 + 2, 'and the text is cut short');
   },
+  // the Chapter 11 laboratory (Table 11.5, data set v4)
+  'sw-mv': () => {
+    const r = lab('sw-mv');
+    assert.deepEqual(r.spans, [3718]);
+    assert.deepEqual([0, 1, 2, 3].map(r.y), Y_V4);
+  },
+  'npu-mv': () => {
+    const r = lab('npu-mv');
+    assert.deepEqual(r.spans, [10, 143], 'Table 11.5: 10 + 143 = 153');
+    assert.deepEqual([0, 1, 2, 3].map(r.y), Y_V4);
+    assert.deepEqual([r.npu.accesses, r.npu.statusReads, r.npu.runs], [56, 16, 4]);
+  },
+  'sw-mv-m': () => {
+    const r = lab('sw-mv-m');
+    assert.deepEqual(r.spans, [818]);
+    assert.deepEqual([0, 1, 2, 3].map(r.y), Y_V4);
+  },
 };
 
 /** A device template on the instruction-level machine with traps: its own stimulus unless given; run to the halt (or `limit` steps). */
@@ -289,6 +307,39 @@ function memoryRows(file, id) {
   return compareMemory([{ name: file, text: src(file) }], { t6: T6, delays6: json('content/data/ch06-delays.json'), t7: T7, timing8: json('content/data/ch08-timing.json') }, cfg, { jalr: true });
 }
 
+/**
+ * A Chapter 11 laboratory template (NPU-2): in the single-cycle view with the template's memory setting and the
+ * platform (NPU at 0x5000_0000), or on the instruction level with the profile ch11. Returns the marker spans and the
+ * NPU's counters, as the counters panel shows them.
+ */
+function lab(id) {
+  const t = INDEX.templates.find((x) => x.id === id);
+  const platform = new Platform();
+  let m;
+  if (t.view === 'single') {
+    const cfg = readConfig(t.mem);
+    assert.deepEqual(validateConfig(cfg), [], `${id}: its memory setting is valid`);
+    assert.ok(cfg.devices && cfg.words === 1024, 'the laboratory SoC: devices on, 1024 words');
+    const p = assemble([{ name: t.file, text: src(t.file) }], { profile: 'ch06' });
+    assert.ok(p.ok && !p.profileErrors.length, `${id}: ${[...p.errors, ...p.profileErrors].map((e) => e.message).join('; ')}`);
+    m = new SingleCycle(T6, { memsys: buildMemsys(cfg, { platform }).memsys });
+    m.load(p);
+    let r;
+    do r = m.step(); while (r === 'step' && m.cycle < 100_000);
+    assert.equal(r, 'halt', `${id}: ${m.error ?? r}`);
+  } else {
+    assert.equal(t.profile, 'ch11');
+    const p = assemble([{ name: t.file, text: src(t.file) }], { profile: 'ch11' });
+    assert.ok(p.ok && !p.profileErrors.length, `${id}: ${[...p.errors, ...p.profileErrors].map((e) => e.message).join('; ')}`);
+    m = new Hart(p, { profile: 'ch11', platform });
+    while (!m.halted && m.instret < 100_000) m.stepFast();
+    assert.ok(m.halted, `${id} halts`);
+  }
+  const ms = platform.measurement();
+  return { spans: ms.spans.map((s) => s.cycles), npu: ms.npu, y: (i) => m.mem ? m.mem.read(0x100 + 4 * i, 4) | 0 : m.dmem.read(0x100 + 4 * i, 4) | 0 };
+}
+const Y_V4 = [-18228, -641, -2072, -31173]; // y of the first vector of data set v4 (golden.hex, RAM word 0x40)
+
 /** A C template: both translations give the exit code; the register one runs fewer instructions. */
 function cPair(f, exit) {
   const n = {};
@@ -307,7 +358,8 @@ test('the templates are numbered by their place in the index: the device templat
   const at = (id) => INDEX.templates.findIndex((t) => t.id === id) + 1;
   assert.deepEqual(['gpio-leds', 'gpio-switches', 'button-interrupt', 'timer-poll', 'timer-interrupt', 'ecall-trap', 'uart-hello'].map(at), [22, 23, 24, 25, 26, 27, 28]);
   assert.deepEqual(['cache-spatial', 'cache-speedup'].map(at), [29, 35]);
-  assert.equal(INDEX.templates.length, 35);
+  assert.deepEqual(['sw-mv', 'npu-mv', 'sw-mv-m'].map(at), [36, 37, 38], 'the Chapter 11 laboratory (NPU-2)');
+  assert.equal(INDEX.templates.length, 38);
 });
 
 test('every template file is in the index, every entry has a file, a group, a view and a check', () => {

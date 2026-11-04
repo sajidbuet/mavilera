@@ -22,6 +22,8 @@ const ICONS = {
   clock: [['M12 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16z', 'M12 8v4l3 2']],
   steps: [['M3.5 19H8v-4.5h4.5V10H17V5.5h3.5']],
   pipeline: [['M3.5 5.5h8v3h-8zM8 10.5h8v3H8zM12.5 15.5h8v3h-8z']],
+  npu: [['M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4zM4 10h4v4H4zM10 10h4v4h-4zM16 10h4v4h-4zM4 16h4v4H4zM10 16h4v4h-4zM16 16h4v4h-4z']], // a 3 x 3 array of PEs (NPU view)
+  analysis: [['M4 3.5V20h16.5', 'M6.5 17 12 9.5h7.5'], ['M14.3 13.2a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z']], // axes, a roofline and a point (Analysis view)
   compare: [['M12 4v16', 'M8 20h8', 'M5 7h14', 'M5 7 2.5 13h5zM19 7l-2.5 6h5z']],
   sun: [['M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z', 'M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8']],
   moon: [['M19.5 14.5A8 8 0 1 1 9.5 4.5a6.4 6.4 0 0 0 10 10z']],
@@ -55,6 +57,16 @@ const ICONS = {
   zoomOut: [['M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13z', 'M15.2 15.2 20 20', 'M7.5 10.5h6']],
   fitView: [['M4 8.5V4h4.5M15.5 4H20v4.5M20 15.5V20h-4.5M8.5 20H4v-4.5', 'M8 9h8v6H8z']],
   pan: [['M12 3.5v17M3.5 12h17', 'M9.5 6 12 3.5 14.5 6M9.5 18l2.5 2.5 2.5-2.5M6 9.5 3.5 12 6 14.5M18 9.5l2.5 2.5-2.5 2.5']],
+  fitWidth: [['M3 5v14M21 5v14', 'M6 12h12', 'M9 9 6 12l3 3M15 9l3 3-3 3']],
+  fitHeight: [['M5 3h14M5 21h14', 'M12 6v12', 'M9 9l3-3 3 3M9 15l3 3 3-3']],
+  // a window with its bar of controls on top, at the left or at the right (the docking of the execution controls)
+  dockTop: [['M3.5 4.5h17v15h-17z', 'M3.5 9h17'], ['M5 6h14v1.6H5z']],
+  dockLeft: [['M3.5 4.5h17v15h-17z', 'M8.5 4.5v15'], ['M5 6h2v12H5z']],
+  dockRight: [['M3.5 4.5h17v15h-17z', 'M15.5 4.5v15'], ['M17 6h2v12h-2z']],
+  // the workspace's presentations (view-mode.js): the whole window of panes, and the focus on the drawing
+  normalView: [['M3.5 4.5h17v15h-17z', 'M3.5 8.5h17', 'M9 8.5v11M15 8.5v11']],
+  focusView: [['M12 4.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15z', 'M12 2v4M12 18v4M2 12h4M18 12h4'], ['M12 9.6a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8z']],
+  speed: [['M4.5 16.5a7.5 7.5 0 1 1 15 0', 'M12 16.5l3.8-4.6', 'M7.2 11.2l1 1M12 8.5V10'], ['M12 14.9a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z']],
 };
 
 /** An icon as an inline SVG element (aria-hidden). */

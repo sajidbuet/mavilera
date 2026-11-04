@@ -34,6 +34,9 @@ const ID = opt('--arch');
 const { ARCHITECTURES } = await import(pathToFileURL(join(ROOT, 'src/arch/registry.js')).href);
 if (!ARCHITECTURES[ID]) throw new Error(`--arch: one of ${Object.keys(ARCHITECTURES).join(', ')}`);
 const arch = (await ARCHITECTURES[ID]()).descriptor;
+// the views the module's own page shows (a tool inside the module, as the NPU in RISC-V, has views of its own)
+const { PLATFORM_ARCHS, toolViews } = await import(pathToFileURL(join(ROOT, 'src/shell/platform-archs.js')).href);
+const PAGE_VIEWS = toolViews(arch, PLATFORM_ARCHS.find((a) => a.id === ID && !a.module));
 const { STRINGS } = await import(pathToFileURL(join(ROOT, 'src/ui/strings.js')).href);
 const TITLE = `${STRINGS.appName}: ${arch.strings.appFull}`;
 
@@ -101,15 +104,15 @@ async function checks(b, base) {
   await check('every view loads, a processor view with its drawing; no other architecture\'s module is fetched (W-D29)', async () => {
     const p = await fresh();
     const n = await p.eval(views);
-    if (n !== arch.views.length) throw new Error(`${n} view tabs, ${arch.views.length} views`);
+    if (n !== PAGE_VIEWS.length) throw new Error(`${n} view tabs, ${PAGE_VIEWS.length} views`);
     const seen = [];
     for (let i = 0; i < n; i++) {
       await p.eval(view(i));
       await p.waitFor(loaded(i));
       // the drawings the shell attached pan and zoom to (ViewInstance.diagrams), as shown
       const d = await p.eval(`[...document.querySelectorAll('svg.pz-svg')].filter((s) => s.getBoundingClientRect().width > 0).length`);
-      if (['datapath', 'bus'].includes(arch.views[i].kind) && !d) throw new Error(`${arch.views[i].id}: no drawing`);
-      seen.push(`${arch.views[i].id} ${d}`);
+      if (['datapath', 'bus'].includes(PAGE_VIEWS[i].kind) && !d) throw new Error(`${PAGE_VIEWS[i].id}: no drawing`);
+      seen.push(`${PAGE_VIEWS[i].id} ${d}`);
     }
     const other = await p.eval(foreign);
     if (other.length) throw new Error(`fetched ${other.join(', ')}`);

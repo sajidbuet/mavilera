@@ -40,7 +40,8 @@ export class MemPort {
         throw new BusError('fetch', `bus fault: instruction fetch from the device ${r.region.name} at ${hex8(addr)}`, addr >>> 0);
       }
       if (!r.region.target.widths.includes(size)) {
-        throw new BusError('width', `bus fault: ${r.region.name} does not accept a ${size}-byte access`, addr >>> 0);
+        const why = r.region.target.widthMessage ? ` (${r.region.target.widthMessage})` : '';
+        throw new BusError('width', `bus fault: ${r.region.name} does not accept a ${size}-byte access${why}`, addr >>> 0);
       }
     }
     return r;

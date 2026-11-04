@@ -113,11 +113,27 @@
     .btn-disabled { background: transparent; color: var(--text-2); border: 1px dashed var(--border); cursor: not-allowed; }
     .path { margin: 0; color: var(--text-2); font-size: 14px; }
     .hero-logo { margin: 0; }
-    .hero-logo img { width: min(820px, 100%); height: auto; }
-    /* on narrow screens the logo drops its subtitle, which is then set as text */
-    .hero-expansion { display: none; margin: 8px 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
-                      text-transform: uppercase; color: var(--text-2); }
-    @media (max-width: 600px) { .hero-expansion { display: block; } }
+    .hero-logo img { width: min(640px, 100%); height: auto; }
+    /* the full form of the name, as text after it (author, 2026-11-04): the logo is the lockup without its subtitle */
+    .hero-expansion { margin: 10px 0 0; font-size: 18px; font-weight: 600; letter-spacing: 0.01em; color: var(--text-2); max-width: 40em; }
+    .hero-expansion b { color: var(--primary); font-weight: 700; }
+    @media (max-width: 600px) { .hero-expansion { font-size: 15px; } }
+    /* the header logo: a light sweeps across it on hover or focus; it lifts a little (no movement under reduced motion) */
+    .top .brand { position: relative; display: inline-block; overflow: hidden; border-radius: 4px; }
+    .top .brand img { display: block; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
+    .top .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+                         background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat;
+                         background-size: 250% 100%; }
+    .top .brand:hover img, .top .brand:focus-visible img { filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25)); }
+    @media (prefers-reduced-motion: no-preference) {
+      .top .brand:hover img, .top .brand:focus-visible img { transform: translateY(-1px); }
+      .top .brand:hover::after, .top .brand:focus-visible::after { animation: mv-shine 0.9s ease-out; }
+    }
+    @keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
+    /* the module logos on the cards (name lockups: chip and name) */
+    .card-logo { display: block; align-self: flex-start; height: 34px; width: auto; max-width: 100%; margin: 0 0 4px; }
+    .status.preview { color: var(--insight); border-color: var(--insight); }
+    .arch.tool { border-left: 4px solid var(--primary); }
     .descriptor { margin: 10px 0 0; font-size: 22px; color: var(--text); }
     footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
     footer p { margin: 4px 0; }
@@ -140,9 +156,8 @@
 
   <main id="main">
     <div class="wrap hero">
-      <h1 class="hero-logo"><picture><source media="(max-width: 600px)" srcset="brand/mavilera-lockup.svg" width="1614" height="588"><img src="brand/mavilera-full.svg" width="1615" height="682"
-          alt="MAVILERA: Microprocessor Architecture Visualizer for Interactive Learning, Execution, and Runtime Analysis"></picture></h1>
-      <p class="hero-expansion" aria-hidden="true">Microprocessor Architecture Visualizer for Interactive Learning, Execution, and Runtime Analysis</p>
+      <h1 class="hero-logo"><img src="brand/mavilera-lockup.svg" width="1614" height="588" alt="MAVILERA"></h1>
+      <p class="hero-expansion"><b>M</b>icroprocessor <b>A</b>rchitecture <b>V</b>isualizer for <b>I</b>nteractive <b>L</b>earning, <b>E</b>xecution, and <b>R</b>untime <b>A</b>nalysis</p>
       <p class="descriptor">Interactive Microprocessor Architecture Laboratory</p>
       <p class="tagline">Visualize. Execute. Understand.</p>
       <p class="lead">MAVILERA is an open-source educational platform for exploring microprocessor architecture through

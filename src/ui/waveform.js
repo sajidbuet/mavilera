@@ -30,24 +30,19 @@ export class WaveformPanel {
    *   format?: (name: string, v: number) => string|null, onGoTo: (cycle: number) => void}} o
    */
   constructor({ id, signals, defaults, format = null, onGoTo }) {
-    Object.assign(this, { id, signals, format, onGoTo });
+    Object.assign(this, { id, format, onGoTo });
     const W = STRINGS.wave;
     const key = `pips.wave.${id}`;
     let saved = null;
     try { saved = JSON.parse(store.get(key) ?? 'null'); } catch { /* none kept */ }
-    const known = new Set(signals.map((s) => s.name));
-    this.chosen = (Array.isArray(saved) ? saved : defaults).filter((n) => known.has(n));
+    this.key = key;
+    // the names chosen, kept even while a signal is not offered (the NPU's, with the platform devices off)
+    this.chosen = (Array.isArray(saved) ? saved : defaults).filter((n) => typeof n === 'string');
     this.frames = [];
     this.current = 0;
-    const pick = (s) => el('label.wave-pick', {}, el('input', { type: 'checkbox', checked: this.chosen.includes(s.name), onchange: (e) => {
-      this.chosen = e.target.checked ? [...this.chosen, s.name] : this.chosen.filter((n) => n !== s.name);
-      this.chosen = signals.map((x) => x.name).filter((n) => this.chosen.includes(n)); // the dictionary's order
-      store.set(key, JSON.stringify(this.chosen));
-      this.render();
-    } }), ` ${s.name}`);
-    const group = (kind, title) => el('fieldset.wave-group', {}, el('legend', { text: title }), signals.filter((s) => s.kind === kind).map(pick));
-    this.picker = el('details.wave-picker', {}, el('summary', { text: W.signals }),
-      el('div.wave-picks', {}, group('control', W.control), group('data', W.data)));
+    this.picks = el('div.wave-picks');
+    this.picker = el('details.wave-picker', {}, el('summary', { text: W.signals }), this.picks);
+    this.setSignals(signals);
     this.labels = el('div.wave-labels', { 'aria-hidden': 'true' });
     this.plot = el('div.wave-plot', { tabindex: '0', 'aria-label': W.plotLabel });
     this.cycles = el('div.wave-cycles', { role: 'toolbar', 'aria-label': W.cyclesLabel });
@@ -66,6 +61,27 @@ export class WaveformPanel {
     });
   }
 
+  /** The signals offered (the export model's: with the platform devices on, the NPU's too); the choice is kept. */
+  setSignals(signals) {
+    const W = STRINGS.wave;
+    const same = this.signals?.length === signals.length && this.signals.every((s, i) => s.name === signals[i].name);
+    this.signals = signals;
+    if (same) return;
+    const order = (names) => signals.map((x) => x.name).filter((n) => names.includes(n)); // the dictionary's order
+    const pick = (s) => el('label.wave-pick', {}, el('input', { type: 'checkbox', checked: this.chosen.includes(s.name), onchange: (e) => {
+      const others = this.chosen.filter((n) => n !== s.name);
+      const known = new Set(signals.map((x) => x.name));
+      this.chosen = [...order(e.target.checked ? [...others, s.name] : others), ...others.filter((n) => !known.has(n))];
+      store.set(this.key, JSON.stringify(this.chosen));
+      this.render();
+    } }), ` ${s.name}`);
+    const group = (kind, title) => {
+      const list = signals.filter((s) => s.kind === kind);
+      return list.length ? el('fieldset.wave-group', {}, el('legend', { text: title }), list.map(pick)) : null;
+    };
+    this.picks.replaceChildren(...[group('control', W.control), group('data', W.data), group('npu', W.npu)].filter(Boolean));
+  }
+
   /** The records of cycles 0 to `current` (frames[k]: the signals of cycle k). */
   update(frames, current) {
     this.frames = frames;
@@ -82,7 +98,7 @@ export class WaveformPanel {
 
   render() {
     const W = STRINGS.wave;
-    const sigs = this.chosen.map((n) => this.signals.find((s) => s.name === n));
+    const sigs = this.chosen.map((n) => this.signals.find((s) => s.name === n)).filter(Boolean);
     const n = this.frames.length;
     const first = Math.max(0, n - MAX_SHOWN);
     this.first = first;

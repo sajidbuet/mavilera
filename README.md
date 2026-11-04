@@ -19,6 +19,8 @@ registered trademark (see [`TRADEMARKS.md`](TRADEMARKS.md)).
 | **SAP-1 Laboratory** | available | `https://sajidlab.org/mavilera/sap-1/` |
 | **SAP-2 Laboratory** | available | `https://sajidlab.org/mavilera/sap-2/` |
 | **Armv7 Laboratory** | available (from 1.1.0) | `https://sajidlab.org/mavilera/armv7/` |
+| **NPU** (a tool of the RISC-V Laboratory) | available (from 1.2.0) | `https://sajidlab.org/mavilera/riscv/?tool=npu` |
+| **GPU Laboratory** | preview (from 1.2.0): instruction level only | `https://sajidlab.org/mavilera/gpu/` |
 | MOS 6502, Intel 8086, MIPS | planned, not built | — |
 
 The landing page is `https://sajidlab.org/mavilera/`. Each simulator is

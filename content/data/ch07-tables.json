@@ -1,9 +1,9 @@
 {
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (book-derived; Apache-2.0).",
  "_source": {
-  "book_commit": "a5ad0e0fb96f7f1faee043de7540eddf8055789d",
+  "book_commit": "c2dc4c4892163ae96951a8584bf5b9ce7e55b490",
   "files": {
-   "chapters/chapter07/chapter07.tex": "ea209a3b78c5a3c043bf358e9d1d9b4fed776d933af726dbac906d17dff26e7a"
+   "chapters/chapter07/chapter07.tex": "bf47a753f8bbd63e5ea122756eda8ba14afcdf9f27d500d8a048d75cabb372fc"
   },
   "exported_by": "tools/export_ch07.py"
  },

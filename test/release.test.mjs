@@ -52,9 +52,9 @@ test('WS-N-002: every module of the offline build exports what Node.js reads fro
 test('W-D29 phase 6: each architecture builds from its own modules and content folders', () => {
   const all = releaseFiles();
   const own = { riscv: ['src/arch/riscv/', 'src/isa/', 'src/asm/', 'src/core/', 'src/uarch/', 'src/cc/'], 'sap-1': ['src/arch/sap-1/'], 'sap-2': ['src/arch/sap-2/'],
-    armv7: ['src/arch/armv7/'] };
+    armv7: ['src/arch/armv7/'], gpu: ['src/arch/gpu/'] };
   const built = registry().filter((a) => a.content);
-  assert.deepEqual(built.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7']);
+  assert.deepEqual(built.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu']);
   for (const a of built) {
     for (const c of a.content) assert.ok(existsSync(join(ROOT, c)), `${a.id}: ${c}`);
     const { files, overrides } = archFiles(a.id);
@@ -71,14 +71,14 @@ test('W-D29 phase 6: each architecture builds from its own modules and content f
     assert.deepEqual(reg.exports, ['ARCHITECTURES']);
     assert.match(overrides['src/shell/arch-id.js'], new RegExp(`^export const ARCH_ID = "${a.id}";$`, 'm'));
   }
-  // the RISC-V build is the release files without SAP-1's, SAP-2's and ARMv7's (each built on its own) and without the
-  // logo files no page, manifest or module names (WS-N-004: the social preview and the print
-  // variants belong to the landing page and the repository)
+  // the RISC-V build is the release files without SAP-1's, SAP-2's, ARMv7's and the GPU's (each built on its own; the
+  // GPU a preview from 1.2.0) and without the logo files no page, manifest or module
+  // names (WS-N-004: the social preview and the print variants belong to the landing page and the repository)
   const rv = new Set(archFiles('riscv').files);
   const brand = 'content/branding/mavilera/';
   const unused = ['social-preview.png', 'mavilera-dark.svg', 'mavilera-light.svg', 'mavilera-mono.svg', 'mavilera-lockup.svg'];
   assert.deepEqual(all.filter((p) => !rv.has(p) && !p.startsWith(brand)),
-    all.filter((p) => /^(src\/arch|content)\/(sap-[12]|armv7)\//.test(p)));
+    all.filter((p) => /^(src\/arch|content)\/(sap-[12]|armv7|gpu)\//.test(p)));
   for (const f of unused) assert.ok(!rv.has(brand + f), f);
   for (const f of ['favicon.ico', 'mavilera-icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'mavilera-logo.svg', 'mavilera-full.svg']) assert.ok(rv.has(brand + f), f);
   assert.ok(archFiles('sap-1').files.includes(`${brand}mavilera-logo-sap-1.svg`), 'SAP-1: its header lockup');

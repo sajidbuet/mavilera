@@ -48,6 +48,25 @@ export function parseNumbers(text, size = 4) {
   return bytes;
 }
 
+/**
+ * Words of a .hex file as Verilog's $readmemh reads them (the book's data.hex): hexadecimal words without prefix,
+ * separated by white space; `//` and `#` comments; no address markers. Returns little-endian bytes.
+ */
+export function parseHexWords(text, size = 4) {
+  const values = [];
+  text.split(/\r\n|\r|\n/).forEach((line, i) => {
+    for (const t of line.replace(/(\/\/|#).*$/, '').split(/\s+/).filter(Boolean)) {
+      if (!/^[0-9a-f_]+$/i.test(t)) throw new DataError(`line ${i + 1}: "${t}" is not a hexadecimal word`, { line: i + 1, token: t });
+      const digits = t.replace(/_/g, '');
+      if (digits.length > 2 * size) throw new DataError(`line ${i + 1}: ${t} does not fit ${8 * size} bits`, { line: i + 1, token: t });
+      values.push(parseInt(digits, 16));
+    }
+  });
+  const bytes = new Uint8Array(values.length * size);
+  values.forEach((v, k) => { for (let b = 0; b < size; b++) bytes[k * size + b] = (v >>> (8 * b)) & 0xff; });
+  return bytes;
+}
+
 /** The data segment holding `address` (a segment without code), or null. */
 const segmentAt = (program, address) => (program?.segments ?? [])
   .find((s) => !s.executable && address >= s.address && address < s.address + s.bytes.length) ?? null;

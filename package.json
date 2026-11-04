@@ -1,6 +1,6 @@
 {
   "name": "mavilera",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "license": "Apache-2.0",
   "description": "MAVILERA, the Interactive Microprocessor Architecture Laboratory: a platform of browser-based processor simulators. The first module is the RISC-V Laboratory (RV32I + M assembler, simulator and animated single-cycle, multicycle and pipelined datapaths).",
@@ -18,6 +18,8 @@
     "smoke": "node tools/browser-smoke.mjs",
     "smoke:header": "node tools/header-smoke.mjs",
     "smoke:mobile": "node tools/mobile-smoke.mjs",
+    "smoke:dock": "node tools/dock-smoke.mjs",
+    "smoke:view": "node tools/view-mode-smoke.mjs",
     "release": "node tools/release.mjs",
     "preview": "node tools/release.mjs --preview && node tools/serve.mjs 8001 dist"
   },

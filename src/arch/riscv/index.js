@@ -23,6 +23,7 @@ import { goldenText, traceRecords, traceJsonLines, traceCsv } from '../../core/e
 import { DEFAULT_SOURCE } from './default-source.js';
 import { immediateSteps } from './immediate.js';
 import { editor } from './editor.js';
+import { labRows, labDiagnostics } from './lab-rows.js';
 
 /** The application's root, for the views' content files. */
 const BASE = new URL('../../../', import.meta.url);
@@ -127,10 +128,10 @@ function create(program, { historyLimit, runLimit, platformConfig } = {}) {
     reset: () => s.reset(),
     state: () => {
       const h = s.hart;
-      // iss-priv: the console shows what the UART sent
+      // iss-priv and ch11: the console shows what the UART sent
       return { pc: h ? h.pc : program.entry, registers: regs(), halted: s.halted, error: s.error, retired: h ? h.instret : 0,
-        exitCode: h ? h.exitCode : null, output: h ? text(h.priv ? h.platform.uart?.tx ?? [] : h.output) : '',
-        outputDropped: h && !h.priv ? h.outputDropped : 0,
+        exitCode: h ? h.exitCode : null, output: h ? text(h.platform ? h.platform.uart?.tx ?? [] : h.output) : '',
+        outputDropped: h && !h.platform ? h.outputDropped : 0,
         historyDropped: s.history.dropped, steps: s.runCount };
     },
     last: () => {
@@ -156,6 +157,7 @@ function create(program, { historyLimit, runLimit, platformConfig } = {}) {
       return [
         ...h.abiViolations.map((v) => ({ kind: 'abi', message: RV.abiViolation(v) })),
         ...(h.priv ? h.priv.violations.map((v) => ({ kind: 'trap', message: STRINGS.platform.trapViolation(v) })) : []), // rvsim.py --trap-check
+        ...labDiagnostics(h.platform), // decision G5: a RESULT read while the NPU is busy
         ...uninit,
       ];
     },
@@ -167,7 +169,8 @@ function create(program, { historyLimit, runLimit, platformConfig } = {}) {
         ...CLASSES.filter((c) => rep.by_class[c] || ['alu', 'load', 'store', 'branch_taken', 'branch_not_taken', 'jump'].includes(c))
           .map((c) => [RV.classes[c], rep.by_class[c]]),
         [RV.stackUse, rep.stack_bytes],
-        ...(rep.priv ? [[STRINGS.platform.cpu.cycle, rep.priv.cycles], [STRINGS.platform.cpu.traps, h.traps]] : [])];
+        ...(rep.priv ? [[RV.platform.cpu.cycle, rep.priv.cycles], [RV.platform.cpu.traps, h.traps]] : h.platform ? [[RV.platform.cpu.cycle, h.cycle]] : []),
+        ...labRows(h.platform)]; // the Chapter 11 laboratory measurement (NPU-2)
     },
     callStack: () => (s.hart ? callStack(s.hart, program).map((f) => ({ ...f, args: f.args.map((value, k) => ({ name: `a${k}`, value })) })) : []),
     dataAccess: () => {
@@ -361,6 +364,7 @@ export const descriptor = {
     regions: [
       { name: 'RAM', base: 0x0000_0000, size: 0x4000_0000, kind: 'ram' },
       { name: 'Devices (iss-priv)', base: 0x4000_0000, size: 0x1000_0000, kind: 'device' }, // W-D26: the platform's window (GPIO, timer, UART)
+      { name: 'NPU', base: 0x5000_0000, size: 0x1000, kind: 'device' }, // decision G1: the Chapter 11 NPU, outside the window
     ],
   },
   engine: {
@@ -369,7 +373,7 @@ export const descriptor = {
     profiles: Object.values(PROFILES).map((p) => ({
       id: p.id, label: RV.profileNames[p.id], memory: p.memory, stackTop: p.stackTop,
       ...(p.subsets ? { subsets: ['full', ...Object.keys(p.subsets)].map((id) => ({ id, label: RV.single.subsets[id] })) } : {}),
-      ...(p.priv ? { capabilities: { traps: true, worker: off('privNoWorker') } } : {}),
+      ...(p.priv ? { capabilities: { traps: true, worker: off('privNoWorker') } } : p.devices ? { capabilities: { worker: off('devicesNoWorker') } } : {}),
     })),
   },
   memorySystem: { timing: true, cache: true, devices: true },
@@ -396,6 +400,29 @@ export const descriptor = {
       const [{ CompareView, loadCompareContent }, w] = await Promise.all([import('./ui/compare-view.js'), import('./views.js')]);
       const content = await loadCompareContent(BASE);
       return { create: (ctx) => w.compare(new CompareView(content), ctx) };
+    } },
+    // the NPU tool (NPU-3; shown only there, src/shell/platform-archs.js): the single-cycle processor with the platform
+    // devices and its datapath extended by the NPU on the data bus, and the NPU itself at its four levels
+    { id: 'npu-single', label: RV.viewSingle, icon: 'clock', kind: 'datapath', profile: 'ch06', names: 'x', load: async () => {
+      const [{ SingleView, loadSingleContent }, w, X] = await Promise.all([import('./ui/single-view.js'), import('./views.js'), import('./npu-datapath.js')]);
+      const content = await loadSingleContent(BASE);
+      const extend = { geom: X.extendForNpu, info: X.NPU_DP_INFO, values: X.npuDpValues, path: X.npuDpPath };
+      return { create: (ctx) => w.npuSingle(new SingleView(content, { extend }), ctx) };
+    } },
+    { id: 'npu', label: RV.viewNpu, icon: 'npu', kind: 'datapath', profile: 'ch06', names: 'x', load: async () => {
+      const [{ SingleView, loadSingleContent }, { NpuView }, w] = await Promise.all([import('./ui/single-view.js'), import('../../ui/npu-view.js'), import('./views.js')]);
+      const [content, geom] = await Promise.all([loadSingleContent(BASE), fetch(new URL('content/geometry/ch11-npu.json', BASE)).then((r) => {
+        if (!r.ok) throw new Error(`content/geometry/ch11-npu.json: ${r.status}`);
+        return r.json();
+      })]);
+      return { create: (ctx) => w.npu(new SingleView(content), new NpuView(geom), ctx) };
+    } },
+    // the NPU tool's Analysis (NPU-4): Chapter 11's offload breakdown, CPU/NPU comparison and analytical panels; it
+    // measures the program on the laboratory profile (RV32IM with the devices), so `mul` assembles there
+    { id: 'npu-analysis', label: RV.viewAnalysis, icon: 'analysis', kind: 'compare', profile: 'ch11', load: async () => {
+      const [{ AnalysisView, loadAnalysisContent }, w] = await Promise.all([import('./ui/analysis-view.js'), import('./views.js')]);
+      const content = await loadAnalysisContent(BASE);
+      return { create: () => w.analysis(new AnalysisView(content)) };
     } },
   ],
   content: { examples: 'content/examples/index.json', templates: 'content/templates/index.json', help: 'content/help/help.json', exercises: 'content/exercises/index.json',

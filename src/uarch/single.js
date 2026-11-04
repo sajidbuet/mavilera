@@ -218,6 +218,8 @@ export class SingleCycle {
       rec.mem = s.alu_y;
       rec.memOld = this.dmem.write(s.alu_y, 4, s.rs2_val);
     }
+    // the data access the edge completed, for a view of the cycle after it (the NPU tool's views)
+    if (s.MemWrite || s.ResultSel === 1) rec.acc = { addr: s.alu_y >>> 0, write: Boolean(s.MemWrite), value: (s.MemWrite ? s.rs2_val : s.rdata) >>> 0 };
     this.pc = s.pc_next;
     this.cycle += 1;
     this.remember(rec);

@@ -8,7 +8,8 @@
     "pipe": "Pipelined processor",
     "devices": "Devices and traps",
     "cache": "Caches and memory",
-    "compare": "Comparison"
+    "compare": "Comparison",
+    "lab": "Laboratory: the NPU"
   },
   "templates": [
     {
@@ -492,6 +493,41 @@
           "hit": 1
         }
       }
+    },
+    {
+      "id": "sw-mv",
+      "file": "sw-mv.s",
+      "group": "lab",
+      "view": "single",
+      "lang": "asm",
+      "title": "y = W x in software: the baseline (shift-and-add)",
+      "mem": {
+        "mode": "ideal",
+        "words": 1024,
+        "devices": true
+      }
+    },
+    {
+      "id": "npu-mv",
+      "file": "npu-mv.s",
+      "group": "lab",
+      "view": "single",
+      "lang": "asm",
+      "title": "y = W x on the NPU: weights, activations, start, poll",
+      "mem": {
+        "mode": "ideal",
+        "words": 1024,
+        "devices": true
+      }
+    },
+    {
+      "id": "sw-mv-m",
+      "file": "sw-mv-m.s",
+      "group": "lab",
+      "view": "isa",
+      "profile": "ch11",
+      "lang": "asm",
+      "title": "y = W x in software with mul (instruction level only)"
     }
   ]
 }

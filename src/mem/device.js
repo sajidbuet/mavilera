@@ -17,6 +17,7 @@ export class Device {
     this.registers = registers;
     this.latency = { read: latency.read ?? 1, write: latency.write ?? 1 }; // CPU cycles of one access
     this.widths = widths;
+    this.widthMessage = null; // why another width is refused, added to the bus fault (the NPU: whole words only)
     this.listeners = new Set();
     this.journal = null; // {touch()}: called before every change of state, so that the machine can save it (back-step)
     this.window = false; // a region that other devices may be placed inside (the platform's peripheral window)

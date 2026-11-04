@@ -8,6 +8,9 @@
 //                               src/arch/sap-1/exercise.js)
 //   title, task                 strings shown to the student
 //   lang                        "asm" (default) or "c": the language the program is written in
+//   profile                     optional: "iss" (default) or "ch11", the laboratory profile with the platform
+//                               devices (GPIO, timer, UART, NPU at 0x5000_0000), RAM of 1024 words from 0, one cycle
+//                               per instruction (NPU-4); the program is assembled and run on it
 //   starter                     optional: a program to start from
 //   entry                       optional: a label to call as a procedure in each test (ra returns
 //                               to a stop address); without it the program runs from its start
@@ -15,17 +18,20 @@
 //     registers: {a0: 5, a1: "arr"}   values set after reset (numbers, or labels of the program)
 //     memory: [{at: "arr" | 4096, words | halves | bytes: [...]}]   data written after reset
 //     expect: { registers: {...}, memory: [{at, words | halves | bytes}], output: "text", exit: n,
+//               maxCycles: n (the run takes at most n cycles),
 //               abi: true (no calling-convention report) }
 //     limit }]                   instructions at most (default 1 000 000)
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
 import { Hart, SimError } from './iss.js';
+import { Platform } from '../mem/platform.js';
 import { ABI_NAMES } from '../isa/encoding.js';
 
 export const EXERCISE_FORMAT = 'risc-vista-exercise';
 const RETURN_STOP = 0xfffffff0; // where the procedure of an `entry` test returns to
 const SIZES = { words: 4, halves: 2, bytes: 1 };
+export const EXERCISE_PROFILES = Object.freeze(['iss', 'ch11']);
 
 /** Register number of `x7`, `a0`, `s0`/`fp`; null if none. */
 export function registerNumber(name) {
@@ -49,6 +55,9 @@ export function parseExercise(o) {
   if (!Array.isArray(o.tests) || !o.tests.length) fail('the exercise has no tests');
   const lang = o.lang ?? 'asm';
   if (!['asm', 'c'].includes(lang)) fail(`unknown language "${lang}"`);
+  const profile = o.profile ?? 'iss';
+  if (!EXERCISE_PROFILES.includes(profile)) fail(`unknown profile "${profile}" (${EXERCISE_PROFILES.join(' or ')})`);
+  if (profile === 'ch11' && lang !== 'asm') fail('the laboratory profile takes assembly only');
   const regs = (r, where) => {
     if (r === undefined) return {};
     if (typeof r !== 'object' || Array.isArray(r)) fail(`${where}: registers must be an object`);
@@ -75,11 +84,12 @@ export function parseExercise(o) {
     return {
       name: String(t.name ?? `Test ${i + 1}`), registers: regs(t.registers, where), memory: mem(t.memory, where),
       expect: { registers: regs(e.registers, `${where}, expect`), memory: mem(e.memory, `${where}, expect`),
-        output: e.output === undefined ? null : String(e.output), exit: e.exit === undefined ? null : Number(e.exit), abi: e.abi === true },
+        output: e.output === undefined ? null : String(e.output), exit: e.exit === undefined ? null : Number(e.exit), abi: e.abi === true,
+        maxCycles: e.maxCycles === undefined ? null : Number(e.maxCycles) },
       limit: Number(t.limit ?? 1_000_000),
     };
   });
-  return { title: o.title, task: String(o.task ?? ''), lang, starter: o.starter === undefined ? null : String(o.starter),
+  return { title: o.title, task: String(o.task ?? ''), lang, profile, starter: o.starter === undefined ? null : String(o.starter),
     entry: o.entry === undefined ? null : String(o.entry), tests };
 }
 
@@ -95,7 +105,7 @@ function valueOf(v, program) {
 }
 
 /**
- * Run every test of `ex` on an assembled program (profile iss). Returns, per test,
+ * Run every test of `ex` on an assembled program (its profile: iss, or ch11 with a fresh platform per test). Returns, per test,
  * {name, pass, error, checks: [{what, expected, actual, ok}], instructions}.
  */
 export function runExercise(program, ex) {
@@ -104,7 +114,7 @@ export function runExercise(program, ex) {
     let error = null;
     let h = null;
     try {
-      h = new Hart(program, { profile: 'iss', abiCheck: true });
+      h = ex.profile === 'ch11' ? new Hart(program, { profile: 'ch11', platform: new Platform(), abiCheck: true }) : new Hart(program, { profile: 'iss', abiCheck: true });
       if (ex.entry) {
         h.pc = valueOf(ex.entry, program);
         h.x[1] = RETURN_STOP;
@@ -149,6 +159,7 @@ export function runExercise(program, ex) {
         checks.push({ what: 'output', expected: JSON.stringify(x.output), actual: JSON.stringify(got), ok: got === x.output });
       }
       if (x.exit !== null) checks.push({ what: 'exit code', expected: String(x.exit), actual: h.exitCode === null ? '—' : String(h.exitCode | 0), ok: h.exitCode !== null && (h.exitCode | 0) === x.exit });
+      if (x.maxCycles !== null) checks.push({ what: 'cycles', expected: `at most ${x.maxCycles}`, actual: String(h.cycle || h.instret), ok: !error && (h.cycle || h.instret) <= x.maxCycles });
       if (x.abi) checks.push({ what: 'calling convention', expected: 'kept', actual: h.abiViolations.length ? h.abiViolations[0] : 'kept', ok: !h.abiViolations.length });
     }
     return { name: t.name, pass: !error && checks.every((c) => c.ok), error, checks, instructions: h?.instret ?? 0 };

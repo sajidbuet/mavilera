@@ -3,7 +3,8 @@
 // export); the controller sets a CSS transform on the svg, translate(x, y) scale(k) from its top left corner, so
 // that pointer hit-testing, clicks and tooltips follow. k = 1 with no translation is the drawing fitted and centred
 // in its box (preserveAspectRatio meet). The wheel zooms around the pointer, a right drag pans, and so does a left
-// drag while Pan is on (WS-U-030); keys +, -, 0 and the arrows on the focused drawing (WS-U-034).
+// drag while Pan is on (WS-U-030); keys +, -, 0 and the arrows on the focused drawing (WS-U-034). Besides the whole
+// drawing, the drawing can be fitted to the pane's width or height; a fit holds while the pane changes size.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -63,6 +64,35 @@ export function zoomAt(t, factor, p, f, limits = LIMITS) {
 /** `t` zoomed to `zoom` pixels per drawing unit around the pane's centre (the "100 %" button: zoom 1). */
 export const zoomTo = (t, zoom, pane, f, limits = LIMITS) => zoomAt(t, zoom / f / t.k, { x: pane.w / 2, y: pane.h / 2 }, f, limits);
 
+/**
+ * The transform that fits the drawing's width (`axis` 'w') or height ('h') to the pane, centred on both axes: the
+ * other axis may then be larger than the pane (it pans) or smaller (it is centred). Proportions are kept: one scale.
+ */
+export function fitAxis(axis, pane, box, limits = LIMITS) {
+  const f = fitScale(pane, box);
+  const d = drawnRect(pane, box);
+  const want = axis === 'w' ? pane.w / box.w : pane.h / box.h;
+  const k = clampK(want / f, f, limits);
+  const snap = (v) => (Math.abs(v) < 1e-6 ? 0 : v); // the axis that already fits gives exactly the fitted transform
+  return { k: Math.abs(k - 1) < 1e-9 ? 1 : k, x: snap(pane.w / 2 - k * (d.x + d.w / 2)), y: snap(pane.h / 2 - k * (d.y + d.h / 2)) };
+}
+
+/**
+ * `t` carried over a change of the pane's size (`before` and `after`: {pane, box}): the zoom in pixels per drawing
+ * unit stays, and so does the drawing point at the centre of the pane (a zoomed or panned view is kept as it was).
+ */
+export function keepView(t, before, after) {
+  const f0 = fitScale(before.pane, before.box);
+  const f1 = fitScale(after.pane, after.box);
+  const d0 = drawnRect(before.pane, before.box);
+  const d1 = drawnRect(after.pane, after.box);
+  const z = t.k * f0;
+  const ux = ((before.pane.w / 2 - t.x) / t.k - d0.x) / f0; // the drawing point (drawing units) at the old centre
+  const uy = ((before.pane.h / 2 - t.y) / t.k - d0.y) / f0;
+  const k = z / f1;
+  return { k, x: after.pane.w / 2 - k * d1.x - z * ux, y: after.pane.h / 2 - k * d1.y - z * uy };
+}
+
 /** The zoom factor of a wheel event: a pinch on a touchpad arrives as Ctrl + wheel with small deltas. */
 export function wheelFactor({ deltaY, deltaMode = 0, ctrlKey = false }, pageHeight = 800) {
   const px = deltaMode === 1 ? deltaY * 16 : deltaMode === 2 ? deltaY * pageHeight : deltaY;
@@ -98,6 +128,10 @@ export class PanZoom {
     this.shared = shared;
     (shared.all ??= new Set()).add(this);
     this.t = { ...FIT };
+    // 'fit' (the whole drawing), 'width' or 'height' (fitted on one axis): kept when the pane changes size;
+    // 'manual' (zoomed or panned): the zoom and the point at the centre are kept instead (keepView)
+    this.mode = 'fit';
+    this.last = null; // the pane and drawing sizes of the last transform set, {pane, box}
     this.drag = null;
     this.touches = new Map();
     this.noClick = false;
@@ -113,11 +147,17 @@ export class PanZoom {
     const button = (glyph, label, onclick, attrs = {}) => el('button.pz-btn', { type: 'button', title: label, 'aria-label': label, onclick, ...attrs }, glyph);
     this.level = el('button.pz-btn.pz-level.mono', { type: 'button', title: Z().actual, 'aria-label': Z().actual, onclick: () => this.actual() });
     this.panBtn = button(icon('pan', { size: 16 }), Z().pan, () => this.setPan(!this.shared.pan), { 'aria-pressed': 'false' });
+    // the fit buttons show which fit holds (pressed); a zoom or a pan releases it, and a press restores it
+    this.fitBtns = {
+      fit: button(icon('fitView', { size: 16 }), Z().fit, () => this.fit(true), { 'aria-pressed': 'true' }),
+      width: button(icon('fitWidth', { size: 16 }), Z().fitWidth, () => this.fitTo('width', true), { 'aria-pressed': 'false' }),
+      height: button(icon('fitHeight', { size: 16 }), Z().fitHeight, () => this.fitTo('height', true), { 'aria-pressed': 'false' }),
+    };
     this.bar = el('div.pz-bar', { role: 'toolbar', 'aria-label': Z().toolbar },
       button(icon('zoomOut', { size: 16 }), Z().zoomOut, () => this.step(-1)),
       this.level,
       button(icon('zoomIn', { size: 16 }), Z().zoomIn, () => this.step(1)),
-      button(icon('fitView', { size: 16 }), Z().fit, () => this.fit(true)),
+      this.fitBtns.fit, this.fitBtns.width, this.fitBtns.height,
       this.panBtn);
     view.append(this.bar);
 
@@ -128,7 +168,7 @@ export class PanZoom {
     for (const type of ['pointerup', 'pointercancel']) view.addEventListener(type, (e) => this.up(e));
     view.addEventListener('click', (e) => { if (this.noClick) { e.preventDefault(); e.stopPropagation(); this.noClick = false; } }, true);
     view.addEventListener('keydown', (e) => this.key(e));
-    if (typeof ResizeObserver === 'function') new ResizeObserver(() => this.apply()).observe(view);
+    if (typeof ResizeObserver === 'function') new ResizeObserver(() => this.resized()).observe(view);
     this.syncPan();
     this.apply();
   }
@@ -147,6 +187,7 @@ export class PanZoom {
     const g = this.geometry();
     if (!(g.pane.w > 0 && g.pane.h > 0)) return; // hidden: keep t as it is
     this.t = clampPan({ ...t, k: clampK(t.k, g.f) }, g.pane, drawnRect(g.pane, g.box));
+    this.last = { pane: g.pane, box: g.box };
     this.view.classList.toggle('pz-anim', animate && !reducedMotion());
     const { k, x, y } = this.t;
     this.svg.style.transform = k === 1 && x === 0 && y === 0 ? '' : `translate(${x}px, ${y}px) scale(${k})`;
@@ -155,17 +196,46 @@ export class PanZoom {
     this.level.setAttribute('aria-label', Z().level(n));
   }
 
+  /**
+   * The pane changed size (a split moved, the execution controls docked elsewhere, the window resized): a fit is
+   * computed again for the new size; a manual view keeps its zoom and centre. An unchanged size changes nothing.
+   */
+  resized() {
+    const g = this.geometry();
+    if (!(g.pane.w > 0 && g.pane.h > 0)) return;
+    const same = this.last && Math.abs(this.last.pane.w - g.pane.w) < 0.5 && Math.abs(this.last.pane.h - g.pane.h) < 0.5
+      && this.last.box.w === g.box.w && this.last.box.h === g.box.h;
+    if (this.mode === 'fit') this.apply({ ...FIT });
+    else if (this.mode !== 'manual') this.apply(fitAxis(this.mode === 'width' ? 'w' : 'h', g.pane, g.box));
+    else this.apply(same || !this.last ? this.t : keepView(this.t, this.last, g));
+  }
+
+  /** The fit in force ('fit', 'width', 'height') or 'manual'; the fit buttons show it. */
+  setMode(m) {
+    this.mode = m;
+    for (const [id, b] of Object.entries(this.fitBtns)) b.setAttribute('aria-pressed', String(id === m));
+  }
+
   step(dir) {
     const g = this.geometry();
+    this.setMode('manual');
     this.apply(zoomAt(this.t, dir > 0 ? STEP : 1 / STEP, { x: g.pane.w / 2, y: g.pane.h / 2 }, g.f), true);
   }
 
   actual() {
     const g = this.geometry();
+    this.setMode('manual');
     this.apply(zoomTo(this.t, 1, g.pane, g.f), true);
   }
 
-  fit(animate = false) { this.apply({ ...FIT }, animate); }
+  fit(animate = false) { this.setMode('fit'); this.apply({ ...FIT }, animate); }
+
+  /** Fit the drawing's width or height (`axis` 'width' or 'height') to the pane; it stays so through a resize. */
+  fitTo(axis, animate = false) {
+    const g = this.geometry();
+    this.setMode(axis);
+    if (g.pane.w > 0 && g.pane.h > 0) this.apply(fitAxis(axis === 'width' ? 'w' : 'h', g.pane, g.box), animate);
+  }
 
   setPan(on) {
     this.shared.pan = on;
@@ -182,6 +252,7 @@ export class PanZoom {
     if (this.bar.contains(e.target)) return;
     e.preventDefault(); // over the drawing the wheel zooms; outside it the page scrolls as before
     const g = this.geometry();
+    this.setMode('manual');
     this.apply(zoomAt(this.t, wheelFactor(e, innerHeight), { x: e.clientX - g.left, y: e.clientY - g.top }, g.f));
   }
 
@@ -209,6 +280,7 @@ export class PanZoom {
     if (this.pinch && this.touches.size === 2) {
       const now = this.spread();
       const t = zoomAt(this.pinch.t, now.d / this.pinch.d, this.pinch.p, this.geometry().f);
+      this.setMode('manual');
       this.apply({ k: t.k, x: t.x + now.p.x - this.pinch.p.x, y: t.y + now.p.y - this.pinch.p.y });
       return;
     }
@@ -221,6 +293,7 @@ export class PanZoom {
       d.moved = true;
       this.view.setPointerCapture?.(e.pointerId);
       this.view.classList.add('pz-dragging');
+      this.setMode('manual');
     }
     this.apply({ k: d.t.k, x: d.t.x + dx, y: d.t.y + dy });
   }
@@ -246,6 +319,6 @@ export class PanZoom {
     e.preventDefault();
     if (a.zoom) this.step(a.zoom);
     else if (a.fit) this.fit(true);
-    else this.apply({ k: this.t.k, x: this.t.x + a.pan[0], y: this.t.y + a.pan[1] });
+    else { this.setMode('manual'); this.apply({ k: this.t.k, x: this.t.x + a.pan[0], y: this.t.y + a.pan[1] }); }
   }
 }

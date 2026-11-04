@@ -24,7 +24,11 @@ node tools/make-mavilera-brand.mjs
 ```
 
 A module's header lockup alone, without the fonts (its letters are drawn): `python -I tools/logo/make_logo.py
-$env:TEMP/logo-raw --only armv7`, then steps 2's SVGO and `finish.py` on that folder, and step 3.
+$env:TEMP/logo-raw --only armv7`, then steps 2's SVGO and `finish.py` on that folder, and step 3. Keys: `riscv`, `sap1`,
+`sap2`, `armv7`, `npu`, `gpu`, and `names` for every tool's name lockup (chip and name, the switcher's entries).
+`finish.py` also writes the RISC-V/mark PNGs and `favicon.ico` into its destination: for a partial build, give it a
+scratch folder holding copies of `mavilera-riscv.svg`, `mavilera-mark.svg` and `mavilera-icon.svg`, then copy the new
+SVGs into `logo/`.
 
 `finish.py` checks each SVG (view box, no `<image>`/`<text>`/fonts/strokes, copyright line, < 30 KB) and that SVGO
 changed no rendered pixel. Step 1 rewrites `mark.json` without its `_copyright` field; add it back.

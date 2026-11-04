@@ -70,8 +70,8 @@ export function download(name, data, type = 'text/plain') {
 }
 
 // Each architecture keeps its own settings and workspace (W-D29: the applications share an origin); RISC-V keeps the
-// historical keys. The theme and the projector mode are the platform's.
-const SHARED_KEYS = new Set(['pips.theme', 'pips.projector']);
+// historical keys. The theme, the projector mode and the place of the execution controls are the platform's.
+const SHARED_KEYS = new Set(['pips.theme', 'pips.projector', 'pips.toolbarDock']);
 /** The storage key of a setting for this page's architecture. */
 export const scoped = (key) => (ARCH_ID === 'riscv' || SHARED_KEYS.has(key) ? key : key.replace(/^pips\./, `pips.${ARCH_ID}.`));
 

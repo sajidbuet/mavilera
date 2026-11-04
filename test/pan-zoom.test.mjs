@@ -5,8 +5,8 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { LIMITS, FIT, MARGIN, PAN_STEP, fitScale, drawnRect, zoomOf, clampK, clampPan, zoomAt, zoomTo, wheelFactor, keyAction }
-  from '../src/ui/pan-zoom.js';
+import { LIMITS, FIT, MARGIN, PAN_STEP, fitScale, drawnRect, zoomOf, clampK, clampPan, zoomAt, zoomTo, wheelFactor, keyAction,
+  fitAxis, keepView } from '../src/ui/pan-zoom.js';
 
 const near = (a, b, msg) => assert.ok(Math.abs(a - b) < 1e-9, `${msg ?? ''} ${a} != ${b}`);
 const pane = { w: 800, h: 400 };
@@ -77,6 +77,50 @@ test('pan limits: the drawing cannot leave the pane; at least MARGIN pixels of i
   // a drawing smaller than the margin: half of it stays in view
   const small = clampPan({ k: 1, x: 1e6, y: 0 }, pane, { x: 0, y: 0, w: 20, h: 20 });
   assert.equal(small.x, pane.w - 10);
+});
+
+test('fit to height: the drawing fills the pane\'s height, one scale on both axes, centred; to width likewise', () => {
+  // a wide drawing in this pane is fitted by width (0.8): fit to height scales it to 1 px per unit, 1000 px wide
+  const h = fitAxis('h', pane, box);
+  near(zoomOf(h, f), pane.h / box.h);
+  const top = h.y + h.k * drawn.y;
+  near(top, 0, 'top');
+  near(top + h.k * drawn.h, pane.h, 'bottom'); // no vertical cropping
+  const left = h.x + h.k * drawn.x;
+  near(left + (h.k * drawn.w) / 2, pane.w / 2, 'centred'); // wider than the pane: centred, pans sideways
+  assert.ok(h.k * drawn.w > pane.w);
+  // the axis that already fits gives exactly the whole-drawing fit (no transform)
+  assert.deepEqual(fitAxis('w', pane, box), FIT);
+  // a tall drawing (the Armv7 pipeline is taller than wide in a narrow pane): fit to width fills the width
+  const tallBox = { w: 400, h: 1000 };
+  const tf = fitScale(pane, tallBox);
+  const td = drawnRect(pane, tallBox);
+  const w = fitAxis('w', pane, tallBox);
+  near(zoomOf(w, tf), pane.w / tallBox.w);
+  near(w.x + w.k * td.x, 0, 'left');
+  near(w.x + w.k * (td.x + td.w), pane.w, 'right');
+  assert.deepEqual(fitAxis('h', pane, tallBox), FIT);
+  // the zoom limits hold
+  near(zoomOf(fitAxis('h', { w: 10, h: 4000 }, { w: 1000, h: 100 }), fitScale({ w: 10, h: 4000 }, { w: 1000, h: 100 })), LIMITS.max);
+});
+
+test('a resize keeps a manual view: the same zoom, the same drawing point at the centre', () => {
+  const t = { k: 2.5, x: -300, y: -120 };
+  const before = { pane, box };
+  const after = { pane: { w: 760, h: 520 }, box }; // the toolbar docked at a side: narrower, taller
+  const u = keepView(t, before, after);
+  const f1 = fitScale(after.pane, box);
+  near(zoomOf(u, f1), zoomOf(t, f), 'zoom');
+  // the drawing unit at the old centre is at the new centre
+  const d1 = drawnRect(after.pane, box);
+  const unitAt = (tt, pp, ff, dd) => ({ x: ((pp.w / 2 - tt.x) / tt.k - dd.x) / ff, y: ((pp.h / 2 - tt.y) / tt.k - dd.y) / ff });
+  const a = unitAt(t, pane, f, drawn);
+  const b = unitAt(u, after.pane, f1, d1);
+  near(a.x, b.x, 'x');
+  near(a.y, b.y, 'y');
+  // an unchanged pane changes nothing
+  const same = keepView(t, before, before);
+  near(same.k, t.k); near(same.x, t.x); near(same.y, t.y);
 });
 
 test('wheel: down zooms out, up zooms in; lines and a touchpad pinch (Ctrl) are scaled', () => {

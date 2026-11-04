@@ -144,6 +144,10 @@ export class MemoryPanel {
     this.onWatch = onWatch;
     this.roles = registers.roles ?? {};
     this.wordBytes = addressSpace.wordBytes;
+    // bytes per address: 1, or 2 for a memory of 16-bit words with one address per word (the GPU module's program
+    // memory); rows, columns and marks count addresses, reads and the cells' digits bytes
+    this.unit = addressSpace.unitBits / 8;
+    this.unitBits = addressSpace.unitBits;
     this.addrDigits = Math.ceil(addressSpace.addressBits / 4);
     this.list = registers.groups.flatMap((g) => g.registers).filter((r) => !r.hidden);
     this.base = 0;
@@ -178,9 +182,9 @@ export class MemoryPanel {
         this.roles.sp ? el('button.mem-sp', { type: 'button', text: spName(this.list, this.roles.sp), title: STRINGS.memGoSp, // the name is the visible text; the title describes it
           onclick: () => { if (this.regs) this.goToAddress(this.regs[this.roles.sp]); } }) : null,
         this.regSel,
-        this.wordBytes > 1 ? this.modeSel : null, this.viewSel,
-        this.paged ? el('button', { type: 'button', text: '▲', 'aria-label': STRINGS.previous, onclick: () => { this.base -= this.rowBytes * this.rows; this.render(); } }) : null,
-        this.paged ? el('button', { type: 'button', text: '▼', 'aria-label': STRINGS.next, onclick: () => { this.base += this.rowBytes * this.rows; this.render(); } }) : null,
+        this.wordBytes > this.unit ? this.modeSel : null, this.viewSel,
+        this.paged ? el('button', { type: 'button', text: '▲', 'aria-label': STRINGS.previous, onclick: () => { this.base -= this.rowUnits() * this.rows; this.render(); } }) : null,
+        this.paged ? el('button', { type: 'button', text: '▼', 'aria-label': STRINGS.next, onclick: () => { this.base += this.rowUnits() * this.rows; this.render(); } }) : null,
         this.regions),
       el('div.scroll', {}, el('table.listing.memtable', {}, this.body)));
   }
@@ -198,6 +202,9 @@ export class MemoryPanel {
     this.render();
   }
 
+  /** Addresses in a row of the table. */
+  rowUnits() { return this.rowBytes / this.unit; }
+
   /** Rows and paging for the bytes per row. */
   layoutRows() {
     this.rows = Math.min(16, Math.ceil(this.span / this.rowBytes));
@@ -210,13 +217,13 @@ export class MemoryPanel {
     if (n === this.rowBytes || n % this.wordBytes !== 0) return;
     this.rowBytes = n;
     this.layoutRows();
-    this.base = (this.base - (this.base % n)) >>> 0;
+    this.base = (this.base - (this.base % this.rowUnits())) >>> 0;
     this.render();
   }
 
   /** The address of the memory-panel word holding address a. */
   wordOf(a) {
-    return (a - (a % this.wordBytes)) >>> 0;
+    return (a - (a % (this.wordBytes / this.unit))) >>> 0;
   }
 
   /** Address of a label, a register's value (by its first alias), or a hexadecimal number; null if none. */
@@ -237,7 +244,7 @@ export class MemoryPanel {
 
   /** Show the memory from the row that holds address a. */
   goToAddress(a) {
-    this.base = this.paged ? (a - (a % this.rowBytes)) >>> 0 : 0;
+    this.base = this.paged ? (a - (a % this.rowUnits())) >>> 0 : 0;
     this.goto.value = this.hex(a);
     this.render();
   }
@@ -251,7 +258,7 @@ export class MemoryPanel {
     const harvard = this.profile?.memory === 'harvard'; // the data memory holds no code
     for (const s of segs) {
       if (harvard && s.executable) continue;
-      if (a >= s.address && a < s.address + Math.max(s.bytes.length, 1)) return s.executable ? STRINGS.regionText : STRINGS.regionData;
+      if (a >= s.address && a < s.address + Math.max(s.bytes.length / this.unit, 1)) return s.executable ? STRINGS.regionText : STRINGS.regionData;
     }
     const top = this.profile?.stackTop;
     // The stack: from sp up to the stack top, within the 64 KiB below the top (sp may hold anything).
@@ -274,14 +281,15 @@ export class MemoryPanel {
     const W = this.wordBytes;
     const rows = [];
     for (let r = 0; r < this.rows; r++) {
-      const a = (this.base + this.rowBytes * r) >>> 0;
+      const a = (this.base + this.rowUnits() * r) >>> 0;
       const cells = [];
       for (let k = 0; k < this.rowBytes; k += this.mode === 'word' ? W : 1) {
-        const addr = (a + k) >>> 0;
+        const addr = (a + k / this.unit) >>> 0;
         const size = this.mode === 'word' ? W : 1;
+        const n = Math.max(1, size / this.unit); // addresses in the cell
         const v = (this.view === 'ram' && this.ram ? this.ram : this.mem).read(addr, size);
-        const hit = this.written && addr < this.written.addr + this.written.size && addr + size > this.written.addr;
-        const acc = this.accessed && addr < this.accessed.addr + this.accessed.size && addr + size > this.accessed.addr;
+        const hit = this.written && addr < this.written.addr + this.written.size / this.unit && addr + n > this.written.addr;
+        const acc = this.accessed && addr < this.accessed.addr + this.accessed.size / this.unit && addr + n > this.accessed.addr;
         const stale = this.view === 'ram' && this.dirty?.(addr);
         const watched = this.watched?.has(this.wordOf(addr));
         const marks = [addr === sp ? 'sp' : '', addr === fp ? 'fp' : ''].filter(Boolean).join(',');
@@ -290,19 +298,19 @@ export class MemoryPanel {
           title: [this.hex(addr), lbl, marks, hit ? STRINGS.mem.writtenMark : '', acc ? STRINGS.mem.accessedMark : '', stale ? STRINGS.mem.dirtyMark : '',
             watched ? STRINGS.watchedMark : ''].filter(Boolean).join(' · '),
           ondblclick: size === W ? () => this.onWatch?.(addr) : null,
-        }, watched && (size === W || addr % W === 0) ? '👁' : '', hit ? '◆' : '', acc && !hit ? '◇' : '', stale ? '✎' : '', marks ? `‹${marks}›` : '',
+        }, watched && (size === W || addr % (W / this.unit) === 0) ? '👁' : '', hit ? '◆' : '', acc && !hit ? '◇' : '', stale ? '✎' : '', marks ? `‹${marks}›` : '',
         size === 1 ? hex2(v) : (v >>> 0).toString(16).padStart(2 * size, '0')));
       }
       const lbl = [];
-      for (let k = 0; k < this.rowBytes; k++) if (labels.has((a + k) >>> 0)) lbl.push(labels.get((a + k) >>> 0));
+      for (let k = 0; k < this.rowUnits(); k++) if (labels.has((a + k) >>> 0)) lbl.push(labels.get((a + k) >>> 0));
       rows.push(el('tr', {}, el('td.mono.addr', { text: this.hex(a) }), cells,
         el('td.note', { text: [this.region(a), lbl.join(' ')].filter(Boolean).join(' · ') })));
     }
     const step = this.mode === 'word' ? W : 1;
     const head = el('tr', {}, el('th', { text: STRINGS.colAddress }),
-      Array.from({ length: this.rowBytes / step }, (_, i) => el('th.mono', { text: `+${(i * step).toString(16)}` })), el('th'));
+      Array.from({ length: this.rowBytes / step }, (_, i) => el('th.mono', { text: `+${((i * step) / this.unit).toString(16)}` })), el('th'));
     this.body.replaceChildren(head, ...rows);
-    this.regions.textContent = W === 1 ? STRINGS.memByteWordsNote : this.mode === 'word' ? STRINGS.memWordsNote : STRINGS.memBytesNote;
+    this.regions.textContent = W === 1 ? STRINGS.memByteWordsNote : this.unit > 1 ? STRINGS.memUnitWordsNote(this.unitBits) : this.mode === 'word' ? STRINGS.memWordsNote : STRINGS.memBytesNote;
   }
 }
 

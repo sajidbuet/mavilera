@@ -12,6 +12,8 @@ Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, 
 | `https://sajidlab.org/mavilera/sap-1/` | SAP-1 Laboratory (no separate documentation) |
 | `https://sajidlab.org/mavilera/sap-2/` | SAP-2 Laboratory (documentation at `sap-2/docs/`) |
 | `https://sajidlab.org/mavilera/armv7/` | Armv7 Laboratory (from 1.1.0; documentation at `armv7/docs/`) |
+| `https://sajidlab.org/mavilera/riscv/?tool=npu` | the NPU, a tool of the RISC-V Laboratory (from 1.2.0) |
+| `https://sajidlab.org/mavilera/gpu/` | GPU Laboratory, a preview (from 1.2.0; no separate documentation) |
 
 Every module whose status is `available` in `site/architectures.json` is built by `tools/release.mjs` into its
 registry path, from `src/arch/<id>` and its content folders (W-D29; `docs/ADDING-SIMULATORS.md`).
@@ -41,7 +43,7 @@ No DNS record changes are needed or wanted: DNS resolves hostnames, not paths.
 
 The domain is proxied by Cloudflare. Nothing is required for correctness. Optional, for speed:
 
-- **Cache Rule**: if URI Path starts with `/mavilera/riscv/assets/` or `/mavilera/sap-1/assets/` or `/mavilera/sap-2/assets/` or `/mavilera/armv7/assets/` (one condition per
+- **Cache Rule**: if URI Path starts with `/mavilera/riscv/assets/` or `/mavilera/sap-1/assets/` or `/mavilera/sap-2/assets/` or `/mavilera/armv7/assets/` or `/mavilera/gpu/assets/` (one condition per
   module) then Eligible for cache, Edge TTL 1 year, Browser TTL 1 year. Safe because the folder name under `assets/`
   is a hash of the module's files: a new release gets a new folder.
 - Leave everything else at the default. Each module's `sw.js` and `index.html` are re-validated by the service
@@ -63,10 +65,10 @@ addresses printed on the landing page and in `og:` tags; every file reference is
 
 ## Checks after publishing
 
-- `/mavilera/`, `/mavilera/riscv/`, `/mavilera/sap-1/`, `/mavilera/sap-2/` and `/mavilera/armv7/` load; refresh on each
+- `/mavilera/`, `/mavilera/riscv/`, `/mavilera/riscv/?tool=npu`, `/mavilera/sap-1/`, `/mavilera/sap-2/`, `/mavilera/armv7/` and `/mavilera/gpu/` load; refresh on each
   works; each module's `docs/` loads.
 - The browser console shows no 404 for `<module>/assets/<hash>/...`, and each module's service worker registers
-  with its own scope (`/mavilera/riscv/`, `/mavilera/sap-1/`, `/mavilera/sap-2/`, `/mavilera/armv7/`).
+  with its own scope (`/mavilera/riscv/`, `/mavilera/sap-1/`, `/mavilera/sap-2/`, `/mavilera/armv7/`, `/mavilera/gpu/`).
 - `https://sajidlab.org/` and the other project pages are unchanged.
 - The planned modules' paths (`/mavilera/6502/` ...) return 404 and are not linked from the landing page.
 

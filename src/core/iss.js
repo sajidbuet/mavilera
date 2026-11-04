@@ -65,15 +65,18 @@ export class Hart {
     // Optional memory system (docs/architecture/memory-hierarchy.md): loads, stores and fetches go
     // through its ports. Without it the stores are used directly, as before.
     this.memsys = options.memsys ?? null;
-    if (this.profile.priv) {
+    // Profile ch11 (`devices` without `priv`): the same devices and time, one cycle per instruction, no traps.
+    if (this.profile.priv || this.profile.devices) {
       this.platform = options.platform ?? new Platform(options.platformConfig);
       this.memsys ??= new MemorySystem();
       for (const { base, device } of this.platform.devices()) this.memsys.addDevice(base, device);
       const pc = options.platformConfig ?? {};
-      const ps = new PrivState(this.platform, options.privOptions ?? { trapEntry: pc.trapEntry ?? 3, mtvalZero: Boolean(pc.mtvalZero), trapCheck: Boolean(pc.trapCheck) });
+      const ps = this.profile.priv
+        ? new PrivState(this.platform, options.privOptions ?? { trapEntry: pc.trapEntry ?? 3, mtvalZero: Boolean(pc.mtvalZero), trapCheck: Boolean(pc.trapCheck) })
+        : null;
       this.priv = ps;
-      this.journal = new Journal(() => ({ ps: ps.snapshot(), pl: this.platform.snapshot() }));
-      ps.journal = this.journal;
+      this.journal = new Journal(() => ({ ps: ps ? ps.snapshot() : null, pl: this.platform.snapshot() }));
+      if (ps) ps.journal = this.journal;
       this.platform.setJournal(this.journal);
     }
     if (this.memsys) {
@@ -138,7 +141,17 @@ export class Hart {
    * profile iss-priv a step may also take a trap (an interrupt, or the exception the instruction raised).
    */
   stepFast() {
-    return this.priv ? this.stepPriv() : this.execute();
+    return this.priv ? this.stepPriv() : this.platform ? this.stepDevices() : this.execute();
+  }
+
+  /** One step of profile ch11: tell the devices the time, then execute (one cycle; the halt word takes none). */
+  stepDevices() {
+    this.journal.reset();
+    this.d_priv = null; this.d_dcyc = 0; this.d_idle = 0; this.d_trap = 0; this.d_csr = -1;
+    this.platform.tick(this.cycle);
+    const r = this.execute();
+    if (r === STEP_DONE) { this.d_priv = this.journal.saved; this.d_dcyc = 1; }
+    return r;
   }
 
   /** One step of iss-priv, in the order of rvsim.py --priv: tell the devices the time, take an interrupt, else execute. */
@@ -191,7 +204,7 @@ export class Hart {
 
   /** Undo of a step's privileged state (back-step): devices and CSRs as they were before the step. */
   restorePriv(saved) {
-    this.priv.restore(saved.ps);
+    if (saved.ps) this.priv.restore(saved.ps);
     this.platform.restore(saved.pl);
   }
 
@@ -339,8 +352,8 @@ export class Hart {
         if (addr % size) throw this.misaligned(addr, size, w, pc, 'r');
         ldSize = size;
         ldAddr = addr;
-        if (this.priv) {
-          this.privAccess('r', addr, size, pc);
+        if (this.platform) {
+          if (this.priv) this.privAccess('r', addr, size, pc);
           value = this.privLoad(addr, size);
         } else {
           value = this.mem.read(addr, size);
@@ -357,8 +370,8 @@ export class Hart {
         const addr = (a + (((w >> 25) << 5) | ((w >>> 7) & 31))) >>> 0;
         if (addr % size) throw this.misaligned(addr, size, w, pc, 'w');
         const v = size === 4 ? b : b & ((1 << (8 * size)) - 1);
-        if (this.priv) {
-          this.privAccess('w', addr, size, pc);
+        if (this.platform) {
+          if (this.priv) this.privAccess('w', addr, size, pc);
           this.memsys.cycle = this.cycle + 1; // a device sees the store when it completes: one cycle after it starts
         }
         this.d_memOld = this.mem.write(addr, size, v);
@@ -497,7 +510,7 @@ export class Hart {
     }
     this.countArr[cls] += 1;
     this.instret += 1;
-    if (this.priv) this.cycle += 1; // every class costs one cycle (rvsim.py's default CPI table)
+    if (this.platform) this.cycle += 1; // every class costs one cycle (rvsim.py's default CPI table)
     return STEP_DONE;
   }
 
@@ -577,10 +590,10 @@ export class Hart {
       halt: this.d_halt,
       output: this.d_outLen ? this.output.slice(this.output.length - this.d_outLen) : null,
     };
+    if (this.platform) rec.cycle = this.cycle - this.d_dcyc; // the cycle at which the step started
     if (this.priv) {
       if (this.d_cls === TRAP) rec.trap = this.d_trap;
       if (this.d_csr >= 0) rec.csr = { num: this.d_csr, value: this.d_csrVal };
-      rec.cycle = this.cycle - this.d_dcyc; // the cycle at which the step started
     }
     return rec;
   }

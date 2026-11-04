@@ -227,13 +227,16 @@ export class MobileWorkspaces {
     }
   }
 
-  /** Show workspace `id` (a tab, or a jump from another pane); `focus` moves the focus to its tab. */
-  select(id, focus = false) {
+  /**
+   * Show workspace `id` (a tab, or a jump from another pane); `focus` moves the focus to its tab; `save` false: not
+   * kept as the workspace to open next time (a change the Datapath focus makes for itself, ui/view-mode.js).
+   */
+  select(id, focus = false, save = true) {
     if (!this.mobile || !availableWorkspaces(this.context(), (p) => this.has(p)).some((w) => w.id === id)) return;
     const was = this.workspace.dataset.ws;
     this.activeId = id;
     this.apply();
-    store.set(KEY, id);
+    if (save) store.set(KEY, id);
     if (focus) this.tabs.querySelector(`[data-ws="${id}"]`)?.focus();
     if (was !== id) {
       this.announce.textContent = this.S.announce(this.S.names[id]);
@@ -250,8 +253,8 @@ export class MobileWorkspaces {
     if (w) this.select(w.id);
   }
 
-  /** The workspace id, brought forward (a no-op if it is not on offer here). */
-  reveal(id) { this.select(id); }
+  /** The workspace id, brought forward (a no-op if it is not on offer here); `save` as select. */
+  reveal(id, save = true) { this.select(id, false, save); }
 
   get active() { return this.workspace.dataset.ws ?? null; }
 

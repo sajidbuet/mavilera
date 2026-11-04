@@ -182,11 +182,11 @@ export class PipeView {
   }
 
   /** The model for the options: early resolution (an extension) runs with the complete hazard unit. */
-  makeModel(historyLimit = undefined) {
+  makeModel(historyLimit = undefined, exportMemsys = null) {
     const o = this.options;
     const early = o.resolution === 'id';
     return new Pipeline(this.tables, { hazard: early ? 'full' : o.hazard, predictor: o.predictor, entries: o.entries, early, historyLimit,
-      memsys: historyLimit === 0 ? null : this.memsys ?? null }); // the exports (historyLimit 0) run on ideal memory
+      memsys: historyLimit === 0 ? exportMemsys : this.memsys ?? null }); // the exports (historyLimit 0) run on ideal memory, or with the platform devices on a fresh memory system
   }
 
   /** Take another memory system (null: ideal memory, as the book's processor); the program restarts. */
@@ -197,8 +197,8 @@ export class PipeView {
   }
 
   /** For the exports (core/exports.js): a fresh model with this view's options and program, its signals and RTL module. */
-  exportModel() {
-    const m = this.makeModel(0);
+  exportModel(memsys = null) {
+    const m = this.makeModel(0, memsys);
     m.load(this.program ?? { segments: [] });
     const o = this.options;
     const label = `ch08, ${this.early ? 'early resolution (extension)' : `hazard ${o.hazard}`}, predictor ${o.predictor}${o.predictor === 'none' ? '' : `/${o.entries}`}`;

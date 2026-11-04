@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PLATFORM_ARCHS, switchTargets, homeUrl, archUrl } from '../src/shell/platform-archs.js';
+import { PLATFORM_ARCHS, switchTargets, homeUrl, archUrl, currentTool, toolViews, NAME_AT } from '../src/shell/platform-archs.js';
 import { withBootScreen, bootSvg } from '../tools/make-boot-screen.mjs';
 import { endBoot, MIN_MS } from '../src/ui/boot.js';
 import { STRINGS } from '../src/ui/strings.js';
@@ -18,17 +18,40 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const read = (p) => readFileSync(join(ROOT, p), 'utf8');
 const registry = JSON.parse(read('site/architectures.json')).architectures;
 
-test('the switcher lists the available modules, in the registry order, each with a logo file that exists; a planned module only as a preview', () => {
+test('the views a tool shows: RISC-V its five, the NPU tool ISA, its single-cycle view and NPU (no multicycle, pipelined or comparison)', async () => {
+  const { descriptor } = await import('../src/arch/riscv/index.js');
+  const ids = (tool) => toolViews(descriptor, PLATFORM_ARCHS.find((a) => a.id === tool)).map((v) => v.id);
+  assert.deepEqual(ids('riscv'), ['isa', 'single', 'multi', 'pipe', 'compare']);
+  assert.deepEqual(ids('npu'), ['isa', 'npu-single', 'npu', 'npu-analysis']);
+  assert.equal(toolViews(descriptor, null).length, descriptor.views.length, 'a module without a list shows every view');
+  for (const a of PLATFORM_ARCHS.filter((x) => x.views)) {
+    for (const id of a.views) assert.ok(descriptor.views.some((v) => v.id === id) || a.module !== 'riscv' && a.id !== 'riscv', `${a.id}: ${id}`);
+  }
+});
+
+test('the switcher lists the available modules, in the registry order, then the NPU and GPU, each with a name lockup that exists; a planned module only as a preview', () => {
   const available = registry.filter((a) => a.status === 'available');
-  const listed = PLATFORM_ARCHS.filter((a) => !a.preview);
+  const listed = PLATFORM_ARCHS.filter((a) => !a.preview && !a.module);
   assert.deepEqual(listed.map((a) => a.id), available.map((a) => a.id));
   assert.deepEqual(listed.map((a) => a.name), available.map((a) => a.name));
   assert.equal(PLATFORM_ARCHS[0].id, 'riscv', 'RISC-V stays on top');
-  for (const a of PLATFORM_ARCHS) assert.ok(existsSync(join(ROOT, 'content/branding/mavilera', a.logo)), a.logo);
+  assert.deepEqual(PLATFORM_ARCHS.slice(-2).map((a) => a.id), ['npu', 'gpu'], 'the accelerators come last');
+  for (const a of PLATFORM_ARCHS) {
+    assert.ok(existsSync(join(ROOT, 'content/branding/mavilera', a.logo)), a.logo);
+    assert.match(a.logo, /^mavilera-name-/, `${a.id}: an entry shows the name lockup, without MAVILERA`);
+    assert.doesNotMatch(read(join('content/branding/mavilera', a.logo)), /<title id="mv-title">MAVILERA/);
+    if (a.header) assert.ok(existsSync(join(ROOT, 'content/branding/mavilera', a.header)), a.header);
+  }
   assert.ok(!listed.some((a) => registry.find((r) => r.id === a.id)?.status === 'planned'));
-  // ARMv7: a preview on the development page until ARM-A6, available from 1.1.0 (author, 2026-11-02); no preview now
-  assert.deepEqual(PLATFORM_ARCHS.filter((a) => a.preview).map((a) => a.id), []);
+  // ARMv7: a preview on the development page until ARM-A6, available from 1.1.0 (author, 2026-11-02); the GPU is
+  // one while the registry plans it
+  assert.deepEqual(PLATFORM_ARCHS.filter((a) => a.preview).map((a) => a.id), registry.find((r) => r.id === 'gpu').status === 'planned' ? ['gpu'] : []);
   assert.equal(registry.find((r) => r.id === 'armv7').status, 'available');
+  // the NPU is a tool of the RISC-V module (decision G2), on a view that module has (NPU-3, 2026-11-04)
+  const npu = PLATFORM_ARCHS.find((a) => a.id === 'npu');
+  assert.equal(npu.module, 'riscv');
+  assert.match(read('src/arch/riscv/index.js'), new RegExp(`\\{ id: '${npu.view}', label:`));
+  assert.ok(npu.views.includes(npu.view));
   // a preview entry is still kept from a release page and the offline file
   const list = [...PLATFORM_ARCHS, { id: 'x', name: 'X', logo: 'x.svg', preview: true }];
   assert.ok(switchTargets('riscv', { protocol: 'https:', href: 'https://sajidlab.org/mavilera/riscv/', release: true }, list).every((t) => t.id !== 'x'));
@@ -43,21 +66,45 @@ test('addresses: a release page links to its siblings, the offline file to the s
   assert.equal(homeUrl(file), 'https://sajidlab.org/mavilera/');
   assert.equal(archUrl('sap-1', file), 'https://sajidlab.org/mavilera/sap-1/');
   const dev = { protocol: 'http:', href: 'http://127.0.0.1:8000/', release: false };
-  assert.equal(homeUrl(dev), null, 'the development tree has no landing page');
+  assert.equal(homeUrl(dev), 'https://sajidlab.org/mavilera/', 'the development tree has no landing page: the site\'s (author, 2026-11-04)');
   assert.equal(archUrl('sap-2', dev), '?arch=sap-2');
 });
 
-test('the targets leave out the current architecture and keep the order', () => {
+test('the targets leave out the current tool and keep the order; the NPU opens the RISC-V module with tool=npu', () => {
   const dev = { protocol: 'http:', href: 'http://127.0.0.1:8000/', release: false };
-  assert.deepEqual(switchTargets('riscv', dev).map((t) => t.id), ['sap-1', 'sap-2', 'armv7']);
-  assert.deepEqual(switchTargets('sap-2', dev).map((t) => t.id), ['riscv', 'sap-1', 'armv7']);
-  assert.deepEqual(switchTargets('sap-1', dev).map((t) => t.url), ['?arch=riscv', '?arch=sap-2', '?arch=armv7']);
-  assert.deepEqual(switchTargets('armv7', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2']);
-  // a release page and the offline file offer the same modules
+  assert.deepEqual(switchTargets('riscv', dev).map((t) => t.id), ['sap-1', 'sap-2', 'armv7', 'npu', 'gpu']);
+  assert.deepEqual(switchTargets('sap-2', dev).map((t) => t.id), ['riscv', 'sap-1', 'armv7', 'npu', 'gpu']);
+  assert.deepEqual(switchTargets('sap-1', dev).map((t) => t.url), ['?arch=riscv', '?arch=sap-2', '?arch=armv7', '?arch=riscv&tool=npu', '?arch=gpu']);
+  assert.deepEqual(switchTargets('armv7', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2', 'npu', 'gpu']);
+  assert.deepEqual(switchTargets('npu', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu']);
+  assert.deepEqual(switchTargets('gpu', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'npu']);
+  // a release page and the offline file offer the same tools (the GPU a preview module from 1.2.0)
   const rel = { protocol: 'https:', href: 'https://sajidlab.org/mavilera/riscv/', release: true };
-  assert.deepEqual(switchTargets('riscv', rel).map((t) => t.id), ['sap-1', 'sap-2', 'armv7']);
-  assert.deepEqual(switchTargets('sap-1', { protocol: 'file:', href: 'file:///x.html', release: true }).map((t) => t.id), ['riscv', 'sap-2', 'armv7']);
-  assert.ok(switchTargets('riscv', dev).every((t) => !('preview' in t)));
+  assert.deepEqual(switchTargets('riscv', rel).map((t) => t.id), ['sap-1', 'sap-2', 'armv7', 'npu', 'gpu']);
+  assert.equal(switchTargets('riscv', rel).find((t) => t.id === 'npu').url, 'https://sajidlab.org/mavilera/riscv/?tool=npu');
+  const file = { protocol: 'file:', href: 'file:///x.html', release: true };
+  assert.deepEqual(switchTargets('sap-1', file).map((t) => t.id), ['riscv', 'sap-2', 'armv7', 'npu', 'gpu']);
+  assert.equal(switchTargets('sap-1', file).find((t) => t.id === 'npu').url, 'https://sajidlab.org/mavilera/riscv/?tool=npu');
+  assert.ok(switchTargets('riscv', dev).every((t) => Object.keys(t).join() === 'id,name,logo,url'));
+});
+
+test('the current tool: the module, or a tool of it named by tool=', () => {
+  assert.equal(currentTool('riscv', '').id, 'riscv');
+  assert.equal(currentTool('riscv', '?arch=riscv&tool=npu').id, 'npu');
+  assert.equal(currentTool('riscv', '?tool=npu').header, 'mavilera-logo-npu.svg');
+  assert.equal(currentTool('sap-1', '?arch=sap-1&tool=npu').id, 'sap-1', 'the NPU is not a tool of SAP-1');
+  assert.equal(currentTool('riscv', '?tool=nothing').id, 'riscv');
+  assert.equal(currentTool('gpu', '?arch=gpu').id, 'gpu');
+});
+
+test('the entries line up with the header: the name lockups begin where the header lockups have their chip', () => {
+  const box = (f) => read(join('content/branding/mavilera', f)).match(/translate\((-?[\d.]+) /)[1];
+  const headers = ['mavilera-logo.svg', 'mavilera-logo-sap-1.svg', 'mavilera-logo-sap-2.svg', 'mavilera-logo-armv7.svg', 'mavilera-logo-npu.svg', 'mavilera-logo-gpu.svg'];
+  for (const h of headers) for (const a of PLATFORM_ARCHS) {
+    const at = Number(box(h)) * -1, name = Number(box(a.logo)) * -1; // the files' left edges, in master units
+    assert.ok(Math.abs((name - at) / 192 - NAME_AT) < 0.005, `${h} / ${a.logo}`);
+  }
+  assert.match(read('src/ui/theme.css'), new RegExp(`left: calc\\(var\\(--brand-h\\) \\* ${NAME_AT.toFixed(3).replace('.', '\\.')} - 17px\\)`));
 });
 
 test('strings: the switcher\'s labels are British English text in the shell strings, and the old home link is gone', () => {

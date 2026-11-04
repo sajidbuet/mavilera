@@ -8,6 +8,7 @@
 // Rights class: code.
 
 import { Gpio, Timer, Uart, PeripheralWindow, GPIO_BASE, TIMER_BASE, UART_BASE, PERIPH_LO, PERIPH_SIZE, BUTTON_BIT } from './devices.js';
+import { Npu, NPU_BASE } from './npu.js';
 
 const MTI = 7;
 
@@ -52,14 +53,17 @@ export class Platform {
   /**
    * @param {{stimulus?: Array, rx?: Array, mtimeDiv?: number, uart?: boolean, txCycles?: number}} o
    *   stimulus: pin events of the GPIO inputs; rx: bytes arriving at the UART ({cycle, byte}); uart: false
-   *   leaves the slot at 0x4000_2000 to the window (reads 0), as rvsim.py has no UART.
+   *   leaves the slot at 0x4000_2000 to the window (reads 0), as rvsim.py has no UART; npu: the Chapter 11 NPU at
+   *   0x5000_0000, outside the window (decision G1: it joins the platform devices; false leaves the address unmapped);
+   *   npuStop: a RESULT read while the NPU is busy also stops the run (decision G5).
    */
-  constructor({ stimulus = [], rx = [], mtimeDiv = 1, uart = true, txCycles = 4 } = {}) {
-    this.config = { stimulus, rx, mtimeDiv, uart, txCycles };
+  constructor({ stimulus = [], rx = [], mtimeDiv = 1, uart = true, txCycles = 4, npu = true, npuStop = false } = {}) {
+    this.config = { stimulus, rx, mtimeDiv, uart, txCycles, npu, npuStop };
     this.window = new PeripheralWindow();
     this.gpio = new Gpio({ stimulus });
     this.timer = new Timer({ div: mtimeDiv });
     this.uart = uart ? new Uart({ txCycles, rx }) : null;
+    this.npu = npu ? new Npu({ stopOnBusyResult: npuStop }) : null;
     this.log = []; // every interrupt request: {source, rise, taken, ack}
     this.open = new Map(); // source -> the request being served
     this.journal = NO_JOURNAL;
@@ -80,12 +84,12 @@ export class Platform {
     for (const d of this.parts) d.events = events;
   }
 
-  get parts() { return [this.gpio, this.timer, ...(this.uart ? [this.uart] : [])]; }
+  get parts() { return [this.gpio, this.timer, ...(this.uart ? [this.uart] : []), ...(this.npu ? [this.npu] : [])]; }
 
   /** [{base, device}] to register: the window first, then the devices inside it. */
   devices() {
     return [{ base: PERIPH_LO, device: this.window }, { base: GPIO_BASE, device: this.gpio }, { base: TIMER_BASE, device: this.timer },
-      ...(this.uart ? [{ base: UART_BASE, device: this.uart }] : [])];
+      ...(this.uart ? [{ base: UART_BASE, device: this.uart }] : []), ...(this.npu ? [{ base: NPU_BASE, device: this.npu }] : [])];
   }
 
   setJournal(j) {
@@ -127,6 +131,16 @@ export class Platform {
       if (addr >= base && addr < base + device.size) return `${device.name}.${device.registers.find((r) => r.offset === addr - base)?.name ?? ''}`.replace(/\.$/, '');
     }
     return '';
+  }
+
+  /**
+   * The measurement of the Chapter 11 laboratory (tb_npu_soc's RUN INFO): the GPIO OUT changes (markers) as
+   * {cycle, out}, the cycles between consecutive markers, and the NPU's counters (null without the NPU).
+   */
+  measurement() {
+    const markers = this.gpio.changes.map((c) => ({ ...c }));
+    const spans = markers.slice(1).map((m, k) => ({ from: markers[k].out, to: m.out, cycles: m.cycle - markers[k].cycle }));
+    return { markers, spans, npu: this.npu ? { ...this.npu.counters } : null };
   }
 
   snapshot() {

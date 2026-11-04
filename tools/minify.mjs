@@ -1,5 +1,5 @@
 // minify.mjs -- the release copy of a text file without what only a reader needs (WS-N-004: the site without
-// examples under 1.25 MB, W-D31): JavaScript and CSS lose their comments, the indentation of their lines and blank lines;
+// examples under 2 MB, W-D38): JavaScript and CSS lose their comments, the indentation of their lines and blank lines;
 // JSON is written without spaces. Nothing else changes: no renaming, no joining of lines (a line break may end a
 // JavaScript statement), strings, template literals and regular expressions are kept byte for byte. The copyright
 // line of a comment stays. The repository's sources are not touched; tools/release.mjs applies this to the files

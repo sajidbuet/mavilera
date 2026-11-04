@@ -57,7 +57,16 @@ const fill = (tpl, vars) => tpl.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? var
 const signed = (v) => String(v | 0).replace('-', '−');
 
 export class SingleView {
-  constructor({ geom, tables, delays, narrative }) {
+  /**
+   * @param {object} content loadSingleContent's
+   * @param {{extend?: {geom: Function, info: object, values: Function, path: Function}}} [o] a drawing that extends
+   *   Chapter 6's (the NPU view: src/arch/riscv/npu-datapath.js): its geometry, the new signals' widths, their values
+   *   in a cycle (signals -> {name: value}) and the active path on it (signals, path -> path)
+   */
+  constructor({ geom: bookGeom, tables, delays, narrative }, { extend = null } = {}) {
+    const geom = extend ? extend.geom(bookGeom) : bookGeom;
+    this.extend = extend;
+    this.info = extend ? { ...SIGNAL_INFO, ...extend.info } : SIGNAL_INFO;
     Object.assign(this, { geom, tables, narrative });
     this.delayTable = delays; // the chapter's table; this.delays holds the values in use
     this.defaultDelays = delayMap(delays);
@@ -69,7 +78,7 @@ export class SingleView {
     this.critical = false;
     this.decimal = false;
 
-    this.dp = new DatapathView(geom, { title: S.diagramTitle, description: geom.alt, valueAt: VALUE_AT, info: SIGNAL_INFO });
+    this.dp = new DatapathView(geom, { title: S.diagramTitle, description: geom.alt, valueAt: VALUE_AT, info: this.info });
     const check = (label, on) => el('label.toggle', {}, el('input', { type: 'checkbox', onchange: (e) => on(e.target.checked) }), ` ${label}`);
     this.figSel = el('select', { 'aria-label': S.figure, onchange: (e) => { this.figure = e.target.value; this.render(); } },
       el('option', { value: '', text: S.figureNone }),
@@ -130,8 +139,8 @@ export class SingleView {
   }
 
   /** For the exports (core/exports.js): a fresh model with this view's options and program, its signals and RTL module. */
-  exportModel() {
-    const m = new SingleCycle(this.tables, { ext: this.ext, historyLimit: 0 });
+  exportModel(memsys = null) {
+    const m = new SingleCycle(this.tables, { ext: this.ext, historyLimit: 0, memsys }); // memsys: a fresh one with the platform devices (NPU-3), else ideal memory
     m.load(this.model.program);
     return { model: m, signals: this.ext ? [...SINGLE_SIGNALS, ...SINGLE_EXT_SIGNALS] : SINGLE_SIGNALS,
       module: 'rv32i_single', label: this.ext ? 'ch06 + xori/lbu' : 'ch06', retired: (x) => x.cycle };
@@ -173,9 +182,16 @@ export class SingleView {
       const rec = { text: this.fmt(d.name, v), tag, tip: this.tip(d.name, v) };
       (d.kind === 'control' ? ctls : sigs).set(d.name, rec);
     }
+    if (this.extend) { // the new signals of an extended drawing
+      for (const [name, v] of Object.entries(this.extend.values(s))) {
+        const d = this.extend.info[name];
+        const text = d.width === 32 ? hex8(v) : String(v);
+        (d.kind === 'control' ? ctls : sigs).set(name, { text, tag: d.width === 32 ? (v >>> 0).toString(16).padStart(8, '0') : null, tip: `${name} = ${text}` });
+      }
+    }
     this.dp.setValues(sigs, ctls);
 
-    const path = activePath(s);
+    const path = this.extend ? this.extend.path(s, activePath(s)) : activePath(s);
     let crit = null;
     let ann = [];
     if (this.figure) {

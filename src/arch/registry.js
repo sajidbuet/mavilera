@@ -9,4 +9,5 @@ export const ARCHITECTURES = Object.freeze({
   'sap-1': () => import('./sap-1/index.js'),
   'sap-2': () => import('./sap-2/index.js'),
   armv7: () => import('./armv7/index.js'),
+  gpu: () => import('./gpu/index.js'),
 });

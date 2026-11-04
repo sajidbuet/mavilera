@@ -25,6 +25,8 @@ import { recordFrames, vcd } from './shell/vcd.js';
 import { Split } from './ui/split.js';
 import { icon } from './ui/icons.js';
 import { overflowBar } from './ui/overflow.js';
+import { DOCKS, ToolbarDock } from './ui/dock.js';
+import { MODES, ViewModes } from './ui/view-mode.js';
 import { MobileWorkspaces } from './ui/workspaces.js';
 import { PanZoom } from './ui/pan-zoom.js';
 import { CONFIG_KEY, readConfig, writeConfig, validateConfig, buildMemsys, describe as describeMem } from './mem/config.js';
@@ -37,13 +39,17 @@ import { traceCacheRun, TraceCache } from './mem/trace-cache.js';
 import { ARCHITECTURES } from './arch/registry.js';
 import { ARCH_ID } from './shell/arch-id.js';
 import { archSwitcher } from './ui/arch-switcher.js';
-import { PLATFORM_ARCHS, switchTargets, homeUrl } from './shell/platform-archs.js';
+import { currentTool, switchTargets, homeUrl, toolViews, NAME_AT } from './shell/platform-archs.js';
 import { endBoot } from './ui/boot.js';
 
 // The architecture this application runs (contract W-D29; one per build from phase 6, until then `?arch=<id>`). The
 // shell reads it through its descriptor only.
 const arch = (await ARCHITECTURES[ARCH_ID]()).descriptor;
 mergeStrings(arch.strings); // the architecture's interface text over the shell's (phase 4)
+// the tool this page shows (src/shell/platform-archs.js): the module, or a tool inside it (`?tool=npu`: the RISC-V
+// module opened on the Chapter 11 laboratory profile and the NPU tab, with the NPU lockup)
+const TOOL = currentTool(ARCH_ID, location.search);
+const VIEWS = toolViews(arch, TOOL); // the views this tool shows (the NPU tool: ISA, its single-cycle view, NPU)
 // share links and settings files of this architecture (WS-F-122; what they may hold comes from the descriptor)
 const { encodeFragment, decodeFragment, settingsFile, readSettingsFile } = createShare(shareSchema(arch));
 const EXAMPLE = arch.language.defaultSource;
@@ -504,10 +510,22 @@ const fileMenuBox = fileMenu(
 const toolbarMore = moreMenu(TL.more, TL.moreTitle, ['simulation', 'processor', 'program']);
 // the processor context: the Architecture (profile) and, in a view that has them, the subset
 const archCtx = el('div.arch-ctx', {}, profileField);
+// The toolbar docked as a column (ui/dock.js): the speed and the processor context, which do not fit as an icon, move
+// into these menus (the same nodes); in the row they are hidden and empty. The tooltip tells the value chosen.
+const flyMenu = (iconName, name, cls) => dropMenu(el('summary.tool.tool-icon', { title: name, 'aria-label': name },
+  icon(iconName), el('span.tool-label', { text: name })), [], { cls: `.dock-fly${cls}` });
+const speedFly = flyMenu('speed', STRINGS.speed, '.fly-speed');
+const archFly = flyMenu('chip', STRINGS.profile, '.fly-arch');
+speedFly.hidden = archFly.hidden = true;
+const flyTitles = () => {
+  speedFly.querySelector('summary').title = TL.flyout(STRINGS.speed, speedSel.selectedOptions[0]?.text ?? '');
+  archFly.querySelector('summary').title = TL.flyout(STRINGS.profile, profileSel.selectedOptions[0]?.text ?? '');
+};
+for (const f of [speedFly, archFly]) for (const ev of ['pointerenter', 'focus']) f.querySelector('summary').addEventListener(ev, flyTitles);
 const toolbar = el('div.toolbar', { role: 'toolbar', 'aria-label': TL.group },
   group('.tb-run', assembleBtn, runBtn),
   group('.tb-step', stepBackBtn, stepBtn, stepOverBtn, stepOutBtn, runToCursorBtn, resetBtn),
-  group('.tb-speed', speedField, archCtx),
+  group('.tb-speed', speedField, archCtx, speedFly, archFly),
   runStatus,
   el('span.sep'),
   group('.tb-program', memBtn, templatesMenu, exerciseBtn, fileMenuBox),
@@ -554,12 +572,15 @@ function showTheme() {
   themeBtn.title = TL.themes[cur];
   themeBtn.setAttribute('aria-label', TL.themes[cur]);
 }
-// Full screen: the whole page, for a projector or a small screen; hidden where the browser cannot.
-const fullBtn = tool('fullscreen', STRINGS.fullScreen, () => {
-  if (document.fullscreenElement) document.exitFullscreen?.();
-  else document.documentElement.requestFullscreen?.().catch((e) => consolePanel.message(STRINGS.fullScreenRefused(e.message), 'warn'));
-}, { iconOnly: true });
-fullBtn.hidden = !document.documentElement.requestFullscreen;
+// The workspace's presentation (ui/view-mode.js): Normal view, Datapath focus, Full screen. One state; the browser's
+// full screen is read from the Fullscreen API, never stored; a page opens in Normal view. applyViewMode lays it out.
+const VM = STRINGS.viewModes;
+const viewModes = new ViewModes({ onChange: (s) => applyViewMode(s),
+  onError: (e) => consolePanel.message(e.message === 'unsupported' ? VM.unavailable : STRINGS.fullScreenRefused(e.message), 'warn') });
+// Full screen: the page over the whole display in the compact layout (the View menu's Full screen, the same state);
+// hidden where the browser cannot.
+const fullBtn = tool('fullscreen', STRINGS.fullScreen, () => (viewModes.fullscreen ? viewModes.exit() : viewModes.set('fullscreen')), { iconOnly: true });
+fullBtn.hidden = !viewModes.supported;
 document.addEventListener('fullscreenchange', () => {
   setToolLabel(fullBtn, 'fullscreen', document.fullscreenElement ? STRINGS.exitFullScreen : STRINGS.fullScreen);
   fullBtn.setAttribute('aria-pressed', String(Boolean(document.fullscreenElement)));
@@ -581,6 +602,20 @@ const keysBox = el('details.keys', {}, el('summary.tool.tool-icon', { title: STR
   el('span.tool-label', { text: STRINGS.keys })), el('p', { text: STRINGS.shortcuts }));
 const viewMenu = dropMenu(el('summary.tool', { title: STRINGS.layout.view }, icon('layout'), el('span.tool-label', { text: STRINGS.layout.view })),
   [], { onOpen: (list) => fillViewMenu(list), cls: '.view-menu-top' });
+// Dock: where the execution controls stand, a row on top or a column at the left or right (ui/dock.js); the choice
+// applies at once. Its button shows the place chosen; it is hidden on a narrow screen, which keeps the row.
+const DOCK_ICON = { top: 'dockTop', left: 'dockLeft', right: 'dockRight' };
+let tbDock = null; // the ToolbarDock, made once the workspace is in the page
+// In Focus or Full screen the controls are a column: Left or Right chosen there is kept; Top returns to the normal view.
+const dockRadios = DOCKS.map((p) => el('input', { type: 'radio', name: 'tb-dock', value: p, onchange: () => {
+  tbDock?.choose(p);
+  if (p === 'top' && viewModes.state.compact) viewModes.set('normal');
+} }));
+const dockMenu = dropMenu(el('summary.tool.tool-icon', { title: TL.dock, 'aria-label': TL.dock }, icon('dockTop'), el('span.tool-label', { text: TL.dockLabel })),
+  [el('p.menu-head', { text: TL.dock, 'aria-hidden': 'true' }),
+    ...DOCKS.map((p, i) => el('label.menu-check.dock-opt', {}, dockRadios[i], icon(DOCK_ICON[p], { size: 16 }), el('span', { text: TL.docks[p] })))],
+  { cls: '.dock-menu' });
+dockMenu.querySelector('.menu-list').setAttribute('aria-label', TL.dock);
 
 const panel = (title, body, cls = '', iconName = null) => el(`section.panel${cls}`, { 'aria-label': title }, head(title, iconName), body);
 /** A panel heading: icon, title and any tools (the collapse button joins it). */
@@ -608,11 +643,11 @@ const tabs = (items) => {
   return { root: el('div.tabbed', {}, bar, host), select, selectTitle };
 };
 
-// --- views (WS-U-010): the architecture's views (contract: arch.views). The first is the instruction-level view the
+// --- views (WS-U-010): the architecture's views (contract: arch.views), those the tool shows (VIEWS). The first is the instruction-level view the
 // shell draws itself; the others are loaded with their tab (WS-N-011) and give a ViewInstance (RISC-V: the
 // single-cycle, multicycle and pipelined views of Chapters 6 to 8, and the comparison of the three, WS-F-060)
-let mode = arch.views[0].id;
-const viewOf = (id) => arch.views.find((v) => v.id === id) ?? null;
+let mode = VIEWS[0].id;
+const viewOf = (id) => VIEWS.find((v) => v.id === id) ?? null;
 const inst = {}; // view id -> ViewInstance, created on first use
 const memsysOf = {}; // view id -> the MemorySystem the view was given (null: ideal memory of the default size)
 /** A view with its own model and drawing (kind datapath or bus). */
@@ -680,7 +715,7 @@ function updateMemPanels() {
   const ms = v ? memsysOf[mode] ?? null : null;
   const ctx = { memsys: ms, cfg: memCfg, mode, accessed: dataAccessNow(), fetch: v ? v.state()?.pc ?? null : engine?.state().pc ?? null, words: ms?.memWords, dev: platformCtx(), // the devices on the bus, if any
     // the instruction-level view counts a whole run on demand (no clock, so no timing)
-    ...(mode === arch.views[0].id ? { analyse: analyseTrace, trace: traceResult && traceResult.at === (engine?.state().retired ?? 0) ? traceResult : liveTrace(),
+    ...(mode === VIEWS[0].id ? { analyse: analyseTrace, trace: traceResult && traceResult.at === (engine?.state().retired ?? 0) ? traceResult : liveTrace(),
       traceStale: traceResult && (traceResult.program !== session.program || traceResult.cfg !== memCfg) } : {}) };
   cacheView.update(ctx);
   periph.update(ctx);
@@ -708,12 +743,12 @@ function giveInput(x) {
 }
 let isaProfile = session.profile;
 const viewTabs = el('nav.mode-nav', { role: 'tablist', 'aria-label': STRINGS.views });
-const viewButtons = arch.views.map((v) =>
+const viewButtons = VIEWS.map((v) =>
   el('button.mode-btn', { type: 'button', role: 'tab', title: v.label, 'aria-label': v.label, 'aria-selected': String(v.id === mode), onclick: () => setMode(v.id) },
     icon(v.icon), el('span', { text: v.label })));
 viewTabs.append(...viewButtons);
 // the subsets of the profile of a view that offers them (RISC-V: the Chapter 6 laboratory subset and extension); the first is the whole profile
-const SUBSETS = profileOf(arch.views.find((v) => v.subsets)?.profile)?.subsets ?? [];
+const SUBSETS = profileOf(VIEWS.find((v) => v.subsets)?.profile)?.subsets ?? [];
 const noSubset = (value) => !SUBSETS.length || value === SUBSETS[0].id;
 const subsetSel = el('select', { 'aria-label': STRINGS.view.subset, hidden: true, onchange: (e) => {
   session.subset = noSubset(e.target.value) ? null : e.target.value;
@@ -723,23 +758,41 @@ const subsetSel = el('select', { 'aria-label': STRINGS.view.subset, hidden: true
 archCtx.append(subsetSel);
 const helpBtn = tool('help', STRINGS.help.button, () => helpDialog.open(), { iconOnly: true });
 const headerMore = moreMenu(TL.menu, TL.menuTitle, ['views', 'workspace', 'application']);
+// The compact header of Focus and Full screen (ui/view-mode.js) keeps the brand (MAVILERA and the architecture) and
+// adds the open view's name and the mode, the View and Dock menus, and Exit; the rest of the header waits (theme.css).
+const focusView = el('span.focus-view');
+const focusBadge = el('span.focus-badge');
+const focusCrumb = el('span.focus-crumb', { hidden: true }, focusView, focusBadge);
+const exitBtn = el('button.tool.focus-exit', { type: 'button', hidden: true, onclick: () => viewModes.exit() });
+function syncCrumb(s = viewModes.state) {
+  focusView.textContent = viewOf(mode)?.label ?? '';
+  if (!s.compact) return;
+  focusBadge.textContent = VM.badge[s.mode] ?? VM.badge.focus;
+  const k = s.fullscreen ? 'fullscreen' : 'focus';
+  exitBtn.replaceChildren(icon(s.fullscreen ? 'restore' : 'close'), el('span.tool-label', { text: VM.exit[k] }));
+  exitBtn.setAttribute('aria-label', VM.exit[k]);
+  exitBtn.title = VM.exitTitle[k];
+}
 header.replaceChildren(
   el('div.brand', {}, header.querySelector('.app-logo') ?? el('span.app-logo', { 'aria-hidden': 'true' }),
     el('div.brand-text', {}, header.querySelector('.app-title'), el('span.app-subtitle', { text: STRINGS.appFull }))),
+  focusCrumb,
   viewTabs,
-  el('div.header-tools', {}, viewMenu, themeBtn, projBtn, fullBtn, keysBox, helpBtn),
+  el('div.header-tools', {}, viewMenu, dockMenu, themeBtn, projBtn, fullBtn, keysBox, helpBtn),
+  exitBtn,
   headerMore.menu);
 showTheme();
 // Each control of the two bars carries its command's id (data-cmd), wherever the overflow puts it.
 for (const [cmd, node] of Object.entries({ assemble: assembleBtn, run: runBtn, stepBack: stepBackBtn, step: stepBtn, stepOver: stepOverBtn,
   stepOut: stepOutBtn, runToCursor: runToCursorBtn, reset: resetBtn, speed: speedSel, memory: memBtn, templates: templatesMenu, exercise: exerciseBtn,
   file: fileMenuBox, profile: profileSel, subset: subsetSel, views: viewTabs, layout: viewMenu, theme: themeBtn, projector: projBtn,
-  fullScreen: fullBtn, keys: keysBox, help: helpBtn, moreHeader: headerMore.menu, moreToolbar: toolbarMore.menu })) node.dataset.cmd = cmd;
+  fullScreen: fullBtn, keys: keysBox, help: helpBtn, moreHeader: headerMore.menu, moreToolbar: toolbarMore.menu,
+  dock: dockMenu, speedMenu: speedFly, profileMenu: archFly, viewExit: exitBtn })) node.dataset.cmd = cmd;
 // The order in which each bar gives way, lowest priority first: compact styles, then controls into its More menu.
 // Assemble, Run and Step never leave the toolbar; the brand never leaves the header.
 headerFit = overflowBar({ bar: header, more: headerMore.menu, sections: headerMore.bodies, steps: [
   { cls: 'hb-tight' }, { cls: 'hb-views-active' }, // the views: only the open one keeps its name
-  { node: projBtn, group: 'workspace' }, { node: keysBox, group: 'application' }, { node: fullBtn, group: 'application' },
+  { node: projBtn, group: 'workspace' }, { node: dockMenu, group: 'workspace' }, { node: keysBox, group: 'application' }, { node: fullBtn, group: 'application' },
   { node: viewMenu, group: 'workspace' }, { node: themeBtn, group: 'application' }, { cls: 'hb-views-icons' },
   { node: viewTabs, group: 'views' }, { node: helpBtn, group: 'application' },
   { cls: 'hb-mini' }] });
@@ -772,13 +825,14 @@ async function brandSvg(file, decorative = true) {
 }
 const brandReady = (async () => {
   try {
-    const [full, small] = await Promise.all([brandSvg(arch.content?.logo ?? 'mavilera-logo.svg'), brandSvg('mavilera-icon.svg')]); // contract v6
+    // a tool inside this module (the NPU, `?tool=npu`) shows its own lockup
+    const [full, small] = await Promise.all([brandSvg(TOOL?.header ?? arch.content?.logo ?? 'mavilera-logo.svg'), brandSvg('mavilera-icon.svg')]); // contract v6
     full.classList.add('brand-logo', 'brand-full');
     small.classList.add('brand-logo', 'brand-icon');
     // MAVILERA goes to the landing page, the architecture part opens the switcher (docs/architecture/arch-switcher.md)
     const where = { protocol: location.protocol, href: location.href, release: !!document.querySelector('meta[name="risc-vista-edition"][content="release"]') };
-    const switcher = archSwitcher({ logo: full, targets: switchTargets(ARCH_ID, where), home: homeUrl(where), current: PLATFORM_ARCHS.find((a) => a.id === ARCH_ID)?.name ?? STRINGS.appFull,
-      loadLogo: (file) => brandSvg(file), strings: STRINGS.archSwitch });
+    const switcher = archSwitcher({ logo: full, targets: switchTargets(TOOL?.id ?? ARCH_ID, where), home: homeUrl(where), current: TOOL?.name ?? STRINGS.appFull,
+      loadLogo: (file) => brandSvg(file), strings: STRINGS.archSwitch, nameAt: NAME_AT });
     header.querySelector('.app-logo')?.replaceChildren(switcher, small);
     header.classList.add('has-logo');
     refit();
@@ -792,6 +846,7 @@ const aboutLogo = el('div.about-logo');
 const about = el('dialog.about', { 'aria-labelledby': 'about-title' },
   aboutLogo,
   el('h2', { id: 'about-title', text: `${STRINGS.appName}: ${STRINGS.appFull}` }),
+  el('p.about-expansion', { text: `${STRINGS.appName}: ${STRINGS.appExpansion}` }),
   el('p.about-tag', { text: STRINGS.tagline }),
   el('p', { text: STRINGS.aboutText }),
   el('p.about-meta', { text: RELEASE ? STRINGS.aboutVersionRelease(RELEASE) : STRINGS.aboutVersion }),
@@ -813,7 +868,7 @@ document.body.append(dataDialog.root);
 
 // the example library (WS-F-123): an example opens like a shared program, in the view of its processor
 // the view that runs an example's profile: the first view of that profile that is not the comparison (the ISA view: the first profile)
-const viewForProfile = (profile) => arch.views.find((v) => !isCmp(v.id) && (v.profile ?? arch.engine.profiles[0].id) === profile)?.id ?? arch.views[0].id;
+const viewForProfile = (profile) => VIEWS.find((v) => !isCmp(v.id) && (v.profile ?? arch.engine.profiles[0].id) === profile)?.id ?? VIEWS[0].id;
 const examplesDialog = new ExamplesDialog({ index: contentUrl('examples'), templates: () => loadTemplates(), onTemplate: (t) => openTemplate(t), templateItems, onOpen: async (x, text) => {
   let source = text;
   if (x.gcc) { const imps = await arch.language.importers(); source = (imps.find((i) => i.test(text)) ?? imps[0]).convert(text, x.file).text; }
@@ -910,7 +965,8 @@ const pCompare = panel(STRINGS.view.comparison, el('p.note', { text: STRINGS.loa
 // the shared memory panel (D7): the same in every view, with the Cache and Peripherals tabs; a view's own
 // detail tabs only link to it
 const memTabs = tabs([[STRINGS.mem.tabMemory, memory.root], [STRINGS.mem.tabCache, cacheView.root, () => updateMemPanels(), CAP.cache],
-  [STRINGS.mem.tabPeripherals, periph.root, () => updateMemPanels(), CAP.devices], ...archPanels.map(({ p, inst }) => [p.label, inst.root, () => updateArchPanels()])]);
+  [STRINGS.mem.tabPeripherals, periph.root, () => updateMemPanels(), CAP.devices],
+  ...archPanels.map(({ p, inst }) => [p.label, inst.root, () => updateArchPanels()])]);
 // the memory pane's name: without caches (capability cache off) it is the Memory pane
 const MEM_PANE = CAP.cache.enabled ? { panel: STRINGS.mem.panel, link: STRINGS.mem.link, bar: STRINGS.layout.dockBarDp }
   : { panel: STRINGS.mem.panelPlain, link: STRINGS.mem.linkPlain, bar: STRINGS.layout.dockBarDpPlain };
@@ -1031,7 +1087,23 @@ function fillViewMenu(list) {
   const panes = [[workSplit, 'editor', P.editor],
     ...(dp ? [[midSplit, 'info', P.info], [rightSplit, 'counters', P.counters], [rightSplit, 'console', STRINGS.console], [rootSplit, 'dock', MEM_PANE.panel]]
       : [...(isCmp() ? [] : [[midSplit, 'inspector', P.inspector]]), [rightSplit, 'calls', P.calls], [rightSplit, 'counters', P.counters], [rootSplit, 'dock', P.dock]])];
+  // the workspace's presentation (ui/view-mode.js): one choice of three, the one shown checked
+  const now = viewModes.state.mode;
+  const modeIcon = { normal: 'normalView', focus: 'focusView', fullscreen: 'fullscreen' };
+  const modeItems = MODES.map((m) => {
+    const off = m === 'fullscreen' && !viewModes.supported;
+    return el('label.menu-check.vm-opt', { title: off ? VM.unavailable : m === 'focus' ? `${VM.focus} (${VM.focusKey})` : null },
+      el('input', { type: 'radio', name: 'view-mode', value: m, checked: m === now, disabled: off, 'data-mode': m,
+        // a choice closes the menu, which would otherwise cover the drawing in its new layout; the focus returns to View
+        onchange: () => {
+          viewMenu.open = false;
+          viewModes.set(m).then(() => viewMenu.querySelector('summary').focus({ preventScroll: true }));
+        } }), icon(modeIcon[m], { size: 16 }), el('span', { text: VM[m] }));
+  });
   list.replaceChildren(
+    el('p.menu-head', { text: VM.group, 'aria-hidden': 'true' }),
+    el('div.vm-group', { role: 'radiogroup', 'aria-label': VM.group }, modeItems),
+    el('hr.menu-sep'),
     el('label.menu-check', { title: STRINGS.projectorTitle }, el('input', { type: 'checkbox', checked: projector,
       onchange: (e) => setProjector(e.target.checked) }), ` ${STRINGS.projector}`),
     el('hr.menu-sep'),
@@ -1130,6 +1202,63 @@ function updateWsStatus() {
 
 const app = document.getElementById('app');
 app.replaceChildren(toolbar, ws.nav, workspace, ws.sheet);
+// The execution controls at the place chosen (ui/dock.js): the same toolbar as a row on top or a column at a side;
+// the workspace and the drawings take the room that is left (their ResizeObservers), nothing is rebuilt.
+tbDock = new ToolbarDock({ main: app, toolbar, fit: toolbarFit, narrow: ws.mq,
+  flyouts: [{ menu: speedFly, body: speedFly.querySelector('.menu-list'), nodes: [speedField] },
+    { menu: archFly, body: archFly.querySelector('.menu-list'), nodes: [archCtx] }],
+  onChange: (place, chosen) => {
+    const shown = ws.mobile ? chosen : place; // in Focus a chosen Top shows as Left: the menu tells what shows
+    dockRadios.forEach((r) => { r.checked = r.value === shown; });
+    dockMenu.querySelector('summary > .icon').replaceWith(icon(DOCK_ICON[shown]));
+    dockMenu.hidden = ws.mobile; // a narrow screen keeps the row (the choice is kept for a wide one)
+    refit();
+  } });
+tbDock.apply(true);
+
+// --- the workspace's presentation (ui/view-mode.js) ---------------------------------------------------------------
+// Focus and Full screen are a layout over the same panes (theme.css .workspace.focus): the middle column's main pane
+// (the drawing with its stage strip, the listing or the comparison) takes the workspace, the editor, the details, the
+// registers, the console and the memory dock step aside without being folded, so that the splits' saved sizes and
+// folds are untouched and come back as they were. The page-session states that would cover the drawing (Enlarge,
+// a maximised pane) are put aside on entry and back on exit. On a narrow screen the workspaces stay; the Datapath
+// workspace is shown while focused (not stored), and the one shown before comes back.
+let preFocus = null;
+function applyViewMode(s) {
+  const was = workspace.classList.contains('focus');
+  const c = s.compact;
+  const focusLost = () => { const a = document.activeElement; return !a || a === document.body || !a.checkVisibility?.(); };
+  if (c && !was) {
+    const maxed = workspace.classList.contains('mid-max') ? [pInfo, pFields].find((n) => n.classList.contains('max-pane')) ?? null : null;
+    preFocus = { zoomed: workspace.classList.contains('zoomed'), dockMax: workspace.classList.contains('dock-max'), midMax: maxed, wsTab: ws.mobile ? ws.active : null };
+    setZoom(false);
+    setDockMax(false);
+    if (maxed) setMidMax(maxed, false);
+    if (ws.mobile) ws.reveal('datapath', false);
+  }
+  header.classList.toggle('hb-focus', c);
+  workspace.classList.toggle('focus', c);
+  document.documentElement.dataset.viewMode = s.mode;
+  focusCrumb.hidden = !c;
+  exitBtn.hidden = !c;
+  syncCrumb(s);
+  headerFit.pause(c); // the compact header holds what it shows; the rest is hidden, not moved
+  tbDock.setCompact(c);
+  if (!c && was && preFocus) {
+    if (preFocus.zoomed && isDp()) setZoom(true);
+    if (preFocus.dockMax) setDockMax(true);
+    if (preFocus.midMax && preFocus.midMax._split === midSplit) setMidMax(preFocus.midMax, true);
+    if (ws.mobile && preFocus.wsTab && ws.active === 'datapath') ws.reveal(preFocus.wsTab, false); // unless another was chosen meanwhile
+    preFocus = null;
+  }
+  const menuList = viewMenu.querySelector('.menu-list');
+  if (viewMenu.open) fillViewMenu(menuList);
+  refit();
+  // the focus never stays on a control that went away
+  if (focusLost() && c !== was) (c ? exitBtn : viewMenu.querySelector('summary')).focus({ preventScroll: true });
+}
+viewModes.notify(true); // Normal view (a page always opens in it)
+
 refit();
 configureLayout();
 setDockMax(false);
@@ -1149,7 +1278,8 @@ const viewContext = () => ({
   strings: STRINGS, memsys: null,
   message: (text, kind) => consolePanel.message(text, kind),
   openPanel: (t) => openTarget(t), refresh: () => refresh(), goToCycle: (k) => goToCycle(k),
-  command: (name) => (name === 'stepUnit' ? stepUnit() : name === 'backUnit' ? backUnit() : undefined), // the view's own buttons
+  // the view's own buttons; `view:<id>` opens another view the tool shows (the NPU tool's NPU block, NPU-3)
+  command: (name) => (name === 'stepUnit' ? stepUnit() : name === 'backUnit' ? backUnit() : name.startsWith('view:') ? setMode(name.slice(5)) : undefined),
   memConfig: () => memCfg,
   download: (name, data, type) => download(name, data, type),
 });
@@ -1208,16 +1338,21 @@ function refreshWave(force = false) {
   const s = v.state();
   if (!s) { w.update([], 0); return; }
   const opt = v.revision?.() ?? '';
+  const pc = session.platformConfig;
+  const script = memCfg.devices ? `${pc.stimulus.length}|${pc.rx.length}` : ''; // a pin event or a received byte: the platform's replay changes
   let rec = waveRec[mode];
-  if (!rec || rec.program !== session.program || rec.memsys !== memsysOf[mode] || rec.opt !== opt) {
-    rec = waveRec[mode] = { program: session.program, memsys: memsysOf[mode], opt, model: v.exportModel().model, frames: [], done: false, max: 0 };
+  if (!rec || rec.program !== session.program || rec.memsys !== memsysOf[mode] || rec.opt !== opt || rec.script !== script) {
+    const x = v.exportModel(); // with the platform devices on: the NPU's signals too (NPU-3)
+    rec = waveRec[mode] = { program: session.program, memsys: memsysOf[mode], opt, script, model: x.model, frames: [], done: false, max: 0 };
+    w.setSignals(x.signals);
   }
   const cur = s.cycle;
   rec.max = Math.min(Math.max(rec.max, cur), VCD_CAP);
+  // the model stands at the last frame's cycle: step it before each new frame (the frames of recordFrames, also when
+  // the record grows by one cycle per refresh while the tab is open)
   while (!rec.done && rec.frames.length <= rec.max) {
+    if (rec.frames.length && rec.model.step() !== 'step') { rec.done = true; break; } // the export model's own protocol, as for the VCD export
     rec.frames.push({ ...rec.model.evaluate().signals });
-    if (rec.frames.length > rec.max) break;
-    if (rec.model.step() !== 'step') rec.done = true; // the export model's own protocol, as for the VCD export
   }
   w.update(rec.frames.slice(0, rec.max + 1), Math.min(cur, rec.frames.length - 1));
 }
@@ -1233,13 +1368,13 @@ function goToCycle(k) {
 
 /** Switch view. A view with a profile runs it; the ISA view gets its profile back (WS-F-004). */
 async function setMode(next) {
-  if (next === mode) return;
+  if (next === mode || !viewOf(next)) return; // a view this tool does not show (a share link of another tool) is not opened
   cancelRun();
-  const isa = arch.views[0].id;
+  const isa = VIEWS[0].id;
   if (next !== isa && !(await loadView(next))) return;
   const wasIsa = mode === isa;
   mode = next;
-  viewButtons.forEach((b, i) => b.setAttribute('aria-selected', String(arch.views[i].id === mode)));
+  viewButtons.forEach((b, i) => b.setAttribute('aria-selected', String(VIEWS[i].id === mode)));
   const sc = isDp(); // a datapath view
   const cmp = isCmp();
   for (const b of toolbar.querySelectorAll('.dp-only')) b.hidden = !sc;
@@ -1256,6 +1391,8 @@ async function setMode(next) {
   profileSel.disabled = sc || cmp;
   profileField.hidden = sc || cmp; // a datapath view fixes the profile; its panel title names the chapter
   archCtx.hidden = profileField.hidden && subsetSel.hidden;
+  tbDock?.sync(); // a docked column offers the Architecture menu only while it holds something
+  syncCrumb(); // the compact header names the open view
   refit();
   // the view's register naming (RISC-V: the datapath chapters name registers by number)
   listing.names = viewOf(mode).names ?? arch.language.disassembly?.names?.[0];
@@ -1426,7 +1563,8 @@ function exportVcd() {
   const { model, signals, module, label } = uv().exportModel();
   const { frames, stop } = recordFrames(model, VCD_CAP);
   const name = session.files[0].name.replace(/\.\w+$/, '');
-  download(`${name}-${viewOf(mode).profile}.vcd`, vcd(frames, signals, { module, comment: `${name}, ${label}; one cycle = 10 ns of the time axis` }));
+  const npu = signals.some((s) => s.kind === 'npu') ? '; scope npu: the simulator\'s NPU model (FIG-0114 names), not an RTL net' : '';
+  download(`${name}-${viewOf(mode).profile}.vcd`, vcd(frames, signals, { module, comment: `${name}, ${label}; one cycle = 10 ns of the time axis${npu}` }));
   consolePanel.message(STRINGS.exportedVcd(label, frames.length), 'ok');
   if (stop === 'step') consolePanel.message(STRINGS.exportedVcdCut(VCD_CAP + 1), 'warn');
   else if (stop === 'error') consolePanel.message(STRINGS.exportNoHalt(model.error), 'warn');
@@ -1838,7 +1976,7 @@ const hasTraps = (id) => capability(arch, 'traps', profileOf(id)).enabled;
 
 /** The program with its view and settings, as share.js takes it. */
 function shareState() {
-  return { arch: arch.id, view: mode, profile: mode === arch.views[0].id ? session.profile : isaProfile, subset: subsetSel.value || null, lang, name: sourceName(), // no subset: an empty menu
+  return { arch: arch.id, view: mode, profile: mode === VIEWS[0].id ? session.profile : isaProfile, subset: subsetSel.value || null, lang, name: sourceName(), // no subset: an empty menu
     source: editor.value, cc: xlValues(), ...Object.fromEntries(SETTINGS.map((v) => [v.settings.key, viewSettings(v)])),
     ...(memCfg.mode !== 'ideal' || memCfg.words !== 256 || memCfg.devices ? { mem: memCfg } : {}),
     ...(hasTraps(session.profile) || hasTraps(isaProfile) || memCfg.devices ? { platform: session.platformConfig } : {}) };
@@ -1886,7 +2024,7 @@ async function applyShared(st, message) {
   store.set(sourceKey(), st.source);
   syncLangControls();
   if (st.view === mode) {
-    if (mode === arch.views[0].id) { session.profile = st.profile; profileSel.value = st.profile; }
+    if (mode === VIEWS[0].id) { session.profile = st.profile; profileSel.value = st.profile; }
     else if (viewOf(mode).subsets) session.subset = noSubset(subsetSel.value) ? null : subsetSel.value;
     doAssemble();
   } else await setMode(st.view);
@@ -1955,7 +2093,8 @@ async function runExerciseTests() {
     if (!c.ok) { consolePanel.message(STRINGS.cc.errors, 'error'); return null; }
     text = c.text;
   }
-  const p = arch.language.assemble([{ name: lang === XID ? stem(cName) + arch.language.extension : session.files[0].name, text }], { profile: arch.engine.profiles[0].id });
+  // an exercise of the laboratory profile (NPU-4) is assembled for it: its data lie in the laboratory RAM
+  const p = arch.language.assemble([{ name: lang === XID ? stem(cName) + arch.language.extension : session.files[0].name, text }], { profile: exercise.profile ?? arch.engine.profiles[0].id });
   if (!(p.assembled ?? p.ok)) { consolePanel.message(STRINGS.asmErrors(errorCount(p)), 'error'); return null; }
   return arch.exercises.run(p, exercise);
 }
@@ -1963,7 +2102,7 @@ const exerciseDialog = new ExerciseDialog({
   onRun: () => runExerciseTests(),
   onStarter: async (source, l) => {
     exerciseDialog.root.close();
-    await applyShared({ view: mode, profile: arch.engine.profiles[0].id, lang: l, name: `exercise${l === XID ? XL.extension : arch.language.extension}`, source }, STRINGS.exercise.starterLoaded);
+    await applyShared({ view: mode, profile: exercise?.profile ?? arch.engine.profiles[0].id, lang: l, name: `exercise${l === XID ? XL.extension : arch.language.extension}`, source }, STRINGS.exercise.starterLoaded);
   },
   onClose: () => { exercise = null; store.set('pips.exercise', ''); exerciseBtn.hidden = true; refit(); },
   onOpenFile: () => { exerciseDialog.root.close(); fileInput.click(); },
@@ -2021,7 +2160,7 @@ async function openFile(file) {
     store.set(sourceKey(), text);
     syncLangControls();
     const first = arch.engine.profiles[0].id; // imported code is for the whole ISA
-    if (gccReport && mode === arch.views[0].id && session.profile !== first) { session.profile = first; isaProfile = first; profileSel.value = first; store.set('pips.profile', first); }
+    if (gccReport && mode === VIEWS[0].id && session.profile !== first) { session.profile = first; isaProfile = first; profileSel.value = first; store.set('pips.profile', first); }
     doAssemble();
     if (gccReport) reportImport(file.name, gccReport.report);
     return;
@@ -2146,8 +2285,32 @@ document.addEventListener('keydown', (e) => {
   else if (k === 'F10') { e.preventDefault(); e.shiftKey ? stepBack() : stepOnce(); }
   else if (k === 'F11') { e.preventDefault(); e.shiftKey ? stepOut() : stepOver(); }
   else if (k === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); doAssemble(); }
+  else if (k === 'Escape' && popoverOpen()) { /* Esc closes the pop-up only (an i button's, src/ui/info-button.js) */ }
   else if (k === 'Escape' && workspace.classList.contains('zoomed') && !e.target.closest?.('details[open]')) setZoom(false);
+  else if (k === 'Escape' || k === 'f' || k === 'F') viewKey(e);
 });
+/** An open pop-up (the HTML popover; false in a browser without it): the browser closes it on Esc, after the keydown. */
+function popoverOpen() {
+  try { return Boolean(document.querySelector(':popover-open')); } catch { return false; }
+}
+/**
+ * F turns the Datapath focus on or off; Esc leaves the focus. Not while the user types (editor, a field, a list), with
+ * a modifier, in a dialog, or while a menu is open (Esc closes that first); Esc in full screen is the browser's.
+ */
+function viewKey(e) {
+  if (e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey || e.repeat) return;
+  const t = e.target;
+  if (t.closest?.('input, textarea, select, [contenteditable=""], [contenteditable="true"], dialog') || document.querySelector('dialog[open]')) return;
+  if (document.querySelector('details[open]')) return;
+  if (e.key === 'Escape') {
+    if (viewModes.fullscreen || viewModes.state.mode !== 'focus') return;
+    e.preventDefault();
+    viewModes.set('normal');
+  } else {
+    e.preventDefault();
+    viewModes.toggleFocus();
+  }
+}
 
 // --- start ----------------------------------------------------------------------------------
 document.title = `${STRINGS.appName}: ${STRINGS.appFull}`;
@@ -2159,6 +2322,7 @@ const theme = store.get('pips.theme');
 if (theme) document.documentElement.dataset.theme = theme;
 const savedProfile = store.get('pips.profile');
 if (savedProfile && profileOf(savedProfile)) session.profile = savedProfile;
+if (TOOL?.profile && profileOf(TOOL.profile)) session.profile = TOOL.profile; // a tool's profile, not kept as the user's choice
 profileSel.value = session.profile;
 if (XL && store.get('pips.lang') === XID && (await loadExtra())) lang = XID;
 editor.value = store.get(sourceKey()) ?? (lang === XID ? XL.example : EXAMPLE);
@@ -2172,7 +2336,8 @@ if (savedSubset && SUBSETS.some((s) => s.id === savedSubset)) subsetSel.value = 
 doAssemble();
 for (const b of toolbar.querySelectorAll('.dp-only')) b.hidden = true;
 if (isShareFragment(location.hash)) await openFragment(); // a share link decides the view (WS-F-122)
-else if (viewOf(store.get('pips.view')) && store.get('pips.view') !== arch.views[0].id) await setMode(store.get('pips.view'));
+else if (TOOL?.view && viewOf(TOOL.view)) await setMode(TOOL.view); // a tool inside the module opens on its view (the NPU)
+else if (viewOf(store.get('pips.view')) && store.get('pips.view') !== VIEWS[0].id) await setMode(store.get('pips.view'));
 restoreRunState(kept);
 restoring = false;
 { // an exercise kept from an earlier visit

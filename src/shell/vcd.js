@@ -37,7 +37,8 @@ const vcdValue = (v, width) => (width === 1 ? `${v & 1}` : `b${(v >>> 0).toStrin
  * VCD waveform of `frames` (recordFrames) for the signals of a dictionary of
  * uarch/signals.js. Each signal sits at its RTL path below `module` (u_ctrl.Branch
  * in scope u_ctrl); a signal without an RTL name goes into the scope `model`,
- * since the RTL has no net of that name. One clock cycle is 10 ns, as in the
+ * since the RTL has no net of that name, or to its own `vcd` path (the platform's
+ * NPU: scope `npu`, src/mem/npu-wave.js). One clock cycle is 10 ns, as in the
  * book's testbenches (`always #5 clk = ~clk`); the values of cycle k change at
  * the rising edge that starts it, t = 10k ns. The time axis orders the cycles;
  * it is not a hardware timing.
@@ -47,7 +48,7 @@ export function vcd(frames, signals, { module, comment = '' }) {
   const vars = [{ name: 'clk', width: 1, id: vcdId(0), get: null }];
   tree.vars.push(vars[0]);
   signals.forEach((s, i) => {
-    const path = s.rtl ? s.rtl.split('.') : ['model', s.name];
+    const path = s.rtl ? s.rtl.split('.') : s.vcd ? s.vcd.split('.') : ['model', s.name]; // vcd: a model's own path (the NPU's, scope npu)
     let node = tree;
     for (const part of path.slice(0, -1)) {
       if (!node.scopes.has(part)) node.scopes.set(part, { scopes: new Map(), vars: [] });

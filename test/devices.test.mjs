@@ -145,7 +145,8 @@ test('the platform on a memory system: the window reads 0 and ignores writes, th
   assert.equal(D.sample(0x40ff0000, 4), 0);
   assert.throws(() => D.sample(GPIO_BASE, 1), /does not accept a 1-byte access/);
   assert.equal(D.map.resolve(0x4fffffff).region.name, 'periph');
-  assert.equal(D.map.resolve(0x50000000).region.name, 'ram', 'outside the window');
+  assert.equal(D.map.resolve(0x50000000).region.name, 'NPU', 'the NPU, outside the window (decision G1)');
+  assert.equal(D.map.resolve(0x50001000).region.name, 'ram', 'past the NPU\'s slot');
   assert.equal(D.map.regions.find((r) => r.name === 'GPIO').cacheable, false, 'a device is never cached');
 });
 

@@ -31,10 +31,20 @@ const M = {
   horner: (c, x) => c.reduce((acc, k) => s(Math.imul(acc, x) + k), 0),
   primes: (n) => { let c = 0; for (let k = 2; k < n; k++) { let p = true; for (let d = 2; d * d <= k; d++) if (k % d === 0) { p = false; break; } if (p) c++; } return c; },
   find: (a, key) => a.indexOf(key),
+  // the NPU of the laboratory profile (NPU-4): RESULT[i] += sum_j W[i][j] x[j], INT8 operands, 32-bit wrap
+  npu: (W, x) => W.map((row) => row.reduce((t, w, j) => s(t + w * x[j]), 0)),
   longestRun: (a) => { let best = 0; let run = 0; a.forEach((v, i) => { run = i && a[i - 1] === v ? run + 1 : 1; best = Math.max(best, run); }); return best; },
 };
 const bytesOf = (text) => [...Buffer.from(`${text}\0`, 'latin1')];
 
+const pack = (row) => u(row.reduce((t, w, j) => t | ((w & 0xff) << (8 * j)), 0)); // W[i][j] in bits 8j+7..8j
+const npuHead = (name, task, how, data) => `${head(name, task, how)}# Laboratory profile: the NPU at 0x5000_0000 (CTRL 0x00, STATUS 0x04, WEIGHT 0x10, ACT 0x20, RESULT 0x30).
+        .equ NPU, 0x50000000
+        .data
+${data}        .text
+main:   # your code
+        halt
+`;
 const head = (name, task, how) => `# ${name} -- practice exercise (RISC-VISTA)\n# ${task}\n# ${how}\n`;
 const proc = (label, comment, body = '        li   a0, 0              # replace with your code') => `        .text\n${label}:\n        # ${comment}\n${body}\n        ret\n`;
 
@@ -140,9 +150,47 @@ const EXERCISES = [
       memory: a.length ? [{ at: 'data', words: a }] : [], expect: { registers: { a0: M.longestRun(a) }, abi: true },
     })),
   },
+  {
+    id: 'npu-accumulate', group: 'npu', title: 'NPU: add two products in the accumulators', profile: 'ch11',
+    task: 'For the laboratory profile (the NPU at 0x5000_0000; register map in the Help). The four rows of a 4 × 4 INT8 matrix W are at w, one word per row with W[i][j] in bits 8j+7 to 8j; two vectors a and b are at xa and xb, one INT8 value per word. Using the NPU, compute y = W a + W b: load W into the NPU once, run the array on a and then on b, and let the accumulators add the two products (clear them only before the first run). Store RESULT[0] to RESULT[3] as four words at y, then halt.',
+    starter: npuHead('npu-accumulate', 'y = W a + W b on the NPU, with one clear and two starts.', 'Hint: CTRL bit 0 starts, bit 1 clears; writes while the NPU is busy are ignored, so wait for STATUS bit 1 (done).',
+      ['w:      .word 0x04030201, 0x08070605, 0xfcfdfeff, 0x00000000', 'xa:     .word 1, 2, 3, 4', 'xb:     .word -1, 0, 1, 2', 'y:      .space 16', ''].join('\n')),
+    tests: [
+      [[[1, 2, 3, 4], [5, 6, 7, 8], [-1, -2, -3, -4], [0, 0, 0, 0]], [1, 2, 3, 4], [-1, 0, 1, 2]],
+      [[[127, -128, 0, 1], [-1, -1, -1, -1], [2, 0, 0, 0], [0, 0, 0, 127]], [127, 127, 5, -128], [-128, 1, 2, 3]],
+      [[[10, 20, 30, 40], [0, 1, 0, 1], [-7, 3, -7, 3], [100, -100, 50, -50]], [0, 0, 0, 0], [9, -9, 9, -9]],
+      [[[-128, -128, -128, -128], [127, 127, 127, 127], [1, -1, 1, -1], [3, 5, 7, 11]], [-128, -128, -128, -128], [-128, -128, -128, -128]],
+    ].map(([W, a, b], k) => ({
+      name: `case ${k + 1}`,
+      memory: [{ at: 'w', words: W.map(pack) }, { at: 'xa', words: a.map(u) }, { at: 'xb', words: b.map(u) }],
+      expect: { memory: [{ at: 'y', words: M.npu(W, a).map((v, i) => u(s(v + M.npu(W, b)[i]))) }] },
+      limit: 2000,
+    })),
+  },
+  {
+    id: 'npu-two-layers', group: 'npu', title: 'NPU: two layers in a row', profile: 'ch11',
+    task: 'For the laboratory profile (the NPU at 0x5000_0000; register map in the Help). Two 4 × 4 INT8 matrices W1 and W2 are at w1 and w2 (one word per row, W[i][j] in bits 8j+7 to 8j) and a vector x at x (one INT8 value per word). Using the NPU for both products, compute h = W1 x and store it as four words at h, then compute y = W2 h and store it as four words at y; then halt. The tests choose values for which every h[i] fits in INT8.',
+    starter: npuHead('npu-two-layers', 'h = W1 x, then y = W2 h, both on the NPU.', 'Hint: ACT[j] takes bits 7..0 of the word written, so a result that fits in INT8 can be written back as it is; load W2 only when the first run is done.',
+      ['w1:     .word 0x00000001, 0x00000100, 0x00010000, 0x01000000', 'w2:     .word 0x01010101, 0x00000000, 0x00000000, 0x00000000',
+        'x:      .word 1, 2, 3, 4', 'h:      .space 16', 'y:      .space 16', ''].join('\n')),
+    tests: [
+      [[[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [[1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [1, 2, 3, 4]],
+      [[[2, -1, 0, 1], [1, 1, 1, 1], [-3, 0, 2, 0], [0, 4, 0, -4]], [[1, 2, 3, 4], [-1, 0, 1, 0], [5, -5, 5, -5], [127, 0, 0, -128]], [3, -2, 5, 1]],
+      [[[10, 0, 0, 0], [0, -10, 0, 0], [1, 1, 1, 1], [-1, -1, -1, -1]], [[3, 3, 3, 3], [1, -1, 1, -1], [0, 0, 0, 1], [-7, 7, -7, 7]], [12, 12, -20, 7]],
+    ].map(([W1, W2, x], k) => {
+      const h = M.npu(W1, x);
+      if (h.some((v) => v < -128 || v > 127)) throw new Error(`npu-two-layers case ${k + 1}: h does not fit in INT8`);
+      return {
+        name: `case ${k + 1}`,
+        memory: [{ at: 'w1', words: W1.map(pack) }, { at: 'w2', words: W2.map(pack) }, { at: 'x', words: x.map(u) }],
+        expect: { memory: [{ at: 'h', words: h.map(u) }, { at: 'y', words: M.npu(W2, h).map(u) }] },
+        limit: 2000,
+      };
+    }),
+  },
 ];
 
-const GROUPS = { bits: 'Bits and shifts', branches: 'Comparisons and branches', loops: 'Loops and arithmetic', memory: 'Arrays and strings', output: 'Output', c: 'C' };
+const GROUPS = { bits: 'Bits and shifts', branches: 'Comparisons and branches', loops: 'Loops and arithmetic', memory: 'Arrays and strings', output: 'Output', c: 'C', npu: 'NPU (laboratory profile)' };
 
 let differ = 0;
 const put = (name, obj) => {
@@ -156,7 +204,7 @@ const put = (name, obj) => {
 };
 if (!check) mkdirSync(DIR, { recursive: true });
 for (const e of EXERCISES) {
-  put(`${e.id}.json`, { _copyright: COPY, format: 'risc-vista-exercise', version: 1, title: e.title, task: e.task, lang: e.lang ?? 'asm',
+  put(`${e.id}.json`, { _copyright: COPY, format: 'risc-vista-exercise', version: 1, title: e.title, task: e.task, lang: e.lang ?? 'asm', ...(e.profile ? { profile: e.profile } : {}),
     starter: e.starter, ...(e.entry ? { entry: e.entry } : {}), tests: e.tests });
 }
 put('index.json', { _copyright: COPY, groups: GROUPS, exercises: EXERCISES.map((e) => ({ id: e.id, file: `${e.id}.json`, group: e.group, title: e.title, lang: e.lang ?? 'asm' })) });

@@ -81,6 +81,15 @@ const SVGS = {
   'mavilera-logo-sap-1.svg': svg('mavilera-sap1-header.svg', 'MAVILERA SAP-1'), // the same for the SAP-1 module (content.logo, contract v6)
   'mavilera-logo-sap-2.svg': svg('mavilera-sap2-header.svg', 'MAVILERA SAP-2'), // and for the SAP-2 module
   'mavilera-logo-armv7.svg': svg('mavilera-armv7-header.svg', 'MAVILERA ARMv7'), // and for the ARMv7 module (W-D35)
+  'mavilera-logo-npu.svg': svg('mavilera-npu-header.svg', 'MAVILERA NPU'), // the RISC-V module opened as the NPU tool
+  'mavilera-logo-gpu.svg': svg('mavilera-gpu-header.svg', 'MAVILERA GPU'), // the GPU module
+  // the architecture switcher's entries: the chip and the tool's name, without MAVILERA (src/shell/platform-archs.js)
+  'mavilera-name-riscv.svg': svg('mavilera-riscv-name.svg', 'RISC-V'),
+  'mavilera-name-sap-1.svg': svg('mavilera-sap1-name.svg', 'SAP-1'),
+  'mavilera-name-sap-2.svg': svg('mavilera-sap2-name.svg', 'SAP-2'),
+  'mavilera-name-armv7.svg': svg('mavilera-armv7-name.svg', 'ARMv7'),
+  'mavilera-name-npu.svg': svg('mavilera-npu-name.svg', 'NPU'),
+  'mavilera-name-gpu.svg': svg('mavilera-gpu-name.svg', 'GPU'),
   'mavilera-full.svg': svg('mavilera-full.svg', 'MAVILERA'), // the landing page
   'mavilera-lockup.svg': svg('mavilera-lockup.svg', 'MAVILERA'), // the landing page on narrow screens: no subtitle
   'mavilera-wordmark.svg': svg('mavilera-wordmark.svg', 'MAVILERA'),

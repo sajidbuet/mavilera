@@ -1,5 +1,5 @@
 // arch-switcher.js -- the header logo as two controls over one image: MAVILERA (home) and the architecture part (a
-// drop-down of the other architectures); choosing one slides the stack up to its place, then navigates
+// drop-down of the other tools, each by its name lockup); choosing one slides the stack up to its place, then navigates
 // (docs/architecture/arch-switcher.md, AS-1 to AS-5). Styles: theme.css (.brand-switch).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
@@ -18,9 +18,10 @@ const SLIDE_MS = 380;
  * @param {(file: string) => Promise<SVGElement>} o.loadLogo the lockup file as an inline SVG
  * @param {{home: string, label: (name: string) => string, list: string, open: (name: string) => string}} o.strings
  * @param {(url: string) => void} [o.go] navigation (the page's `location.assign`; replaced in tests)
+ * @param {number} [o.nameAt] where the name lockup stands in the header lockup, in lockup heights (platform-archs.js NAME_AT)
  * @returns {HTMLElement} the element that replaces the lockup in the header
  */
-export function archSwitcher({ logo, targets, home, current, loadLogo, strings, go = (u) => location.assign(u) }) {
+export function archSwitcher({ logo, targets, home, current, loadLogo, strings, go = (u) => location.assign(u), nameAt = 0 }) {
   const root = el('div.brand-switch', {}, logo);
   logo.classList.add('brand-logo-img');
   if (home) root.append(el('a.brand-home', { href: home, title: strings.home, 'aria-label': strings.home }));
@@ -88,8 +89,9 @@ export function archSwitcher({ logo, targets, home, current, loadLogo, strings, 
     busy = true;
     root.classList.add('is-switching');
     const chosen = e.currentTarget;
+    // an entry is a name lockup (chip and name): it slides to the header's chip and name, not to its left edge
     const from = logo.getBoundingClientRect(), to = chosen.querySelector('svg, span').getBoundingClientRect();
-    const dx = to.left - from.left, dy = to.top - from.top;
+    const dx = to.left - (from.left + nameAt * from.height), dy = to.top + to.height / 2 - (from.top + from.height / 2);
     const slide = (node, extra = []) => node.animate(
       extra.length ? extra : [{ transform: 'translate(0, 0)' }, { transform: `translate(${-dx}px, ${-dy}px)` }],
       { duration: SLIDE_MS, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' });

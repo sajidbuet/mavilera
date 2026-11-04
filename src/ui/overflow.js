@@ -12,7 +12,9 @@
  * @param {Object<string, HTMLElement>} o.sections  where each group's controls go in the menu (each in a section
  *   that is hidden while empty: the body's parent)
  * @param {Array<{cls?: string, node?: Element, group?: string}>} o.steps  lowest priority first
- * @returns {{fit: () => void, fitNow: () => void}} fit: on the next frame; fitNow: at once
+ * @returns {{fit: () => void, fitNow: () => void, pause: (on: boolean) => void}} fit: on the next frame; fitNow: at
+ *   once; pause: while paused (a bar docked as a column, ui/dock.js) every control stays in its place and the More
+ *   menu is hidden
  */
 export function overflowBar({ bar, more, sections, steps }) {
   const moves = steps.filter((s) => s.node);
@@ -35,12 +37,9 @@ export function overflowBar({ bar, more, sections, steps }) {
   }
 
   function fitNow() {
+    if (paused) return; // a paused bar was put back whole once (pause); its controls may be elsewhere now (dock.js)
     const focus = document.activeElement;
-    for (const s of steps) {
-      if (s.cls) bar.classList.remove(s.cls);
-      else home.get(s.node).after(s.node);
-    }
-    more.hidden = true; // shown, and its room taken, only once a control has to leave
+    restore();
     for (const s of steps) {
       if (fits()) break;
       if (s.cls) bar.classList.add(s.cls);
@@ -57,6 +56,25 @@ export function overflowBar({ bar, more, sections, steps }) {
     pending = true;
     requestAnimationFrame(() => { pending = false; fitNow(); });
   }
+  /** Every control back in its place, no compact class, the More menu hidden (`close`: and closed). */
+  function restore(close = false) {
+    for (const s of steps) {
+      if (s.cls) bar.classList.remove(s.cls);
+      else home.get(s.node).after(s.node);
+    }
+    more.hidden = true; // shown, and its room taken, only once a control has to leave
+    if (close) more.open = false;
+  }
+  let paused = false;
+  function pause(on) {
+    paused = false;
+    if (on) {
+      const focus = document.activeElement;
+      restore(true);
+      if (focus && focus !== document.activeElement && focus.isConnected) focus.focus({ preventScroll: true });
+    } else fitNow();
+    paused = on;
+  }
   new ResizeObserver(fit).observe(bar);
-  return { fit, fitNow };
+  return { fit, fitNow, pause };
 }

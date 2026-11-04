@@ -85,10 +85,11 @@ export const reducedMotion = () => typeof matchMedia === 'function' && matchMedi
 /**
  * The signal-flow control of a datapath view: a labelled select, remembered in the
  * browser, disabled under reduced motion. `get()` is the time per connection now (ms).
+ * `fallback`: the speed while the reader has chosen none (the NPU view starts animated).
  */
-export function flowControl() {
+export function flowControl(fallback = 'off') {
   const saved = store.get('pips.flow');
-  let speed = reducedMotion() ? 'off' : (saved in FLOW_SPEEDS ? saved : 'off');
+  let speed = reducedMotion() ? 'off' : (saved in FLOW_SPEEDS ? saved : fallback);
   const sel = el('select', { 'aria-label': STRINGS.flow, disabled: reducedMotion(), onchange: (e) => { speed = e.target.value; store.set('pips.flow', speed); } },
     Object.entries(STRINGS.flowSpeeds).map(([k, t]) => el('option', { value: k, text: t, selected: k === speed })));
   const label = el('label.toggle', { title: reducedMotion() ? STRINGS.flowReduced : STRINGS.flowTitle }, `${STRINGS.flow} `, sel);
@@ -123,8 +124,10 @@ export class DatapathView {
    *   info: the model's signal dictionary (name -> {width}), the source of the bus-width markers
    *   bands: shaded columns behind the drawing [{left, right}] (cm; Chapter 8: the stages)
    */
-  constructor(geom, { title, description, valueAt = {}, labelBounds = false, nearColours = false, info = null, bands = [] }) {
+  constructor(geom, { title, description, valueAt = {}, labelBounds = false, nearColours = false, info = null, bands = [], ids = 'dp', textSize = 12.65 }) {
     this.geom = geom;
+    this.textSize = textSize; // the size of the elements' names (px; the book's \small; FIG-0114 is set in \scriptsize)
+    this.ids = ids; // the prefix of the drawing's element ids: two drawings on one page need different ones
     this.valueAt = valueAt; // signal -> wire id where its value tag goes
     this.info = info;
     this.wires = new Map();
@@ -156,14 +159,14 @@ export class DatapathView {
     this.viewBoxes = { '': vb };
     for (const [name, v] of Object.entries(geom.variants ?? {})) this.viewBoxes[name] = box([...base, ...points(v)]);
 
-    this.titleNode = svg('title', { id: 'dp-title' }, title);
-    this.descNode = svg('desc', { id: 'dp-desc' }, description);
+    this.titleNode = svg('title', { id: `${ids}-title` }, title);
+    this.descNode = svg('desc', { id: `${ids}-desc` }, description);
     const kinds = ['normal', 'active', 'ctrl', 'crit', ...Array.from({ length: WIRE_COLOURS }, (_, k) => `wc${k}`)];
     const defs = svg('defs', {}, kinds.map((k) => svg('marker', {
-      id: `dp-arrow-${k}`, class: `dp-arrow dp-arrow-${k}`, markerUnits: 'userSpaceOnUse', markerWidth: 10, markerHeight: 10,
-      viewBox: '-8 -4 9 8', refX: 0, refY: 0, orient: 'auto',
+      id: `${ids}-arrow-${k}`, class: `dp-arrow dp-arrow-${k}`, markerUnits: 'userSpaceOnUse', markerWidth: 10, markerHeight: 10,
+      viewBox: '-8 -4 9 8', refX: 0, refY: 0, orient: 'auto-start-reverse',
     }, svg('path', { d: 'M0,0 L-7,-2.8 L-5.2,0 L-7,2.8 Z' }))));
-    this.svg = svg('svg', { viewBox: vb, class: 'dp', role: 'img', 'aria-labelledby': 'dp-title dp-desc' },
+    this.svg = svg('svg', { viewBox: vb, class: 'dp', role: 'img', 'aria-labelledby': `${ids}-title ${ids}-desc` },
       this.titleNode, this.descNode, defs);
 
     // Stage bands: from the top to the bottom of every view box, so that a variant's larger box is covered too.
@@ -242,7 +245,7 @@ export class DatapathView {
         const fit = (w * SCALE - 4 * PT) / (chars * 0.55);
         g.append(multiline(e.text, { x: X(e.at[0]), y: Y(e.at[1]), 'text-anchor': 'middle', 'dominant-baseline': 'central',
           class: e.mono ? 'dp-eltext dp-elmono' : 'dp-eltext', // mono: a register named in the code face (Chapter 7)
-          style: fit < 12.65 ? `font-size:${fit.toFixed(2)}px` : null }));
+          style: Math.min(fit, this.textSize) < 12.65 ? `font-size:${Math.min(fit, this.textSize).toFixed(2)}px` : null }));
       }
     } else {
       const pic = this.geom.pics[e.type];
@@ -262,10 +265,11 @@ export class DatapathView {
 
   drawLabel(l) {
     const anchor = l.anchor ?? PLACE[l.place] ?? 'center';
-    if (l.rotate) {
-      const t = svg('text', { x: X(l.at[0]), y: Y(l.at[1]), transform: `rotate(-${l.rotate} ${X(l.at[0])} ${Y(l.at[1])})`,
-        dx: SEP, dy: -SEP, 'text-anchor': 'start', 'dominant-baseline': 'text-after-edge', class: `dp-${l.style}` }, l.text);
-      return t;
+    if (l.rotate) { // the anchor applies in the rotated frame, as in TikZ (default south west: the text after the point)
+      const sep = l.style === 'sig' || l.style === 'tsig' ? SEP : PT;
+      const a = textAt(0, 0, l.anchor ?? 'south west', sep);
+      return svg('text', { x: X(l.at[0]) + a.x, y: Y(l.at[1]) + a.y, transform: `rotate(-${l.rotate} ${X(l.at[0])} ${Y(l.at[1])})`,
+        'text-anchor': a['text-anchor'], 'dominant-baseline': a['dominant-baseline'], class: `dp-${l.style}` }, l.text);
     }
     return multiline(l.text, { ...textAt(l.at[0], l.at[1], anchor, l.style === 'sig' ? SEP : PT), class: `dp-${l.style}` });
   }
@@ -280,9 +284,19 @@ export class DatapathView {
       p[p.length - 1] = [x1 - ((x1 - x0) / len) * back, y1 - ((y1 - y0) / len) * back];
       p.tip = [x1, y1];
     }
+    if (w.start) { // an arrow at the first point as well (FIG-0114: the d_ bus, <->)
+      const [x0, y0] = p[0];
+      const [x1, y1] = p[1];
+      const len = Math.hypot(x1 - x0, y1 - y0) || 1;
+      const back = (2 * PT) / SCALE;
+      p.first = [x0, y0];
+      p[0] = [x0 + ((x1 - x0) / len) * back, y0 + ((y1 - y0) / len) * back];
+    }
     const g = svg('g', { class: `dp-wire dp-${w.style}`, 'data-id': w.id, 'data-signal': w.signal });
-    const d = pts(p) + (p.tip ? ` ${X(p.tip[0])},${Y(p.tip[1])}` : '');
-    const line = svg('polyline', { points: d, class: 'dp-line', 'marker-end': w.arrow ? `url(#dp-arrow-${w.style === 'ctrl' ? 'ctrl' : 'normal'})` : null });
+    const d = (p.first ? `${X(p.first[0])},${Y(p.first[1])} ` : '') + pts(p) + (p.tip ? ` ${X(p.tip[0])},${Y(p.tip[1])}` : '');
+    const kind = w.style === 'ctrl' ? 'ctrl' : 'normal';
+    const line = svg('polyline', { points: d, class: 'dp-line', 'marker-end': w.arrow ? `url(#${this.ids}-arrow-${kind})` : null,
+      'marker-start': w.start ? `url(#${this.ids}-arrow-${kind})` : null });
     const hit = svg('polyline', { points: d, class: 'dp-hit' });
     for (const lab of w.labels) g.append(this.drawLabel({ ...lab, style: 'sig' }));
     g.append(line, hit);
@@ -313,7 +327,7 @@ export class DatapathView {
       Object.assign(attrs, { x: X(p[0]) + t.x, y: Y(p[1]) + t.y, transform: `rotate(-${c.rotate} ${X(p[0])} ${Y(p[1])})` });
     }
     const name = svg('text', attrs, text);
-    const line = svg('polyline', { points: pts([a, b]), class: 'dp-ctrl', 'marker-end': c.arrow === false ? null : 'url(#dp-arrow-ctrl)' });
+    const line = svg('polyline', { points: pts([a, b]), class: 'dp-ctrl', 'marker-end': c.arrow === false ? null : `url(#${this.ids}-arrow-ctrl)` });
     const hit = svg('polyline', { points: pts([a, b]), class: 'dp-hit' });
     const m = this.markers.get(c);
     const g = svg('g', { class: 'dp-stub', 'data-signal': c.signal }, line, hit, m ? this.drawMarker(m, 'dp-bw dp-bw-ctrl') : null, name);
@@ -399,7 +413,9 @@ export class DatapathView {
       w.g.classList.toggle('dp-wc', k !== undefined);
       if (k !== undefined) w.g.style.setProperty('--wc', `var(--wc-${k})`); else w.g.style.removeProperty('--wc');
       const plain = w.def.style === 'ctrl' ? 'ctrl' : 'normal';
-      if (w.arrow) w.line.setAttribute('marker-end', `url(#dp-arrow-${k !== undefined ? `wc${k}` : hl ? (critical ? 'crit' : 'active') : plain})`);
+      const marker = `url(#${this.ids}-arrow-${k !== undefined ? `wc${k}` : hl ? (critical ? 'crit' : 'active') : plain})`;
+      if (w.arrow) w.line.setAttribute('marker-end', marker);
+      if (w.def.start) w.line.setAttribute('marker-start', marker);
       if (hl) this.dirWires.add(id);
     }
     for (const [id, g] of this.elements) g.classList.toggle('dp-muted', Boolean(active) && !active.elements.has(id));
@@ -432,7 +448,7 @@ export class DatapathView {
     this.gDir.replaceChildren();
     for (const id of this.dirWires) {
       const w = this.wires.get(id);
-      if (!w || this.hidden(w)) continue;
+      if (!w || this.hidden(w) || w.def.bidir) continue; // a two-way bus has no single direction
       const p = w.def.points;
       if (this.march && !reducedMotion()) {
         this.gDir.append(svg('polyline', { points: pts(p), class: `dp-march${w.def.style === 'ctrl' ? ' dp-march-ctrl' : ''}` }));
@@ -458,7 +474,7 @@ export class DatapathView {
    * without text takes its accessible name from `names` (by id), else from its kind.
    */
   setLinks(targets, onOpen, names = {}) {
-    groupRole(this.svg, 'dp-title', 'dp-desc');
+    groupRole(this.svg, `${this.ids}-title`, `${this.ids}-desc`);
     for (const [id, g] of this.elements) {
       if (!targets[id] || g.classList.contains('dp-link')) continue;
       const def = [...this.geom.elements, ...Object.values(this.geom.variants ?? {}).flatMap((v) => v.elements)].find((e) => e.id === id);
@@ -488,16 +504,17 @@ export class DatapathView {
    * Signal flow (WS-U-003): each active connection is drawn on from its start to its
    * end, after `at` (0..1) of the cycle's span, then the overlay fades. `ms` is the time
    * of one connection; the whole cycle takes about 2.5 × ms. Nothing happens when the
-   * browser cannot animate; the caller leaves it off for reduced motion.
+   * browser cannot animate; the caller leaves it off for reduced motion. `reverse`: drawn
+   * from the wire's end to its start (a read on a two-way bus).
    */
   animate(list, ms) {
     this.gFlow.replaceChildren();
     if (!ms || !list.length) return;
     const span = 1.5 * ms;
-    for (const { id, at } of list) {
+    for (const { id, at, reverse = false } of list) {
       const w = this.wires.get(id);
       if (!w || w.g.getAttribute('display') === 'none') continue;
-      const p = w.def.points;
+      const p = reverse ? [...w.def.points].reverse() : w.def.points;
       let len = 0;
       for (let i = 1; i < p.length; i++) len += Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]) * SCALE;
       const style = this.colourStyle(id);
@@ -509,6 +526,11 @@ export class DatapathView {
       line.animate([{ strokeDashoffset: len, opacity: 1 }, { strokeDashoffset: 0, opacity: 1 }], { duration: ms, delay, fill: 'forwards', easing: 'linear' });
       line.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: span + ms + 150, fill: 'forwards' });
     }
+  }
+
+  /** Connections drawn dashed, as about to carry data (the NPU tool's coming access); an empty set clears them. */
+  setNext(ids = new Set()) {
+    for (const [id, w] of this.wires) w.g.classList.toggle('dp-next', ids.has(id));
   }
 
   /** Show or hide a variant of the drawing; the connections it replaces are hidden while it is shown. */
