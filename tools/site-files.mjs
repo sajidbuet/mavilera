@@ -42,10 +42,12 @@ export const RELEASE_EXCLUDE = (p) => p === 'content/data/ch07-jalr.json' || /^c
  * Modules one architecture's build takes from another's folder, by decision (W-D29 allows no other sharing):
  * the GPU's RISC-V SIMT core reuses RISC-V's assembler and encoding tables (G18), its Models view the analytical panels
  * (GPU-4); the RISC-V module's CPU + GPU tool runs the GPU's core as a device and draws it with the GPU's core view
- * (G30, 2026-11-05). test/release.test.mjs and tools/module-smoke.mjs read this list.
+ * (G30, 2026-11-05). A content file listed here is published in that build too: the GPU's core view draws from
+ * RISC-V's content/geometry/ch11a-gpu.json (GPU-3). test/release.test.mjs and tools/module-smoke.mjs read this list.
  */
 export const SHARED = Object.freeze({
-  gpu: Object.freeze(['src/asm/assembler.js', 'src/asm/disassembler.js', 'src/isa/encoding.js', 'src/core/profiles.js', 'src/core/analytic.js']),
+  gpu: Object.freeze(['src/asm/assembler.js', 'src/asm/disassembler.js', 'src/isa/encoding.js', 'src/core/profiles.js', 'src/core/analytic.js',
+    'content/geometry/ch11a-gpu.json']),
   riscv: Object.freeze(['src/arch/gpu/rvsimt/core-model.js', 'src/arch/gpu/rvsimt/engine.js', 'src/arch/gpu/rvsimt/isa.js', 'src/arch/gpu/rvsimt/language.js',
     'src/arch/gpu/rvsimt/strings.js', 'src/arch/gpu/rvsimt/ui/core-view.js', 'src/arch/gpu/ui/mask-grid.js']),
 });
@@ -79,7 +81,8 @@ export function archOverrides(id, root = ROOT) {
 
 /** The application files of one architecture (phase 6): the page, its manifest and style sheet, the modules reached
  *  from the page and the Worker with the architecture's overrides, the shared logo files and the content folders of
- *  its registry entry (`content`), without what a release leaves out. Returns the files and the overrides. */
+ *  its registry entry (`content`) and the content files it shares by decision (SHARED), without what a release leaves
+ *  out. Returns the files and the overrides. */
 export function archFiles(id, root = ROOT) {
   const entry = registry(root).find((a) => a.id === id);
   if (!entry?.content?.length) throw new Error(`site/architectures.json: ${id} names no content folders`);
@@ -91,7 +94,8 @@ export function archFiles(id, root = ROOT) {
   const named = new Set([...page, ...mods].flatMap((p) => readFileSync(join(root, p), 'utf8')
     .match(/\b(?:mavilera[\w-]*|icon-[\w-]+|apple-touch-icon|favicon)\.(?:svg|png|ico)\b/g) ?? []));
   const brand = (p) => p.startsWith('content/branding/mavilera/') && named.has(p.slice('content/branding/mavilera/'.length));
-  const files = releaseFiles(root).filter((p) => page.has(p) || mods.has(p) || brand(p) || entry.content.some((c) => p.startsWith(c)));
+  const files = releaseFiles(root).filter((p) => page.has(p) || mods.has(p) || brand(p) || entry.content.some((c) => p.startsWith(c))
+    || (p.startsWith('content/') && (SHARED[id] ?? []).includes(p)));
   const missing = [...mods].filter((p) => !files.includes(p));
   if (missing.length) throw new Error(`${id}: modules outside the release files: ${missing.join(', ')}`);
   return { files, overrides };

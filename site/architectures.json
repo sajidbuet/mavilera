@@ -47,18 +47,17 @@
       "description": "The Intel 8086: an assembler in the style of Intel's ASM-86 and an instruction-level simulator with the general, pointer, index and segment registers, the flags, 1 MiB of segmented memory and the I/O ports, its instructions checked against the SingleStepTests 8086 suite. A beta: the BIU and EU view steps each instruction through a teaching model, or clock by clock with the bus interface unit filling the instruction queue; the clock counts are the teaching model's, and instruction timing comes later.",
       "tagline": "The Intel 8086: segmented memory, the flags and the I/O ports, instruction by instruction.",
       "path": "i8086/",
-      "status": "available",
-      "preview": true,
+      "status": "planned",
+      "_status": "A beta, built on the development page only: not published until its full documentation is approved (publication gate, author 2026-11-05).",
       "content": ["content/i8086/"]
     },
     {
       "id": "gpu",
       "name": "GPU",
-      "description": "A SIMT core of RISC-V threads in warps (two warps of four lanes, or one of eight), with an active mask, a reconvergence stack, split and join, and barriers, drawn cycle by cycle; models of data-parallel machines; practice exercises; a CPU + GPU system with the core on the RISC-V Laboratory's bus. A seven-instruction micro-ISA is kept as an introduction. A preview.",
+      "description": "A SIMT core of RISC-V threads in warps (two warps of four lanes, or one of eight), with an active mask, a reconvergence stack, split and join, and barriers, drawn cycle by cycle; models of data-parallel machines; practice exercises; a CPU + GPU system with the core on the RISC-V Laboratory's bus. A seven-instruction micro-ISA is kept as an introduction.",
       "tagline": "A SIMT core: warps, an active mask and divergent branches, cycle by cycle.",
       "path": "gpu/",
       "status": "available",
-      "preview": true,
       "docs": "gpu/docs/",
       "content": ["content/gpu/"]
     },
@@ -113,7 +112,7 @@
       "summary": "Many processing elements, or many lanes, working on one task.",
       "steps": [
         { "lab": "npu", "text": "A systolic array driven by a RISC-V program: where the cycles go when the work is offloaded." },
-        { "lab": "gpu", "text": "Lanes running one instruction stream: the active mask and divergent branches. A preview." }
+        { "lab": "gpu", "text": "Lanes running one instruction stream: the active mask and divergent branches." }
       ]
     }
   ]

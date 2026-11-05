@@ -6,7 +6,7 @@
 //   - A `module` entry is a tool inside another module: the NPU is a device of the RISC-V module (decision G2), opened
 //     as `riscv/?tool=npu` on the module's NPU view (`view`); its page shows the `header` lockup.
 //   - A `preview` entry is a planned module listed on the development page only, never in a release build or the
-//     offline file (W-D35 addendum; ARMv7 was one until ARM-A6, 2026-11-02; the GPU is one until its release).
+//     offline file (W-D35 addendum; ARMv7 was one until ARM-A6, 2026-11-02; the 8086 beta is one until its publication).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -16,10 +16,10 @@ export const PLATFORM_ARCHS = Object.freeze([
   Object.freeze({ id: 'sap-1', name: 'SAP-1', logo: 'mavilera-name-sap-1.svg' }),
   Object.freeze({ id: 'sap-2', name: 'SAP-2', logo: 'mavilera-name-sap-2.svg' }),
   Object.freeze({ id: 'armv7', name: 'Armv7', logo: 'mavilera-name-armv7.svg' }), // available from 1.1.0 (ARM-A6)
-  Object.freeze({ id: 'i8086', name: '8086', logo: 'mavilera-name-8086.svg' }), // the 8086 beta (8086-B0 to B2; author, 2026-11-05)
+  Object.freeze({ id: 'i8086', name: '8086', logo: 'mavilera-name-8086.svg', preview: true }), // the 8086 beta: development page only until its documentation is approved (publication gate, author 2026-11-05)
   Object.freeze({ id: 'npu', name: 'NPU', logo: 'mavilera-name-npu.svg', header: 'mavilera-logo-npu.svg', module: 'riscv',
     view: 'npu', views: Object.freeze(['isa', 'npu-single', 'npu', 'npu-analysis']) }), // NPU-3: no multicycle or pipelined host (the book times the NPU on the ISS and the single-cycle processor only); NPU-4: the Analysis view
-  Object.freeze({ id: 'gpu', name: 'GPU', logo: 'mavilera-name-gpu.svg' }), // published as a preview module from 1.2.0 (GPU-1; author, 2026-11-04)
+  Object.freeze({ id: 'gpu', name: 'GPU', logo: 'mavilera-name-gpu.svg' }), // a preview from 1.2.0 (GPU-1), complete from 1.3.0 (author, 2026-11-05)
 ]);
 
 /** Where the name lockup stands in a header lockup, as a multiple of the lockup's height: the name files begin 12

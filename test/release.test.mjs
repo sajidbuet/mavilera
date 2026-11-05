@@ -75,7 +75,7 @@ test('W-D29 phase 6: each architecture builds from its own modules and content f
     assert.match(overrides['src/shell/arch-id.js'], new RegExp(`^export const ARCH_ID = "${a.id}";$`, 'm'));
   }
   // the RISC-V build is the release files without SAP-1's, SAP-2's, ARMv7's, the 8086's and the GPU's (each built on its
-  // own; the GPU a preview from 1.2.0, the 8086 a beta) and without the logo files no page, manifest or module
+  // own; the GPU available from 1.3.0, the 8086 a beta) and without the logo files no page, manifest or module
   // names (WS-N-004: the social preview and the print variants belong to the landing page and the repository)
   const rv = new Set(archFiles('riscv').files);
   const brand = 'content/branding/mavilera/';
@@ -86,6 +86,8 @@ test('W-D29 phase 6: each architecture builds from its own modules and content f
   for (const f of ['favicon.ico', 'mavilera-icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'mavilera-logo.svg', 'mavilera-full.svg']) assert.ok(rv.has(brand + f), f);
   assert.ok(archFiles('sap-1').files.includes(`${brand}mavilera-logo-sap-1.svg`), 'SAP-1: its header lockup');
   assert.ok(archFiles('sap-2').files.includes(`${brand}mavilera-logo-sap-2.svg`), 'SAP-2: its header lockup');
+  // the GPU's core view draws from RISC-V's geometry file, shared by decision (SHARED): its build carries it
+  assert.ok(archFiles('gpu').files.includes('content/geometry/ch11a-gpu.json'), 'GPU: the core view\'s geometry');
   assert.throws(() => archOverrides('mips'), /no architecture mips/);
 });
 

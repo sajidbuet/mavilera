@@ -167,8 +167,10 @@ test('the micro-ISA mask model: same registers as the engine every cycle, exact 
 });
 
 const BOOK = process.env.MES_BOOK_FIGS ?? join(ROOT, '..', 'book-MES-ch11a-fig');
-const noBook = existsSync(join(BOOK, 'code', 'chapter11a', 'make_fig_core.py')) ? false
-  : `the book's generators are not at ${BOOK} (set MES_BOOK_FIGS to a checkout of fig/ch11a-gpu-generators)`;
+// the export script reads the private book and stays in the private repository (PRIVATE_ONLY): a public clone skips
+const noBook = !existsSync(join(ROOT, 'tools', 'export_ch11a.py')) ? 'tools/export_ch11a.py is in the private repository only'
+  : existsSync(join(BOOK, 'code', 'chapter11a', 'make_fig_core.py')) ? false
+    : `the book's generators are not at ${BOOK} (set MES_BOOK_FIGS to a checkout of fig/ch11a-gpu-generators)`;
 test('content/geometry/ch11a-gpu.json is what the book\'s generators export', { skip: noBook }, () => {
   const r = spawnSync(process.platform === 'win32' ? 'python' : 'python3', ['-I', 'tools/export_ch11a.py', '--book', BOOK, '--check'], { cwd: ROOT, encoding: 'utf8' });
   assert.equal(r.status, 0, r.stdout + r.stderr);

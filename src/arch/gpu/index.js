@@ -4,7 +4,7 @@
 // instructions tmc, wspawn, split, join and bar on custom-0, and the identity CSRs. The micro-ISA core of GPU-1
 // (seven instructions on 16-bit words, decisions G6, G7) is kept as the variant `microisa` (contract v9, decision G13):
 // MAVILERA's introductory core, not a book laboratory; its profiles reload the page in it. Published as a preview from
-// 1.2.0 (the micro-ISA then; author, 2026-11-04).
+// 1.2.0 (the micro-ISA then; author, 2026-11-04), complete from 1.3.0 (author, 2026-11-05).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
