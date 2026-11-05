@@ -1,0 +1,526 @@
+<!doctype html>
+<!--
+  content/gpu/help/docs/index.html -- the detailed documentation of the MAVILERA GPU Laboratory, published at
+  /mavilera/gpu/docs/ beside the application (/mavilera/gpu/) by tools/release.mjs (roadmap GPU-5, decision G31: full
+  documentation before the module is published). It names no book (W-D16).
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: content. Apache-2.0.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA GPU Laboratory documentation</title>
+  <meta name="description" content="Documentation of the MAVILERA GPU Laboratory: the RISC-V SIMT core, its views, the micro-ISA introduction, the Models view, the CPU + GPU system, walkthroughs, exercises, files, exports and offline use.">
+  <meta name="theme-color" content="#0b2a55">
+  <!-- in a release, tools/release.mjs places the icons at the site root, two levels up -->
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../../icon.svg">
+  <style>
+    /* the MAVILERA palette (W-D30): the tokens of src/ui/theme.css */
+    :root {
+      --primary: #1a4f8b; --primary-soft: #e8f1fa; --navy: #0b2a55; --blue: #3a78b5; /* the logo blue darkened for 3:1 on white (WCAG 1.4.3, large text) */ --amber: #a85a00;
+      --bg: #f4f7fb; --surface: #ffffff; --border: #d8e1ec; --text: #14243a; --text-2: #5a6b80; --code-bg: #f3f6fa;
+      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #5b9bd5; --primary-soft: #132a45; --navy: #f2f5fa; --blue: #5b9bd5; --amber: #e3a453;
+        --bg: #0d1420; --surface: #141d2b; --border: #2a3648; --text: #e3e9f2; --text-2: #9aa9bd; --code-bg: #182233;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--primary); text-underline-offset: 2px; }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
+    code, kbd, pre { font-family: var(--font-code); font-size: 0.9em; }
+    code { background: var(--code-bg); padding: 0 0.25em; border-radius: 3px; }
+    kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: var(--surface); white-space: nowrap; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.45; }
+    pre code { background: none; padding: 0; }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+    header.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+    header.top .in { max-width: 1180px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .word { font-weight: 800; font-size: 20px; letter-spacing: 0.01em; color: var(--navy); text-decoration: none; }
+    .word span { color: var(--blue); }
+    header.top nav { margin-left: auto; display: flex; gap: 16px; }
+    .layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 230px 1fr; gap: 36px; }
+    .toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 24px 0; font-size: 14px; }
+    .toc ol { list-style: none; margin: 0; padding: 0; }
+    .toc li { margin: 2px 0; }
+    .toc a { color: var(--text); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+    .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+    main { min-width: 0; padding: 24px 0 64px; }
+    h1 { font-size: 30px; margin: 8px 0 6px; line-height: 1.2; }
+    h2 { font-size: 24px; margin: 48px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.25; }
+    h3 { font-size: 18px; margin: 26px 0 6px; }
+    .lead { font-size: 18px; color: var(--text-2); margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 15px; background: var(--surface); }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); }
+    .wrap-table { overflow-x: auto; }
+    .note { border-left: 4px solid var(--primary); background: var(--surface); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+    .small { font-size: 14px; color: var(--text-2); }
+    footer { color: var(--text-2); font-size: 14px; border-top: 1px solid var(--border); margin-top: 48px; padding-top: 16px; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; gap: 0; }
+      .toc { position: static; max-height: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="in">
+      <a class="word" href="../../">MAVILERA<span> GPU Laboratory</span></a>
+      <nav aria-label="Site">
+        <a href="../">Open the application</a>
+        <a href="../../">MAVILERA Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#about">About the laboratory</a></li>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#workspace">The workspace</a></li>
+        <li><a href="#sets">Two instruction sets</a></li>
+        <li><a href="#core">The RISC-V SIMT core</a></li>
+        <li><a href="#programs">Writing kernels</a></li>
+        <li><a href="#views">The Core views</a></li>
+        <li><a href="#micro">The micro-ISA</a></li>
+        <li><a href="#models">The Models view</a></li>
+        <li><a href="#cpugpu">The CPU + GPU system</a></li>
+        <li><a href="#walk">Walkthroughs</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#files">Files, sharing and exports</a></li>
+        <li><a href="#offline">Offline use and privacy</a></li>
+        <li><a href="#keys">Keyboard reference</a></li>
+        <li><a href="#checks">How the models were checked</a></li>
+        <li><a href="#limits">Limits of the model</a></li>
+        <li><a href="#rights">Licence and notices</a></li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <h1>MAVILERA GPU Laboratory: documentation</h1>
+      <p class="lead">Interactive Microprocessor Architecture Laboratory: Visualize. Execute. Understand.</p>
+
+      <h2 id="about">About the laboratory</h2>
+      <p>The GPU Laboratory runs a small SIMT (single instruction, multiple threads) core in the browser. Its threads are
+        grouped in warps: the threads of a warp share one instruction fetch and run it in lock-step, one thread per lane,
+        each with its own 32 registers. An active mask says which lanes an instruction changes, and a reconvergence
+        stack per warp lets the threads of a warp take different paths and meet again.</p>
+      <p>Every thread runs the RISC-V base instruction set RV32I, less the few instructions the core does not need. Five
+        warp-control instructions are added on the <em>custom-0</em> opcode: <code>tmc</code>, <code>wspawn</code>,
+        <code>split</code>, <code>join</code> and <code>bar</code>. Their names and their R-type format follow the
+        Vortex research GPU as its paper describes it.</p>
+      <p>Why it matters: a graphics processor gets its speed from many simple lanes rather than one clever pipeline, and
+        its programs from code written for one thread. The core shows what that costs: lanes left idle when the threads of
+        a warp branch apart, and the instructions that manage the mask. The Models view adds the ideas around it, and the
+        CPU + GPU system puts the core on the bus of a RISC-V processor.</p>
+      <ul>
+        <li><cite>Vortex: Extending the RISC-V ISA for GPGPU and 3D-Graphics Research</cite>. B. Tine, F. Elsabbagh,
+          K. Yalamarthy, H. Kim. arXiv:2110.10857, 2021.
+          <a href="https://arxiv.org/pdf/2110.10857">arxiv.org/pdf/2110.10857</a></li>
+      </ul>
+      <p class="small">The SIMT core and the micro-ISA are MAVILERA's teaching cores. They are not Vortex and not any
+        product's GPU.</p>
+
+      <h2 id="start">Getting started</h2>
+      <ol>
+        <li>Open the application. The editor holds a kernel for two warps of four threads; <strong>Templates</strong> in
+          the toolbar offers the laboratory programs, each with a note at the top on what to try.</li>
+        <li>Press <strong>Assemble</strong> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>). The listing shows each instruction's
+          32-bit word; errors are marked in the editor and explained in the console.</li>
+        <li>Press <strong>Step</strong> (<kbd>F10</kbd>). Each step is one clock cycle, in which one warp issues one
+          instruction. <strong>Step back</strong> (<kbd>Shift</kbd>+<kbd>F10</kbd>) undoes a cycle; <strong>Run</strong>
+          (<kbd>F5</kbd>) runs to the end or to a breakpoint.</li>
+        <li>Choose <strong>Core · 2 × 4</strong> at the top to see the same run on the drawing of the core.</li>
+      </ol>
+      <p>The kernel of a new session: each thread writes the absolute value of its element.</p>
+<pre><code>        .include "simt.inc"
+        .text
+_start: li     t0, 2              # two warps
+        la     t1, kernel
+        wspawn t0, t1             # warp 1 starts at kernel; warp 0 goes on there too
+kernel: csrr   t0, THREAD_INDEX   # i, the thread's index in the block (0 to 7)
+        slli   t0, t0, 2          # the byte offset of x[i] and y[i]
+        lw     t1, x(t0)          # t1 := x[i]
+        slt    t2, t1, zero       # p := (x[i] &lt; 0)
+        split  t2                 # the threads with p = 1 first
+        beqz   t2, 1f             # every active thread agrees here: no divergent branch
+        sub    t1, zero, t1       # then: t1 := -x[i]
+1:      join                      # first pass: to the other threads; second: reconverge
+        sw     t1, y(t0)          # y[i] := |x[i]|
+        tmc    zero               # this warp ends
+        .data                     # the data memory, from address 0
+x:      .word  5, -3, 0, -7, 2, -1, 4, -8
+y:      .space 32</code></pre>
+      <p>It ends after 28 cycles with y = 5, 3, 0, 7, 2, 1, 4, 8: 28 warp-instructions issued, 92 active lane-slots of
+        112, a SIMT efficiency of 82.1 %.</p>
+
+      <h2 id="workspace">The workspace</h2>
+      <p>The page is a workspace of panes, as in a code editor.</p>
+      <ul>
+        <li><strong>Header</strong>: the views; the <em>View</em> menu (show or hide panes, focus and full screen); the
+          theme and projector mode; Help.</li>
+        <li><strong>Toolbar</strong>: Assemble, Run, Step, Step back, Reset, Run to cursor; Speed; the
+          <strong>Architecture</strong> menu, which chooses the instruction set and machine (below); Templates; Exercise;
+          File.</li>
+        <li><strong>Editor</strong> with the program, <strong>Listing</strong> with each word and its fields, the
+          <strong>Registers</strong> of the core and of each warp, the <strong>Counters</strong>, the
+          <strong>Memory</strong> pane with the data memory and the <strong>Threads</strong> tab (every thread's
+          registers), and the <strong>Console</strong>.</li>
+      </ul>
+      <p>A one-bit register (done, fault) shows 0 or 1. The register <code>PC (next)</code> is the PC of the warp that
+        issues in the next cycle.</p>
+
+      <h2 id="sets">Two instruction sets</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Architecture menu</th><th>Machine</th><th>Views</th></tr></thead>
+        <tbody>
+          <tr><td>RISC-V SIMT · 2 warps × 4 lanes</td><td>The SIMT core, two warps of four lanes (the default)</td><td>Instructions, Core · 2 × 4, Core · 1 × 8, Models, CPU + GPU</td></tr>
+          <tr><td>RISC-V SIMT · 1 warp × 8 lanes</td><td>The same core with one warp of eight lanes</td><td>as above</td></tr>
+          <tr><td>SIMT core · 4 lanes</td><td>The micro-ISA, an introduction: seven instructions, four lanes</td><td>Instructions, Masks · 4 lanes, Masks · 8 lanes, Models, CPU + GPU</td></tr>
+          <tr><td>SIMT core · 8 lanes</td><td>The micro-ISA with eight lanes</td><td>as above</td></tr>
+        </tbody>
+      </table></div>
+      <p>Changing between the RISC-V SIMT core and the micro-ISA reloads the page after a question in the page itself;
+        each instruction set keeps its own program, view and workspace in the browser.</p>
+
+      <h2 id="core">The RISC-V SIMT core</h2>
+      <h3>The machine</h3>
+      <ul>
+        <li>Two warps of four lanes, or one warp of eight lanes. Each warp has a program counter, an active mask, a state
+          (ready, waiting at a barrier, or not running) and a reconvergence stack of four entries.</li>
+        <li>Each cycle the scheduler takes the next ready warp after the last one (round-robin) and issues one instruction
+          to it. Every instruction takes one cycle; a load sees an ideal memory.</li>
+        <li>An instruction memory of 64 words and a data memory of 256 words (1024 bytes), both from address 0. Every lane
+          has its own port to the data memory; when two lanes store to the same word, the highest lane's value stays.</li>
+        <li>A run starts with warp 0 at address 0, every lane active and every register 0. It ends when every warp has
+          ended, or at a fault.</li>
+      </ul>
+      <h3>Instructions</h3>
+      <p>Per thread: RV32I without <code>auipc</code>, <code>jalr</code>, byte and half-word loads and stores,
+        <code>fence</code>, <code>ecall</code> and <code>ebreak</code>. A branch, a jump, a load or a store works as in
+        RV32I for every active thread; an operand that the warp uses as one value (the mask of <code>tmc</code>, the
+        operands of <code>wspawn</code> and <code>bar</code>) comes from the lowest active thread.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Instruction</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>tmc rs1</code></td><td>The active mask becomes rs1. A zero mask ends the warp. The stack must be empty.</td></tr>
+          <tr><td><code>wspawn rs1, rs2</code></td><td>In warp 0 only, with no other warp running: starts warps 1 to rs1 − 1 at address rs2, every lane active, registers 0.</td></tr>
+          <tr><td><code>split rs1</code></td><td>Pushes a reconverge entry with the present mask. If bit 0 of rs1 divides the active threads, it also pushes an else entry (the other threads' mask and the address after <code>split</code>) and continues with the threads whose bit is 1.</td></tr>
+          <tr><td><code>join</code></td><td>Pops the stack: an else entry sends the other threads to its address with their mask; a reconverge entry restores the mask.</td></tr>
+          <tr><td><code>bar rs1, rs2</code></td><td>The warp waits at barrier rs1 (0 or 1) until rs2 warps have reached it.</td></tr>
+          <tr><td><code>csrr rd, csr</code></td><td>Reads an identity register of the thread (below).</td></tr>
+        </tbody>
+      </table></div>
+      <p>The five warp-control instructions are R-type words on the custom-0 opcode (0001011), funct7 0, with funct3
+        0 to 4 for <code>tmc</code>, <code>wspawn</code>, <code>split</code>, <code>join</code>, <code>bar</code>.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Identity register</th><th>Address</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>THREAD_INDEX</code></td><td>0xCC0</td><td>warp × lanes + lane: the thread's index in the block</td></tr>
+          <tr><td><code>LANE_ID</code></td><td>0xCC1</td><td>the lane within the warp</td></tr>
+          <tr><td><code>WARP_ID</code></td><td>0xCC2</td><td>the warp</td></tr>
+          <tr><td><code>BLOCK_INDEX</code></td><td>0xCC3</td><td>0 (a host may set it in the CPU + GPU system)</td></tr>
+          <tr><td><code>BLOCK_SIZE</code></td><td>0xCC4</td><td>warps × lanes</td></tr>
+          <tr><td><code>KERNEL_ARGS</code></td><td>0xCC5</td><td>0 (a host may set it in the CPU + GPU system)</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Faults</h3>
+      <p>The core runs divergent code only between <code>split</code> and <code>join</code>: a conditional branch on
+        which the active threads disagree is a fault. A fault stops the run with its code and a message.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Code</th><th>Fault</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>divergent branch</td></tr>
+          <tr><td>2</td><td>illegal instruction (a word outside the subset)</td></tr>
+          <tr><td>3</td><td>reconvergence stack overflow (more than two nested divergent splits)</td></tr>
+          <tr><td>4</td><td>join on an empty stack</td></tr>
+          <tr><td>5</td><td>tmc with a non-empty stack</td></tr>
+          <tr><td>6</td><td>warp-control operand error</td></tr>
+          <tr><td>7</td><td>bad data address (not word-aligned, or past the 256 words)</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Counters</h3>
+      <p><code>cycles</code>, <code>issued</code> (warp-instructions) and <code>active_slots</code> (the active lanes
+        summed over the issues). SIMT efficiency = active_slots ÷ (issued × lanes).</p>
+      <h3>MAVILERA's choices</h3>
+      <ul>
+        <li>A faulting instruction counts in the counters and takes one step; nothing else changes.</li>
+        <li>When every running warp waits at a barrier that no other warp will reach, the run stops before the cycle with
+          a message; that cycle is not counted.</li>
+        <li>Step back keeps the last 200 000 cycles.</li>
+      </ul>
+
+      <h2 id="programs">Writing kernels</h2>
+      <ul>
+        <li>One instruction per line, with an optional label (<code>loop:</code>) and a comment after <code>#</code>.
+          Numeric local labels work as in the GNU assembler: <code>1:</code>, then <code>1f</code> or <code>1b</code>.</li>
+        <li><code>.include "simt.inc"</code> gives the names of the identity registers and of the warp-control
+          instructions; it is built in.</li>
+        <li>The code starts at address 0. <code>.data</code> places data in the data memory from address 0; a label there
+          can be an offset: <code>lw t1, x(t0)</code>.</li>
+        <li>Every thread runs the whole program. Use <code>split</code> before a branch on per-thread data, a branch that
+          every active thread then agrees on, and <code>join</code> where the paths meet; end each warp with
+          <code>tmc zero</code>.</li>
+        <li>An instruction outside the subset is marked in the editor; loaded as an image, it faults when it runs.</li>
+      </ul>
+      <p>The pattern of an if/else:</p>
+<pre><code>        slt    t2, t1, zero       # p := (x &lt; 0), per thread
+        split  t2                 # the threads with p = 1 first
+        beqz   t2, else           # uniform in each pass
+        ...                       # then-path
+        j      endif
+else:   ...                       # else-path
+endif:  join                      # to the other threads, then reconverge</code></pre>
+
+      <h2 id="views">The Core views</h2>
+      <p><strong>Core · 2 × 4</strong> and <strong>Core · 1 × 8</strong> draw the core of each machine in this
+        application's own layout. Each step is one cycle: the drawing shows the coming issue, the warp the scheduler
+        chooses, its instruction broadcast to the lanes, what each lane computes, and the write gates driven by the
+        active mask. <code>warp_ctrl</code> and the gates are shown by what they do (masks, stack entries, the address a
+        <code>join</code> returns to), not by their logic. The warps table under the drawing gives each warp's state, PC,
+        mask and stack.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Tab</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td>Issue</td><td>The coming issue lane by lane: the mask bit, what the lane computes and whether it is written.</td></tr>
+          <tr><td>Masks</td><td>One row per issue, a cell per lane with its mask bit (1 active, 0 idle and shaded). <em>Masks-only count</em> hides warp control, branches and jumps, and each warp's launch and setup (its issues before the instruction that computes the predicate of its first split), and says how many of each it hides.</td></tr>
+          <tr><td>Stack</td><td>Each issue of one warp with the active mask and the reconvergence stack after it.</td></tr>
+          <tr><td>Results</td><td>Cycles, issued instructions, active lane-slots and SIMT efficiency of this program, and of the laboratory programs run here.</td></tr>
+          <tr><td>Waveforms</td><td>done, fault, and each warp's mask and state over the cycles run so far; select a cycle to go to it.</td></tr>
+        </tbody>
+      </table></div>
+      <p>On a narrow screen the view shows one lane at a time: the mask strip of the coming issue, a button per lane, and
+        what the chosen lane computes and writes. <em>Whole drawing</em> brings the drawing back. The drawing pans and
+        zooms as the other drawings of MAVILERA do; <em>Display</em> exports it as SVG or PNG.</p>
+
+      <h2 id="micro">The micro-ISA</h2>
+      <p>An introduction before the RISC-V core: one warp of four or eight lanes, a program memory of sixteen 16-bit
+        words, four registers per lane (r0 holds the lane's index, r1 its input, r2 its output) and a mask stack of two
+        entries. Every instruction takes one cycle.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Instruction</th><th>Each active lane, or the warp</th></tr></thead>
+        <tbody>
+          <tr><td><code>LDI rd, imm</code></td><td>rd ← imm (eight bits, sign-extended)</td></tr>
+          <tr><td><code>ADD rd, rs, rt</code></td><td>rd ← rs + rt</td></tr>
+          <tr><td><code>SUB rd, rs, rt</code></td><td>rd ← rs − rt</td></tr>
+          <tr><td><code>IFLT rs, rt</code></td><td>push the mask; the lanes with rs &lt; rt (signed) stay active</td></tr>
+          <tr><td><code>ELSE</code></td><td>the other lanes of the pushed mask become active</td></tr>
+          <tr><td><code>ENDIF</code></td><td>pop the mask</td></tr>
+          <tr><td><code>HALT</code></td><td>stop; the output of each lane is its r2</td></tr>
+        </tbody>
+      </table></div>
+      <p>The dialect is MAVILERA's: one instruction per line, comments after <code>;</code> or <code>//</code>, registers
+        r0 to r3, no labels (there are no branches); <code>.din v0, v1, …</code> gives the lanes' inputs and
+        <code>.word v</code> places one word. A third nested <code>IFLT</code>, and <code>ELSE</code> or
+        <code>ENDIF</code> with nothing pushed, stop the run before the instruction. The counters are
+        <code>cycles</code> and <code>idle_slots</code>.</p>
+      <p>Its views are <strong>Masks · 4 lanes</strong> and <strong>Masks · 8 lanes</strong>, the mask grid of each
+        machine; the <strong>Lanes</strong> tab of the memory pane shows every lane's registers. The default program, the
+        absolute value of four inputs, ends after 7 cycles with 4 idle lane-slots.</p>
+
+      <h2 id="models">The Models view</h2>
+      <p>Calculators for the ideas around the core. They do not run the program in the editor. Each tab has inputs, a
+        table and a drawing; its <em>i</em> button explains the model.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Tab</th><th>Model</th></tr></thead>
+        <tbody>
+          <tr><td>Four machines</td><td>The additions of c[i] = a[i] + b[i] framed by what one instruction covers on a scalar pipeline, packed SIMD, a vector unit and a SIMT machine, with the instruction counts.</td></tr>
+          <tr><td>Amdahl</td><td>S = 1 / ((1 − f) + f / n) and efficiency S / n for a parallel fraction f on n lanes; the ceiling 1 / (1 − f).</td></tr>
+          <tr><td>Strips</td><td>A loop strip-mined with a run-time vector length: AVL and vl of each strip, with VLMAX = VLEN / SEW. The rule: vl = AVL when AVL ≤ VLMAX, VLMAX when AVL ≥ 2 VLMAX, else any value from ⌈AVL / 2⌉ to VLMAX.</td></tr>
+          <tr><td>Indexing</td><td>A launch over n elements: grid_size = ⌈n / block_size⌉ blocks, thread i = block_index × block_size + thread_index, the warps, the tail and the masks of the warps that are not full; where element i lies.</td></tr>
+          <tr><td>Blocks and SMs</td><td>Whole blocks assigned to streaming multiprocessors, in waves, and the warps of one block.</td></tr>
+          <tr><td>Latency</td><td>A timeline of W warps that each issue k instructions per load of latency L; the warps needed, (L − 1) / k + 1; and the occupancy a register file allows, with the share of cycles that issue, k W / (k − 1 + L).</td></tr>
+          <tr><td>Coalescing</td><td>The aligned blocks one warp's load needs at a stride: transactions, bytes delivered and bytes used.</td></tr>
+          <tr><td>Banks</td><td>The banks of a shared memory a warp's access touches; the access takes as many cycles as the busiest bank has distinct words, and a word read by several lanes is broadcast.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Where a model needs a rule that the idea itself does not fix, the rule is MAVILERA's, stated in the tab's
+        <em>i</em> button: the remainder of packed SIMD is done by scalar instructions; block b goes to SM b mod (number
+        of SMs), a set number at a time; the scheduler stays with a warp until it has issued its load, then takes the
+        next ready warp in turn. None of them is the rule of a product.</p>
+
+      <h2 id="cpugpu">The CPU + GPU system</h2>
+      <p>The <strong>CPU + GPU</strong> view of this laboratory opens the RISC-V Laboratory with the SIMT core (two warps
+        of four lanes) on the bus of its single-cycle processor at 0x5000_1000. A host program copies a kernel into the
+        core's instruction memory and its data into the data memory, writes 1 to CTRL, polls STATUS while the core issues
+        one warp-instruction per clock cycle, and reads the results back. That page's views are ISA, Single-cycle (the
+        datapath with the GPU on the data bus) and GPU (the core's drawing, warps, masks and stack as the host steps,
+        and an Interface tab with the registers and the bus log). It keeps its own program and opens, on a first visit,
+        with its template: the host running the absolute-value kernel.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Offset</th><th>Register</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>0x000</td><td>CTRL (write)</td><td>Bit 0 starts the kernel: warp 0 at address 0, every lane active, registers and counters 0. Bit 1 clears DONE and FAULT. Both bits: clear, then start.</td></tr>
+          <tr><td>0x004</td><td>STATUS (read)</td><td>Bit 0 BUSY, bit 1 DONE, bit 2 FAULT, bits 11:8 the fault code (1 to 7 the core's; 8 a deadlock at a barrier).</td></tr>
+          <tr><td>0x008</td><td>ARGS</td><td>kernel_args at launch</td></tr>
+          <tr><td>0x00C</td><td>BLOCK</td><td>block_index at launch</td></tr>
+          <tr><td>0x010, 0x014, 0x018</td><td>CYCLES, ISSUED, ACTIVE (read)</td><td>The counters of the kernel</td></tr>
+          <tr><td>0x400 to 0x4FC</td><td>IMEM</td><td>The instruction memory, 64 words</td></tr>
+          <tr><td>0x800 to 0xBFC</td><td>DMEM</td><td>The data memory, 256 words; a read while the GPU is busy gives the word as it is then</td></tr>
+        </tbody>
+      </table></div>
+      <p>Writes to the GPU while it is busy are ignored, and the bus log marks them; whole words only. This register map is
+        MAVILERA's own design, one way to attach such a core; a laboratory may ask for a design of your own.</p>
+      <p>The host's RISC-V assembler has no warp-control instructions, so a host program carries its kernel as words. The
+        CPU + GPU view of this laboratory gives the program in its editor that way, under <em>Kernel for a host</em>: its
+        instruction words as <code>.word</code> lines, each with its source line as a comment, and its data words, with
+        <em>Copy</em> and <em>Download .s</em>. Assemble the kernel for <em>RISC-V SIMT · 2 warps × 4 lanes</em>, the
+        machine on the host's bus.</p>
+
+      <h2 id="walk">Walkthroughs</h2>
+      <h3>1. The first kernel</h3>
+      <ol>
+        <li>Assemble the kernel of a new session and choose <strong>Core · 2 × 4</strong>.</li>
+        <li>Step three times: warp 0 runs <code>li</code> and the two instructions of <code>la</code>; warp 1 has not
+          started yet. The next step issues <code>wspawn</code>; from then on the warps take turns.</li>
+        <li>Step to the first <code>split</code> of warp 0. Its threads hold 5, −3, 0, −7: the Issue tab shows the
+          predicate 0101 (lane 0 first), so the then-path runs with mask 0101 and the stack gets a reconverge entry R 1111
+          and an else entry for 1010.</li>
+        <li>Run to the end. The Results tab gives 28 cycles, 92 active lane-slots of 112, 82.1 %.</li>
+      </ol>
+      <h3>2. Seeing the cost of divergence</h3>
+      <ol>
+        <li>Open the template <em>An if/else with split and join</em> and open the Masks tab.</li>
+        <li>Turn on <em>Masks-only count</em>: the rows left are the work under a mask, and the line below says how many
+          launch, setup, warp-control and branch issues it hides.</li>
+        <li>Compare with <em>No divergence: every thread takes the same path</em>, where every row is full.</li>
+      </ol>
+      <h3>3. Two warps and a barrier</h3>
+      <ol>
+        <li>Open <em>Reverse an array through a barrier</em>. Step until a warp reaches <code>bar</code>: its state
+          becomes <em>waiting at bar</em> in the warps table, and only the other warp issues.</li>
+        <li>When the second warp arrives, both continue. The run ends after 71 cycles with 244 active lane-slots, an
+          efficiency of 85.9 %.</li>
+        <li>Open <em>Fault: a divergent branch</em> to see a branch without <code>split</code> stop the core with fault
+          1.</li>
+      </ol>
+      <h3>4. The Models view</h3>
+      <ol>
+        <li>In <strong>Indexing</strong>, set n = 21, block size 8, warp size 4: three blocks, and the last warp runs with
+          mask 1000.</li>
+        <li>In <strong>Latency</strong>, keep W = 4, k = 3, L = 9: an instruction issues in every cycle. Change W to 3:
+          two idle cycles (– in the Issue row) appear before the first warp's second round.</li>
+        <li>In <strong>Banks</strong>, change the stride from 1 to 2, then to 8; then try 9.</li>
+      </ol>
+      <h3>5. The CPU + GPU system</h3>
+      <ol>
+        <li>Choose <strong>CPU + GPU</strong> and <em>Open the CPU + GPU system</em>. The page opens with the host program
+          and its template kernel.</li>
+        <li>Assemble and step in the GPU view. The host first copies the 14 kernel words and the 8 inputs into the GPU,
+          then writes 1 to CTRL; from the next cycle the GPU issues one warp-instruction in every cycle while the host
+          polls STATUS.</li>
+        <li>Run to the end: the kernel takes 28 cycles, the host program 231, and the Interface tab reads STATUS = DONE.
+          Step back into the run to see both machines at work in the same cycle.</li>
+      </ol>
+
+      <h2 id="exercises">Exercises</h2>
+      <p><em>File ▸ Exercise…</em> lists practice exercises written for MAVILERA, for the RISC-V SIMT core: <em>Two
+        warps: the difference of two arrays</em>, <em>Clamp to a range with split and join</em> and <em>The sign of each
+        element: a split inside a split</em>. Each opens with a starter program on its machine.</p>
+      <ol>
+        <li>Pick an exercise and read its task; <em>Load the starter program</em> puts it in the editor.</li>
+        <li>Write your kernel in place of the line <code># your code</code>, keeping the data labels the task names.</li>
+        <li>Press the <strong>Exercise</strong> button, then <em>Run the tests</em>. Each test writes words of the data
+          memory, runs your program until every warp has ended, and compares the words it leaves with the expected
+          values.</li>
+      </ol>
+      <p>No solutions are included. A teacher's exercise file (JSON, with <code>"arch": "gpu"</code> and a profile,
+        <code>lab</code> or <code>lab-l8</code>) opens with <em>File ▸ Open</em>; its tests write and check data-memory
+        words. Exercises are not offered with the micro-ISA.</p>
+
+      <h2 id="files">Files, sharing and exports</h2>
+      <ul>
+        <li>Your work is kept in this browser: after a refresh the program, the cursor, breakpoints, watchpoints and the
+          step you had reached come back; each instruction set keeps its own.</li>
+        <li><em>File ▸ Copy share link</em> puts the program, the view and its settings into a link, in the part after
+          <code>#</code>, which the browser never sends to a server.</li>
+        <li><em>File ▸ Save program and settings…</em> writes a <code>.json</code> file; <em>File ▸ Open</em> reads it back,
+          and also <code>.s</code> files.</li>
+      </ul>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Export</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td><code>.hex</code>, <code>.bin</code></td><td>The instruction memory's words, one per line for <code>$readmemh</code>, or raw bytes. <em>Import .hex/.bin…</em> loads one; the data memory then starts as zeros.</td></tr>
+          <tr><td>Listing</td><td>Addresses, words and source lines</td></tr>
+          <tr><td>Golden dump</td><td>The 256 data-memory words, then cycles, issued, active_slots and the fault code, one word per line in hexadecimal (the micro-ISA: each lane's output, cycles, idle_slots and the final mask)</td></tr>
+          <tr><td>Waveform, VCD</td><td>The signals of the Core or Masks views, one clock per cycle</td></tr>
+          <tr><td>Drawing (SVG, PNG)</td><td>The core drawing of the present cycle, from the <em>Display</em> menu</td></tr>
+          <tr><td>Trace (JSON lines, CSV)</td><td>The micro-ISA only: one record per cycle from reset to the end</td></tr>
+        </tbody>
+      </table></div>
+      <p>The run exports replay the program from reset to its end; the session you are in is not changed.</p>
+
+      <h2 id="offline">Offline use and privacy</h2>
+      <ul>
+        <li>After a first visit, the hosted application opens without a network connection.</li>
+        <li>No account, no tracking, no upload: programs, data files and exports never leave the browser.</li>
+      </ul>
+
+      <h2 id="keys">Keyboard reference</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Keys</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Assemble</td></tr>
+          <tr><td><kbd>F5</kbd></td><td>Run or pause</td></tr>
+          <tr><td><kbd>F10</kbd> / <kbd>Shift</kbd>+<kbd>F10</kbd></td><td>Step / step back (one cycle)</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F10</kbd></td><td>Run to the editor's line</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find in the editor</td></tr>
+          <tr><td><kbd>Esc</kbd>, then <kbd>Tab</kbd></td><td>Leave the editor (inside it, <kbd>Tab</kbd> indents)</td></tr>
+          <tr><td>Arrow keys on a divider</td><td>Resize panes (<kbd>Shift</kbd> for larger steps; <kbd>Enter</kbd> restores)</td></tr>
+          <tr><td>Arrow keys on the Models tabs</td><td>Move between the models</td></tr>
+          <tr><td><kbd>Enter</kbd> on a drawn element</td><td>Open its details</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="checks">How the models were checked</h2>
+      <ul>
+        <li>The RISC-V SIMT core runs the eight laboratory programs to their reference golden files: the 256 data-memory
+          words, the three counters and the fault code. Their source assembles to the same words as the GNU assembler's
+          recorded output.</li>
+        <li>Every issue of the eight programs was compared with the trace of the laboratory's Python reference model
+          (cycle, warp, PC, mask before and after, stack), and 400 random programs of the subset with the same model:
+          data memory, counters and fault code agree.</li>
+        <li>The micro-ISA runs its three reference tests to their recorded outputs, cycles and idle lane-slots, and agrees
+          with an independent interpreter on 3000 random programs.</li>
+        <li>The Models view's calculators were checked against worked values: strips 8, 8, 3 for 19 elements and VLMAX 8;
+          four warps with k = 3 and L = 9 issue in every cycle and three leave two idle cycles; 2, 8 and 32 transactions
+          for strides of 1, 4 and 16 words.</li>
+        <li>In the CPU + GPU system, each laboratory program run through the GPU device leaves the same data memory and
+          counters as the core's own run.</li>
+      </ul>
+      <p class="small">No comparison with a hardware description of the core is recorded. Agreement between models is
+        evidence about the models, not about any physical chip.</p>
+
+      <h2 id="limits">Limits of the model</h2>
+      <ul>
+        <li>The core is a teaching model: one instruction per cycle, an ideal memory without latency, caches, coalescing or
+          banks; up to two warps and eight lanes.</li>
+        <li>The Models view's machines are declared models with illustrative numbers, not the timing of any GPU.</li>
+        <li>In the CPU + GPU system the GPU is a device of the single-cycle processor only, with MAVILERA's register map.</li>
+      </ul>
+
+      <h2 id="rights">Licence and notices</h2>
+      <p>© 2026 Sajid Muhaimin Choudhury. MAVILERA and its content (drawings, help texts, this documentation, example programs and exercises) are licensed under the Apache License, Version 2.0. The names and the logo are not licensed as trademarks.</p>
+      <p class="small">The SIMT core and the micro-ISA are MAVILERA's teaching cores; they are not Vortex and not any product's GPU, and MAVILERA makes no claim about the Vortex hardware or source code and is not affiliated with its authors. RISC-V® is a registered trademark of RISC-V International; MAVILERA uses the name only to identify the instruction set it simulates, uses no RISC-V logo, and is not affiliated with or endorsed by RISC-V International.</p>
+
+      <footer>
+        <p>MAVILERA GPU Laboratory documentation · <a href="../../">MAVILERA Home</a> · <a href="../">Open the application</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

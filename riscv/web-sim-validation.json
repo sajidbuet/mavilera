@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-05T06:19:44.681Z",
- "version": "1.2.0",
+ "date": "2026-11-05T18:55:09.325Z",
+ "version": "1.3.0",
  "pass": true,
  "summary": {
-  "checks": 1181,
-  "passed": 1181,
+  "checks": 1354,
+  "passed": 1354,
   "failed": 0,
   "skipped": 0,
-  "seconds": 1327,
+  "seconds": 1215,
   "smoke": "pass"
  },
  "environment": {
@@ -22,10 +22,10 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "f28849d96df0751c44477a641bbef1b0651f7a17",
-  "uncommitted": 0,
+  "commit": "09c68c784ae849a9e8d8d728623970fd96046d2b",
+  "uncommitted": 13,
   "sources": {
-   "sha256": "3cf3a51677f217e408b71067c3798d02649a4e906364649d89a7df2df09129d1",
+   "sha256": "0e9cfff916787255d73935898bd1cd778ea3b701401e46befe856193c0f62356",
    "files": {
     "index.html": "176bb7d2d0c4bcf346961d11c20ad2ede932d6300473d525e18e187f3f52be8f",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
@@ -53,30 +53,60 @@
     "src/arch/armv7/ui/multi-view.js": "3247f24cb2d614a48be5662afb4f052773e04b92e6d35931c9dab9d19dfb0c24",
     "src/arch/armv7/ui/pipe-view.js": "0964e8175d3dc524c1f80c1bef713b1055ec9fa06901b8b2b36ae4103a3d9936",
     "src/arch/armv7/ui/single-view.js": "7ec7bcb88f4008b9969c9051b85f63174e198252ee7d1ed0300b613707838bef",
-    "src/arch/contract.js": "e69656893212525f3a63d9bd478e2c4b16d8841627192de9e0daed19128b41b4",
+    "src/arch/contract.js": "4690e6c395b1e8a19e09f9aeb2d3957efc98f245923ffea7ea0eab2916e54386",
     "src/arch/gpu/engine.js": "9651b980853dfec368b49eea21843893442fccd47ac6632234b45fde4eb5e829",
     "src/arch/gpu/exports.js": "a63519ccc0f40aa87664fde8c4797893a078161e4d158ae4106bee0b4aac8208",
-    "src/arch/gpu/index.js": "03c68ed55f6000e1909f5b87cc1abb5797f76a96a4f89e1b3490f6b0c49abfdf",
+    "src/arch/gpu/index.js": "3faefa35c31933bda97af2fd5ea7d287940502433a6f7e86f77979623d3f811f",
     "src/arch/gpu/language.js": "74260227c7064bf0f2fc208b2b7284fc2362b63155941579dd3d65bc128ca789",
-    "src/arch/gpu/strings.js": "192f6f06ed69b6c079fb4f98a7441a2af2e64941534ed80f98e3a74df36593a5",
+    "src/arch/gpu/mask-model.js": "24bc24653a60037e9c4b73cadef2b4bc59cb001d65bbf3acd254214daf42ac80",
+    "src/arch/gpu/models.js": "c01d07a19842864d03b0513a0781ddf12ef7cd84b7d45ec294b00add244a620a",
+    "src/arch/gpu/rvsimt/core-model.js": "014cb372cec5b712f52e7a5b92d36e3dc241932269da2acee8883ac68cd9f109",
+    "src/arch/gpu/rvsimt/engine.js": "ec76b3ff508cebf5a9bc945af98431cf69a89f23d9bba78eac1ba5e725271cc9",
+    "src/arch/gpu/rvsimt/exercise.js": "65fee12346b0854256971e0e25478f9ebc7a81aaf7ce3348498b13cb8b30753b",
+    "src/arch/gpu/rvsimt/host-words.js": "afd8657c8ea0175da99d2f9685e4889e40b7253d5bf36b920b45068276518475",
+    "src/arch/gpu/rvsimt/isa.js": "37a505e6b5f37348f4d6718483839768b564ff375434b8d1b0b54259b06e0a7f",
+    "src/arch/gpu/rvsimt/language.js": "648408224985b376bfc03f68f8e21e976e350fce343bae81b6b2710256cf8eb1",
+    "src/arch/gpu/rvsimt/strings.js": "ca2c990a0a2fcd9721036fd695b6a107706f5160bb8a1736a79a2d21d6074e9e",
+    "src/arch/gpu/rvsimt/threads-panel.js": "fedd793710515c307da70cd26f5ab92d32013c3e0861ee1ad86e4f7fb3581c5f",
+    "src/arch/gpu/rvsimt/ui/core-view.js": "e372e6f13d0325f77c31f6d9ff342add945305ce8763b460c88f5962682a3e4f",
+    "src/arch/gpu/strings.js": "6086e9b6fc9f80d45a5edd9eecf63bb0bb9f70e8d84794ed400b5d207a68755f",
+    "src/arch/gpu/ui/cpu-gpu-link.js": "6f6b14445b971f9ee86cb5a704e03969585d51603cc2aee4042e958e020c7a7f",
     "src/arch/gpu/ui/lanes-panel.js": "f75bed21926494d071443902ffcd04a40c9a0a1928ac24d27465fa94e36ccc0e",
-    "src/arch/registry.js": "d7bee8a0a51803513471ba5bd19147a3881af06b01f7deef2313394dd26c3a99",
+    "src/arch/gpu/ui/mask-grid.js": "5860f4836b9e007a108f293b7b2ef4d67f7a2d55321ad14dd771ecda3c9a1ad5",
+    "src/arch/gpu/ui/mask-view.js": "85bc2ca77acb2e50206e457ca6a2336f4060fcc7298a1bab8d7bcd32230b20e9",
+    "src/arch/gpu/ui/models-view.js": "e3ece60f6bf7b0f7aa1c1e467b4263c4cfff7a8d11c6e3b266e4faf39c1eae03",
+    "src/arch/i8086/biu-model.js": "b7a8b720a0d34b5b2df4cc976f39316912e5d3bd4e691d13f0346bbc173bed52",
+    "src/arch/i8086/cpu.js": "de4a8a57abbec13f7d457268bf52a724caa2709af32aa118ef830c3638acf099",
+    "src/arch/i8086/engine.js": "bde9f9ca4706535e9311aa437e8d1b22ea101d8b4873ecb1cf31bef25f16b353",
+    "src/arch/i8086/exports.js": "f19d0db3b8296f2a799444e1f142b1a9da6ee762b0cd6ba7a32d37685c11495f",
+    "src/arch/i8086/index.js": "9c73cf6b32216ac19c585218b449044ba49da7fe9cfbe09fc8375a6bd8cbc547",
+    "src/arch/i8086/isa.js": "6d9f5159be23f369e291917b37303083c58c578af892acbb5ce484c52942d2b2",
+    "src/arch/i8086/language.js": "e558053b60e301de94a6dc5f6c4d7bdc5354b2cc28f03d0186b5fec985f7e0dd",
+    "src/arch/i8086/micro-model.js": "9a5cadb4b8d9a03fe8c1ccc671ef02581b81085f19682d4a6a066a873020ad49",
+    "src/arch/i8086/microops.js": "1a055c45af94f2538cd7abf5d97078a1cccb902abb61bbf61c085e64ce3555fd",
+    "src/arch/i8086/strings.js": "e45fa5ae7ed1a8c808565004b4e923a220778b3faccf76ed11971061062889b8",
+    "src/arch/i8086/ui/biu-eu-view.js": "97dfed26dacf925c4837dcf22e81a06f27d1f0fe7c97bf110cba49abe1f13a22",
+    "src/arch/i8086/ui/layout.js": "bafcaad98dc1d04640e354f798a19a0e89784bf66f7aa1d217dc98c7bf0c2d50",
+    "src/arch/i8086/ui/queue-panel.js": "ade8a9f9f5df08671d5f234e27ecbd98b40a94af6b94a11db4de1440d6291b1e",
+    "src/arch/registry.js": "91e2fe63a86051d6bcd06f6c060c19e1ae16567875a819b8f253558956862aa0",
     "src/arch/riscv/default-source.js": "8ecff07b0098dd95613081fca760b4cefa3d15f193994391682b75957ff52a4f",
     "src/arch/riscv/editor.js": "488b716a271edc5fd850a1aecfe6ae7e28415a7da337176495eba9b1805a7b8d",
+    "src/arch/riscv/gpu-datapath.js": "b56759c76403d01a2736b55598d10a5d5e524a26ff7c69a6a55913f28d1c56e0",
     "src/arch/riscv/immediate.js": "2320ca94fd840d43ccd5e6fdee2581dc366a4bcf2739174e5d80d5117e8d5ca6",
-    "src/arch/riscv/index.js": "a79d9d5a16faeb8b7712c8cb276358eaa354f2fa8a6975ca3a37def2a2979aaf",
+    "src/arch/riscv/index.js": "8754264137bd4774ca53fd1060071d5a0d8509052ea20b11d0abe230a072e00a",
     "src/arch/riscv/inspector.js": "69c5343a430faa14b83fbb78b6603977aa86e774253e51bbb1bf0bfb5aee5dde",
     "src/arch/riscv/lab-compare.js": "77865a289f1274d5cdb1e6a906636fa0fe35cd8756391ca02d9d14315fe87be3",
     "src/arch/riscv/lab-rows.js": "911cd9803318c53fdcee06b80a9f02538174dc7219e74ca9bef641cb342a01e0",
-    "src/arch/riscv/npu-datapath.js": "b4544599470c89c60543a3d75321ae9f5bb4c8c91611ce0e671384197300303f",
+    "src/arch/riscv/npu-datapath.js": "cd6649c38307ed87161f123ab1ae8df5b90bfc90b211e4f9d34bccd6326db94f",
     "src/arch/riscv/offload.js": "8439d31401dc3656442cce210b35dc76b5681499218e649488884241f0c5d4b5",
-    "src/arch/riscv/strings.js": "f897c179971c6bde5c174c58fd2b38113dfe213caa96f3b94b5a40a4d32acba2",
+    "src/arch/riscv/strings.js": "52d6ff14b21410b13be1c32b99da8cdefea41874d5bd8cc6b5dc4d3479b77448",
     "src/arch/riscv/ui/analysis-view.js": "c5e40ea1c35c8ac21679a0a48a88c61af76567cd3d8f4305e75c3f3bb3514a05",
     "src/arch/riscv/ui/compare-view.js": "80804effa6cfa5dec425a8cd0819f0ce10a9cc76161630b66d05b15fa2e4f75e",
+    "src/arch/riscv/ui/gpu-host-view.js": "0948d5bc60706351c327d1862879aafbc23506e372a1907c0f6ea4888b875bbc",
     "src/arch/riscv/ui/multi-view.js": "646fb49b43f8c48eb2ba68c02dbda3628da72a9202c9751430fbab4f0ffb9903",
     "src/arch/riscv/ui/pipe-view.js": "01dc3a226ca2b590ee93eb71204d4fbc08223baf2c92f25c4a3adc1c5266d11a",
     "src/arch/riscv/ui/single-view.js": "f512b0f9861d5a3fd43ae950e1cc3208ad8e508dd11d6f752775234794b18314",
-    "src/arch/riscv/views.js": "a9e60cd3d318d8240c17ba315e317c40faaeae0976c077e9566017e71d74b739",
+    "src/arch/riscv/views.js": "6b466796d0132681cd24210b995f20c83049e53ceecb7932aec4cb4027f9c014",
     "src/arch/sap-1/bus-model.js": "970bfc2b6e1b8b35488b982a682c4e2a814de2b9a8f1fe74af7d95184cb9bba6",
     "src/arch/sap-1/engine.js": "72e315b6d2fa6e548fe69a1159fdc97bd13d1cfa0f715fac052d979c20852e2e",
     "src/arch/sap-1/exercise.js": "e1d726e651aacc641f2cb56b7f341d29bd93ec38b182285ac44dcd2ca931294a",
@@ -96,7 +126,7 @@
     "src/arch/sap-2/ui/bus-view.js": "d86b8bd84c6546287c3ef2ba3ecc92959f9e1959591840165689c4e299a62745",
     "src/arch/sap-2/ui/layout.js": "26d7a313a2715fca3b8c1108c5a9d51f5bd8ceacb433a335e3b3c28a7e72a13c",
     "src/arch/sap-2/ui/ports-panel.js": "867f4ada59176de028c4c54f15e97431fe949aeadd502417d4ed3752c590ff15",
-    "src/asm/assembler.js": "f5dedf25e12e83d7b013d5e04cf5ab76c3883290e84c058bcfcea776dfa9dff8",
+    "src/asm/assembler.js": "8495397399419d435fa89f7ea0322b2b2b68fe12b8fd6150c4ddcb65b826f831",
     "src/asm/disassembler.js": "4b17f19293018bc3fb65b2e08f66ba53f4690dd771efc7bd67633ea63005a22c",
     "src/asm/gcc-import.js": "a809e3b567a2fe52e00e8e364f67e03d5b4eff5506ff0390434511cc908ab391",
     "src/asm/scratch.js": "bc9bbce7e475032d52578838d884e36b516d6947a3661d6488f217ed86b0d514",
@@ -119,25 +149,26 @@
     "src/core/profiles.js": "6b9efa63c8e8f66ca741af04b68f7fea0c7ecf06b7ea757f0c3530fc82cc145d",
     "src/core/session.js": "4bf27eff7ec112bb7e6d936e19ed983e33827095c076b277d29db02b4d507e20",
     "src/isa/encoding.js": "4cabfb9181bfa1898eb7097fd6dd1c7b63ff89d68b1e794c6a4da8e5d2d7dc06",
-    "src/main.js": "0aadb0a93a331e6805caec9e725b7216a2de2aecfad709f86dadeff4a02f188f",
+    "src/main.js": "4e68950e125198e1ecb49fd844d9097b8504f15fbd62a4581e0a6a16a8444e79",
     "src/mem/bus.js": "fd0d6af266303d5b5bc043fac4f117571f663b021b51a15f982dae1d3e3d4edb",
     "src/mem/cache.js": "a4b8e994fc7ee9a415005b761d0401369c01a076890af3241dfcd649a793aedc",
     "src/mem/config.js": "4f58325d2625ca445c4c6b5b516b0c26aea920360d3a5b083cbdae69a2448db2",
     "src/mem/controller.js": "d72ba67c8ad35c6f92a458250adc7cdd215de5c4e1f5a1cc7db8c68feb6c27cb",
     "src/mem/device.js": "b467ed8aaae599f6740f3720c7f536aa389db023f59e2720443412f0b9888d53",
     "src/mem/devices.js": "e60b584c4d70284de5b96320552429fe802d88c2a4236bb7c4d057b379c76e55",
-    "src/mem/npu-wave.js": "0a0bbc5661121c6b9d6fe245d3bd9de2b8876dcd15ed85fc20aae138bb160c80",
+    "src/mem/gpu.js": "08acababfe0966627b419fda14cc72e9c0d3828548ff9f8133c3a828e599c6c1",
+    "src/mem/npu-wave.js": "03f0f1f35c1bf1ab7ff95d9c3cdb66749d36fc7e8ad68ac0b1fabea79948a104",
     "src/mem/npu.js": "c4363ca366eee835b9aaba79da5b22c3df2f98dd937949c3a4e5dd06ccdc7b45",
-    "src/mem/platform.js": "d775a3741046522f57d1d13b400c5910755ae688654d84da507028e3554afb33",
+    "src/mem/platform.js": "b2146b5587e7122efd1d94d0a2eb4ae21ba7a3e5ea95c77da6f300157515007b",
     "src/mem/system.js": "65cac375a95eb57a985b2ce3e9ab0ec1d791934acdd832e4676560e73b12b374",
     "src/mem/timing.js": "cf2fae0a2dc7c2f401e69e3797b460870c3a41c56c0b7c3f6289510b18ba174a",
     "src/mem/trace-cache.js": "4a3a21f140c904243cd18109a03a76ad5bb0ff1b4c0153636bf5038b38dc0cda",
     "src/shell/arch-id.js": "9e8b4c7457323f3b81850f98165bb0fde456df0d9f958c493a0ede055f6d6669",
     "src/shell/capabilities.js": "eb50d55c4e5230acd406832d07a7b9a632062161d0d750d65881f2536dddb047",
     "src/shell/data-io.js": "385d6c613b270b944992ee605c0c0ab283ece5711e41dbc69576f50de50fc1bd",
-    "src/shell/platform-archs.js": "f931299b21649b0ab39b3b4450e8a36f42c36f1271a906203120b24bddab1030",
-    "src/shell/share-schema.js": "a896a4e6fd9081521435b669552ebfb881c083b1d5d852ed6a0ae31f8a43c6de",
-    "src/shell/share.js": "df2cf1e6d2b54ea7c0778abe5174d9ba89bb7a290dadc44800339f2edea59978",
+    "src/shell/platform-archs.js": "e29f62e6b801c4dc59fa4f8a5de7c680180b60eeda5f244563403927e862f9c3",
+    "src/shell/share-schema.js": "be240e09be29114aa7d9d48d2a16af748a0915e7c03f772cc97048f853dbaac4",
+    "src/shell/share.js": "7f1ca6479ff836502d1b4d56487cbadea1b97cdeb4836bb868db5d486b944778",
     "src/shell/vcd.js": "f4d018c7e87f564da50ea8bece641b08abbdbbb7b74eb4d124d30e075aaef18f",
     "src/uarch/ch07-jalr.js": "752fc9a893e2e29c8452ac6ae43d899ee089438495173d86f2ee69dd9e71949b",
     "src/uarch/compare.js": "bbe493ca5df11665154a5e668e665efd46f4453f0c98292c891c73f17b7f6606",
@@ -150,7 +181,7 @@
     "src/uarch/single-paths.js": "f564511d62573058ac72aa076174fb5e633a2703301788c0c0898f59a3cb23c8",
     "src/uarch/single.js": "7ff1464eabe6dad25ded2084c32384c6b2c75262e7fe1b504cc4a7069bd83a0e",
     "src/uarch/timing.js": "8289df5cf5ba5cf1389c0cfa623b5a81950b8534fb111e8c0a85c016918c1393",
-    "src/ui/analytic-panels.js": "a481262d210708100ddbfa58aeea4ddf45042197de8c36354d381b30bb34cfcb",
+    "src/ui/analytic-panels.js": "1f0ed64a670d27afad0f32af88ad046b5a4b6f19283f08f02c47550db35fcb85",
     "src/ui/arch-switcher.js": "b82d00f2e7b7459db4641ef1f7bcbbe2983b89f966283b7180e5fa29d841c852",
     "src/ui/assist.js": "db64986d6b396abcad2b636a57adc6eed2ff168b1ac3a16eb324300b1c421f2e",
     "src/ui/boot.js": "4efcb84c315c9ef52e1b12a96cf74d065dc6d64f0913c7b43c0e629846135f2e",
@@ -160,7 +191,7 @@
     "src/ui/data-dialog.js": "50b1ceff636fdc4cc6c58ce338f91d79403b19d6fda0eae912ae60784e6e6353",
     "src/ui/datapath.js": "2856afe6126f9f71d11eca99dac95d7c50e98438e7d0581e60dde6f7bbaad930",
     "src/ui/dock.js": "2951c152bd3db24b01e7cbc8019fb072c0a2704e02e83720a5f45bca79ec6bc9",
-    "src/ui/dom.js": "b16ee24cb871ceccfbc08e6d8f5c11e639b137878164a9b56504841650e17c3b",
+    "src/ui/dom.js": "ab31415f9d1919697e2c321ccf69e1038a12a0816d36e84080b29ee2b620809d",
     "src/ui/editor.js": "08bf0c367f5712c0669bc232150189fd84ec78e071a5d8da65a979ba4281df9d",
     "src/ui/examples-dialog.js": "dbde1771fd8e26d4188851b987a6b591740c4305b0706a77ec43892400e9e3cb",
     "src/ui/exercise-dialog.js": "de3a647833768e51ef6cbc3d7cffa164daa5de6c12f560077c1a112195e1c3d9",
@@ -180,10 +211,11 @@
     "src/ui/split-math.js": "e0edce05f827d405f27fc4a13f225652b7b44ca3773a4d47c4162cf86f99054a",
     "src/ui/split.js": "ea902fd6f182c5eca158625effc1c1f136ff97e789a114817b5144aa38c8783d",
     "src/ui/state-panels.js": "806309285b257eb4bdbc89e0c04463c2c6f61557158deb34cf04c11c9f87d61e",
-    "src/ui/strings.js": "b4176a59a3622067d2b441ef3ec74f8cbd291505f458d0417afa157409605063",
-    "src/ui/theme.css": "46ae6e0159b860fbaeed1f36dad08ae72df71dec70e7aeebd6ad6d53652d9c44",
+    "src/ui/strings.js": "49542e33e15171e8b03a9773f5dbbecc72a83e02dba9059b94b8b0579136cf00",
+    "src/ui/theme.css": "6356c38f28b5f04dcb67d8e138a8301f4986812c7467d75bdc2600195cb63d03",
+    "src/ui/variant-dialog.js": "3783f1340cc369afdded3037d428c923426b624517f4093804ca1c9bec2b3758",
     "src/ui/view-mode.js": "f4f703b6888cc419a12303595941decd730fad34332b8bc0898a050a58a07b1a",
-    "src/ui/waveform.js": "5368ec558e8e00689a44710e89d9c31fa15b61bdc6345b7d4fa943e95714d3ad",
+    "src/ui/waveform.js": "4a00cd693624f7bffa7f7ae77dc49fccaebbdb6b1238e5c82bda476953d85345",
     "src/ui/wire-colours.js": "8b9e402a48835295370b5c888b2da6135bd6122c19452dfbea55122ddf05bac4",
     "src/ui/workspaces.js": "a9320a9dd53338e9692133897cb37a045b9de9e5a79aa39b87adbe1b2a3f2ace",
     "src/worker/run.js": "47c4e5624010c71bb1fcb44bc408bed3b5649f8b0f3d5089b51bc287b41c965d",
@@ -204,8 +236,8 @@
     "content/armv7/geometry/pipe.json": "512229e313b4bfd93685967e830c21e2813bd5a42196ccb4df20a75824ed3517",
     "content/armv7/geometry/single-extended.json": "86691bfed0bc4b898db4e627e667137efe1653ee2e84c27d453c081bbce7f953",
     "content/armv7/geometry/single.json": "838e00624ea0d9492a8fa769f8f966597ef46f5980171c03b00712c49b6a5956",
-    "content/armv7/help/docs/index.html": "043c7ff9c171cc17e7566509d24c285a88c25efd20ec93b78894908135d1af86",
-    "content/armv7/help/help.json": "870b9f608e0fd943c50bf30a1f207b42ec215c832a85e74caecb685474753bd6",
+    "content/armv7/help/docs/index.html": "f4365f4a3fee9af26591c041e7ddfe926a829bd120f1775fe9d3ff048624d8d0",
+    "content/armv7/help/help.json": "76f2e420f34a5a571bc7f9000284b48a31302a5da2b488eb6c3497aa3da2597a",
     "content/armv7/templates/base-sum.s": "47a87edbb931b4a240d29d7a7e381bc738c22043398cf90ee3ae2800fe5209aa",
     "content/armv7/templates/block-copy.s": "ab594712d970f178ad67c0fab7e6b268222a16c7b609a0c1f1005c6f603ee12d",
     "content/armv7/templates/factorial.s": "b7005ae39c1d50f22dfcb14d9aaadb3932962689458b8f775c8b508e776aec36",
@@ -227,6 +259,7 @@
     "content/branding/mavilera/mavilera-icon.svg": "631466d264331eb173746fd2b0841b919af922fedcd1a7c62c386a4f1a6501dd",
     "content/branding/mavilera/mavilera-light.svg": "2fdc52b90d7857b673425f05c7b74595d6a5ca689c9866c1d57eb17b0ce0d982",
     "content/branding/mavilera/mavilera-lockup.svg": "2edb9fe4ab16b1cc3063195e6b890c6410a48aad3ae0f94cd5d70e0c05e8a5e4",
+    "content/branding/mavilera/mavilera-logo-8086.svg": "dcd090ed0470b01436d74af7ef53875e1d2cf683d974670e6da0c7cd18b73fbd",
     "content/branding/mavilera/mavilera-logo-armv7.svg": "94326f9f514b533e088cfdc5926a5d31e7dc6f41aa6a704d34d802ff18204d6c",
     "content/branding/mavilera/mavilera-logo-gpu.svg": "17b8e22a68d80dfe4ed50c769f6a3f2d1c923455fdd6c037709def69572ee097",
     "content/branding/mavilera/mavilera-logo-npu.svg": "42e66255e07a396c95736864340706ded4fe2a75b25a471499ce46571acb5663",
@@ -235,6 +268,7 @@
     "content/branding/mavilera/mavilera-logo.svg": "7a3473b77953a5d55fae2072f2fc69f0cfa9a8ce1e091c467ceb8a80937937a0",
     "content/branding/mavilera/mavilera-mark.svg": "35f1d0b46f9af5bf10812b69f6cf9d9b1008196259f1924ce46745a8bdf8495b",
     "content/branding/mavilera/mavilera-mono.svg": "c34d32599cb51ab5287ff17baf1c930c0a88f13905070234d937dc54abb0448e",
+    "content/branding/mavilera/mavilera-name-8086.svg": "a7d6340ccb3aefe78003ccadf1a5f93f36da195cca5f2fa53cc0002148e1ffb5",
     "content/branding/mavilera/mavilera-name-armv7.svg": "6bbde62f6c2070ed6ae1e4bc2ddd27230488125439a1dfa49a41fd72eefd0a04",
     "content/branding/mavilera/mavilera-name-gpu.svg": "0e51e6a713c137cc23d2a1b6d1770b5a7134d31931f81071e88dc6f9f1febe23",
     "content/branding/mavilera/mavilera-name-npu.svg": "901fc0d03d9e328bbbf68e537aa33601a5a0675d2777de9d0806737c3013a027",
@@ -285,43 +319,67 @@
     "content/examples/tests-divcases.s": "9f62a99db9ffa219e97b287b8a134c822bc4191a4fc2ff2efed11544427395ec",
     "content/examples/tests-fact.s": "b8007fbaa06bfef6988984410d786f9e8cc3c536955fcadc0e4e4f4a76392778",
     "content/examples/tests-isa_all.s": "c90127a3c669d8acbef13263e4d6a2c82a9c04188b7e6b544de9d1e5704727c3",
-    "content/exercises/c-find.json": "a4e8845f7e02fdf15ed51f2e38aa518eadd9671390b17af073feafdc0e4d6236",
-    "content/exercises/c-longest-run.json": "5278e6b41de00454bc7444241204f5f14913b07e9e0d5e308162188846a1d836",
-    "content/exercises/c-primes.json": "bb2a23cd878591eaeb4ea0ede5330a23d6c566934e9c69eb49f95edfd5aad4f1",
-    "content/exercises/clamp.json": "4a1b04cfa0f46e0a885c4a0b218ec319d43c28877aadbfa697ef3667391a2fc9",
-    "content/exercises/collatz.json": "d1b356a7ee861e0d71bebb0a33c8690411964ac3767275cfc0567a419fd03be8",
-    "content/exercises/digit-sum.json": "0abe933370aa0fbc83e6c68494e8113002b044fb7d006fc9d6172f8da30d6199",
-    "content/exercises/gcd.json": "5d2e7e4481da5d0ab1cbb97c4bc45c1d2476c8f16131b7d0202a88e847eded0b",
-    "content/exercises/gray.json": "723144effd8a0026af457b0b2815a29b845f7f129eeae38e2b4b31bb38c73626",
-    "content/exercises/horner.json": "c34fdc9f282058265dd2ebfa691dcdf2230532a38989b8bd8fb513816ae1606e",
-    "content/exercises/index.json": "147c77fd6aad87dbbfa7673d09e743de879722036302564d9b2dfda2ef6a6449",
-    "content/exercises/isqrt.json": "84968d3556159c9833b00304ef02b5ffc30dd07473c233e220d03868e7fbe849",
-    "content/exercises/npu-accumulate.json": "18f27912afa3bb282ce34e832022b35b07b29ce693c89f097a54c2ddef483115",
-    "content/exercises/npu-two-layers.json": "df38ffbc93efce46af170f125b7ab99b6725f074059940e637764f7c7ff2ab3e",
-    "content/exercises/palindrome.json": "4b7e5edb88de96f0371c5d3b27fc8b2a44667a5aab12d7523b492f6b8a5aaf1b",
-    "content/exercises/popcount.json": "a01b8776f4df946555ff738858e63df4c70d273240e0550f7bc051e49b503ff9",
-    "content/exercises/print-number.json": "ac13f65e1b8866c6c51bdb373f2eba573c5628b732b3b85e7aa313d4beab54a9",
-    "content/exercises/reverse.json": "498c4676831682e547bb39d90a0ff69f8b0647fb9b6b6ba7da4010ac1ccd7479",
+    "content/exercises/c-find.json": "000299612a60cfb33dc17f4ca4b843680a02126e77ebed71634e8f61e74d93b0",
+    "content/exercises/c-longest-run.json": "99cbfe9d83f4e0125735c024ea65fffd54e9760e8604e726682a9828cf279276",
+    "content/exercises/c-primes.json": "303d2dff9ab5057171fde8e479080816663e7463120e2bb253bc08d830ad15ba",
+    "content/exercises/clamp.json": "f9b983e4bd637959f741d8652461996b8aac1a008a536b4238ad9d0196e34a4e",
+    "content/exercises/collatz.json": "de4fa534f704f90e54cddf3273a504dffb0601aa0791a3570290831a120b5e8d",
+    "content/exercises/digit-sum.json": "484d481a004d9ca8e3a2a6fcee5933fae5dbdd1e1658cb99f5203cd4ab08789e",
+    "content/exercises/gcd.json": "c62a6541152459e03160b6253aef948cc29597ff253ec56c3e142efad1c505b5",
+    "content/exercises/gray.json": "fb044e365b59833103c353ace85bb440718ae188e406e894953cad374f9a5aa7",
+    "content/exercises/horner.json": "a8cda2973c6c79b3862fc1f28764d1ee52d1271071d30f0b320f50fc3e542fba",
+    "content/exercises/index.json": "843226257fcfae0278c643503eba79e56790774a78a950f11a14b469693f6c0c",
+    "content/exercises/isqrt.json": "2c292f1948e35e0c902f0882bcfb87e70cd3dfb508c3a88d03726685b96c6a74",
+    "content/exercises/npu-accumulate.json": "e38b86e638da24bbb456c6d63e462febe25d46fe696dac8fa978b750577432ad",
+    "content/exercises/npu-two-layers.json": "1fcd9a919a5aa13a025af8dfa4eeaedd78b30d5b4b5740fe7b69fd566039bc37",
+    "content/exercises/palindrome.json": "31d7681f7a96fd6683c3c2bc09f4e643fad1d76649eaa8a6e899e507b694fd12",
+    "content/exercises/popcount.json": "a9c8b4c46252ecfb00496a5038798e64eeb04e14cff038488b532c842ed967d4",
+    "content/exercises/print-number.json": "4dbd157ae395942bd669dee6b7f88f38cd4b57e3316e44c662f683f712fd6789",
+    "content/exercises/reverse.json": "38a1ff9e27ea063badc68cf1951743468bcde5dfd08919ea6227bd8f3ecce597",
     "content/geometry/ch06.json": "fd6a3eff8561b950d2bc5d7504201604c5f08870a6744699b93bb2752d4251a8",
     "content/geometry/ch07.json": "cc0d9a7bcdec06218df0b84829a36be538c1f94a2131a55746cbe6d2ff8bc33c",
     "content/geometry/ch08.json": "d47680ae5c94e8000cbf8c586bafe76d7370b44aaa942885637af4041d895fb7",
     "content/geometry/ch11-npu.json": "0f7dc9d671814f8f6b3573094c4d872b2cf607bd7657a69008d2705d9ab83c7b",
+    "content/geometry/ch11a-gpu.json": "f6013352bc9f84698980f98cb448702b1fb226e513c8a0bcca3a3051c52ccaa3",
+    "content/gpu/help/docs/index.html": "521a31232439358d16eb434161db110b44f3e1868afe29d790291b9ed0354fff",
+    "content/gpu/help/help.json": "04d403d0b42f6a6ce357a75e40a58c3054239ee1f430832a787c4f3a3f7a2b70",
+    "content/gpu/rvsimt/exercises/gpu-clamp.json": "2a26f0c882eac607102926608560186d72a526f4c8f9916e0964f81328241ed3",
+    "content/gpu/rvsimt/exercises/gpu-difference.json": "fbf79d1c212f08c76b80181d06508d30f32c823f284cbf73f92f24fd6ccd97b8",
+    "content/gpu/rvsimt/exercises/gpu-sign.json": "418120e3cbec8cc1bc6758a2103decc1691d905cc7c165cb8df8c82198a792bd",
+    "content/gpu/rvsimt/exercises/index.json": "ec3b2c9e4d15bace4058b0d386bac02f0887800a80946b82a9af67b9171519d9",
+    "content/gpu/rvsimt/templates/fault_div.s": "b4f63e2b975c266fffa6d4eada2585be29f37795cee59d518afc8664f0e99443",
+    "content/gpu/rvsimt/templates/fault_join.s": "1d7751f0dc9b6c6ebeacbe32058e76fff0f5e9a0de61f4a8b66aafa0a30d885e",
+    "content/gpu/rvsimt/templates/ifelse.s": "0c7b058385a726f65a4526445ca2866e67ceaf1c7281ebbd98f29868ef6d0bd7",
+    "content/gpu/rvsimt/templates/ifelse8.s": "e3ca19528d0bd48ada1953f20006f7fccffa93118f7d71e44d3d9d88530ff284",
+    "content/gpu/rvsimt/templates/index.json": "fd0c1a27d2e0a43a62aa9f3c11d75f6ce3ea7a6358fe46d6adb4bfc69d5a66ff",
+    "content/gpu/rvsimt/templates/nested.s": "4f6510a9e49a4b7ae1439b30c03c943396c694dd2d8aa83bf9681dd4d9db8ded",
+    "content/gpu/rvsimt/templates/reverse_bar.s": "3ba2ae3904abfc93e81a6eb7b59943c31c88d2bf6a1479dd798afcf1c9f8d425",
+    "content/gpu/rvsimt/templates/uniform.s": "2d7c5b0af726327ee6a8a25781b14f357bce27365e6514c4f2f2f18fccd29f51",
+    "content/gpu/rvsimt/templates/vadd_tail.s": "613b58e3e907e9898f5d1fc371363153f950d7ec74ede60085c952cf8afadbd0",
     "content/gpu/templates/abs.simt": "f20de54cc4a71f3f7eb2fdc7c5f33024f372e61574f20ffcd75230766c334746",
     "content/gpu/templates/clamp8.simt": "6827b3d646bf54154f59e73be1b0e48501a37cb3b54d1b0fd214fa6d6855d168",
-    "content/gpu/templates/index.json": "987262d4fe2ad72eb15bb20d6bc2807e594f51dbfe863e664a12c4153830ac93",
+    "content/gpu/templates/index.json": "317c17ea65dc7eca2cb510d96bb71227a0d55b9df7cdb6168cb2b5ee9fc04ac3",
     "content/gpu/templates/nested.simt": "4f7ac856a4fbe4b2179005fd006b1159cfae8625722dcd0d2b83fedaa6189ef5",
     "content/gpu/templates/straight.simt": "3577f7143561e5c2a50d6d87748eab66630a39911cd1efd409e5fc1004a04c1b",
-    "content/help/docs/index.html": "a4a780df00ac421ac93018830e29ab5678bc43b0e2a93cbb220abfa082359190",
-    "content/help/help.json": "791cb0260c768eec635158b6357b2f11722945d07f15909f08c5b2c0986feee9",
+    "content/gpu/templates/warp8.simt": "740f189af184a961b70e07d3c558edea615ddce470307d0586e71b696c3595f1",
+    "content/help/docs/index.html": "da1f3417e7132e7a3ed13d004741dabe2c17450d54a3d4536ec8dd7781140e10",
+    "content/help/help.json": "e380d375a28a87ee6ecc18cc026462d4c81250dbb4f1c1b2597785785882bc70",
     "content/help/narrative-ch06.json": "612026b34976e25ec309b125a1a2de5d116598fa77cceaa5dcd86805733bad6a",
     "content/help/narrative-ch07.json": "9006e11087d7edae8e4c4714a373b7e52d6da745e8f00bc82d537fb77491a933",
+    "content/i8086/templates/decimal.asm": "f370d4ebbc8d4c7cf5ec4508d6ef494c1ae5c99b9ad06e34b6587adbe8c4c4f3",
+    "content/i8086/templates/flags.asm": "c41c252df7850cbb0a5e9fa6729231de9fbf2090453d3d3c9193a791984d54bb",
+    "content/i8086/templates/index.json": "7a336614dc95736e766dc35cf5f4c2ef90b4ce0120550f227914d566fba1829e",
+    "content/i8086/templates/interrupts.asm": "c4772d3135a60c4c9dfa7019fb11631486e21987394c92d06b08c10ebd35699d",
+    "content/i8086/templates/segments.asm": "9f664058e2e796a4fc33b1d95eb203d85c08312a4cdb08e132ffed7a36c0bd05",
+    "content/i8086/templates/strings.asm": "fa131b43a5c0b5ae73c2c8234d8d390ed7b45fc58be98df2ed28b584fd75cd3c",
+    "content/i8086/templates/sum-table.asm": "25a52161a9eedc05478b905494222db73f4c3e709a2cd7363a8e39f6cf0be7e6",
     "content/sap-1/exercises/both-differences.json": "9e3f5095dcabd9caf4c76ccfea51f1b00f3d54a656a61b75ce1fa70a9bda5664",
     "content/sap-1/exercises/index.json": "21f8be0c7c8ef70cf916df631dc07be1096ffc79e165a91ae4768f75e336734d",
     "content/sap-1/exercises/negate.json": "d937f215c441d805a6378860c3a7041d1b85d93888e683ada335977689e12c1c",
     "content/sap-1/exercises/running-total.json": "50439eb30bf4dfccc10f8e6d882ccf1da759dd67e33aa022220792f2a35d2f95",
     "content/sap-1/exercises/sum-four.json": "77b1042b731b4eaa49eb6b0da05fccb8232f11a0be06534b5ec42a2cf182ad72",
     "content/sap-1/exercises/times-ten.json": "44f7df0465b09c6885f7d1c1b9cdf8728e49cd1828a8f6c1edc780f432013699",
-    "content/sap-1/help/docs/index.html": "a98fa720988e7631692801986233a763f9c7506002c160a33c80e2abda4e55d9",
+    "content/sap-1/help/docs/index.html": "ed865abd4589cf1a5420044aec2cc41e115db576acffa90aa9180991cc4522ab",
     "content/sap-1/help/help.json": "50ed6611b427bfa526487a38cd189be302107d829d97b8f046bbad377202a45b",
     "content/sap-1/templates/code-is-data.asm": "f127d497700a8752b3c1d6b44ec238cfe1cfcfcce3b7b2bcc4fabe60d0fb371f",
     "content/sap-1/templates/index.json": "4a87e9e8181b55a8a8fab038db46ff1808660fe86c9f3fdc6a32f1cbfb88546b",
@@ -336,7 +394,7 @@
     "content/sap-2/exercises/sum-to-n.json": "f632c4c56fb88ff611acd8a7bf25c958742686968fb115d241840d67022eb12e",
     "content/sap-2/exercises/swap.json": "7492ed3992bd539df45a03635592d243d68a75da7095b6199e368368799409fc",
     "content/sap-2/exercises/times-four.json": "5d4e0cb0cb0f61afe3a6b33c41edb7f1e312c647d226fa9821aaed6c7adc7691",
-    "content/sap-2/help/docs/index.html": "6d695b208d0e3e5d5a2fa56c21233943f31f575704b51f597bae20bf4ec2fcd8",
+    "content/sap-2/help/docs/index.html": "4f97013215d175ff7ad7c082f3b572a032931fb589c73ff8e602d72ee5736be7",
     "content/sap-2/help/help.json": "6198a622e8f4b1b3cb089849cff6fef763b73e7e3ca37d0987714fb3a8f391fd",
     "content/sap-2/templates/alu-next-fetch.asm": "36949e946acd60bee920cb3e0fa2b070ef6a255a22c3574933d4dcdf4d76e30f",
     "content/sap-2/templates/call-states.asm": "31995d560e4b335eaca10ba0493b1a89147751d403efc3e7e58e0ca11991f1ea",
@@ -348,54 +406,55 @@
     "content/sap-2/templates/rom-write.asm": "c2f1d3c2bd391a55604ff2915fab0386faa09d3383480cd8904b48cb894f400c",
     "content/sap-2/templates/serial-out.asm": "9682b09c3887f482e1f811beb5a02e9251899901c49baa7504f044216b85d2f5",
     "content/sap-2/templates/subroutine.asm": "9af68ff85be10cad37529ddf623bd8cd82a4fc4dbca9db23b7ed26c0c293ad1e",
-    "content/templates/abi-fault.s": "03bfa9ff3dc96560a501bbc61431a898b97296b2cb4b5023e37ad4f9a1dbb876",
-    "content/templates/bit-fields.s": "d7340448b58df4f77c30202985cc694636707c18ac215c3856870add0f95b532",
-    "content/templates/branch-loop.s": "be6e5ce07548b25e7f56a42c8a0f63f59e1b1fad316441466ddc28d9a8f013c2",
+    "content/templates/abi-fault.s": "a919f057738320ce679889d35e6db2ef7b77fbd37cbeba150770afbba4da8ff4",
+    "content/templates/bit-fields.s": "52123ce1b8f0076a302817eca377d31b91b4706f5dc681032f5f455faee12f7a",
+    "content/templates/branch-loop.s": "3ca72fc2d81a290fab16d2f9f369188c251128c6bd9237143a913a866c89fecc",
     "content/templates/button-interrupt.s": "f9709855616d667632fda0e8c8bb5a6c442d2e7b5b4aca8a3f2a0c2edbbb6fad",
-    "content/templates/cache-conflict.s": "a9a3cc1f51f6ac48994cd02fc991958933227bc87cc63727cdb0a5e6ff0bd891",
-    "content/templates/cache-pipe.s": "eed306b47aa248f6aa38962e82245f1da8e89eff5b4ab77b94fe389313d08b4d",
-    "content/templates/cache-replacement.s": "f483671ab748caed338eb926d515f6bb0884d891e570e721b2f1ff1c8283edb8",
-    "content/templates/cache-spatial.s": "d73602d18b2b04e53105ceacd7568d08921d218d92d07a55dff5d2e46f9e3098",
-    "content/templates/cache-speedup.s": "6133342b50ea2fc3fec01e606eca2b8747b1ae14fabddd3a68c14c529204504f",
-    "content/templates/cache-stride.s": "0138eceb6e442b2500bfdf2a4d615ad6875bc4a5c181c49487f42daa31769b4f",
-    "content/templates/cache-writeback.s": "a6865c5d5ea5e36358da39584408969081c6be3d878f7e3259f726bb8e0d5262",
-    "content/templates/class-tour.s": "58d1508a86c8dd30abc756609b34617ef0400a1b8edf6b3a91ee8e7c5d001a45",
-    "content/templates/cpi-mix.s": "e342bc4a2d61b740cbdb3418b19b47f0fe818fcd4e8eefcad8770b84784239d9",
+    "content/templates/cache-conflict.s": "5450802d06173f764c434036341385a918ef5ab958e4162bc948416dbce13a94",
+    "content/templates/cache-pipe.s": "69ba20bfb90510dfd6c640fa39d908fa283d25ba1183c165e87e5f20ae1777bf",
+    "content/templates/cache-replacement.s": "14c5881d157fdbd412966d3135d6f0e232ae97eb31681925d43b832af71cec6c",
+    "content/templates/cache-spatial.s": "320f345f55bf0a324f88be42c80c6bf411b5e91823ccd13dbc8b5e5b689f6645",
+    "content/templates/cache-speedup.s": "6426ae045d327393dfeaadddb82b71114454b7b783d636522df33b020d45b4a4",
+    "content/templates/cache-stride.s": "71e311157e58853c8a327e701732475f154655d5ba845cb21bbcbda2bc920cb3",
+    "content/templates/cache-writeback.s": "85ae4b91c35a741fb5359d28482b0903b3242ddbb4ee3578186130055975d7da",
+    "content/templates/class-tour.s": "1611221daabc0cdbed7638079b2185a5ce172e95d91f368d169c13d0412edf37",
+    "content/templates/cpi-mix.s": "382349f695489a314502a6bc9a072f4b6dccad3b4935b86fcbce89bcd1bcadfc",
+    "content/templates/cpu-gpu-abs.s": "624a7b70bd9c4c21bfa2509c2268767f40e6d934946ef1044e105d70541447f8",
     "content/templates/ecall-trap.s": "5a8e8a89b2b9223886c625057bb9d2635346687432554f044d7be34c4151f3af",
-    "content/templates/endianness.s": "988d95e11a067c94580f9501a2b6b4316186d12898bc6fa0b7cf18f030cb1312",
-    "content/templates/forwarding.s": "e0541a94cdaed6ae1cd708517535698694dc2ae0631907fffb4fcee1558f7d94",
+    "content/templates/endianness.s": "eabfc941a18103a4f51aa5b569c36e1b9f172a8d2f9a31d9c8c7dbff402da71a",
+    "content/templates/forwarding.s": "3ad868bf0885e0841d72a945da4eed99958fa1ddb470f5497f6f096e8cc38ca5",
     "content/templates/gpio-leds.s": "315c462245e5749fe02698b2d94c465e23fc24bee05d2b739462cf601c88c54d",
     "content/templates/gpio-switches.s": "4dbf70697b5b3d2cdad5c0c2625e2724fe60927045e2e2f5ff077bde5517ece6",
-    "content/templates/hazard-unit-steps.s": "af7206fd48461708fedec5b862c823f39f583fe1e4455d993472c1f58922b4c8",
-    "content/templates/hello.s": "31195e602a43470a33bd0967b300d780c2a91871bdc698a4656113ddbca73b7f",
-    "content/templates/index.json": "40d7b2ce74ad205cfd45f5a0a59ece8f8f6b16bd1308a0fb6aadefe396a97f00",
-    "content/templates/jumps.s": "c95fcced197df11b545c6cd14a387b43020fcda489a082ac0859cbf293d9187e",
-    "content/templates/load-use.s": "3f42560f210e163f149caf4c381bd0ff402142aa5a2568397eb3ccd1b9dd1a22",
-    "content/templates/mispredict-pattern.s": "3415e72ee3dba5f0a152c08a01ddefbf27b09a3b5829475a1f88faa664e4d7bd",
+    "content/templates/hazard-unit-steps.s": "490430f64c20c8de75664178343733a9f884bfd370fcef0640571fcbe63ba3a1",
+    "content/templates/hello.s": "f0a7cde8354df7059b1c54e8112a94b46c4827dfe6c8e3b5dc39d3fad6f954e8",
+    "content/templates/index.json": "77e7b847fdb303674fa7ec06a8bfeb79d9bc1e904bf2e4aa23c704b2df9de32b",
+    "content/templates/jumps.s": "3dc8634307a3ab97195f929f16cfd72a7ddd874c43a6b953999a5f114094d64f",
+    "content/templates/load-use.s": "a9bc581af1be02ffa8f701b903aed52b41f7c91ce49d57afa704301066237103",
+    "content/templates/mispredict-pattern.s": "a9a78486d5cd64c354d64edb4fd4856772f4852d2879c7b50f53f70dc86d42ca",
     "content/templates/npu-mv.s": "b8498bc3d7ec999293ccb296e48895b8054042342cff80af96602b57a28946f8",
-    "content/templates/overflow.s": "470127288aae07f46e607ae964a65c0bd05f527064a1aa0c35e57b6a7c9f76cd",
-    "content/templates/plain-vs-register.c": "30e21675ba32fcfabafa3abb14d4f527842100c3a0cab514e14ef4b91dd396a2",
-    "content/templates/pointers.c": "f2fdcee046fa24061ab6e839fac557872d47ba86695b59606a3dd5c60d18456d",
-    "content/templates/predictor-aliasing.s": "6571d13f67b7ae443afaa9f51d75c05389517c92f81f5f6134efc3f50cf8e7d2",
-    "content/templates/procedures.s": "665719f57e245bf6237abfb2527d877d6247fd89d6ec296899d7122585a84b5d",
-    "content/templates/recursion.s": "ca753082a2c63974daaddb17dcd5166dc6a90003f43f138e02e01fe828a21c7e",
-    "content/templates/speedup.s": "a35d78384ad7c9cd83fa20b0bd8f146867ad48a248de04ef2d6dc23860311b5e",
-    "content/templates/sum-loop.s": "b7e4bebc96208baf45b3aa5838f60f22ae67aad223984d29431fdd2920696456",
+    "content/templates/overflow.s": "30dd5e3df61c8624bd95c8eddc4aa083292d45c2e392898b12deb86e4ab2db73",
+    "content/templates/plain-vs-register.c": "888ebe6c7a56eef88e5bdefb570f519767ea499c1273561052e82248a3aaaafd",
+    "content/templates/pointers.c": "273a813b665bf176f916072078ebf60e639532a921fbedec0232e9ae021abf6c",
+    "content/templates/predictor-aliasing.s": "0d01c3402dc7c6afec3f225e7a2f83f9161a7b32c8979bc1ee4d98ec68d3f545",
+    "content/templates/procedures.s": "5d6ff29a9c54b8ccde9ed7e7361dcf432bdfb98d8400c8a42a36752b50c3a7b1",
+    "content/templates/recursion.s": "99b9ce6c453593d0711c91b19f2a143ee8d614f8b52b507e6d4b8187cfb086ae",
+    "content/templates/speedup.s": "b6abb00722d6f5841bcda91887fb00fd5ed5817a20553613a03ab2fd5f520481",
+    "content/templates/sum-loop.s": "4c9c2b442042d409f436c982d9207bd3ab787d569676ea5b19cf27874d11b750",
     "content/templates/sw-mv-m.s": "5725aeefab0b604dff5b6789ceffe3135fba362ba61ae4da5b8462c6801ce87c",
     "content/templates/sw-mv.s": "7c4461052827b19b7b81f76fbf4ae391af2fe8b402fffc12c69d15779c34ba25",
     "content/templates/timer-interrupt.s": "4ae18ec1ec20a81aa1f7c0c511ba061276e8ebfbf196b57b7dadb576dedbb59a",
     "content/templates/timer-poll.s": "d779bb16006c1156c6e14fdf1c2890dd83e4dbc0d0c8d87e566b2d8fb2754352",
     "content/templates/uart-hello.s": "97e3b093491ccdfef1175e6c4a5a181448edfb59c9f2386b46ca5bef6fa9f1fd",
-    "content/templates/watch-overrun.s": "809af4dce59852c1fbe715e81b0c5ebceb2723c5135d108d637c9526800f9b4d"
+    "content/templates/watch-overrun.s": "441cead4a0178a66450fe6a82843e4233de638ea33904be4ca3c56e0252d9d6f"
    }
   },
   "corpus": {
-   "sha256": "dbf0005417d016f8a046e09641c298ecc68b026a6f62edbdabc869a4aed08683",
+   "sha256": "faeb9d1df1c1803770187b93c5b65ff934fb459176836cc33b630734688cae89",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
-    "test/arch-contract.test.mjs": "13f524e678a203b5caeef29e006b1c406b49e2865c2601ba6b0a0c6d8b0b575a",
+    "test/arch-contract.test.mjs": "28c511e32151a97d6e099e28e57bbf5e4f2d9e57501b198ee1b9679ce26fb1d8",
     "test/arch-riscv.test.mjs": "e5d2c2e2ee4652fe9fde85cb0362ca22af2c283e194c5bb050db48d7c7957369",
-    "test/arch-switcher.test.mjs": "fd5fb131d58b6c92040a5276a1ac5e1baad8ed33ddc8a7e69d8c972fa432d97d",
+    "test/arch-switcher.test.mjs": "4946db61b396c85b03722a62455d9402fdc08928b51c2e5ca3a73f02380f5439",
     "test/armv7-engine.test.mjs": "1b39155e1328969cca9a0643235c0706a8a17933e15dd7d0cb265be4ecf0cd76",
     "test/armv7-equivalence.test.mjs": "aa4880cc750ec6580a90b3461083f1322fd5ecb91b39f01d225ef8afb4bb372b",
     "test/armv7-gnu-oracle.test.mjs": "a3c1006add7d634db8ab34d22b7b5e69b31bc1e63af4753355021ab9e24d9f87",
@@ -423,9 +482,11 @@
     "test/cc.test.mjs": "de3777dd752660b4faf4688c903f86b2f191fd1fb92c011db59c7c30f66acf73",
     "test/ch07-content.mjs": "17bd83ee475efd32d55748506eb848b28ea85727c51aaa6f83e517dcfaa29487",
     "test/compare-memory.test.mjs": "6b46bd74b52f98c2290ed39138ab5a7e28191d13cf11bc112a217b37a68e1e72",
+    "test/contract-v9.test.mjs": "87632fef9b1415e5758673647b34f992b12d7457b8d822f116af3a0efbd69fb3",
+    "test/cpu-gpu.test.mjs": "bb8c40a7a6452e78a421d107762111e3ab25d978039b7d3a2247e77cfacf5d4d",
     "test/data-io.test.mjs": "b92820292d425cc50b2a0859433d7283427e346d796870c849ff575bf8094268",
     "test/devices.test.mjs": "85f711a8810aba9c1cee0acab0ec7c38d2453746ac396f395f4f478b3200e057",
-    "test/diagnostics.test.mjs": "05ffdd1a56ba760afed070654432e6d786d0498e29476114d96ce2ccef18a6ec",
+    "test/diagnostics.test.mjs": "bc847a9ad60dc832fd5ed5638cf1cc5a6054fde7ca246ef4daac5d577fd153c8",
     "test/dock.test.mjs": "4b9a44ead4e31ceccdd36f75dd1a74e5867d0da8c60de99d33e142a767cff864",
     "test/examples.test.mjs": "99fc38ca3f760c3d5b8993674ff4a1c56dc3bde0b39d7600d310e663b89d27a6",
     "test/exercise.test.mjs": "a5d8324226b32f1d5712e339518cbabe6a16bc2ac7b5b73504a151f3939822bd",
@@ -444,6 +505,41 @@
     "test/fixtures/gcc/sum-O2-rv32im.s": "21e33ff7fb6fc17bf0b022d416ad40e9b9b384fe796e3ec49870e9a2339cb0b1",
     "test/fixtures/gcc/sum.c": "ec33232dda504bc4bd2093a9176f2cab2fd41aebd58e62254eeff59c046b92d9",
     "test/fixtures/gpu/README.md": "19e74601a4c9fcd1db4965a6c5f5da548bbd5504b34a6e04d5398a71002a4c81",
+    "test/fixtures/gpu/lab/README.md": "7ca7d6562c079c0d5d4276be9df0495ce4753c3917eeeacebd55aded1faa856a",
+    "test/fixtures/gpu/lab/assembly-record.json": "dcd0123b1663191c5a0fc1eb82e0b5d8c768d2e76343544d7dffffaa633669e9",
+    "test/fixtures/gpu/lab/fault_div/data.hex": "1b1aa352c4cf13742ba03d735859156d2198fca632d2b8ee950e442234f5eba2",
+    "test/fixtures/gpu/lab/fault_div/golden.hex": "dfc1cf937542e6d7111adfc8da60d04d68bf7b2490a04b93e0427ca73e92a73b",
+    "test/fixtures/gpu/lab/fault_div/prog.hex": "13814cc354a5947d17b13de0fdb958732c0a2d8a7ce507a971383569377f6d68",
+    "test/fixtures/gpu/lab/fault_div/prog.s": "5440ca2d8f16be79b3690d7e7c84b44ab3389035545aa7ac015e47fccdf96d59",
+    "test/fixtures/gpu/lab/fault_join/data.hex": "1b1aa352c4cf13742ba03d735859156d2198fca632d2b8ee950e442234f5eba2",
+    "test/fixtures/gpu/lab/fault_join/golden.hex": "4d3c2694de185c7e10f8fcea980e00fe94d3da87752cbefe4c7e8e02a98a72ec",
+    "test/fixtures/gpu/lab/fault_join/prog.hex": "d921b995b402fef701bfdb7565790b428963c98f6198c62a28e775e2695c9b25",
+    "test/fixtures/gpu/lab/fault_join/prog.s": "690a3a0f66dcd3afdf5b25b01939f8ac9a76c98cbb4ff51844b356d1e9bf1f80",
+    "test/fixtures/gpu/lab/ifelse/data.hex": "2ed5608a7aba85c293fe2a38957137a76ac74456d0c5e7f6b0488eb0295081e5",
+    "test/fixtures/gpu/lab/ifelse/golden.hex": "ff0bb012e75fa0a4941e39c95e168938eaffa5966170dd3167c9a0fb2f120ecc",
+    "test/fixtures/gpu/lab/ifelse/prog.hex": "8363c80d6c56470587a04530802cc7f73dd9e48860d6c6b4b018aa52fcb3c6f7",
+    "test/fixtures/gpu/lab/ifelse/prog.s": "42406279fea60b649a4dded93475da5d26f0e845667db6b93b0f6c7a647a873b",
+    "test/fixtures/gpu/lab/ifelse8/data.hex": "2ed5608a7aba85c293fe2a38957137a76ac74456d0c5e7f6b0488eb0295081e5",
+    "test/fixtures/gpu/lab/ifelse8/golden.hex": "d2e279bde01017ab5fc266574eaa944278836d219abdbb957ef6f041cba007cb",
+    "test/fixtures/gpu/lab/ifelse8/prog.hex": "8cd1d027b2bdc0c3ba1065f673eda567d246d6ad1e0ef42666a42b2d1d720299",
+    "test/fixtures/gpu/lab/ifelse8/prog.s": "43b6d85641c5b680b46d8bef9edac16d204fcb95c0d50ac1fc8e6e003586d673",
+    "test/fixtures/gpu/lab/nested/data.hex": "c7fe44d2256a18226c621b47e2acf7c471ede3bcb4916c9caeacf848a6bcfd69",
+    "test/fixtures/gpu/lab/nested/golden.hex": "7fcdaee8eebe20a3545ecbebf446b4c206b79218b43c8261c2bdbb6e6223d581",
+    "test/fixtures/gpu/lab/nested/prog.hex": "7f254b234dc63ad243f8774f88ef29feb6ce2601bf38cd708f34f453794a9aee",
+    "test/fixtures/gpu/lab/nested/prog.s": "c9f2bae6ddfb8e3bec0d57a332b099ef93d825205207477ff6d9b08abcdcbcb7",
+    "test/fixtures/gpu/lab/reverse_bar/data.hex": "9dcb0c6fab1865788de6beeef6af7c3ae2e3dada34e2c010fcad480205454af0",
+    "test/fixtures/gpu/lab/reverse_bar/golden.hex": "cb2fb7c7059b3902544f00b7ee995e61663c68b3affc8f69e9acfe384f7c0896",
+    "test/fixtures/gpu/lab/reverse_bar/prog.hex": "76783fca9f26add6cc6f24c6d9cafd811d8d24d90eef5668ece88b45d69ce747",
+    "test/fixtures/gpu/lab/reverse_bar/prog.s": "abb6bc81efa415311969e31f5e5093b01e12963748cf3f85421d95f8de8c29e9",
+    "test/fixtures/gpu/lab/simt.inc": "27bc916ec405e8735f622bc5d96ceed4e796b76cb1dc1134c50ec04e5d65404f",
+    "test/fixtures/gpu/lab/uniform/data.hex": "0a54f3e372eab9f753b69d81f4c2c3bf44d5e9cb47f15fbf32938186f8c0a1b3",
+    "test/fixtures/gpu/lab/uniform/golden.hex": "03c69512ecf7740212690c138ee36d9e4067207fc0183303dc1abbba3ceeb74d",
+    "test/fixtures/gpu/lab/uniform/prog.hex": "1b01f059b04e8325845550db12558302c3353183241145573c85e332e4a89d02",
+    "test/fixtures/gpu/lab/uniform/prog.s": "7186d85459f2c20be979f8f5cd63813ef4b8777e3b3f246f411b63aeeafd1ca5",
+    "test/fixtures/gpu/lab/vadd_tail/data.hex": "486321d27dae3675104f8c4a08cacfc32a873048917d064a895ae86d51420610",
+    "test/fixtures/gpu/lab/vadd_tail/golden.hex": "f54ed9c91777e8d4543aeb7681c9015e3ec7cc928aab554f3c08c966f411b8a4",
+    "test/fixtures/gpu/lab/vadd_tail/prog.hex": "9eb4c56ee949600fc6947f0d93141e369c500c12a68b6e8364b471574889278c",
+    "test/fixtures/gpu/lab/vadd_tail/prog.s": "9bac88df9189f010b101b5359ffb1bcf3611f236a8013adf1b4fb640c8b14b60",
     "test/fixtures/gpu/simt_tests.hex": "af47e1e69c2c458f2371e6f9daffa2bbdecb4b0632afa4eb8aaca59a445d454a",
     "test/fixtures/npu/README.md": "02d721638d9950e97137bdf714a9ca9e7c7db663fb0fe0b4cf3a8c3358b39e4e",
     "test/fixtures/npu/ch11/data/v1/data.hex": "98730230c57381b60cb8939bf941d696287e0a51f8f31ff4da971eec4132d3fb",
@@ -468,15 +564,29 @@
     "test/fixtures/priv/gpio-regs.s": "60282d03ebc30ffad20e06750c3ce0a88db8ca7d7a27979fad55f08719174fbb",
     "test/fixtures/priv/timer-vectored.s": "34e42ef69253b2fe62c579a2784e29d8fbd4024222c071f3fb76cc73bab25178",
     "test/gcc-import.test.mjs": "d174834d4d140132f7f26446412da021086dd5ec54e341ad3075ec1d5dadfead",
+    "test/gpu-device.test.mjs": "e7bd564d65cf025295ca4fac599dc474a333ce6f47a4b434c0ffd2865475800a",
+    "test/gpu-docs.test.mjs": "cc11f6a4279714fb41c44d980975fac6a248d2becc6e8cd036dcdde3af6974ab",
     "test/gpu-engine.test.mjs": "6e25800712d30dbf38eb96d288cc95cdef271dff3599bf85290473bf609a431c",
     "test/gpu-fixtures.mjs": "bf74e8308e5b655bb4d6119876ce41945f2fdc6f0edaadffff0eb7d2e0d98d69",
+    "test/gpu-help.test.mjs": "849c5187f9f615835257669200165acbed4384041d4082b971677ab72edcbbbb",
     "test/gpu-language.test.mjs": "9dcc7fc85d9edae08c679ee8ca083570a1e5caa57d22473f524783d6ecc12c95",
-    "test/gpu-templates.test.mjs": "d6af5dc0ab942e132d301568d53e90d9a82e3807f55d73e3f1c29a4d5ed2bfe3",
+    "test/gpu-models.test.mjs": "41282d0de312de18f27142de636d174f677ac6ca89113327965dfa2496372f5a",
+    "test/gpu-rvsimt.test.mjs": "db412a649538d977cc4e1da7778ca2a2fadc1b88867122fc8f671a589b16f314",
+    "test/gpu-templates.test.mjs": "52423b9520de5d0359cf14cf467a762a1b56642ba792ff458b26fed05ae3a2dd",
+    "test/gpu-views.test.mjs": "f0314f28715488152816db5b31279e58f1ae30e63bbf2cd0aec1b079e86b7add",
     "test/history.test.mjs": "b0e55fa95c9e632b9003a00f89198e65bad5c6d3f8f3e0e0a9e28e483ae4e4be",
+    "test/i8086-biu.test.mjs": "17128549d04b3b904633136f72b5254fa2e4563e82ab61f3cb36e35ba8cee9df",
+    "test/i8086-engine.test.mjs": "25137692793fe9d8859fbb7cbc2df96beb71b71c7964d1d349d6276134f10a9d",
+    "test/i8086-language.test.mjs": "00d41065295fafa7a915871c4ed593d90932b1b285fab45b13ae4fe64f2a60fa",
+    "test/i8086-layout.test.mjs": "16d5824b7fe36c1331722ce817529fe7f38961dcb837428c72986673b6e67bfa",
+    "test/i8086-micro-model.test.mjs": "bc83383d0abdb4136a7d9f8538c125ea8c8c17f67a8b7a5bfe77142d3b4cfa0d",
+    "test/i8086-microops.test.mjs": "4db95c8adf9d0bb8b30bef1802aa9e4190581afad3bb64a660917b2bae55cf5e",
+    "test/i8086-sst.test.mjs": "8cb8e34b623b322af3fe420077906f3e58ae5c30b77250eed6290be98711ef5b",
+    "test/i8086-templates.test.mjs": "b63f20d6654faba9ad69854a6256eac2def88c68fb25d4b1ee57a91fb941a2ef",
     "test/layout.test.mjs": "ed13e30a4af564e795047935bb1d3f4b57771bc760e1f48583c32e9ff7ca1740",
     "test/mavilera-brand.test.mjs": "a74a504072e55a37175a7a92f82ab57411afd371993f404c50209246f1976c4a",
     "test/mem-cache-models.test.mjs": "3efb168b22027827cb7f97cc3da847228d03e6b416e4db32a61ac2d1c60b57db",
-    "test/mem-cache.test.mjs": "5685a5ebf68a45db7c04cc37cdf4caa2ae817372b9deb46256779a5034b36e48",
+    "test/mem-cache.test.mjs": "655181962be77ccf15a9979905ac820a0829046a2be8dccfe1adec927ee47efb",
     "test/mem-config.test.mjs": "f647ee6ce66e224fb9ef8d93c821061319ec6ea2763541ec18407b04aae6ddcb",
     "test/mem-system.test.mjs": "d8ae97bbb4a52c5791502ec4fc484bffbeb8a31dcd7cb0ee24d1d705e19c4300",
     "test/mem-timing.test.mjs": "effd79be70c13655e73f5bcf6178d164d43b808a6c891effc294efd5c68fe9fd",
@@ -490,26 +600,26 @@
     "test/npu-device.test.mjs": "b84fd2ddbb8893ed98fe1b6aa175dfa92a4cf980c9236841fdca76a3f6076a87",
     "test/npu-fixtures.mjs": "b4c044ae414470fcc4a884a98b6429d22c7e82bab6c2ec37369b76c2b6eb7762",
     "test/npu-lab.test.mjs": "9c9a31c7855e97dbd0dd5276923d76ff1515059e510f5aad48c95e88fca69f78",
-    "test/npu-views.test.mjs": "2df39682ca6fe31d485bb65aa4aa58b66eb9422903c018c6e8834f67f4e43f7e",
+    "test/npu-views.test.mjs": "536a552ac1125df7b84ce182127e6f795377fc26b50fe1279bf87d3793753b25",
     "test/npu-wave.test.mjs": "64a82ec3d0c22f759bb55243aded0cb3f0c960318aa804266140a3273d9f08e6",
     "test/output-cap.test.mjs": "d431af9e8b9a25aa297ca6e8f6b19f91748a79bc9929ed9e8346e778d7c0fa5f",
     "test/pan-zoom.test.mjs": "735ff1fa587f2dff99e6f69db7c913462da58f6090d3be12207cbfe67368bb4e",
     "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
     "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
     "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
-    "test/platform.test.mjs": "88cb540fcea57c68e9b569404c52638a1b83873f7acb996b8c431eb57fe28ee0",
+    "test/platform.test.mjs": "d8de53331a2af2876ed20dceb9cd31855605c51382fc7af474e185564b751673",
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
-    "test/random.test.mjs": "2c3f27c2a76ac3cb9bbda309ea3d0f42fed3ae3c9f4d3e4a01e8dd6152c6514e",
-    "test/release.test.mjs": "d96fd56d7dade8f195f7987f27ff7012a2b2665677d2a3396567bc2ebf8fb9ca",
+    "test/random.test.mjs": "f4c2506d4c73ec9b028993e06efeb9608b99e1dc8552021d111efdf8fe0bc59e",
+    "test/release.test.mjs": "77b4c4e01710c29cd9c16fa120375f59c7052cdd869c12adcf30a14786a66e0e",
     "test/sap1-bus-model.test.mjs": "1913ce4c7182278de219f52d06c958f68eed155fe7f433de9fd849df8417b841",
     "test/sap1-engine.test.mjs": "11d8227fda92d105613f0a2c05679b14aa18a4b113b4709c92f1c31292f71eaa",
     "test/sap1-extras.test.mjs": "8b0e7cbdab16c97c8d073fb72cb0a398d00f961cebce4d5f8755014cd76c9a20",
     "test/sap1-language.test.mjs": "e76f232b9a6c330edd3d9d5dbe8beb338bb22a8c2572c9e38ad7328a72441e52",
     "test/sap1-layout.test.mjs": "60354b7d1a3372852de966d4ec48d3d3a10963c02f602b15cd5f7cae5a2403c2",
     "test/sap1-templates.test.mjs": "ef4338e0f55038749bed253f6e328f0712a32d4706dbb7a4153acb91b07da3f8",
-    "test/sap2-bus-model.test.mjs": "3bb5f7c586c10f5761c5cfb4b4481a79bcc0b5b9f75c378adbb80bf0d1ed1b07",
+    "test/sap2-bus-model.test.mjs": "33b2ec7bde8ffcfcd6bcaa78055b4a4faa76bddc51a5ee0a69a2a197e6c9562f",
     "test/sap2-engine.test.mjs": "ac81e3d9f574483ef5a1b1b6c5ceef67ab73dd3fdcacc28aaab8d67b83775886",
     "test/sap2-language.test.mjs": "2198dab03bf94fe69afc19acfa38ff0350afe421bde991afbb78c55e1c46009c",
     "test/sap2-layout.test.mjs": "923e24894f818e967431f864ca04df833a37a8013359cbbaadf905f026875458",
@@ -519,12 +629,12 @@
     "test/scratch.test.mjs": "123bc357f09f04cb5d84c9091a400d4a921bae9fcadc78ea37488e153e04e7f7",
     "test/session.test.mjs": "04431e64dddb0ba9b9526cdf2c2d747482b365d0d053a34b7475d60c7c9e1ef5",
     "test/share.test.mjs": "5f480d5098c2597c40fe57c7295ea941b5d65abb83561666f37cae0f6f376463",
-    "test/shell-format.test.mjs": "1c9c412752191064f46d76d67bc6a9a1808e63355ec8d9eeb067e542c8987e4e",
+    "test/shell-format.test.mjs": "87f41b1f21a9cda817696e4a1c66aa75e27c464e9309ec2be4c17dc263e341a4",
     "test/single-paths.test.mjs": "24664755d1c04dac1707ac7f301fb93572195afeb67d6175dc4f7bb7c416f66c",
     "test/single.test.mjs": "5e814551e3fe2fa48e252181f93333d9655219e2a6f57f2153c67792d43f8a02",
     "test/split.test.mjs": "7eb2aa046e3b1f6c8afc2fadca721a510de8973ee5da40c3af6cdf03624ee482",
     "test/strings-merge.test.mjs": "27a604b4f4e70e64fc5b8cf2f035be00dee066c3f15b14d713a62c2bd01549dd",
-    "test/templates.test.mjs": "11daca7ff7311a3c419a54b570daa0962162d2021e0e3e341ad4bc1871fe97f7",
+    "test/templates.test.mjs": "b6991141570f4af1cabe5235889e2a7985fb90b14622efbc802fa591737f6bcd",
     "test/timing.test.mjs": "2f2707cda7d36d16df28ba8bcab6c1f106777b0bcda7e1174b51ca8bcdc743b9",
     "test/uarch-ecall.test.mjs": "bb9cbd1e59249083493e0383513650a5c04394523cdef486c1be213f411a583e",
     "test/uninit.test.mjs": "7703a40cd13f36bbcb96384d60a633b7c713cb962a00ae2bb5210b6e179bc234",
@@ -532,11 +642,11 @@
     "test/wire-colours.test.mjs": "ab8c01ea4d3a9bb40e8c800203ba4b19b80354411b0bc6bfabbf1251d959e673",
     "test/workspaces.test.mjs": "59903c7db8c97d4c83e9d4963a8d4750e2165e73467a6f559690d56c8d8baa40",
     "test/zip.test.mjs": "0a6206256fdb0685cd376c12e48f07c15f65695c7920a0a2521a289f776ff2f5",
-    "(not published: tests that need the private book repository or hold exercise solutions)": "45 files, sha256 5e3dba2ff95ea4279387ea983b0eedd437d84871ccb33024b2bf27fb4976d53c"
+    "(not published: tests that need the private book repository or hold exercise solutions)": "49 files, sha256 7952e078044a206fd331f1df1200bee84433654d00e90ccfe3e2a2ddf2605052"
    }
   },
   "tools": {
-   "sha256": "2d5f55590d64ff68833bf397919b1a09724eb69b74d0d8298a6221d15e212564",
+   "sha256": "a1c6444642b551fc9a7218ba4ba044315c24c3ae0f4e9f9fef03f8f5e574c1af",
    "files": {
     "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
     "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
@@ -559,8 +669,17 @@
     "tools/armv7/single-smoke.mjs": "5b25e4c9a04ecc83d6e56d8123042bf0a12ade6f4709bc82f544704f8eadafb1",
     "tools/browser-smoke.mjs": "3365c0e61005313b6fb9f8016d0272d3fa9cf7619c614b73c509b835b8848f0c",
     "tools/browser.mjs": "bdfb9016c4e657546371a233980d41ba41264f99b1f3add9bdfcbc664175018d",
+    "tools/cpu-gpu-smoke.mjs": "f98c49bebee35acf459506dff73b783ac948bf789290e7755fb13e4a6cc270a2",
     "tools/dock-smoke.mjs": "284e1d6da94633addcb394f5c46dae2420f8a861887b675ef96a7b537c914bb7",
+    "tools/gpu/host-templates.mjs": "b289b183fab05e761b6f24b968ef9b40d9a54398ee30e0bb09e05ab0b49fbb35",
+    "tools/gpu/lab-templates.mjs": "f266a9ef4bd02489e0730f16531ad5e211ac0f2aed5a68ec4b91c4ef67b8f98e",
+    "tools/gpu/make-exercises.mjs": "06a178e652771ddfd7b280600070d984bdf18602f426336528e2edcbbd9f3a8f",
     "tools/header-smoke.mjs": "edd8f6d526fb18a78accd98589c041175fa3b17753c09e61a59304648ba6d6cd",
+    "tools/i8086/biu-check.mjs": "92a17e962aa62184b72b8faf9b1a70baf121387e296fa538355e6131bac4731a",
+    "tools/i8086/lockstep.mjs": "24ef1ae139fcdc0d27a45e05e43fa378883a8274e083911aab7a054b77980642",
+    "tools/i8086/preview-datapath.html": "0da59ccfbe6e74b7046612d5883cdea12cddb80662141af9520167aa70ad411c",
+    "tools/i8086/preview-datapath.mjs": "b0f9b07131f37371e05250c18bf73ea5fac4f4677e92957381d9ffa40da42cf5",
+    "tools/i8086/sst.mjs": "2cb6dda2e0de8711de83638eec6baea1c3a209cba150029f89243808b5f5bbab",
     "tools/logo/README.md": "67ccec66ea403acafbecdde7b5e97c16092adeebb6d92000db7fc363536289a9",
     "tools/logo/compare-parts.mjs": "081c5ed9b574f2fbf2eecf13d39496f64984dfa1b1ad2abd158589ecb190970b",
     "tools/logo/finish.py": "30d3d97a717dc07acd3be71d7ea86630b3797213c53b37a69ac6385c757f7e05",
@@ -570,20 +689,21 @@
     "tools/logo/hero-variants.js": "fdc287e1dbaff28e47374e8d459b06953e91d5dac872bc53c4b56b9e0d6427e3",
     "tools/logo/lockup-parts.mjs": "04f1c6f2b474d5fcc66080320aa87a7a1ea326207e706a5ed897576f6bff606d",
     "tools/logo/make-hero-variants.mjs": "e1a15d33ff93bd5f96db598bd88daf5a0a22b6c05ce2400c77d2752f2f34ed2d",
-    "tools/logo/make_logo.py": "6777d1fb05e7f75308a6db329dc168366db3d2702ed6b71636f63a1b3719c8ee",
+    "tools/logo/make_logo.py": "28bdfc59c8d93e1f3dac88010474423380cb211eb076d8fafee90d53634dd9e9",
     "tools/logo/mark.json": "7cda5546946400fcc89ffd6fac072265e57c27ddec00fd2a554d76a81923a496",
     "tools/logo/markfit.py": "3aaae38a8ce17fd4e8520c835e4d719c79e0666a5af9971a6138b4df1014acad",
     "tools/logo/seg.py": "966e267dabda7f2e49bd60296c0e4f3f712526d1160e2143c504b6fbd2ac76bf",
     "tools/logo/svgo.config.mjs": "5c03a29148d1674b45a3dad2a3459ed5c2fead60121a95dd1518a8541249c60b",
     "tools/make-boot-screen.mjs": "bfe0ff7e2a98d4a12c9b4d8a956b87f9969b3a589a40f43643cccda9e8bb3421",
-    "tools/make-exercises.mjs": "24c89b6c8e6e4ced0191adc15a3ce7f902ab55a18c8ffddae9910fa03b8a4f1b",
-    "tools/make-mavilera-brand.mjs": "6fd62add66b082ec613453df1ce0438a4fefe01cfb24788d8e745e9ef9034817",
+    "tools/make-exercises.mjs": "a6c86017aa4abadca666e4617fb1d148a5fa977aa5dbe2c15b2e280928e4b67d",
+    "tools/make-mavilera-brand.mjs": "c2324e45ea14f0528588fb83308e315dd802a80bb035164005cf990166e342e0",
     "tools/make-sap1-exercises.mjs": "e8c754b46ecf83398bf030f48b2ba2f40a34dee52d03e40fdf49ba19845d57bc",
     "tools/make-sap2-exercises.mjs": "b25aa4d90efcbf7ebe72cac3fc277653619fb8205213f3b22784afeda471d401",
     "tools/minify.mjs": "d4d8ce86001274c36ca7f0ecfbb605a433fe8ba0c56774149b6473efecf09ca2",
     "tools/mobile-smoke.mjs": "fdfc238c5059141782f3adbc1afafdc46cc47d14216f4a070efa9db4644893a4",
-    "tools/module-smoke.mjs": "84c9573b35ddf5b2d932f1b49459597a7be95f91aadcbdce61540e30cf519942",
-    "tools/npu-smoke.mjs": "b5222b10c53fb196dd89a965bd3bda1d5320a356c9b64c620ac83bd4b4ba9acf",
+    "tools/models-smoke.mjs": "9a7c3de8edda5ab3dec559130a8b09e41820ae77db0f601c6bca416617d1469d",
+    "tools/module-smoke.mjs": "acfbe4b3723edc264a5353563aebd2b8c28279fcf44ad4e71f91e9c1bf2664f0",
+    "tools/npu-smoke.mjs": "919d7b70a1844b9af0c087c4185f28e82b2eac09a37161717a73be96e543e7e5",
     "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
     "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
@@ -592,10 +712,10 @@
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
     "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
-    "tools/site-files.mjs": "96838dcdde03af9accfe0361c5328596f5614da8ca80d3b015e0ebf123134ea9",
+    "tools/site-files.mjs": "1a59c3ff8bbfad173b9c02366aacd25f30d39aab4ff238115f5f8d91cf395721",
     "tools/view-mode-smoke.mjs": "90f72bc0e92b337ea622d7f82a7f67f1a338892e228ed617571e84aac10377d3",
     "tools/zip.mjs": "ead8c71f183e52385ce4dd42a4b921731a435bcb19b6c6d84ce3e4fec4dc09d4",
-    "(not published: scripts that read the private book repository, and the publication scripts)": "16 files, sha256 6de41b6619a410916365b3c5b240ea0067080c4b2a5c32919b3eeee4ba3eaabd"
+    "(not published: scripts that read the private book repository, and the publication scripts)": "18 files, sha256 373b588511acdb5c19aa32a932b30ba2f93b7f9e853f8728ac32e90d370bde16"
    }
   }
  },
@@ -641,7 +761,7 @@
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1187,\"pass\":1187,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1205,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1360,\"pass\":1360,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1264,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -817,6 +937,116 @@
   {
    "file": "test/arch-contract.test.mjs",
    "name": "gpu: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "gpu@microisa: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "i8086: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
    "ok": true
   },
   {
@@ -2680,6 +2910,86 @@
    "ok": true
   },
   {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: a descriptor with variants validates, in its own variant and in the other",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: a link of another variant is refused with code variant before its view is checked",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: storage keys of a variant other than the descriptor's own get @variant; the profile and layout do not",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: the validator checks legacy and that the own variant has a profile",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: the validator reports bad variants",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: the version is 9",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: variantOf and variantProfiles",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v9.test.mjs",
+   "name": "v9: withVariant refuses keys a variant may not replace",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "a kernel as words for a host: the template's kernel lines are the helper's; data words follow; notes for other programs",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "on the instruction-level model (profile ch11, the tool's platform): the same result; step back over every step",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "on the single-cycle host: the template runs its kernel on the GPU and copies y = |x| back",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "the CPU + GPU tool: a hosted tool of the RISC-V module, within the GPU entry; no switcher entry of its own",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "the GPU joins the platform only when asked; the setting keeps it; the RISC-V pages have no GPU",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "the GPU's signals join the waveform frames: a start, busy for the kernel's issues, the coming warp and mask",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "the single-cycle drawing with the GPU: the block at 0x5000_1000, MAVILERA's names, a GPU access routed to it",
+   "ok": true
+  },
+  {
+   "file": "test/cpu-gpu.test.mjs",
+   "name": "the template is the generator's; the template index shows it on the tool's page only",
+   "ok": true
+  },
+  {
    "file": "test/data-io.test.mjs",
    "name": "WS-F-145: a load reaches the run, survives a new assembly, and must fit",
    "ok": true
@@ -3305,6 +3615,91 @@
    "ok": true
   },
   {
+   "file": "test/gpu-device.test.mjs",
+   "name": "a deadlock at a barrier ends the run with FAULT and code 8",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "ARGS and BLOCK reach the identity registers kernel_args and block_index",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "fault_div: through the device, the data memory and counters equal the GPU module's run; BUSY lasts one cycle per issue",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "fault_join: through the device, the data memory and counters equal the GPU module's run; BUSY lasts one cycle per issue",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "ifelse: through the device, the data memory and counters equal the GPU module's run; BUSY lasts one cycle per issue",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "nested: through the device, the data memory and counters equal the GPU module's run; BUSY lasts one cycle per issue",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "reverse_bar: through the device, the data memory and counters equal the GPU module's run; BUSY lasts one cycle per issue",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "snapshot and restore give back the state; a back-step over a running kernel is exact",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "the register map: names, reset values, unused offsets read 0",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "uniform: through the device, the data memory and counters equal the GPU module's run; BUSY lasts one cycle per issue",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "vadd_tail: through the device, the data memory and counters equal the GPU module's run; BUSY lasts one cycle per issue",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-device.test.mjs",
+   "name": "writes are ignored while busy and counted; CLEAR clears DONE and the fault; START with CLEAR launches",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-docs.test.mjs",
+   "name": "it names the views, Models tabs, profiles, templates and exercises as the interface does",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-docs.test.mjs",
+   "name": "the documentation is the module's docs content; every contents link has its section",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-docs.test.mjs",
+   "name": "the numbers it quotes are the simulator's",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-docs.test.mjs",
+   "name": "the register map in both documents is the device's",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-docs.test.mjs",
+   "name": "W-D16: neither document names a book, chapter, figure or exercise number",
+   "ok": true
+  },
+  {
    "file": "test/gpu-engine.test.mjs",
    "name": "G1-G3: simt_tests.hex through the core's ports, driven as tb_simt_core drives it",
    "ok": true
@@ -3360,6 +3755,61 @@
    "ok": true
   },
   {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "a GPU exercise is refused by the other architectures, and theirs by the GPU, with the reason",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "C5: no model solution is published; the starters hold only tmc zero and directives",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "GPU practice exercise gpu-clamp: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "GPU practice exercise gpu-difference: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "GPU practice exercise gpu-sign: the starter fails, a model solution passes every test",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "the checks: memory words against the run; a fault, an endless run, a bad address and the wrong profile are reported",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "the descriptor offers the exercises for the SIMT core, not for the micro-ISA",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-exercises.test.mjs",
+   "name": "the GPU exercise files are those tools/gpu/make-exercises.mjs writes",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-help.test.mjs",
+   "name": "the GPU help describes the module's views and the Models tabs by their names",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-help.test.mjs",
+   "name": "the GPU help: sections of known block kinds, the first page with the logo, references and notice",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-help.test.mjs",
+   "name": "W-D16: the GPU help names no book, chapter, figure or exercise number",
+   "ok": true
+  },
+  {
    "file": "test/gpu-language.test.mjs",
    "name": "G4: every 16-bit word disassembles, and assembles back to the word without the bits its operation ignores",
    "ok": true
@@ -3400,6 +3850,196 @@
    "ok": true
   },
   {
+   "file": "test/gpu-models.test.mjs",
+   "name": "A2 strips: n = 19, VLMAX = 8 gives (19, 8) (11, 8) (3, 3); the permitted range at AVL 11 is 6 to 8",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "A3 scheduler: W = 4, k = 3, L = 9 issues every cycle; W = 3 idles",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "A4 coalescing: 2, 8 and 32 transactions",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "banks: strides 1, 2, 3, 8 and one word on 8 banks",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "blocks go whole to SMs, in waves",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "occupancy: registers against latency",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "one loop, four machines: 8, 2, 1 and 1 instructions for eight elements",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "the models refuse what they cannot compute",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "the tail of a launch: n = 1000, blocks of 256, warps of 32",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-models.test.mjs",
+   "name": "thread indexing figure: n = 21, blocks of 8, warps of 4; block 2, thread 5 is i = 21",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: 400 random programs give the supplied model's data memory, counters and fault",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: a snapshot restores the state and its history (the Worker)",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: fault_div assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: fault_join assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: ifelse assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: ifelse8 assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: nested assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: reverse_bar assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: step back is exact through every program (state, data memory, last record)",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: the contract engine of the module gives the same dumps, and the counters panel the efficiency",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: uniform assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S: vadd_tail assembles to GNU's prog.hex and runs to its golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S10 (MAVILERA): a barrier no other warp reaches stops the run before the cycle, as an error; step back clears it",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S10: bad data address (7): unaligned or past the 256-word data memory, for any active thread",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S10: illegal instruction (2): a word outside the subset faults, and the assembler marks it",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S10: reconvergence stack overflow (3): two nested divergent splits fit, a third does not",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S10: the directed programs give the supplied model's fault code and counters",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S10: tmc with a non-empty stack (5); a uniform split pushes only the reconverge entry",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S10: warp-control operand errors (6): wspawn outside warp 0, past WARPS or with a warp active; bar ids and counts",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S11: scalar operands from the lowest active thread; the highest lane wins a same-word store; CSRs; x0",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "S9: every issue equals the supplied model's trace (cycle, warp, PC, mask before and after, stack)",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "the default program assembles and gives |x|",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "the disassembly names the warp-control instructions and the identity CSRs; decoding is total",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "the fixtures are the files the README lists, and the programs those the assembly record hashes",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "the profiles: lab is two warps of four lanes, lab-l8 one warp of eight",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "the shared assembler is unchanged for RISC-V: no warp-control mnemonic, no .include, no numeric labels",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "the templates are the generator's, and each runs to its program's golden.hex",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-rvsimt.test.mjs",
+   "name": "the Threads panel: one table per warp, a column per lane, the non-zero registers (all with the option)",
+   "ok": true
+  },
+  {
    "file": "test/gpu-templates.test.mjs",
    "name": "each template runs to HALT with the outputs, cycles and idle lane-slots its comment gives",
    "ok": true
@@ -3412,6 +4052,86 @@
   {
    "file": "test/gpu-templates.test.mjs",
    "name": "the Lanes panel's matrix: one column per lane of the profile, registers signed, mask and stack bits",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "content/geometry/ch11a-gpu.json is what the book's generators export",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "G9: the eight-lane template warp8 under the masks-only filter gives FIG-0109's MASKS",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "S12: ifelse8 under the masks-only filter gives FIG-0109's MASKS and states what it hides",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "S13: the stack rows of ifelse8 from slt to the store after join equal FIG-0215",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "S14: the counters of the five laboratory programs equal FIG-0218",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "step back through the view model is exact (state, issue log, preview)",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the micro-ISA mask model: same registers as the engine every cycle, exact step back, golden dump",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the preview of the coming issue: split predicate, branch outcome, results gated by the mask",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of fault_div equals its golden.hex, through the export protocol",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of fault_join equals its golden.hex, through the export protocol",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of ifelse equals its golden.hex, through the export protocol",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of ifelse8 equals its golden.hex, through the export protocol",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of nested equals its golden.hex, through the export protocol",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of reverse_bar equals its golden.hex, through the export protocol",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of uniform equals its golden.hex, through the export protocol",
+   "ok": true
+  },
+  {
+   "file": "test/gpu-views.test.mjs",
+   "name": "the view model's golden dump of vadd_tail equals its golden.hex, through the export protocol",
    "ok": true
   },
   {
@@ -3432,6 +4152,261 @@
   {
    "file": "test/history.test.mjs",
    "name": "WS-F-090: the history drops the oldest steps at its limit",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5 [TEST]: invariants, queue events, data cycles and the first fetch after a flush, 25 tests of each normal SingleStepTests file",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5 view: peek gives the next clock's record and changes nothing; instruction starts and back by instructions",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: a transfer to an odd address fetches one byte there, then words; the fetch in progress is discarded",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: a word operand at an odd address takes two byte cycles; at an even address one word cycle",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: one clock at a time; step back returns to every earlier clock exactly",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: planted faults in clock records are caught by the invariant checks",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: queue events -- each prefix and the op code are first bytes (F), the rest subsequent (S), a flush E",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: the EU's request waits for a fetch in progress to complete, then goes before the next fetch",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: the queue fills to six bytes and the BIU idles; fast instructions empty it and the EU waits",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: the templates clock by clock (0 wait states): invariants hold, no stale byte, commits follow the L1 engine",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: the templates clock by clock (1 wait states): invariants hold, no stale byte, commits follow the L1 engine",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: wait states lengthen every bus cycle by Tw after T3",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: an interrupt without a handler stops with a message and changes nothing",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: arithmetic flags (IFUM Table 2-21)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: INT, a divide error with a handler, IRET, and the call list",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: profiles: one segment, or segments set by the program",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: REP MOVSB is one step; step back restores the memory it wrote",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: segments, physical addresses and wrap-around",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: shifts and rotates by 1 and by CL",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: step over a CALL, run to a breakpoint, watch a register",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: the stack; PUSH SP pushes the decremented SP",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-engine.test.mjs",
+   "name": "i8086: undocumented op codes stop the run (author's default: documented instructions only)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086 [TEST]: decode, write and assemble again round-trips the instruction bytes of SingleStepTests",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086 [TEST]: the table's statuses agree with SingleStepTests metadata",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086: a listing word keeps its bytes, also with a leading 00H",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086: data, labels, EQU, DUP, OFFSET and typed variables",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086: diagnostics",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086: encodings of the documented forms (IFUM Tables 4-12, 4-13)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086: fields, description, scratch line and editor help",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086: jumps are relative to the next instruction; short when in range, forward jumps shrink",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-language.test.mjs",
+   "name": "i8086: the table has one entry per op code (or eight for a group), and the assembler emits documented forms only",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-layout.test.mjs",
+   "name": "i8086 B4 layout: every element has a name, a source class and a tooltip; abstractions are marked",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-layout.test.mjs",
+   "name": "i8086 B4 layout: every place of the teaching model is drawn, in a row of its unit",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-layout.test.mjs",
+   "name": "i8086 B4 layout: stubs reach the bus or its riser from their unit; links do not cross a unit",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-layout.test.mjs",
+   "name": "i8086 B4 layout: the units lie in their frames, apart from each other and from the ALU data bus",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-micro-model.test.mjs",
+   "name": "i8086 B4: one step at a time, k counts the steps; step back returns to every earlier state exactly",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-micro-model.test.mjs",
+   "name": "i8086 B4: replay of generated instructions equals runMicro (5 000 cases: registers, temporaries, bytes written)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-micro-model.test.mjs",
+   "name": "i8086 B4: the shown memory has the writes of the steps performed; a write is committed with the instruction",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-micro-model.test.mjs",
+   "name": "i8086 B4: the state rebuilt from the steps equals runMicro's after each instruction; commits follow the L1 engine",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3 [TEST]: lock-step and the order of bus requests, 25 tests of each normal SingleStepTests file; the undefined-flag masks equal the metadata",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: 20 000 generated instructions agree with the instruction-level engine",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: interrupt entry reads the vector before the three pushes ([TEST] order); the target and frame are right",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: multiply and divide are loops of 8 or 16 steps (§5); a divisor of 0 and an IDIV quotient of -128 are divide errors",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: planted faults are caught (a carry ignored, a wrong push, a missing read, the wrong default segment, a swapped order, a broken list)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: REP MOVSB as iterations; a shift of memory by CL = 0 still reads and writes it back ([TEST])",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: the effective-address routine (§5): [BX+SI+d8] in four steps, [d16] in two; BP-based forms use SS",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: the places and step kinds are those of the design (§2, §3); hardwired instructions are not shown as microcoded (§4)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-microops.test.mjs",
+   "name": "i8086 B3: the six templates run to HLT in lock-step (registers and memory after every instruction)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-sst.test.mjs",
+   "name": "i8086 [TEST]: SingleStepTests replay, 25 tests of each normal file",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-templates.test.mjs",
+   "name": "i8086: every template is listed, has the copyright line, and shows what it says",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-templates.test.mjs",
+   "name": "i8086: the default program is the first template",
    "ok": true
   },
   {
@@ -5966,6 +6941,11 @@
   },
   {
    "file": "test/shell-format.test.mjs",
+   "name": "G28: a one-bit register (a flag, done, fault) reads 0 or 1 in every format, never -1",
+   "ok": true
+  },
+  {
+   "file": "test/shell-format.test.mjs",
    "name": "narrower registers: ceil(width / 4) digits, signed and binary within the width",
    "ok": true
   },
@@ -6177,6 +7157,11 @@
   {
    "file": "test/templates.test.mjs",
    "name": "template cpi-mix: Cycles per instruction: ALU loop and load loop",
+   "ok": true
+  },
+  {
+   "file": "test/templates.test.mjs",
+   "name": "template cpu-gpu-abs: CPU + GPU: the host starts a kernel and polls the GPU",
    "ok": true
   },
   {
@@ -6551,7 +7536,7 @@
   "browsers": [
    {
     "name": "chrome",
-    "version": "Chrome/156.0.8078.79",
+    "version": "Chrome/156.0.8078.80",
     "installed": true,
     "results": [
      {
@@ -6763,7 +7748,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.79",
+      "version": "Chrome/156.0.8078.80",
       "installed": true,
       "results": [
        {
@@ -6839,7 +7824,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.79",
+      "version": "Chrome/156.0.8078.80",
       "installed": true,
       "results": [
        {
@@ -6915,7 +7900,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.79",
+      "version": "Chrome/156.0.8078.80",
       "installed": true,
       "results": [
        {
@@ -6991,7 +7976,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.79",
+      "version": "Chrome/156.0.8078.80",
       "installed": true,
       "results": [
        {
@@ -7067,7 +8052,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.79",
+      "version": "Chrome/156.0.8078.80",
       "installed": true,
       "results": [
        {
@@ -7091,7 +8076,11 @@
         "ok": true
        },
        {
-        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 4 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "name": "practice exercises: the list opens, the first loads its starter, its tests run and fail on it; the dialog passes axe-core (WS-F-148)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 28 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
         "ok": true
        }
       ]
@@ -7122,7 +8111,11 @@
         "ok": true
        },
        {
-        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 4 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "name": "practice exercises: the list opens, the first loads its starter, its tests run and fail on it; the dialog passes axe-core (WS-F-148)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 28 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
         "ok": true
        }
       ]
