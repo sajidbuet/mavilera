@@ -252,6 +252,42 @@ def accel_header(x, first):
     U = letter_U(x); x += 170
     return union([F, P, U]), x
 
+SB, SH = 569.0, 105.0  # the S's lower bowl: its top (the middle bar's top) and its height (2 x 52.5)
+
+def counter(x0, y):
+    """A bowl's counter as in the S: 48 wide between stems of 51, 17 high, with ends of radius 8.5."""
+    return rrect(x0 + 51, y, 48, 17, 8.5)
+
+def digit_0(x0):
+    """0, 150 wide, in the C's construction closed on the right: stems 51, bars 46, outer corners of radius 52.5 and
+    inner corners of 8.5."""
+    return diff(rrect(x0, T, 150, B - T, 52.5), rrect(x0 + 51, 552, 48, 76, 8.5))
+
+def digit_8(x0):
+    """8, 150 wide: the S's two bowls, both closed (each 105 high with sides of radius 52.5, overlapping in the S's
+    middle bar 569 to 611, which pinches the waist), with the S's counters."""
+    return diff(union([rrect(x0, T, 150, SH, 52.5), rrect(x0, SB, 150, SH, 52.5)]),
+                union([counter(x0, 552), counter(x0, 611)]))
+
+def digit_6(x0):
+    """6, 150 wide: the C's top bar and left stem, the 8's lower bowl, and the C's inner corners at the stem."""
+    xr = x0 + 150; ro, ri = 52.5, 8.5
+    b = Builder()
+    b.M((xr, T)).L((x0 + ro, T)).A((x0 + ro, T + ro), ro, -math.pi / 2, -math.pi)
+    b.L((x0, B - ro)).A((x0 + ro, B - ro), ro, math.pi, math.pi / 2)
+    b.L((xr - ro, B)).A((xr - ro, B - ro), ro, math.pi / 2, -math.pi / 2)
+    b.L((x0 + 51 + ri, SB)).A((x0 + 51 + ri, SB - ri), ri, math.pi / 2, math.pi)
+    b.L((x0 + 51, 552 + ri)).A((x0 + 51 + ri, 552 + ri), ri, math.pi, 1.5 * math.pi)
+    b.L((xr, 552)).Z()
+    return diff(b.path, counter(x0, 611))
+
+def i8086_header(x):
+    """'8086' in the wordmark's construction from x; returns (path, right edge). Digits 150 wide, 22 apart."""
+    parts = []
+    for d in (digit_8, digit_0, digit_8, digit_6):
+        parts.append(d(x)); x += 150 + 22
+    return union(parts), x - 22
+
 def wordmark():
     navy = union([letter_M(), letter_A1(), letter_V(), letter_I(), letter_L(), letter_E(), letter_R(), letter_A2()])
     light = union([tri_A1(), tri_A2()])
@@ -419,6 +455,7 @@ TOOL_NAMES = {  # key: (the name after the chip, as built from its left end x; i
     'riscv': (lambda x: riscv_header(x)[0], 'RISC-V'), 'sap1': (lambda x: sap1_header(x)[0], 'SAP-1'),
     'sap2': (lambda x: sap_header(x, 2)[0], 'SAP-2'), 'armv7': (lambda x: armv7_header(x)[0], 'ARMv7'),
     'npu': (lambda x: accel_header(x, 'N')[0], 'NPU'), 'gpu': (lambda x: accel_header(x, 'G')[0], 'GPU'),
+    '8086': (lambda x: i8086_header(x)[0], '8086'),  # 8086-B1 (proposal, 2026-11-05; awaits the author's approval)
 }
 
 def module_headers(only):

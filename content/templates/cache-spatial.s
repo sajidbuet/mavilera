@@ -1,6 +1,6 @@
 # cache-spatial.s -- Spatial locality: a sequential walk misses once per block.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # The Memory setting of this template is a direct-mapped data cache with 16-byte
 # blocks (four words). Try: open the Cache tab at the bottom (data cache) and

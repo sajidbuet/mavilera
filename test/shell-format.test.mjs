@@ -27,3 +27,12 @@ test('narrower registers: ceil(width / 4) digits, signed and binary within the w
   assert.equal(formatValue(5, 'binary', 12), '0000 00000101');
   assert.equal(formatValue(0xffff, 'signed', 16), '-1');
 });
+
+test('G28: a one-bit register (a flag, done, fault) reads 0 or 1 in every format, never -1', () => {
+  for (const fmt of ['signed', 'unsigned', 'binary']) {
+    assert.equal(formatValue(1, fmt, 1), '1', fmt);
+    assert.equal(formatValue(0, fmt, 1), '0', fmt);
+  }
+  assert.equal(formatValue(1, 'hex', 1), '0x1');
+  assert.equal(formatValue(3, 'signed', 2), '-1'); // two bits and wider stay two's complement
+});

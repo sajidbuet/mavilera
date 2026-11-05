@@ -6,8 +6,8 @@
    "title": "About the Armv7 Laboratory",
    "blocks": [
     { "brand": true },
-    { "p": "The Armv7 Laboratory runs programs in the 32-bit ARM instruction set (A32) in your browser, one instruction at a time or one clock cycle at a time on a single-cycle processor that is drawn as it works. Its processors follow the microarchitecture of Sarah L. Harris and David Money Harris's textbook Digital Design and Computer Architecture: ARM Edition; the meaning of every instruction follows ARM's architecture reference manual." },
-    { "p": "The textbook's processor runs a small set of instructions: ADD, SUB, AND and ORR with a register or an immediate, LDR and STR with a positive offset, and B, each with a condition. The Instructions view runs a larger subset, and the single-cycle view's Extended datapath adds the instructions of the textbook's Chapter 7 exercises on a design of this application's own." },
+    { "p": "The Armv7 Laboratory runs programs in the 32-bit ARM instruction set (A32) in your browser, one instruction at a time, or one clock cycle at a time on a single-cycle, a multicycle and a pipelined processor, each drawn as it works. Its processors follow the microarchitecture of Sarah L. Harris and David Money Harris's textbook Digital Design and Computer Architecture: ARM Edition; the meaning of every instruction follows ARM's architecture reference manual." },
+    { "p": "The textbook's processor runs a small set of instructions: ADD, SUB, AND and ORR with a register or an immediate, LDR and STR with a positive offset, and B, each with a condition. The Instructions view runs a larger subset, and the processor views' Extended datapath adds the instructions of the textbook's Chapter 7 exercises on a design of this application's own." },
     { "refs": [
       ["Digital Design and Computer Architecture: ARM Edition", null, "S. L. Harris, D. M. Harris. Morgan Kaufmann (Elsevier), 2016. ISBN 978-0-12-800056-4. Chapter 6: architecture; Chapter 7: microarchitecture."],
       ["ARM Architecture Reference Manual ARMv7-A and ARMv7-R edition", null, "ARM Limited, ARM DDI 0406C.d, 2018. Section A8: the instructions, used here for every instruction's effect on the registers and flags."]
@@ -24,9 +24,9 @@
       "Type a program in the editor, or open one from Templates.",
       "Assemble it (Ctrl+Enter). Errors are listed in the console with their line.",
       "Step (F10) or run (F5). Step back (Shift+F10) undoes a step.",
-      "Choose the Single-cycle view to watch the processor execute each instruction in one clock cycle."
+      "Choose the Single-cycle, Multicycle or Pipelined view to watch a processor run the same program, one clock cycle per step."
     ] },
-    { "p": "The single-cycle processor runs only the textbook's instructions unless you choose \"Extended datapath\" in the instruction-set menu. The template \"Base instructions only: the sum 1 to 10\" runs on the base design." }
+    { "p": "The processors run only the textbook's instructions unless you choose \"Extended datapath\" in the instruction-set menu. The template \"Base instructions only: the sum 1 to 10\" runs on the base design." }
    ]
   },
   {
@@ -113,7 +113,7 @@
     { "dl": [
       ["Ctrl+Enter", "Assemble"],
       ["F5", "Run or pause"],
-      ["F10 / Shift+F10", "Step / step back (in the Single-cycle view, one clock cycle)"],
+      ["F10 / Shift+F10", "Step / step back (in a processor view, one clock cycle)"],
       ["F11 / Shift+F11", "Step over / step out"],
       ["Ctrl+F10", "Run to the editor's line"],
       ["Ctrl+F", "Find in the editor"],

@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "Evaluate a polynomial",
  "task": "Write the procedure poly: a0 holds the address of a1 signed word coefficients, the highest power first; return in a0 the value of the polynomial at x = a2, by Horner's rule: start from 0, then for each coefficient multiply by x and add it.",
  "lang": "asm",
- "starter": "# poly -- practice exercise (RISC-VISTA)\n# Return the polynomial with the a1 coefficients at a0 evaluated at a2.\n# Hint: one mul and one add per coefficient.\n        .data\ncoef:   .space 64               # the tests put their coefficients here\n        .text\npoly:\n        # a0 = address of the coefficients, a1 = how many, a2 = x\n        li   a0, 0              # replace with your code\n        ret\n",
+ "starter": "# poly -- practice exercise (MAVILERA)\n# Return the polynomial with the a1 coefficients at a0 evaluated at a2.\n# Hint: one mul and one add per coefficient.\n        .data\ncoef:   .space 64               # the tests put their coefficients here\n        .text\npoly:\n        # a0 = address of the coefficients, a1 = how many, a2 = x\n        li   a0, 0              # replace with your code\n        ret\n",
  "entry": "poly",
  "tests": [
   {

@@ -1,5 +1,5 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "groups": {
   "bits": "Bits and shifts",
   "branches": "Comparisons and branches",

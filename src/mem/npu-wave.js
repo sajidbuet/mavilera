@@ -1,9 +1,10 @@
-// npu-wave.js -- the NPU's signals in the waveform panel and the VCD export (NPU-3, gate V of
-// docs/research/gpu-npu/roadmaps/NPU_DEVELOPMENT_ROADMAP.md; WS-F-125, WS-F-146). A processor model with the platform
-// devices is wrapped so that each frame of a cycle carries, besides the processor's signals, the NPU's signals of the
-// same cycle: the controller and array registers during it (Npu.visible) and the bus access the cycle made. The access
-// is known only after the cycle's edge, so the wrapper runs the model one cycle ahead of the recording. Pure
-// JavaScript, no DOM; no change to the architecture contract (the view's export model is still a model).
+// npu-wave.js -- the platform devices' signals in the waveform panel and the VCD export: the NPU's (NPU-3, gate V of
+// docs/research/gpu-npu/roadmaps/NPU_DEVELOPMENT_ROADMAP.md; WS-F-125, WS-F-146) and the GPU's (GPU-7, decision G30).
+// A processor model with the platform devices is wrapped so that each frame of a cycle carries, besides the processor's
+// signals, each device's signals of the same cycle: its registers during it (Device.visible) and the bus access the
+// cycle made. The access is known only after the cycle's edge, so the wrapper runs the model one cycle ahead of the
+// recording, once for all devices. Pure JavaScript, no DOM; no change to the architecture contract (the view's export
+// model is still a model).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -43,25 +44,29 @@ export function npuFrame(S, bus, n = NPU_N) {
 }
 
 /**
- * The export model `x` ({model, signals, ...} of a processor view) with the NPU of `platform` added to its frames, or
- * `x` itself when the platform has no NPU. evaluate() of cycle k executes cycle k on the inner model (the frame's bus
- * access is the one stamped k, NPU-1's convention: a store and a load carry the cycle that executes them); step()
- * then only reports that cycle's result. Everything else reads the inner model.
+ * The export model `x` ({model, signals, ...} of a processor view) with the signals of the devices `parts` added to its
+ * frames: parts [{device, signals, frame: (S, bus) => values}], S the device's registers during the cycle and bus its
+ * access of the cycle (or null). `x` itself when there is no part. evaluate() of cycle k executes cycle k on the inner
+ * model (the frame's bus access is the one stamped k, NPU-1's convention: a store and a load carry the cycle that
+ * executes them); step() then only reports that cycle's result. Everything else reads the inner model.
  */
-export function withNpuSignals(x, platform) {
-  const npu = platform?.npu;
-  if (!npu) return x;
+export function withDeviceSignals(x, parts) {
+  if (!parts.length) return x;
   const inner = x.model;
   let ahead = null; // {result, r}: cycle inner.cycle - 1 evaluated and executed
   const look = () => {
     if (ahead) return ahead;
     const k = inner.cycle;
     const result = inner.evaluate();
-    const S = npu.visible;
-    const before = npu.last;
+    const before = parts.map((p) => ({ S: p.device.visible, last: p.device.last }));
     const r = inner.step();
-    const bus = npu.last !== before && npu.last?.cycle === k ? npu.last : null;
-    ahead = { result: { ...result, signals: { ...result.signals, ...npuFrame(S, bus, npu.n) } }, r };
+    const signals = { ...result.signals };
+    parts.forEach((p, i) => {
+      const d = p.device;
+      const bus = d.last !== before[i].last && d.last?.cycle === k ? d.last : null;
+      Object.assign(signals, p.frame(before[i].S, bus));
+    });
+    ahead = { result: { ...result, signals }, r };
     return ahead;
   };
   const model = new Proxy(inner, {
@@ -74,5 +79,14 @@ export function withNpuSignals(x, platform) {
       return typeof v === 'function' ? v.bind(t) : v;
     },
   });
-  return { ...x, model, signals: [...x.signals, ...NPU_WAVE_SIGNALS] };
+  return { ...x, model, signals: [...x.signals, ...parts.flatMap((p) => p.signals)] };
+}
+
+/** The NPU part of withDeviceSignals for a platform (null without the NPU). */
+export const npuPart = (platform) => (platform?.npu ? { device: platform.npu, signals: NPU_WAVE_SIGNALS, frame: (S, bus) => npuFrame(S, bus, platform.npu.n) } : null);
+
+/** The export model with the NPU of `platform` added to its frames, or `x` itself when the platform has no NPU. */
+export function withNpuSignals(x, platform) {
+  const p = npuPart(platform);
+  return p ? withDeviceSignals(x, [p]) : x;
 }

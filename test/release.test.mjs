@@ -12,7 +12,7 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { ROOT, shippedFiles, releaseFiles, registry, archFiles, archOverrides, archPage } from '../tools/site-files.mjs';
+import { ROOT, shippedFiles, releaseFiles, registry, archFiles, archOverrides, archPage, SHARED } from '../tools/site-files.mjs';
 import { collect, transform, buildOffline } from '../tools/offline.mjs';
 
 test('W-D20: a release publishes the application without the JALR answer and without the site documentation', () => {
@@ -52,9 +52,12 @@ test('WS-N-002: every module of the offline build exports what Node.js reads fro
 test('W-D29 phase 6: each architecture builds from its own modules and content folders', () => {
   const all = releaseFiles();
   const own = { riscv: ['src/arch/riscv/', 'src/isa/', 'src/asm/', 'src/core/', 'src/uarch/', 'src/cc/'], 'sap-1': ['src/arch/sap-1/'], 'sap-2': ['src/arch/sap-2/'],
-    armv7: ['src/arch/armv7/'], gpu: ['src/arch/gpu/'] };
+    armv7: ['src/arch/armv7/'], i8086: ['src/arch/i8086/'], gpu: ['src/arch/gpu/'] };
+  // the declared sharing (G18, GPU-4, G30): tools/site-files.mjs SHARED
+  const shared = SHARED;
+  const GPU_IN_RISCV = SHARED.riscv;
   const built = registry().filter((a) => a.content);
-  assert.deepEqual(built.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu']);
+  assert.deepEqual(built.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu']);
   for (const a of built) {
     for (const c of a.content) assert.ok(existsSync(join(ROOT, c)), `${a.id}: ${c}`);
     const { files, overrides } = archFiles(a.id);
@@ -62,7 +65,7 @@ test('W-D29 phase 6: each architecture builds from its own modules and content f
     // nothing of another architecture: neither its modules nor its content
     for (const b of others) {
       const theirs = [...own[b.id], ...b.content];
-      assert.deepEqual(files.filter((p) => theirs.some((t) => p.startsWith(t))), [], `${a.id} has ${b.id}'s files`);
+      assert.deepEqual(files.filter((p) => theirs.some((t) => p.startsWith(t)) && !(shared[a.id] ?? []).includes(p)), [], `${a.id} has ${b.id}'s files`);
     }
     for (const p of ['index.html', 'manifest.webmanifest', 'src/main.js', 'src/worker/run.js', 'src/ui/theme.css', 'content/branding/mavilera/mavilera-icon.svg']) assert.ok(files.includes(p), `${a.id}: ${p}`);
     // the overrides: one registry entry, importing what the development registry imports; the id fixed
@@ -71,14 +74,14 @@ test('W-D29 phase 6: each architecture builds from its own modules and content f
     assert.deepEqual(reg.exports, ['ARCHITECTURES']);
     assert.match(overrides['src/shell/arch-id.js'], new RegExp(`^export const ARCH_ID = "${a.id}";$`, 'm'));
   }
-  // the RISC-V build is the release files without SAP-1's, SAP-2's, ARMv7's and the GPU's (each built on its own; the
-  // GPU a preview from 1.2.0) and without the logo files no page, manifest or module
+  // the RISC-V build is the release files without SAP-1's, SAP-2's, ARMv7's, the 8086's and the GPU's (each built on its
+  // own; the GPU a preview from 1.2.0, the 8086 a beta) and without the logo files no page, manifest or module
   // names (WS-N-004: the social preview and the print variants belong to the landing page and the repository)
   const rv = new Set(archFiles('riscv').files);
   const brand = 'content/branding/mavilera/';
   const unused = ['social-preview.png', 'mavilera-dark.svg', 'mavilera-light.svg', 'mavilera-mono.svg', 'mavilera-lockup.svg'];
   assert.deepEqual(all.filter((p) => !rv.has(p) && !p.startsWith(brand)),
-    all.filter((p) => /^(src\/arch|content)\/(sap-[12]|armv7|gpu)\//.test(p)));
+    all.filter((p) => /^(src\/arch|content)\/(sap-[12]|armv7|i8086|gpu)\//.test(p) && !GPU_IN_RISCV.includes(p)));
   for (const f of unused) assert.ok(!rv.has(brand + f), f);
   for (const f of ['favicon.ico', 'mavilera-icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'mavilera-logo.svg', 'mavilera-full.svg']) assert.ok(rv.has(brand + f), f);
   assert.ok(archFiles('sap-1').files.includes(`${brand}mavilera-logo-sap-1.svg`), 'SAP-1: its header lockup');
@@ -133,7 +136,7 @@ test('WS-N-002: the offline page holds the release content, marked as the releas
 });
 
 test('W-D20: the in-app help has sections of known block kinds, and the documentation no unfilled fields', () => {
-  for (const dir of ['content/help', 'content/sap-1/help', 'content/sap-2/help']) {
+  for (const dir of ['content/help', 'content/sap-1/help', 'content/sap-2/help', 'content/gpu/help']) {
     const help = JSON.parse(readFileSync(join(ROOT, dir, 'help.json'), 'utf8'));
     const ids = help.sections.map((s) => s.id);
     assert.equal(new Set(ids).size, ids.length, dir);

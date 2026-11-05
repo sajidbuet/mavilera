@@ -1,12 +1,12 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "NPU: two layers in a row",
  "task": "For the laboratory profile (the NPU at 0x5000_0000; register map in the Help). Two 4 × 4 INT8 matrices W1 and W2 are at w1 and w2 (one word per row, W[i][j] in bits 8j+7 to 8j) and a vector x at x (one INT8 value per word). Using the NPU for both products, compute h = W1 x and store it as four words at h, then compute y = W2 h and store it as four words at y; then halt. The tests choose values for which every h[i] fits in INT8.",
  "lang": "asm",
  "profile": "ch11",
- "starter": "# npu-two-layers -- practice exercise (RISC-VISTA)\n# h = W1 x, then y = W2 h, both on the NPU.\n# Hint: ACT[j] takes bits 7..0 of the word written, so a result that fits in INT8 can be written back as it is; load W2 only when the first run is done.\n# Laboratory profile: the NPU at 0x5000_0000 (CTRL 0x00, STATUS 0x04, WEIGHT 0x10, ACT 0x20, RESULT 0x30).\n        .equ NPU, 0x50000000\n        .data\nw1:     .word 0x00000001, 0x00000100, 0x00010000, 0x01000000\nw2:     .word 0x01010101, 0x00000000, 0x00000000, 0x00000000\nx:      .word 1, 2, 3, 4\nh:      .space 16\ny:      .space 16\n        .text\nmain:   # your code\n        halt\n",
+ "starter": "# npu-two-layers -- practice exercise (MAVILERA)\n# h = W1 x, then y = W2 h, both on the NPU.\n# Hint: ACT[j] takes bits 7..0 of the word written, so a result that fits in INT8 can be written back as it is; load W2 only when the first run is done.\n# Laboratory profile: the NPU at 0x5000_0000 (CTRL 0x00, STATUS 0x04, WEIGHT 0x10, ACT 0x20, RESULT 0x30).\n        .equ NPU, 0x50000000\n        .data\nw1:     .word 0x00000001, 0x00000100, 0x00010000, 0x01000000\nw2:     .word 0x01010101, 0x00000000, 0x00000000, 0x00000000\nx:      .word 1, 2, 3, 4\nh:      .space 16\ny:      .space 16\n        .text\nmain:   # your code\n        halt\n",
  "tests": [
   {
    "name": "case 1",

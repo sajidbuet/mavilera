@@ -1,0 +1,261 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (W-D24), not taken from the textbook; produced by tools/gpu/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "gpu",
+ "title": "Two warps: the difference of two arrays",
+ "task": "For the profile with two warps of four lanes. Eight threads, i = 0 to 7 (the identity register THREAD_INDEX), each compute z[i] = x[i] − y[i] for the arrays x, y and z of eight words at the labels x, y and z. Start the second warp with wspawn, so that both warps run the same kernel; end every warp with tmc zero. No thread needs to branch.",
+ "lang": "asm",
+ "profile": "lab",
+ "starter": "# gpu-difference -- practice exercise (MAVILERA GPU Laboratory)\n# z[i] = x[i] - y[i] for i = 0 to 7, one thread per element.\n# Profile: two warps of four lanes (thread i = 0 to 7); start warp 1 with wspawn.\n        .include \"simt.inc\"\n        .text\n_start: # your code\n        tmc    zero\n        .data\nx:      .word  9, 8, 7, 6, 5, 4, 3, 2\ny:      .word  1, 1, 2, 3, 5, 8, 13, 21\nz:      .space 32\n",
+ "tests": [
+  {
+   "name": "case 1",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      9,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3,
+      2
+     ]
+    },
+    {
+     "at": "y",
+     "words": [
+      1,
+      1,
+      2,
+      3,
+      5,
+      8,
+      13,
+      21
+     ]
+    },
+    {
+     "at": "z",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "z",
+      "words": [
+       8,
+       7,
+       5,
+       3,
+       0,
+       4294967292,
+       4294967286,
+       4294967277
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "case 2",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      4294966853,
+      4294967038,
+      4294966524,
+      4294966563,
+      538,
+      982,
+      688,
+      456
+     ]
+    },
+    {
+     "at": "y",
+     "words": [
+      4294967022,
+      15,
+      4294966944,
+      321,
+      4294967107,
+      4294966675,
+      385,
+      921
+     ]
+    },
+    {
+     "at": "z",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "z",
+      "words": [
+       4294967127,
+       4294967023,
+       4294966876,
+       4294966242,
+       727,
+       1603,
+       303,
+       4294966831
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "case 3",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      41389,
+      4294899856,
+      57506,
+      95794,
+      76809,
+      15713,
+      20091,
+      4294900815
+     ]
+    },
+    {
+     "at": "y",
+     "words": [
+      33111,
+      4294931331,
+      4294936725,
+      4294948053,
+      75811,
+      4294952915,
+      4294892320,
+      4294890951
+     ]
+    },
+    {
+     "at": "z",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "z",
+      "words": [
+       8278,
+       4294935821,
+       88077,
+       115037,
+       998,
+       30094,
+       95067,
+       9864
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "case 4",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "at": "y",
+     "words": [
+      4294967295,
+      4294967294,
+      4294967293,
+      4294967292,
+      4294967291,
+      4294967290,
+      4294967289,
+      4294967288
+     ]
+    },
+    {
+     "at": "z",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "z",
+      "words": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  }
+ ]
+}

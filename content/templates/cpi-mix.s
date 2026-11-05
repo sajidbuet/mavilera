@@ -1,6 +1,6 @@
 # cpi-mix.s -- Cycles per instruction on the multicycle processor.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Each class takes its own number of cycles: ALU instructions 4, loads 5,
 # stores 4, branches 3. Try: run the first loop to its end (a breakpoint on the

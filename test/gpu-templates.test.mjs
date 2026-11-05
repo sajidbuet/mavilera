@@ -7,7 +7,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { descriptor as d } from '../src/arch/gpu/index.js';
+import { descriptor } from '../src/arch/gpu/index.js';
+import { withVariant } from '../src/arch/contract.js';
+// the micro-ISA is the variant microisa of the gpu module since GPU-2 (contract v9, decision G13)
+const d = await withVariant(descriptor, 'microisa');
 import { laneId } from '../src/arch/gpu/engine.js';
 import { laneMatrix } from '../src/arch/gpu/ui/lanes-panel.js';
 import { STOP } from '../src/arch/contract.js';
@@ -17,12 +20,13 @@ const DIR = new URL('../content/gpu/templates/', import.meta.url);
 const ix = JSON.parse(readFileSync(new URL('index.json', DIR), 'utf8'));
 const source = (f) => readFileSync(new URL(f, DIR), 'utf8');
 
-// dout, cycles, idle lane-slots (hand-computed for clamp8; the laboratory's values for the others)
+// dout, cycles, idle lane-slots (hand-computed for clamp8 and warp8; the laboratory's values for the others)
 const EXPECT = {
   abs: [[5, 3, 0, 7], 7, 4, 0],
   nested: [[110, 11, 22, 23], 12, 9, 1],
   straight: [[2, -3, 8, -5], 3, 0, 2],
   clamp8: [[0, 0, 0, 3, 5, 8, 9, 9], 13, 22, null],
+  warp8: [[24, 6, 36, 18, 0, 12, 42, 30], 11, 21, null],
 };
 
 test('the index lists every template once, in a group, a view and a profile of the descriptor', () => {

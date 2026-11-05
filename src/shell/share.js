@@ -43,10 +43,15 @@ function normalise(S, s) {
   const archId = s?.arch ?? FIRST_ARCH;
   if (archId !== S.arch) throw new ShareError('arch', `made for the architecture ${JSON.stringify(String(archId))}`, { arch: String(archId) });
   if (typeof s?.source !== 'string') throw new ShareError('field', 'no program text', { field: 'source' });
+  // contract v9: a profile of another variant is read before the view, whose list is this variant's; the page
+  // reloads in that variant and reads the state there
+  const profile = pick(s.profile, S.profiles, 'profile') ?? S.defaultProfile ?? S.profiles[0];
+  const variant = S.variantOf?.[profile] ?? null;
+  if (variant !== (S.activeVariant ?? null)) throw new ShareError('variant', `made for the profile ${JSON.stringify(profile)} of another instruction set`, { profile, variant });
   const out = {
     arch: S.arch,
     view: pick(s.view, S.views, 'view') ?? S.views[0],
-    profile: pick(s.profile, S.profiles, 'profile') ?? S.profiles[0],
+    profile,
     subset: pick(s.subset, S.subsets, 'subset'),
     lang: pick(s.lang, S.langs, 'lang') ?? 'asm',
     name: typeof s.name === 'string' && /^[\w.-]{1,64}$/.test(s.name) ? s.name : null,
@@ -79,6 +84,7 @@ export function normalisePlatform(p) {
     mtimeDiv: int(p.mtimeDiv, 1, 1_000_000, 1), trapEntry: int(p.trapEntry, 0, 1000, 3),
     mtvalZero: Boolean(p.mtvalZero), trapCheck: Boolean(p.trapCheck), uart: p.uart !== false, txCycles: int(p.txCycles, 1, 1000, 4),
     npu: p.npu !== false, npuStop: Boolean(p.npuStop), // the Chapter 11 NPU at 0x5000_0000 (decisions G1, G5)
+    gpu: Boolean(p.gpu), // the SIMT core at 0x5000_1000: on the CPU + GPU tool's pages only (GPU-7, decision G30)
   };
 }
 

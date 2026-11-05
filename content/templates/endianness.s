@@ -1,6 +1,6 @@
 # endianness.s -- Bytes, half-words and words in memory.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Try: switch the Memory pane to Bytes and find the word at the label word.
 # RISC-V is little-endian: the least significant byte has the lowest address.

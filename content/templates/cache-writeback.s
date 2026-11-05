@@ -1,6 +1,6 @@
 # cache-writeback.s -- Write-back: a dirty line is written to memory only when it is replaced.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # A write-back, write-allocate data cache (1 KiB, direct-mapped, 16-byte
 # blocks). The eight stores miss twice (one per block) and hit six times: the

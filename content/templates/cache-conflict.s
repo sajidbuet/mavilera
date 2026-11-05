@@ -1,6 +1,6 @@
 # cache-conflict.s -- Conflict misses: two arrays that share the same sets.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # A 1 KiB direct-mapped data cache with 16-byte blocks has 64 sets, so two
 # addresses 1024 bytes apart use the same set. Here arrB lies exactly 1 KiB

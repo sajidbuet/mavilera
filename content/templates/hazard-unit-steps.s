@@ -1,6 +1,6 @@
 # hazard-unit-steps.s -- What each part of the hazard unit is for.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Try: set Hazards above the drawing to each setting in turn, from "Stub: none"
 # to "Complete", and run to the halt each time. x6 should end as 8. Without

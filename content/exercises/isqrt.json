@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "Integer square root",
  "task": "Write the procedure isqrt: return in a0 the largest r with r * r <= a0, for the unsigned number in a0 (isqrt(15) = 3). Any method is accepted, if it finishes within the test's limit of 100,000 instructions.",
  "lang": "asm",
- "starter": "# isqrt -- practice exercise (RISC-VISTA)\n# Return floor(sqrt(a0)) for unsigned a0.\n# Hint: a binary search over r, or the bit-by-bit method; beware r * r overflowing.\n        .text\nisqrt:\n        # a0 = x (unsigned)\n        li   a0, 0              # replace with your code\n        ret\n",
+ "starter": "# isqrt -- practice exercise (MAVILERA)\n# Return floor(sqrt(a0)) for unsigned a0.\n# Hint: a binary search over r, or the bit-by-bit method; beware r * r overflowing.\n        .text\nisqrt:\n        # a0 = x (unsigned)\n        li   a0, 0              # replace with your code\n        ret\n",
  "entry": "isqrt",
  "tests": [
   {

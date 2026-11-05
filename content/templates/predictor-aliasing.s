@@ -1,6 +1,6 @@
 # predictor-aliasing.s -- Two branches sharing one predictor entry.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # The branch-history table is indexed by a few bits of the PC. With ENTRIES = 2
 # only bit 2 is used, and the three branches below (at 0x4, 0xc and 0x14) all

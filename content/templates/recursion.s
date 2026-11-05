@@ -1,6 +1,6 @@
 # recursion.s -- A recursive procedure: factorial.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Try: set a breakpoint on the line base: and Run (F5). The Call stack pane then
 # shows five nested calls of fact, each with its own frame on the stack; the

@@ -38,11 +38,23 @@ export function shippedFiles(root = ROOT) {
  *  exercise (spec W-D20), and the site documentation, published beside the application. */
 export const RELEASE_EXCLUDE = (p) => p === 'content/data/ch07-jalr.json' || /^content\/(?:[\w-]+\/)?help\/docs\//.test(p);
 
+/**
+ * Modules one architecture's build takes from another's folder, by decision (W-D29 allows no other sharing):
+ * the GPU's RISC-V SIMT core reuses RISC-V's assembler and encoding tables (G18), its Models view the analytical panels
+ * (GPU-4); the RISC-V module's CPU + GPU tool runs the GPU's core as a device and draws it with the GPU's core view
+ * (G30, 2026-11-05). test/release.test.mjs and tools/module-smoke.mjs read this list.
+ */
+export const SHARED = Object.freeze({
+  gpu: Object.freeze(['src/asm/assembler.js', 'src/asm/disassembler.js', 'src/isa/encoding.js', 'src/core/profiles.js', 'src/core/analytic.js']),
+  riscv: Object.freeze(['src/arch/gpu/rvsimt/core-model.js', 'src/arch/gpu/rvsimt/engine.js', 'src/arch/gpu/rvsimt/isa.js', 'src/arch/gpu/rvsimt/language.js',
+    'src/arch/gpu/rvsimt/strings.js', 'src/arch/gpu/rvsimt/ui/core-view.js', 'src/arch/gpu/ui/mask-grid.js']),
+});
+
 /** Files of the development repository that are not published in the public repository (W-D25): the
  *  scripts that read the private book repository, the tests that need it or hold exercise solutions,
  *  the verification script and the publication scripts. The validation record lists them as one group. */
-export const PRIVATE_ONLY = (p) => /^tools\/[\w.-]+\.py$/.test(p) || /^tools\/(verify|export-public|make-brand-proposals)\.mjs$/.test(p)
-  || p.startsWith('test/fixtures/exercise-solutions/') || /^test\/(rtl|rtl-multi|rtl-pipe|rtl-npu|conformance|priv-conformance|practice-exercises|sap[12]-exercises|armv7-exercises)\.test\.mjs$/.test(p);
+export const PRIVATE_ONLY = (p) => /^tools\/[\w.-]+\.py$/.test(p) || p === 'tools/gpu/model_batch.py' || /^tools\/(verify|export-public|make-brand-proposals)\.mjs$/.test(p)
+  || p.startsWith('test/fixtures/exercise-solutions/') || /^test\/(rtl|rtl-multi|rtl-pipe|rtl-npu|conformance|priv-conformance|practice-exercises|sap[12]-exercises|armv7-exercises|gpu-exercises)\.test\.mjs$/.test(p);
 
 /** The application files of a release. */
 export const releaseFiles = (root = ROOT) => shippedFiles(root).filter((p) => !RELEASE_EXCLUDE(p));

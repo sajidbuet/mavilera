@@ -121,7 +121,7 @@
       "id": "devices",
       "title": "Devices and traps",
       "blocks": [
-        { "p": "The profile \"ISA with traps and devices\" (Profile list, instruction-level view) adds the laboratory's platform: a GPIO at 0x4000_0000 with eight LEDs, four switches and a push button, a machine timer at 0x4000_1000 and a UART at 0x4000_2000, with Zicsr instructions, traps and interrupts." },
+        { "p": "The profile \"ISA with traps and devices\" (Architecture selector, instruction-level view) adds the laboratory's platform: a GPIO at 0x4000_0000 with eight LEDs, four switches and a push button, a machine timer at 0x4000_1000 and a UART at 0x4000_2000, with Zicsr instructions, traps and interrupts." },
         { "p": "The Peripherals tab of the Memory and cache panel draws the board: LEDs glow with the GPIO output, the switches and the button are yours to operate with the mouse or the keyboard (Space or Enter), the timer's count fills against its compare value, and the interrupt lines to the processor light while a request is active. Below it are the processor's mode and trap registers, every device register (read without side effects), the UART terminal where you can type bytes for the receiver, a table of the interrupts requested with the cycles from request to handler, and the stimulus script of pin events. Each pin you change is added to the script at the current cycle, so Reset and Step back replay it." },
         { "dl": [
           ["Programs", "In this profile ecall is a trap: compiled C programs and the exit and write calls of the plain ISA profile are not available. Use the UART to print."],
@@ -205,6 +205,32 @@
             "Output-stationary or row-stationary dataflows and tensor cores.",
             "The NPU on the multicycle and pipelined processors: the NPU tool times it on the instruction level and the single-cycle processor only.",
             "Hardware: the signals of the waveforms and the VCD file are the simulator's model, not nets of a hardware description, and simulated cycles are not FPGA measurements."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpu-gpu",
+      "title": "CPU + GPU",
+      "blocks": [
+        {
+          "p": "The CPU + GPU tool, opened from the GPU Laboratory, puts the GPU Laboratory's SIMT core (two warps of four lanes) on the bus at 0x5000_1000. The processor reaches it with lw and sw only. Its views are ISA, Single-cycle (the single-cycle datapath with the GPU on the data bus) and GPU (the core's drawing, warps, masks and stack, and its registers and bus log, as the host program steps)."
+        },
+        {
+          "dl": [
+            ["0x000 CTRL (write)", "Bit 0 starts the kernel: warp 0 at address 0 with every lane active, registers 0, the counters 0; bit 1 clears DONE and FAULT; both bits: clear, then start."],
+            ["0x004 STATUS (read)", "Bit 0 BUSY, bit 1 DONE, bit 2 FAULT, bits 11:8 the fault code (1 to 7 the core's, 8 a deadlock at a barrier)."],
+            ["0x008 ARGS, 0x00C BLOCK", "The values of the identity registers kernel_args and block_index at launch."],
+            ["0x010 CYCLES, 0x014 ISSUED, 0x018 ACTIVE (read)", "The counters of the kernel: cycles, warp-instructions issued, active lane-slots."],
+            ["0x400–0x4FC IMEM[i]", "The GPU's instruction memory, 64 words."],
+            ["0x800–0xBFC DMEM[i]", "The GPU's data memory, 256 words; a read while the GPU is busy gives the word as it is then."]
+          ]
+        },
+        {
+          "ul": [
+            "After a start, the GPU issues one warp-instruction in every clock cycle of the processor until every warp has ended (tmc zero) or an issue faults; then BUSY is 0 and DONE 1. Writes to the GPU while it is busy are ignored, and the bus log marks them.",
+            "The register map is MAVILERA's own design, one way to attach such a core; a laboratory may ask for a design of your own.",
+            "The RISC-V assembler has no warp-control instructions: a kernel is written in the GPU Laboratory and given to the host as words. The template of the tool does this, with the kernel's source in its comments."
           ]
         }
       ]

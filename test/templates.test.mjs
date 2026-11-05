@@ -269,6 +269,16 @@ const CHECKS = {
     assert.deepEqual(r.spans, [818]);
     assert.deepEqual([0, 1, 2, 3].map(r.y), Y_V4);
   },
+  // the CPU + GPU tool (GPU-7): the host runs the GPU's kernel and copies y = |x| back (test/cpu-gpu.test.mjs runs it in full)
+  'cpu-gpu-abs': () => {
+    const p = assemble([{ name: 'cpu-gpu-abs.s', text: src('cpu-gpu-abs.s') }], { profile: 'ch11' });
+    assert.ok(p.ok, p.errors.map((e) => e.message).join('; '));
+    const h = new Hart(p, { profile: 'ch11', platform: new Platform({ gpu: true }) });
+    while (!h.halted && h.instret < 100_000) h.stepFast();
+    assert.ok(h.halted);
+    const y = p.symbols.get('y');
+    assert.deepEqual(Array.from({ length: 8 }, (_, i) => (h.mem ?? h.dmem).read(y + 4 * i, 4) | 0), [5, 3, 0, 7, 2, 1, 4, 8]);
+  },
 };
 
 /** A device template on the instruction-level machine with traps: its own stimulus unless given; run to the halt (or `limit` steps). */
@@ -359,14 +369,15 @@ test('the templates are numbered by their place in the index: the device templat
   assert.deepEqual(['gpio-leds', 'gpio-switches', 'button-interrupt', 'timer-poll', 'timer-interrupt', 'ecall-trap', 'uart-hello'].map(at), [22, 23, 24, 25, 26, 27, 28]);
   assert.deepEqual(['cache-spatial', 'cache-speedup'].map(at), [29, 35]);
   assert.deepEqual(['sw-mv', 'npu-mv', 'sw-mv-m'].map(at), [36, 37, 38], 'the Chapter 11 laboratory (NPU-2)');
-  assert.equal(INDEX.templates.length, 38);
+  assert.equal(at('cpu-gpu-abs'), 39, 'the CPU + GPU tool\'s (GPU-7), last');
+  assert.equal(INDEX.templates.length, 39);
 });
 
 test('every template file is in the index, every entry has a file, a group, a view and a check', () => {
   const files = readdirSync(DIR).filter((f) => f !== 'index.json').sort();
   assert.deepEqual(INDEX.templates.map((t) => t.file).sort(), files);
   for (const t of INDEX.templates) {
-    assert.ok(INDEX.groups[t.group] && ['isa', 'single', 'multi', 'pipe', 'compare'].includes(t.view) && t.title, t.id);
+    assert.ok(INDEX.groups[t.group] && ['isa', 'single', 'multi', 'pipe', 'compare', ...(t.tool === 'cpu-gpu' ? ['gpu-host'] : [])].includes(t.view) && t.title, t.id);
     assert.ok(CHECKS[t.id], `no check for ${t.id}`);
     assert.match(src(t.file), /Copyright \(c\) 2026 Sajid Muhaimin Choudhury\. Licensed under the Apache License, Version 2\.0\.[\s\S]*Rights class: content/, t.file);
   }

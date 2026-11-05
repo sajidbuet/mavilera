@@ -16,6 +16,7 @@ export const PLATFORM_ARCHS = Object.freeze([
   Object.freeze({ id: 'sap-1', name: 'SAP-1', logo: 'mavilera-name-sap-1.svg' }),
   Object.freeze({ id: 'sap-2', name: 'SAP-2', logo: 'mavilera-name-sap-2.svg' }),
   Object.freeze({ id: 'armv7', name: 'Armv7', logo: 'mavilera-name-armv7.svg' }), // available from 1.1.0 (ARM-A6)
+  Object.freeze({ id: 'i8086', name: '8086', logo: 'mavilera-name-8086.svg' }), // the 8086 beta (8086-B0 to B2; author, 2026-11-05)
   Object.freeze({ id: 'npu', name: 'NPU', logo: 'mavilera-name-npu.svg', header: 'mavilera-logo-npu.svg', module: 'riscv',
     view: 'npu', views: Object.freeze(['isa', 'npu-single', 'npu', 'npu-analysis']) }), // NPU-3: no multicycle or pipelined host (the book times the NPU on the ISS and the single-cycle processor only); NPU-4: the Analysis view
   Object.freeze({ id: 'gpu', name: 'GPU', logo: 'mavilera-name-gpu.svg' }), // published as a preview module from 1.2.0 (GPU-1; author, 2026-11-04)
@@ -52,10 +53,24 @@ export function toolViews(arch, tool) {
   return shown.length ? shown : arch.views;
 }
 
+/**
+ * Tools inside a module that have no entry of their own in the switcher (author, 2026-11-05): they are reached from
+ * another tool (`within`), whose entry the switcher shows as current on their pages. The CPU + GPU system (GPU-7,
+ * decision G30): the RISC-V module's single-cycle processor with the GPU module's SIMT core on its bus at
+ * 0x5000_1000, opened from the GPU Laboratory; `platform` is the platform setting its pages start with, `profile` the
+ * instruction-level profile (RV32IM with the devices).
+ */
+export const HOSTED_TOOLS = Object.freeze([
+  Object.freeze({ id: 'cpu-gpu', name: 'CPU + GPU', logo: 'mavilera-name-gpu.svg', header: 'mavilera-logo-gpu.svg', module: 'riscv', within: 'gpu',
+    view: 'gpu-host', views: Object.freeze(['isa', 'gpu-single', 'gpu-host']), profile: 'ch11', platform: Object.freeze({ gpu: true }),
+    template: 'cpu-gpu-abs' }), // opened on the first visit; the tool keeps its own program (author, 2026-11-05)
+]);
+
 /** The tool a page shows: the one its `tool=` parameter names, if that tool lives in this module; else the module. */
 export function currentTool(archId, search, list = PLATFORM_ARCHS) {
   const asked = new URLSearchParams(search).get('tool');
-  return list.find((t) => t.id === asked && t.module === archId) ?? list.find((t) => t.id === archId) ?? null;
+  const all = list === PLATFORM_ARCHS ? [...list, ...HOSTED_TOOLS] : list;
+  return all.find((t) => t.id === asked && t.module === archId) ?? all.find((t) => t.id === archId) ?? null;
 }
 
 /** The other tools, as {id, name, logo, url}, in list order; a preview module on the development page only. */

@@ -1,6 +1,6 @@
 # overflow.s -- Signed and unsigned, overflow and division by zero.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Try: step with the registers shown as Signed, then Unsigned, then Hex. The same
 # 32 bits compare differently with slt and sltu. RISC-V does not trap on overflow

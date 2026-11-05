@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "Clamp a value to a range",
  "task": "Write the procedure clamp: return in a0 the signed value a0 limited to the range from a1 (lowest) to a2 (highest): a1 if a0 is below it, a2 if above, a0 otherwise. You may assume a1 <= a2.",
  "lang": "asm",
- "starter": "# clamp -- practice exercise (RISC-VISTA)\n# Return a0 limited to [a1, a2] (signed).\n# Hint: two signed comparisons; mind the order of the operands of blt and bge.\n        .text\nclamp:\n        # a0 = value, a1 = lowest, a2 = highest\n        # your code\n        ret\n",
+ "starter": "# clamp -- practice exercise (MAVILERA)\n# Return a0 limited to [a1, a2] (signed).\n# Hint: two signed comparisons; mind the order of the operands of blt and bge.\n        .text\nclamp:\n        # a0 = value, a1 = lowest, a2 = highest\n        # your code\n        ret\n",
  "entry": "clamp",
  "tests": [
   {

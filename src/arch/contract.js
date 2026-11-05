@@ -11,7 +11,8 @@
 // reads, `assembled` and the profile kind of a diagnostic, §16) approved on 2026-10-29; version 6 (`content.docs` and
 // `content.logo`, §19) approved on 2026-10-29; version 7 (`ViewInstance.diagrams`, pan and zoom, §20) approved on
 // 2026-10-29; version 8 (inputs between steps and the architecture's panels, for SAP-2's ports, §25) approved on
-// 2026-10-30. A change raises
+// 2026-10-30; version 9 (profile variants with their own language, registers and address space, for the GPU's two
+// instruction sets, §26) approved on 2026-11-04. A change raises
 // CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
 //
 // Decisions of 2026-10-28 that the shell implements on this contract:
@@ -23,7 +24,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-export const CONTRACT_VERSION = 8;
+export const CONTRACT_VERSION = 9;
 
 /**
  * The output an engine keeps (author, 2026-10-29): when its output passes twice this many characters, the oldest are
@@ -104,7 +105,66 @@ export const VIEW_KINDS = Object.freeze(['isa', 'datapath', 'bus', 'compare']);
  * @property {{parse: (raw: object) => object, run: (program: Program, exercise: object) => object[]}} [exercises]
  *           v4: exercise files (capability exercises)
  * @property {Panel[]} [panels]           v8: the architecture's own panels, as tabs of the shared memory pane
+ * @property {Record<string, {label: string, load: () => Promise<VariantOverrides>, legacy?: boolean}>} [variants]  v9: the profile variants
+ *           (GPU: the micro-ISA beside the RISC-V SIMT core); a profile names its variant in `Profile.variant`, profiles
+ *           without one belong to the descriptor's own fields. The shell resolves the variant when the page starts
+ *           (withVariant) and reloads the page to change it (§26); `legacy` (at most one): the variant that holds the
+ *           module's profiles of before v9, to which the shell moves the program and workspace stored then, once
+ * @property {string | null} [activeVariant]  v9: set by withVariant on the merged descriptor (null: the descriptor's own)
  */
+
+/**
+ * v9. What a variant replaces: each key present replaces the descriptor's; `capabilities` and `strings` are merged over
+ * the descriptor's, `content` takes only `templates` and `help`. The id, name, logo and engine stay the module's
+ * (`engine.create` reads the profile from the program).
+ *
+ * @typedef {{language?: Language, registers?: Registers, addressSpace?: AddressSpace, views?: View[], panels?: Panel[],
+ *   exports?: Exports, exercises?: object, capabilities?: Record<string, any>, strings?: Record<string, any>,
+ *   content?: {templates?: string, help?: string}}} VariantOverrides
+ */
+export const VARIANT_KEYS = Object.freeze(['language', 'registers', 'addressSpace', 'views', 'panels', 'exports', 'exercises',
+  'capabilities', 'strings', 'content']);
+const VARIANT_CONTENT = ['templates', 'help'];
+
+/** The variant of a profile (v9): its `variant`, or null (the descriptor's own); undefined for an unknown profile. */
+export function variantOf(d, profileId) {
+  const p = d.engine?.profiles?.find((x) => x.id === profileId);
+  return p ? p.variant ?? null : undefined;
+}
+
+/** The profiles of a variant (null: the descriptor's own), in the order of engine.profiles. */
+export const variantProfiles = (d, variant) => (d.engine?.profiles ?? []).filter((p) => (p.variant ?? null) === variant);
+
+const isPlain = (o) => o !== null && typeof o === 'object' && !Array.isArray(o) && Object.getPrototypeOf(o) === Object.prototype;
+/** Strings merged as mergeStrings merges them: nested plain objects key by key, anything else replaced. */
+function mergeDeep(base, over) {
+  const out = { ...base };
+  for (const [k, v] of Object.entries(over ?? {})) out[k] = isPlain(v) && isPlain(base?.[k]) ? mergeDeep(base[k], v) : v;
+  return out;
+}
+
+/**
+ * v9. The descriptor as the shell sees it in a variant: the variant's overrides over the descriptor (null or an
+ * unknown variant: the descriptor itself, with activeVariant null). Throws if an override has a key VARIANT_KEYS
+ * does not list, or content other than templates and help.
+ */
+export async function withVariant(d, variant) {
+  if (!variant || !d.variants?.[variant]) return { ...d, activeVariant: null };
+  const o = await d.variants[variant].load();
+  const extra = Object.keys(o ?? {}).filter((k) => !VARIANT_KEYS.includes(k));
+  if (extra.length) throw new Error(`variant ${variant}: ${extra.join(', ')} cannot be replaced`);
+  const extraContent = Object.keys(o.content ?? {}).filter((k) => !VARIANT_CONTENT.includes(k));
+  if (extraContent.length) throw new Error(`variant ${variant}: content.${extraContent.join(', content.')} cannot be replaced`);
+  const out = { ...d, activeVariant: variant };
+  for (const k of VARIANT_KEYS) {
+    if (o[k] === undefined) continue;
+    if (k === 'capabilities') out.capabilities = { ...d.capabilities, ...o.capabilities };
+    else if (k === 'strings') out.strings = mergeDeep(d.strings, o.strings);
+    else if (k === 'content') out.content = { ...d.content, ...o.content };
+    else out[k] = o[k];
+  }
+  return out;
+}
 
 /**
  * v8 (approved by the author, 2026-10-30). A panel the architecture draws (SAP-2: the ports), shown as a tab of the shared memory pane
@@ -261,6 +321,7 @@ export const VIEW_KINDS = Object.freeze(['isa', 'datapath', 'bus', 'compare']);
  * @property {number | null} [stackTop]   v2: the top of the stack, for the memory panel's stack region
  * @property {{id: string, label: string}[]} [subsets]  v2: instruction subsets of the profile; the first is the
  *           default (RISC-V: the whole Chapter 6 subset)
+ * @property {string} [variant]           v9: the id of its variant (Descriptor.variants); absent: the descriptor's own
  *
  * v2: `engine.profiles` lists every profile the profile menu offers; the first is the default.
  */
@@ -506,10 +567,22 @@ export function validateDescriptor(d) {
       pids.add(p.id);
     }
   }
+  if (d.variants !== undefined) { // v9
+    need(d.variants && typeof d.variants === 'object' && !Array.isArray(d.variants), 'variants: an object');
+    for (const [id, v] of Object.entries(d.variants ?? {})) {
+      need(ID.test(id) && typeof v?.label === 'string' && v.label && isFn(v?.load), `variant ${id}: id, label, load`);
+      need((d.engine?.profiles ?? []).some((p) => p.variant === id), `variant ${id}: no profile belongs to it`);
+      if (v?.legacy !== undefined) need(typeof v.legacy === 'boolean', `variant ${id}: legacy is a boolean`);
+    }
+    need(Object.values(d.variants ?? {}).filter((v) => v?.legacy).length <= 1, 'variants: at most one is legacy');
+    need((d.engine?.profiles ?? []).some((p) => p.variant === undefined), 'variants: the descriptor\'s own variant has no profile');
+  }
+  const active = d.activeVariant ?? null;
   const profiles = new Set();
   for (const p of d.engine?.profiles ?? []) {
     need(ID.test(p.id ?? '') && !profiles.has(p.id), `profile id ${p.id}`);
     profiles.add(p.id);
+    if (p.variant !== undefined) need(Object.hasOwn(d.variants ?? {}, p.variant), `profile ${p.id}: variant ${p.variant} is not in variants`);
     if (p.memory !== undefined) need(['sparse', 'harvard', 'unified'].includes(p.memory), `profile ${p.id}: memory ${p.memory}`);
     for (const s of p.subsets ?? []) need(typeof s.id === 'string' && typeof s.label === 'string', `profile ${p.id}: subset`);
   }
@@ -524,6 +597,7 @@ export function validateDescriptor(d) {
     need(v.kind === 'isa' || isFn(v.load), `view ${v.id}: load()`);
     if (v.kind === 'compare') need(d.capabilities?.compare === true, `view ${v.id}: kind compare without capability compare`);
     if (v.profile !== undefined) need(profiles.has(v.profile), `view ${v.id}: profile ${v.profile} is not in engine.profiles`);
+    if (v.profile !== undefined && profiles.has(v.profile)) need(variantOf(d, v.profile) === active, `view ${v.id}: profile ${v.profile} is of another variant`); // v9
     if (v.names !== undefined) need(L.disassembly?.names?.includes(v.names), `view ${v.id}: names ${v.names} not in language.disassembly.names`);
     if (v.settings) { // v5
       const s = v.settings;

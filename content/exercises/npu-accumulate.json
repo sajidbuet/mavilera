@@ -1,12 +1,12 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "NPU: add two products in the accumulators",
  "task": "For the laboratory profile (the NPU at 0x5000_0000; register map in the Help). The four rows of a 4 × 4 INT8 matrix W are at w, one word per row with W[i][j] in bits 8j+7 to 8j; two vectors a and b are at xa and xb, one INT8 value per word. Using the NPU, compute y = W a + W b: load W into the NPU once, run the array on a and then on b, and let the accumulators add the two products (clear them only before the first run). Store RESULT[0] to RESULT[3] as four words at y, then halt.",
  "lang": "asm",
  "profile": "ch11",
- "starter": "# npu-accumulate -- practice exercise (RISC-VISTA)\n# y = W a + W b on the NPU, with one clear and two starts.\n# Hint: CTRL bit 0 starts, bit 1 clears; writes while the NPU is busy are ignored, so wait for STATUS bit 1 (done).\n# Laboratory profile: the NPU at 0x5000_0000 (CTRL 0x00, STATUS 0x04, WEIGHT 0x10, ACT 0x20, RESULT 0x30).\n        .equ NPU, 0x50000000\n        .data\nw:      .word 0x04030201, 0x08070605, 0xfcfdfeff, 0x00000000\nxa:     .word 1, 2, 3, 4\nxb:     .word -1, 0, 1, 2\ny:      .space 16\n        .text\nmain:   # your code\n        halt\n",
+ "starter": "# npu-accumulate -- practice exercise (MAVILERA)\n# y = W a + W b on the NPU, with one clear and two starts.\n# Hint: CTRL bit 0 starts, bit 1 clears; writes while the NPU is busy are ignored, so wait for STATUS bit 1 (done).\n# Laboratory profile: the NPU at 0x5000_0000 (CTRL 0x00, STATUS 0x04, WEIGHT 0x10, ACT 0x20, RESULT 0x30).\n        .equ NPU, 0x50000000\n        .data\nw:      .word 0x04030201, 0x08070605, 0xfcfdfeff, 0x00000000\nxa:     .word 1, 2, 3, 4\nxb:     .word -1, 0, 1, 2\ny:      .space 16\n        .text\nmain:   # your code\n        halt\n",
  "tests": [
   {
    "name": "case 1",

@@ -1,6 +1,6 @@
 # sum-loop.s -- A counted loop over an array.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Try: click the line number of bnez to set a breakpoint, then Run (F5) several
 # times: each run stops after one more iteration. Watch t0 walk the array four

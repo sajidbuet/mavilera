@@ -1,6 +1,6 @@
 # procedures.s -- Calls, returns and a stack frame.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Try: Step (F10) into sumsq and watch the Call stack pane and sp. Step over
 # (F11) on a call runs the whole procedure at once; Step out (Shift+F11) runs to

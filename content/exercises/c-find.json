@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "C: binary search",
  "task": "Complete the C function find(a, n, key): the n ints at a are sorted in ascending order; return the index of key, or -1 if it is not there, looking at no more than about log2(n) + 1 elements (binary search).",
  "lang": "c",
- "starter": "/* find -- practice exercise (RISC-VISTA).\n * The n ints at a are sorted; return the index of key, or -1.\n * Hint: keep a range [lo, hi) and halve it. */\nint table[16];\n\nint find(const int *a, int n, int key)\n{\n    return -1;  /* your code */\n}\n\nint main(void)\n{\n    return find(table, 0, 5);\n}\n",
+ "starter": "/* find -- practice exercise (MAVILERA).\n * The n ints at a are sorted; return the index of key, or -1.\n * Hint: keep a range [lo, hi) and halve it. */\nint table[16];\n\nint find(const int *a, int n, int key)\n{\n    return -1;  /* your code */\n}\n\nint main(void)\n{\n    return find(table, 0, 5);\n}\n",
  "entry": "find",
  "tests": [
   {

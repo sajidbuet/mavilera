@@ -266,8 +266,8 @@ await check('waveforms: with the platform devices on, the single-cycle view offe
   await sleep(200);
   const labels = await p.eval(`[...document.querySelectorAll('.wave-label')].map((l) => l.textContent)`);
   for (const name of ['npu.busy', 'npu.w_load', 'npu.step', 'npu.d_addr']) must(labels.includes(name), `${name} not drawn: ${labels.join(', ')}`);
-  const cells = await p.eval(`[...document.querySelectorAll('.wave table.sr-only tr')].find((tr) => tr.firstChild.textContent === 'npu.busy')?.textContent ?? ''`);
-  const at = await p.eval(`document.querySelector('.wave-cycles .note').textContent + ' | ' + [...document.querySelectorAll('.wave table.sr-only tr')].map((tr) => tr.textContent).join(' / ')`);
+  const cells = await p.eval(`[...document.querySelectorAll('.wave .sr-only table tr')].find((tr) => tr.firstChild.textContent === 'npu.busy')?.textContent ?? ''`);
+  const at = await p.eval(`document.querySelector('.wave-cycles .note').textContent + ' | ' + [...document.querySelectorAll('.wave .sr-only table tr')].map((tr) => tr.textContent).join(' / ')`);
   must(/1/.test(cells.replace('npu.busy', '')), `npu.busy never 1 in the last cycles: ${at}`);
   await shot(p, 'npu-waveform');
   await p.eval(AXE);

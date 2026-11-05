@@ -1,6 +1,6 @@
 # cache-pipe.s -- The pipeline waits for memory: a cache makes most waits vanish.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Open the Memory setting: main memory takes 6 cycles per word, with a cache on
 # each side (1 KiB, direct-mapped). Run to the halt and read "Memory wait

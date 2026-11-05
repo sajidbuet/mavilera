@@ -1,0 +1,58 @@
+{
+  "date_utc": "2026-11-04T15:41Z",
+  "assembler": "GNU assembler (GNU Binutils) 2.46",
+  "linker": "GNU ld (GNU Binutils) 2.46",
+  "commands": [
+    "riscv32-pico-elf-as -march=rv32i_zicsr -mabi=ilp32 -mno-relax -I programs/simt -o prog.o prog.s",
+    "riscv32-pico-elf-ld -m elf32lriscv -Ttext=0 --no-relax -o prog.elf prog.o",
+    "riscv32-pico-elf-objcopy -O binary -j .text prog.elf prog.bin"
+  ],
+  "simt_inc_sha256": "dee791aec6b7301d7b6e6e9de89f59304e895217a7060f0c347f0dade20ee9da",
+  "programs": {
+    "uniform": {
+      "words": 18,
+      "prog_s_sha256": "7186d85459f2c20be979f8f5cd63813ef4b8777e3b3f246f411b63aeeafd1ca5",
+      "prog_hex_sha256": "1b01f059b04e8325845550db12558302c3353183241145573c85e332e4a89d02"
+    },
+    "ifelse": {
+      "words": 24,
+      "prog_s_sha256": "42406279fea60b649a4dded93475da5d26f0e845667db6b93b0f6c7a647a873b",
+      "prog_hex_sha256": "8363c80d6c56470587a04530802cc7f73dd9e48860d6c6b4b018aa52fcb3c6f7"
+    },
+    "ifelse8": {
+      "words": 20,
+      "prog_s_sha256": "43b6d85641c5b680b46d8bef9edac16d204fcb95c0d50ac1fc8e6e003586d673",
+      "prog_hex_sha256": "8cd1d027b2bdc0c3ba1065f673eda567d246d6ad1e0ef42666a42b2d1d720299"
+    },
+    "nested": {
+      "words": 27,
+      "prog_s_sha256": "c9f2bae6ddfb8e3bec0d57a332b099ef93d825205207477ff6d9b08abcdcbcb7",
+      "prog_hex_sha256": "7f254b234dc63ad243f8774f88ef29feb6ce2601bf38cd708f34f453794a9aee"
+    },
+    "vadd_tail": {
+      "words": 31,
+      "prog_s_sha256": "9bac88df9189f010b101b5359ffb1bcf3611f236a8013adf1b4fb640c8b14b60",
+      "prog_hex_sha256": "9eb4c56ee949600fc6947f0d93141e369c500c12a68b6e8364b471574889278c"
+    },
+    "reverse_bar": {
+      "words": 39,
+      "prog_s_sha256": "abb6bc81efa415311969e31f5e5093b01e12963748cf3f85421d95f8de8c29e9",
+      "prog_hex_sha256": "76783fca9f26add6cc6f24c6d9cafd811d8d24d90eef5668ece88b45d69ce747"
+    },
+    "fault_div": {
+      "words": 6,
+      "prog_s_sha256": "5440ca2d8f16be79b3690d7e7c84b44ab3389035545aa7ac015e47fccdf96d59",
+      "prog_hex_sha256": "13814cc354a5947d17b13de0fdb958732c0a2d8a7ce507a971383569377f6d68"
+    },
+    "fault_join": {
+      "words": 7,
+      "prog_s_sha256": "690a3a0f66dcd3afdf5b25b01939f8ac9a76c98cbb4ff51844b356d1e9bf1f80",
+      "prog_hex_sha256": "d921b995b402fef701bfdb7565790b428963c98f6198c62a28e775e2695c9b25"
+    },
+    "ref/reduce_bar": {
+      "words": 42,
+      "prog_s_sha256": "02765f5226fad2ca72eb218f93a2c0acb42e93ddd7d5f8cafc5f78a8333ca225",
+      "prog_hex_sha256": "938dc0ad2c126e8615569c6fb931ec31f17924f067077b5413abaff2b5623a76"
+    }
+  }
+}

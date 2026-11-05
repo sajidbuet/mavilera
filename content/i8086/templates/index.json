@@ -1,0 +1,16 @@
+{
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). 8086 teaching templates written for the application (roadmap 8086-B2, the beta); what each one shows is checked by test/i8086-templates.test.mjs.",
+  "groups": {
+    "isa": "Instructions and flags",
+    "memory": "Memory, segments and the stack",
+    "control": "Subroutines and interrupts"
+  },
+  "templates": [
+    { "id": "sum-table", "file": "sum-table.asm", "group": "isa", "view": "isa", "lang": "asm", "title": "Add the words of a table" },
+    { "id": "flags", "file": "flags.asm", "group": "isa", "view": "isa", "lang": "asm", "title": "Carry, overflow, sign and zero" },
+    { "id": "strings", "file": "strings.asm", "group": "memory", "view": "isa", "lang": "asm", "title": "Copy and compare strings with REP" },
+    { "id": "segments", "file": "segments.asm", "group": "memory", "view": "isa", "lang": "asm", "title": "Segments and physical addresses" },
+    { "id": "decimal", "file": "decimal.asm", "group": "control", "view": "isa", "lang": "asm", "title": "Print a number in decimal" },
+    { "id": "interrupts", "file": "interrupts.asm", "group": "control", "view": "isa", "lang": "asm", "title": "Install interrupt handlers" }
+  ]
+}

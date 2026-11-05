@@ -1,6 +1,6 @@
 # branch-loop.s -- The cost of a taken branch, and a predictor that learns.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # With no predictor every branch is predicted not taken, so each taken bne is
 # resolved in EX and the two instructions fetched behind it are flushed: two

@@ -1,0 +1,258 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (W-D24), not taken from the textbook; produced by tools/gpu/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "gpu",
+ "title": "The sign of each element: a split inside a split",
+ "task": "For the profile with one warp of eight lanes. Each thread i = 0 to 7 writes s[i] = −1 if x[i] < 0, 0 if x[i] = 0 and 1 if x[i] > 0, for the eight words at x and s. The second test needs a decision inside one path of the first: the reconvergence stack holds two nested splits. End the warp with tmc zero.",
+ "lang": "asm",
+ "profile": "lab-l8",
+ "starter": "# gpu-sign -- practice exercise (MAVILERA GPU Laboratory)\n# s[i] = -1, 0 or 1 by the sign of x[i].\n# Profile: one warp of eight lanes (thread i = 0 to 7).\n        .include \"simt.inc\"\n        .text\n_start: # your code\n        tmc    zero\n        .data\nx:      .word  5, -3, 0, -7, 2, 0, 4, -8\ns:      .space 32\n",
+ "tests": [
+  {
+   "name": "case 1",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      5,
+      4294967293,
+      0,
+      4294967289,
+      2,
+      0,
+      4,
+      4294967288
+     ]
+    },
+    {
+     "at": "s",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "s",
+      "words": [
+       1,
+       4294967295,
+       0,
+       4294967295,
+       1,
+       0,
+       1,
+       4294967295
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "case 2",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "at": "s",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "s",
+      "words": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "case 3",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      4294967295,
+      4294967294,
+      4294967293,
+      4294967292,
+      4294967291,
+      4294967290,
+      4294967289,
+      4294967288
+     ]
+    },
+    {
+     "at": "s",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "s",
+      "words": [
+       4294967295,
+       4294967295,
+       4294967295,
+       4294967295,
+       4294967295,
+       4294967295,
+       4294967295,
+       4294967295
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "case 4",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      3,
+      0,
+      3,
+      0,
+      3,
+      0,
+      3,
+      0
+     ]
+    },
+    {
+     "at": "s",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "s",
+      "words": [
+       1,
+       0,
+       1,
+       0,
+       1,
+       0,
+       1,
+       0
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  },
+  {
+   "name": "case 5",
+   "memory": [
+    {
+     "at": "x",
+     "words": [
+      4294967294,
+      0,
+      0,
+      4294967293,
+      3,
+      3,
+      4294967295,
+      4294967293
+     ]
+    },
+    {
+     "at": "s",
+     "words": [
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810,
+      1515870810
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "s",
+      "words": [
+       4294967295,
+       0,
+       0,
+       4294967295,
+       1,
+       1,
+       4294967295,
+       4294967295
+      ]
+     }
+    ]
+   },
+   "limit": 2000
+  }
+ ]
+}

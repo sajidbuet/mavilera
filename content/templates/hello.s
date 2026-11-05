@@ -1,6 +1,6 @@
 # hello.s -- Hello, RISC-V: the write system call.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Try: Assemble (Ctrl+Enter), then Run (F5). The text appears in the console.
 # Step (F10) instead and watch a0, a1, a2 and a7 being set up before each ecall.

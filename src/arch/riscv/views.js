@@ -13,7 +13,8 @@ import { infoButton } from '../../ui/info-button.js';
 import { labRows } from './lab-rows.js';
 import { buildMemsys, defaultConfig } from '../../mem/config.js';
 import { Platform } from '../../mem/platform.js';
-import { withNpuSignals } from '../../mem/npu-wave.js';
+import { withDeviceSignals, npuPart } from '../../mem/npu-wave.js';
+import { gpuPart } from '../../mem/gpu.js';
 
 const REG_IDS = Array.from({ length: 32 }, (_, i) => `x${i}`);
 const PROFILE = { single: 'ch06', multi: 'ch07', pipe: 'ch08' };
@@ -53,7 +54,7 @@ function exportModel(v, memsys, ctx) {
   if (!pl) return v.exportModel();
   const platform = new Platform({ ...pl.config, stimulus: pl.gpio.stim, rx: pl.uart?.rxStim ?? pl.config.rx });
   const fresh = buildMemsys(ctx.memConfig?.() ?? { ...defaultConfig(), devices: true }, { platform }).memsys;
-  return withNpuSignals(v.exportModel(fresh), platform);
+  return withDeviceSignals(v.exportModel(fresh), [npuPart(platform), gpuPart(platform)].filter(Boolean)); // GPU-7: the GPU's too
 }
 
 /**
@@ -148,6 +149,7 @@ export function pipe(v, ctx) {
 }
 
 const NPU_WAVE_DEFAULTS = ['pc', 'instr', 'MemWrite', 'npu.sel_acc', 'npu.d_addr', 'npu.busy', 'npu.w_load', 'npu.run', 'npu.step'];
+const GPU_WAVE_DEFAULTS = ['pc', 'instr', 'MemWrite', 'gpu.sel', 'gpu.d_addr', 'gpu.busy', 'gpu.warp', 'gpu.pc', 'gpu.mask'];
 
 /**
  * A memory system with the platform devices for the NPU tool's views: the shell's when it has them, else one of the
@@ -199,6 +201,49 @@ export function npu(sv, nv, ctx) {
     ...d, root, diagrams: [], render, headerTools, // the hidden processor's Display menu does not apply here
     setMemsys: (ms) => sv.setMemsys(withDevices(ms, ctx)),
     waveform: { defaults: NPU_WAVE_DEFAULTS },
+  };
+}
+
+/**
+ * A memory system with the platform devices and the GPU for the CPU + GPU tool (GPU-7): the shell's when its platform
+ * has the GPU (the tool's pages start with it, src/shell/platform-archs.js), else one of the same setting with it.
+ */
+function withGpu(ms, ctx) {
+  if (ms?.platform?.gpu) return ms;
+  const cfg = { ...(ctx.memConfig?.() ?? defaultConfig()), devices: true };
+  return buildMemsys(cfg, { platform: new Platform({ ...(ms?.platform?.config ?? {}), gpu: true }) }).memsys;
+}
+
+/** The CPU + GPU tool's single-cycle view (GPU-7): the single-cycle view with the GPU on the data bus (gpu-datapath.js). */
+export function gpuSingle(sv, ctx) {
+  sv.setMemsys(withGpu(null, ctx));
+  const x = single(sv, ctx);
+  sv.dp.setLinks({ gpu: true }, () => ctx.command?.('view:gpu-host'), { gpu: RV.gpuView.gpuName });
+  return { ...x, title: RV.gpuView.singlePanel, setMemsys: (ms) => sv.setMemsys(withGpu(ms, ctx)), waveform: { defaults: GPU_WAVE_DEFAULTS } };
+}
+
+/**
+ * The CPU + GPU tool's GPU view (GPU-7): the main pane shows the platform's GPU (`hv`, ui/gpu-host-view.js: the GPU
+ * module's core drawing driven by the device); the single-cycle processor `sv` runs the host program behind it.
+ */
+export function gpuHost(sv, hv, ctx) {
+  const N = RV.gpuView;
+  const S = RV.single;
+  sv.setMemsys(withGpu(null, ctx));
+  const cv = hv.cv;
+  const d = datapath('single', sv, ctx, { title: N.panel, infoTitle: N.info, memoryTab: S.tabMemory,
+    tabs: [[N.tabIssue, cv.issueBox], [N.tabMasks, cv.masksBox, () => cv.drawMasks()], [N.tabStack, cv.stackBox, () => cv.drawStack()],
+      [N.tabInterface, hv.ifaceBox], [S.tabCycle, sv.cycleBox]] });
+  const root = el('div.npu-main.scroll', {}, hv.root);
+  const info = infoButton([N.note], N.about);
+  const render = () => {
+    sv.render();
+    hv.update(sv.loaded ? sv.model.memsys?.platform ?? null : null);
+  };
+  return {
+    ...d, root, diagrams: [cv.dp.svg], render, headerTools: el('span.npu-htools', {}, info, cv.headerTools),
+    setMemsys: (ms) => sv.setMemsys(withGpu(ms, ctx)),
+    waveform: { defaults: GPU_WAVE_DEFAULTS },
   };
 }
 

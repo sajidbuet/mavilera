@@ -1,6 +1,6 @@
 # forwarding.s -- Data dependences and forwarding in the pipeline.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Each instruction uses the result of the one before, before it is written back.
 # Try: step cycle by cycle and open the Hazards tab: fwd_sel_a and fwd_sel_b take

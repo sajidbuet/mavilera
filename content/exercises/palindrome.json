@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "Is it a palindrome?",
  "task": "Write the procedure palindrome: a0 holds the address of a string of bytes ending in a zero byte. Return 1 in a0 if it reads the same backwards (the empty string does), 0 if not.",
  "lang": "asm",
- "starter": "# palindrome -- practice exercise (RISC-VISTA)\n# Return 1 if the zero-terminated string at a0 is a palindrome, else 0.\n# Hint: find the end first (lbu until 0), then compare from both ends.\n        .data\ntext:   .space 64               # the tests put their strings here\n        .text\npalindrome:\n        # a0 = address of the string\n        li   a0, 0              # replace with your code\n        ret\n",
+ "starter": "# palindrome -- practice exercise (MAVILERA)\n# Return 1 if the zero-terminated string at a0 is a palindrome, else 0.\n# Hint: find the end first (lbu until 0), then compare from both ends.\n        .data\ntext:   .space 64               # the tests put their strings here\n        .text\npalindrome:\n        # a0 = address of the string\n        li   a0, 0              # replace with your code\n        ret\n",
  "entry": "palindrome",
  "tests": [
   {

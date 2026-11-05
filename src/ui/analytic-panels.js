@@ -95,13 +95,13 @@ export function logPlot(spec) {
 // --- small form helpers ---------------------------------------------------------------------------------------------------
 
 /** A labelled number input; onchange receives the value (NaN when empty). */
-function field(label, value, onchange, { min, max, step = 'any', title } = {}) {
+export function field(label, value, onchange, { min, max, step = 'any', title } = {}) {
   const input = el('input.an-in', { type: 'number', value: String(value), min, max, step, title, oninput: () => onchange(input.valueAsNumber) });
   return { node: el('label.an-field', {}, el('span', { text: label }), input), input };
 }
 
 /** A two-column table of [label, value] rows. */
-function table(caption, rows, head = null) {
+export function table(caption, rows, head = null) {
   return el('table.listing.an-table', {},
     el('caption', { text: caption }),
     head ? el('thead', {}, el('tr', {}, head.map((h) => el('th', { scope: 'col', text: h })))) : null,
@@ -115,7 +115,7 @@ function table(caption, rows, head = null) {
 export function panelHead(title, info, level = 'h3') {
   return el('div.an-head', {}, el(level, { text: title }), info?.length ? infoButton(info, S().about(title)) : null);
 }
-function panel(id, title, info, fields, draw) {
+export function panel(id, title, info, fields, draw) {
   const out = el('div.an-out', { 'aria-live': 'polite' });
   const run = () => {
     try { out.replaceChildren(...[draw()].flat().filter(Boolean)); } catch (e) { out.replaceChildren(el('p.note.an-error', { text: e.message })); }

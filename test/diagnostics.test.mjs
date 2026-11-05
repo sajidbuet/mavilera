@@ -18,7 +18,8 @@ import { assemble } from '../src/asm/assembler.js';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SIM = process.env.MES_BOOK_SIM ?? join(ROOT, '..', 'book-MES', 'code', 'sim');
 const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
-const haveRef = existsSync(join(SIM, 'rvasm.py')) && spawnSync(PYTHON, ['--version']).status === 0;
+// the reference scripts (tools/*.py) stay in the private repository (tools/site-files.mjs PRIVATE_ONLY): a public clone skips
+const haveRef = existsSync(join(SIM, 'rvasm.py')) && existsSync(join(ROOT, 'tools', 'ref_trace.py')) && spawnSync(PYTHON, ['--version']).status === 0;
 
 // [name, source, line, column, message, hint, compare with rvasm.py]
 const CASES = [

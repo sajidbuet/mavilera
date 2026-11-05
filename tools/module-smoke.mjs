@@ -20,6 +20,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import { launch } from './browser.mjs';
 import { startServer } from './serve.mjs';
+import { SHARED } from './site-files.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const require = createRequire(import.meta.url);
@@ -47,7 +48,9 @@ const view = (i) => `(async () => { document.querySelectorAll('.mode-btn')[${i}]
 // a view has loaded when its tab is selected and no pane of the workspace says it is loading
 const loaded = (i) => `${activeView} === ${i} && ![...document.querySelectorAll('.workspace .note')].some((n) => n.offsetParent && n.textContent.startsWith('Loading'))`;
 // the modules of other architectures the page fetched
-const foreign = `performance.getEntriesByType('resource').map((e) => e.name).filter((n) => /\\/src\\/arch\\/[^/]+\\//.test(n) && !n.includes('/src/arch/${ID}/'))`;
+// (the modules shared by decision, tools/site-files.mjs SHARED, excepted)
+const foreign = `performance.getEntriesByType('resource').map((e) => e.name).filter((n) => /\\/src\\/arch\\/[^/]+\\//.test(n) && !n.includes('/src/arch/${ID}/')`
+  + ` && !${JSON.stringify(SHARED[ID] ?? [])}.some((s) => n.endsWith('/' + s)))`;
 
 async function checks(b, base) {
   const out = [];

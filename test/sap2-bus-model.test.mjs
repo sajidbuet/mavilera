@@ -8,7 +8,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { BusModel, executeStates, microinstruction, signalsOf, DEFERRED, SIGNALS } from '../src/arch/sap-2/bus-model.js';
 import { INSTRUCTIONS, assemble, memoryImage } from '../src/arch/sap-2/language.js';
 import { create } from '../src/arch/sap-2/engine.js';
@@ -166,7 +166,8 @@ test('lock-step with the engine: every template and every exercise test', () => 
   }
   const X = new URL('content/sap-2/exercises/', ROOT);
   const SOL = new URL('test/fixtures/exercise-solutions/sap-2/', ROOT);
-  for (const f of readdirSync(X).filter((x) => x !== 'index.json')) {
+  // the model solutions stay in the private repository (tools/site-files.mjs PRIVATE_ONLY): a public clone checks the templates only
+  if (existsSync(SOL)) for (const f of readdirSync(X).filter((x) => x !== 'index.json')) {
     const ex = parseExercise(JSON.parse(readFileSync(new URL(f, X), 'utf8')));
     const p = asm(readFileSync(new URL(f.replace('.json', '.asm'), SOL), 'utf8'));
     for (const t of ex.tests) {

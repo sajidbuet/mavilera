@@ -6,7 +6,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -28,10 +28,11 @@ test('registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-
     }
   }
   // updated deliberately (docs/ADDING-SIMULATORS.md): SAP-1 since phase 6 of the architecture contract (W-D29), SAP-2 since step 6 of its plan
-  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu']);
-  // `gpu` reserved as planned at GPU-0 (DECISIONS.md G9), published as a preview from 1.2.0 (author, 2026-11-04)
-  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu', '6502', '8086', 'mips']);
-  assert.deepEqual(registry.filter((a) => a.preview).map((a) => a.id), ['gpu']);
+  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu']);
+  // `gpu` reserved as planned at GPU-0 (DECISIONS.md G9), published as a preview from 1.2.0 (author, 2026-11-04); the
+  // planned `8086` became `i8086`, a preview (the beta of 8086-B0 to B2; author, 2026-11-05: id i8086, no contract change)
+  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu', '6502', 'mips']);
+  assert.deepEqual(registry.filter((a) => a.preview).map((a) => a.id), ['i8086', 'gpu']);
   // a tool inside a module: its card links into the module (the NPU in RISC-V, decision G2)
   const tools = JSON.parse(read('site/architectures.json')).tools;
   assert.deepEqual(tools.map((t) => [t.id, t.module, t.path]), [['npu', 'riscv', 'riscv/?tool=npu']]);
@@ -46,7 +47,7 @@ test('landing page: the required wording, the card slot, no claims for planned m
   // minimal layout (author, 2026-11-05): the tiles in the author's order, every module and tool once; no screenshot,
   // no row of launch buttons, no tabs; learning paths by topic; one documentation page for every laboratory
   const reg = JSON.parse(read('site/architectures.json'));
-  assert.deepEqual(reg.landing, ['riscv', 'gpu', 'npu', 'sap-1', 'sap-2', 'armv7', '8086', 'mips', '6502']);
+  assert.deepEqual(reg.landing, ['riscv', 'gpu', 'npu', 'sap-1', 'sap-2', 'armv7', 'i8086', 'mips', '6502']);
   assert.deepEqual([...reg.landing].sort(), [...registry.map((a) => a.id), ...reg.tools.map((t) => t.id)].sort());
   for (const s of ['{{LABS}}', '{{COMING}}', '{{LEARN}}', '{{SITE_CSS}}', '{{HERO_LOGO}}', '{{HERO_CSS}}', 'mvh-play',
     'href="#laboratories"', 'href="#learn"', 'href="docs/"']) assert.ok(html.includes(s), s);
@@ -90,7 +91,10 @@ test('the app links to MAVILERA Home only in a release (the logo does, test/arch
 });
 
 test('the earlier product name appears nowhere user-facing: pages, strings, manifest, documentation', () => {
-  for (const f of ['index.html', 'manifest.webmanifest', 'src/ui/strings.js', 'content/help/help.json', 'content/help/docs/index.html', 'site/index.html']) {
+  const templates = readdirSync(join(ROOT, 'content/templates')).map((f) => `content/templates/${f}`);
+  const exercises = readdirSync(join(ROOT, 'content/exercises')).map((f) => `content/exercises/${f}`);
+  for (const f of ['index.html', 'manifest.webmanifest', 'src/ui/strings.js', 'content/help/help.json', 'content/help/docs/index.html', 'site/index.html',
+    'site/architectures.json', 'content/README.md', ...templates, ...exercises]) {
     const text = read(f).replace(/risc-vista-(?:exercise|settings|edition|version)/g, '');
     assert.ok(!/RISC-VISTA|riscvista/i.test(text), f);
   }

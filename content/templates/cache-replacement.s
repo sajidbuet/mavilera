@@ -1,6 +1,6 @@
 # cache-replacement.s -- Replacement: LRU keeps the block that is used again.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # A 2-way data cache with 16-byte blocks has 32 sets, so blocks 512 bytes
 # apart share a set; A, B and C below all use set 0, which holds only two of

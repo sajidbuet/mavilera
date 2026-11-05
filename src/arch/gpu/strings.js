@@ -77,12 +77,40 @@ export const GPU_STRINGS = Object.freeze({
     note: 'r0 starts as the lane index and r1 as the lane input (din, from .din); r2 is the lane output (dout) at HALT. '
       + 'An inactive lane keeps its registers; its column is marked “off”. Values in signed decimal; hexadecimal in the tooltip.',
   }),
+  // the mask views (ui/mask-view.js, GPU-3, decision G23): the mask grid of the micro-ISA core, one view per lane count
+  viewMasks4: 'Masks · 4 lanes',
+  viewMasks8: 'Masks · 8 lanes',
+  masks: Object.freeze({
+    title: (lanes) => `Active masks · ${lanes} lanes`,
+    label: (lanes) => `micro-ISA core (${lanes} lanes)`,
+    infoTitle: 'Mask details',
+    noProgram: 'Assemble a program to run it on the core.',
+    coming: (cycle, pc, code, mask) => `Cycle ${cycle + 1}: ${code} at ${pc} with mask ${mask} (lane 0 first).`,
+    halted: (cycles) => `HALT after ${cycles} cycles.`,
+    stackHeading: 'Mask stack',
+    stackRows: Object.freeze({ active: 'Active mask', s0: 'Stack level 0', s1: 'Stack level 1', depth: 'Depth (IFLT nesting)' }),
+    masksOnly: 'Masks-only count',
+    masksOnlyTitle: 'Hide ELSE, ENDIF and HALT (mask management and the end) and the setup before the first IFLT; the issues left '
+      + 'are the compare and the work under a mask.',
+    masksCaption: (n, shown) => (shown === n ? `${n} cycle${n === 1 ? '' : 's'} so far` : `${shown} of ${n} cycles shown`),
+    hiddenLine: (h) => `Hidden: ${h.setup} setup, ${h.control} mask management or HALT.`,
+    setupNote: 'Setup: the instructions before the first IFLT.',
+    gridCols: Object.freeze({ n: 'Cycle', code: 'Instruction', lane: (l) => `L${l}`, count: 'Active' }),
+    laneCell: (l, bit) => `lane ${l} ${bit === '1' ? 'active' : 'idle'}`,
+    gridNote: 'Each row is one cycle; a cell is the lane\'s mask bit while the instruction issues (1 active, 0 idle and shaded). '
+      + 'The last row is the latest cycle. The Lanes tab shows the registers.',
+    gridCut: (n) => `The ${n} earliest rows are left out.`,
+    noIssues: 'Nothing has run yet.',
+    fault: 'error',
+    goldenNote: 'The golden dump of this core is MAVILERA\'s format: dout of each lane, cycles, idle_slots, the final mask.',
+  }),
   // why an item of the shell is disabled for the GPU module (contract capabilities; the shell's generic reason covers the rest)
   capability: Object.freeze({
     cRiscvOnly: 'The C compiler targets RISC-V only; the SIMT core is programmed in its micro-ISA.',
     noCalls: 'The micro-ISA has no branch, jump or call instructions.',
     noMemorySystem: 'The SIMT core has only its sixteen-word program memory: no data memory, timing model, caches or devices.',
     noDataMemory: 'The SIMT core has no data memory; give the lane inputs with .din.',
+    noExercises: 'The practice exercises are for the RISC-V SIMT core; choose one of its profiles.',
     oneProcessor: 'The GPU module has one core; there is nothing to compare.',
   }),
   // the editor's help (Language.editor): operand syntax and operation per active lane

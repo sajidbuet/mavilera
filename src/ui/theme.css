@@ -1613,3 +1613,80 @@ table.listing.an-table td, table.listing.an-table th { padding-right: 1.2rem; }
 @media (forced-colors: active) { .an-line, .an-kernel, .an-axis { stroke: CanvasText; } .an-mark { fill: Highlight; } }
 .an-head { display: flex; align-items: center; gap: 0.4rem; margin: 0.4rem 0 0.2rem; }
 .an-head h3, .an-head h4 { margin: 0; }
+
+/* GPU module, RISC-V SIMT core views (GPU-3): the parts the student completes in the book's highlight style (BookFigHighlight
+   = the accent, on its tint); the mask grid and stack rows in the form of the book's mask figures (an idle lane shaded, and
+   written 0); the warps table under the drawing */
+.dp-student .dp-shape { stroke: var(--accent); fill: var(--accent-tint); stroke-width: 1.7; }
+.gpu-core .dp-eltext, .gpu-core .dp-sig { font-size: 9.84px; }
+.gpu-coming { margin: 0.3rem 0; }
+.gpu-core h4, .gpu-issue h4, .gpu-results h4 { margin: 0.7rem 0 0.3rem; font-size: 0.85rem; }
+.gpu-warps-table td, .gpu-warps-table th { white-space: nowrap; }
+.gpu-warps-table tr.gpu-next th, .gpu-grid tr.gpu-last td { font-weight: 650; }
+.gpu-grid { border-collapse: collapse; font-size: 0.82rem; }
+.gpu-grid caption { text-align: left; font-size: 0.8rem; color: var(--ui-text-2); padding: 0.2rem 0; }
+.gpu-grid th.gpu-lane { min-width: 1.6rem; text-align: center; }
+.gpu-grid td.gpu-bit { text-align: center; font-family: var(--font-code); min-width: 1.6rem; border: 1px solid var(--text); }
+.gpu-grid td.gpu-bit.on { background: var(--bg); color: var(--text); }
+.gpu-grid td.gpu-bit.off { background: var(--fig-fill-alt); color: var(--muted); }
+.gpu-grid tr.gpu-quiet td.gpu-code { color: var(--ui-text-2); }
+.gpu-grid tr.gpu-last { outline: 2px solid var(--accent); outline-offset: -2px; }
+.gpu-grid td.gpu-code { white-space: nowrap; }
+.gpu-entries { white-space: nowrap; }
+.gpu-entry { display: inline-block; border: 1px solid var(--text); background: var(--fig-fill); padding: 0 0.3rem; margin-right: 0.25rem; font-size: 0.78rem; }
+.gpu-issue tr.lane-off td, .gpu-issue tr.lane-off th { color: var(--ui-text-2); background: var(--surface-3); }
+@media (forced-colors: active) { .gpu-grid td.gpu-bit.off { background: Canvas; color: GrayText; } .dp-student .dp-shape { stroke: Highlight; } }
+
+/* GPU module, core views on a narrow screen (decision G27): one lane at a time with a mask strip in place of the drawing;
+   "Whole drawing" brings the drawing back */
+.gpu-lanecard { display: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.4rem 0.6rem; margin: 0.3rem 0; background: var(--surface); }
+.gpu-lanehead { display: flex; align-items: center; gap: 0.4rem; }
+.gpu-lanehead h4 { margin: 0 auto 0 0; }
+.gpu-strip { display: flex; flex-wrap: wrap; gap: 2px; margin: 0.2rem 0 0.4rem; }
+.gpu-strip button.gpu-bit { min-width: 2rem; min-height: 2rem; font-family: var(--font-code); border: 1px solid var(--text); border-radius: 0; padding: 0; }
+.gpu-strip button.gpu-bit.on { background: var(--bg); color: var(--text); }
+.gpu-strip button.gpu-bit.off { background: var(--fig-fill-alt); color: var(--muted); }
+.gpu-strip button[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: -3px; font-weight: 700; }
+@media (max-width: 40rem) {
+  .gpu-core:not(.gpu-wide) > .gpu-lanecard { display: block; }
+  .gpu-core:not(.gpu-wide) > .dp-wrap { display: none; }
+  .gpu-core.gpu-wide > .gpu-lanecard { display: block; }
+  .gpu-core.gpu-wide > .gpu-lanecard > :not(button) { display: none; }
+}
+@media (forced-colors: active) { .gpu-strip button.gpu-bit.off { background: Canvas; color: GrayText; } }
+
+/* GPU module, CPU + GPU view (GPU-7): the kernel as words for a host program */
+.gpu-kernel-text { width: 100%; max-width: 52rem; font-size: 0.8rem; background: var(--surface); color: var(--ui-text); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 0.3rem; }
+
+/* GPU module, Models view (GPU-4): rows of element cells framed by what one instruction (strip, warp, block) covers, in the
+   manner of the book's cell-row figures; an idle cell shaded as in the mask grid; the latency timeline as a table */
+.gm-intro { margin: 0.3rem 0.6rem 0; max-width: 52rem; }
+.gm-drawing { margin: 0.6rem 0; max-width: 100%; overflow-x: auto; }
+.gm-title { font-size: 0.8rem; color: var(--ui-text-2); margin: 0 0 0.3rem; }
+.gm-row { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.3rem 0; }
+.gm-rowlabel { flex: none; width: 8.5rem; font-size: 0.8rem; padding-top: 0.25rem; }
+.gm-frames { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: flex-start; }
+.gm-frame { border: 2px solid var(--primary); border-radius: 4px; padding: 2px; background: var(--surface); }
+.gm-frame.gm-rem { border-style: dashed; }
+.gm-frame.gm-block { border-color: var(--text); padding: 3px; }
+.gm-frame.gm-conflict { border-color: var(--accent); border-width: 3px; }
+.gm-tag { font-size: 0.7rem; color: var(--ui-text-2); text-align: center; line-height: 1.2; }
+.gm-cells { display: flex; gap: 1px; }
+.gm-cell { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 1.6rem; height: 1.6rem;
+  padding: 0 0.15rem; border: 1px solid var(--text); background: var(--bg); color: var(--text); font-family: var(--font-code); font-size: 0.75rem; }
+.gm-cell.gm-two { height: 2.3rem; line-height: 1.05; }
+.gm-cell small { font-size: 0.65rem; color: var(--ui-text-2); }
+.gm-cell.gm-idle { background: var(--fig-fill-alt); color: var(--muted); }
+.gm-cell.gm-hot { outline: 2px solid var(--accent); outline-offset: -2px; font-weight: 700; }
+.gm-scroll { max-width: 100%; overflow-x: auto; }
+.gm-timeline { border-collapse: collapse; font-size: 0.72rem; }
+.gm-timeline caption { text-align: left; font-size: 0.8rem; color: var(--ui-text-2); padding: 0.2rem 0; }
+.gm-timeline th { font-weight: 500; padding: 0 0.3rem; white-space: nowrap; }
+.gm-timeline thead th { min-width: 1.2rem; text-align: center; color: var(--ui-text-2); }
+.gm-timeline td.gm-t { text-align: center; min-width: 1.2rem; border: 1px solid var(--border); font-family: var(--font-code); }
+.gm-timeline td.gm-iss { background: var(--fig-fill-alt); border-color: var(--text); }
+.gm-timeline td.gm-ld { background: var(--accent-tint); border-color: var(--text); font-weight: 700; }
+.gm-timeline td.gm-gap { color: var(--ui-error); font-weight: 700; }
+.gm-timeline tr.gm-issue th, .gm-timeline tr.gm-issue td { border-top: 2px solid var(--text); }
+@media (forced-colors: active) { .gm-cell.gm-idle { background: Canvas; color: GrayText; } .gm-frame { border-color: CanvasText; } }
+@media (max-width: 40rem) { .gm-rowlabel { width: 5.5rem; } }

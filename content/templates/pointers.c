@@ -1,6 +1,6 @@
 /* pointers.c -- Indexing an array and walking it with a pointer.
  * Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
- * Rights class: content (a RISC-VISTA template, written for the application).
+ * Rights class: content (a MAVILERA template, written for the application).
  *
  * Try: Compile and compare the loops of sum_index and sum_pointer in the
  * "Assembly from C" tab: the index form computes a + 4*i in every iteration;

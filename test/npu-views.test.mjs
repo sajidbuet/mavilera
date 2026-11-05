@@ -61,7 +61,7 @@ test('NPU geometry: every drawn wire carries a signal of the model\'s dictionary
   assert.deepEqual([w('d_bus'), w('weights'), w('abuf_skew'), w('sums_rbuf'), w('skew_r0'), w('sum0')], [32, 128, 32, 128, 8, 32]);
 });
 
-test('NPU geometry: equal to a fresh export from the book\'s generator (when the book repository is present)', { skip: !BOOK && 'no book checkout with the generator' }, () => {
+test('NPU geometry: equal to a fresh export from the book\'s generator (when the book repository is present)', { skip: !BOOK ? 'no book checkout with the generator' : !existsSync(join(ROOT, 'tools', 'export_ch11.py')) && 'tools/export_ch11.py is in the private repository only' }, () => {
   const r = spawnSync('python', ['-I', join(ROOT, 'tools', 'export_ch11.py'), '--book', BOOK, '--check'], { encoding: 'utf8' });
   assert.equal(r.status, 0, r.stdout + r.stderr);
   const g = spawnSync('python', ['-I', join(BOOK, GENERATOR), '--check'], { encoding: 'utf8' });

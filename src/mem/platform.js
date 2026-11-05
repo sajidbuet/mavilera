@@ -49,21 +49,36 @@ export function parseStimulus(text) {
   return out;
 }
 
+/**
+ * Devices that a module provides to the platform when it loads (W-D29: the platform, which every build carries, imports
+ * no module's device): name -> {create: () => Device, base}. The GPU (src/mem/gpu.js, loaded by the RISC-V module for
+ * its CPU + GPU tool, GPU-7) provides 'gpu'.
+ */
+const PROVIDED = new Map();
+export function provideDevice(name, provider) { PROVIDED.set(name, provider); }
+function provided(name) {
+  const p = PROVIDED.get(name);
+  if (!p) throw new Error(`Platform: the ${name} device is not loaded (src/mem/${name}.js)`);
+  return p;
+}
+
 export class Platform {
   /**
    * @param {{stimulus?: Array, rx?: Array, mtimeDiv?: number, uart?: boolean, txCycles?: number}} o
    *   stimulus: pin events of the GPIO inputs; rx: bytes arriving at the UART ({cycle, byte}); uart: false
    *   leaves the slot at 0x4000_2000 to the window (reads 0), as rvsim.py has no UART; npu: the Chapter 11 NPU at
    *   0x5000_0000, outside the window (decision G1: it joins the platform devices; false leaves the address unmapped);
-   *   npuStop: a RESULT read while the NPU is busy also stops the run (decision G5).
+   *   npuStop: a RESULT read while the NPU is busy also stops the run (decision G5); gpu: the RISC-V SIMT core at
+   *   0x5000_1000 (GPU-7, decision G30), only on the pages of the CPU + GPU tool (off: the address stays unmapped).
    */
-  constructor({ stimulus = [], rx = [], mtimeDiv = 1, uart = true, txCycles = 4, npu = true, npuStop = false } = {}) {
-    this.config = { stimulus, rx, mtimeDiv, uart, txCycles, npu, npuStop };
+  constructor({ stimulus = [], rx = [], mtimeDiv = 1, uart = true, txCycles = 4, npu = true, npuStop = false, gpu = false } = {}) {
+    this.config = { stimulus, rx, mtimeDiv, uart, txCycles, npu, npuStop, gpu };
     this.window = new PeripheralWindow();
     this.gpio = new Gpio({ stimulus });
     this.timer = new Timer({ div: mtimeDiv });
     this.uart = uart ? new Uart({ txCycles, rx }) : null;
     this.npu = npu ? new Npu({ stopOnBusyResult: npuStop }) : null;
+    this.gpu = gpu ? provided('gpu').create() : null;
     this.log = []; // every interrupt request: {source, rise, taken, ack}
     this.open = new Map(); // source -> the request being served
     this.journal = NO_JOURNAL;
@@ -84,12 +99,13 @@ export class Platform {
     for (const d of this.parts) d.events = events;
   }
 
-  get parts() { return [this.gpio, this.timer, ...(this.uart ? [this.uart] : []), ...(this.npu ? [this.npu] : [])]; }
+  get parts() { return [this.gpio, this.timer, ...(this.uart ? [this.uart] : []), ...(this.npu ? [this.npu] : []), ...(this.gpu ? [this.gpu] : [])]; }
 
   /** [{base, device}] to register: the window first, then the devices inside it. */
   devices() {
     return [{ base: PERIPH_LO, device: this.window }, { base: GPIO_BASE, device: this.gpio }, { base: TIMER_BASE, device: this.timer },
-      ...(this.uart ? [{ base: UART_BASE, device: this.uart }] : []), ...(this.npu ? [{ base: NPU_BASE, device: this.npu }] : [])];
+      ...(this.uart ? [{ base: UART_BASE, device: this.uart }] : []), ...(this.npu ? [{ base: NPU_BASE, device: this.npu }] : []),
+      ...(this.gpu ? [{ base: provided('gpu').base, device: this.gpu }] : [])];
   }
 
   setJournal(j) {
@@ -140,7 +156,7 @@ export class Platform {
   measurement() {
     const markers = this.gpio.changes.map((c) => ({ ...c }));
     const spans = markers.slice(1).map((m, k) => ({ from: markers[k].out, to: m.out, cycles: m.cycle - markers[k].cycle }));
-    return { markers, spans, npu: this.npu ? { ...this.npu.counters } : null };
+    return { markers, spans, npu: this.npu ? { ...this.npu.counters } : null, ...(this.gpu ? { gpu: { ...this.gpu.counters } } : {}) };
   }
 
   snapshot() {

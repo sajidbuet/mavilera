@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "Collatz steps",
  "task": "Write the procedure collatz: a0 holds n >= 1. Count the steps to reach 1, where a step halves an even number and turns an odd one into 3n + 1. Return the count in a0 (collatz(6) = 8).",
  "lang": "asm",
- "starter": "# collatz -- practice exercise (RISC-VISTA)\n# Return the number of Collatz steps from a0 to 1.\n# Hint: andi tests the lowest bit; 3n + 1 needs no multiply.\n        .text\ncollatz:\n        # a0 = n >= 1\n        li   a0, 0              # replace with your code\n        ret\n",
+ "starter": "# collatz -- practice exercise (MAVILERA)\n# Return the number of Collatz steps from a0 to 1.\n# Hint: andi tests the lowest bit; 3n + 1 needs no multiply.\n        .text\ncollatz:\n        # a0 = n >= 1\n        li   a0, 0              # replace with your code\n        ret\n",
  "entry": "collatz",
  "tests": [
   {

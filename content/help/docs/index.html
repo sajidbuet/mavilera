@@ -11,22 +11,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MAVILERA RISC-V Laboratory documentation</title>
   <meta name="description" content="Documentation of MAVILERA: the workspace, RISC-V assembly and the C subset, running and debugging, the single-cycle, multicycle and pipelined processor views, files, exports and offline use.">
-  <meta name="theme-color" content="#145e56">
+  <meta name="theme-color" content="#0b2a55">
   <!-- in a release, tools/release.mjs places the icons at the site root, two levels up -->
   <link rel="icon" sizes="16x16 32x32 48x48" href="../../favicon.ico">
   <link rel="icon" type="image/svg+xml" href="../../icon.svg">
   <style>
+    /* the MAVILERA palette (W-D30): the tokens of src/ui/theme.css, as the other laboratories' pages */
     :root {
-      --primary: #145e56; --primary-soft: #e7f4f1; --insight: #1f4e79; --amber: #a85a00;
-      --bg: #f3f6f7; --surface: #ffffff; --border: #dce4e5; --text: #18343b; --text-2: #5f727a; --code-bg: #f6f8f8;
+      --primary: #1a4f8b; --primary-soft: #e8f1fa; --insight: #1f4e79; --amber: #a85a00;
+      --bg: #f4f7fb; --surface: #ffffff; --border: #d8e1ec; --text: #14243a; --text-2: #5a6b80; --code-bg: #f3f6fa;
       --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
       color-scheme: light;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --primary: #46a799; --primary-soft: #16302d; --insight: #8fb4dc; --amber: #e3a453;
-        --bg: #0e1214; --surface: #151b1e; --border: #2b363b; --text: #dde7e9; --text-2: #96a7ae; --code-bg: #1a2125;
+        --primary: #5b9bd5; --primary-soft: #132a45; --insight: #8fb4dc; --amber: #e3a453;
+        --bg: #0d1420; --surface: #141d2b; --border: #2a3648; --text: #e3e9f2; --text-2: #9aa9bd; --code-bg: #182233;
         color-scheme: dark;
       }
     }
@@ -103,7 +104,9 @@
         <li><a href="#compare">Comparison</a></li>
         <li><a href="#memory">Memory and caches</a></li>
         <li><a href="#devices">Devices and traps</a></li>
-<li><a href="#exercises">Exercises</a></li>
+        <li><a href="#npu">The NPU</a></li>
+        <li><a href="#cpugpu">CPU + GPU</a></li>
+        <li><a href="#exercises">Exercises</a></li>
         <li><a href="#files">Files, sharing and examples</a></li>
         <li><a href="#exports">Exports</a></li>
         <li><a href="#offline">Offline use and privacy</a></li>
@@ -180,7 +183,7 @@ main:   la    t0, nums        # address of the array
           <em>View</em> menu (show or hide panes, reset the layout); the theme (system, dark, light); projector mode;
           full screen; the keyboard summary; Help.</li>
         <li><strong>Toolbar</strong>: Assemble (Compile for C), Run/Pause, Step back, Step, Step over, Step out, Run to
-          cursor, Reset, the speed, the profile and the <em>File</em> menu. Each control has a tooltip with its name and
+          cursor, Reset, the speed, the <em>Architecture</em> selector (the profile) and the <em>File</em> menu. Each control has a tooltip with its name and
           shortcut.</li>
         <li><strong>Editor</strong>: line numbers with a breakpoint gutter, error marks, completion of mnemonics and
           registers, and help when you point at an instruction. The status line shows the cursor position, the profile
@@ -212,6 +215,10 @@ main:   la    t0, nums        # address of the array
         <tbody>
           <tr><td>ISA (RV32I + M)</td><td>RV32I and M, <code>ecall</code>, <code>ebreak</code>, <code>fence</code></td>
             <td>One byte-addressed memory: code from <code>0x00000000</code>, data from <code>0x00010000</code>; sp starts at <code>0x00100000</code></td></tr>
+          <tr><td>ISA with traps and devices</td><td>RV32I and M, the Zicsr instructions, <code>mret</code>, <code>wfi</code>; <code>ecall</code> and <code>ebreak</code> are traps</td>
+            <td>As the ISA profile, with the platform devices (below)</td></tr>
+          <tr><td>Laboratory SoC with the NPU</td><td>RV32I and M</td>
+            <td>Separate instruction and data memories of 1024 words each, data from 0; the platform devices and the NPU at <code>0x5000_0000</code> (and, on the CPU + GPU page, the GPU at <code>0x5000_1000</code>)</td></tr>
           <tr><td>Single-cycle processor</td><td rowspan="3">The processor subset: <code>add sub sll slt sltu xor srl sra or and</code>,
             <code>addi slti sltiu xori ori andi slli srli srai</code>, <code>lw sw</code>,
             <code>beq bne blt bge bltu bgeu</code>, <code>jal jalr lui auipc</code></td>
@@ -369,8 +376,9 @@ main:   la    t0, nums        # address of the array
           that cycle.</li>
         <li><strong>Step timing</strong>: the critical path of each step and the clock period they set.</li>
       </ul>
-      <p>Code and data share one memory, with data from <code>0x200</code>. The multicycle processor of this edition has
-        no state for <code>jalr</code>: a program that uses it stops at the <code>jalr</code> with a message.</p>
+      <p>Code and data share one memory, with data from <code>0x200</code>. The multicycle processor has no state for
+        <code>jalr</code> unless the optional <em>Reference JALR state</em> is switched on in the view's toolbar; without
+        it, a program that uses <code>jalr</code> stops there with a message.</p>
 
       <h2 id="pipe">Pipelined processor</h2>
       <p>A five-stage pipeline (IF, ID, EX, MEM, WB) with pipeline registers IF/ID, ID/EX, EX/MEM and MEM/WB. The
@@ -426,7 +434,7 @@ main:   la    t0, nums        # address of the array
         processors under the three memory models.</p>
 
       <h2 id="devices">Devices and traps</h2>
-      <p>The profile <em>ISA with traps and devices</em> (Profile list, instruction-level view) adds the platform of the
+      <p>The profile <em>ISA with traps and devices</em> (<em>Architecture</em> selector, instruction-level view) adds the platform of the
         laboratory: a GPIO at <code>0x4000_0000</code> with eight LEDs, four switches and a push button, a machine timer at
         <code>0x4000_1000</code>, and a UART at <code>0x4000_2000</code>. The Zicsr instructions, <code>mret</code> and
         <code>wfi</code> are instructions; <code>ecall</code>, <code>ebreak</code>, a misaligned or protected access and an
@@ -450,14 +458,65 @@ main:   la    t0, nums        # address of the array
         exist only in the profile with traps.</p>
       <p>The templates of the group <em>Devices and traps</em> are a running light, switches and a button by polling, a
         button interrupt, the timer by polling and by interrupt, a system call as a trap, and a serial port.</p>
+      <h2 id="npu">The NPU</h2>
+      <p>The NPU tool (the switcher's NPU entry) is a laboratory system: a 4 × 4 weight-stationary systolic array of INT8
+        processing elements with 32-bit accumulators, a memory-mapped peripheral at <code>0x5000_0000</code> beside the
+        GPIO, the timer and the UART, on the profile <em>Laboratory SoC with the NPU</em>. The processor reaches it with
+        <code>lw</code> and <code>sw</code> only. Its views are ISA, Single-cycle (the single-cycle datapath with the NPU on
+        the data bus), NPU (the peripheral at four levels: subsystem, systolic array, processing element, system) and
+        Analysis.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Offset</th><th>Register</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>0x00</code></td><td>CTRL (write)</td><td>Bit 0 starts, bit 1 clears the accumulators and done; both bits: clear, then start.</td></tr>
+          <tr><td><code>0x04</code></td><td>STATUS (read)</td><td>Bit 0 busy, bit 1 done.</td></tr>
+          <tr><td><code>0x10</code>–<code>0x1C</code></td><td>WEIGHT[i]</td><td>Row i of W: W[i][j] in bits 8j+7 to 8j.</td></tr>
+          <tr><td><code>0x20</code>–<code>0x2C</code></td><td>ACT[j]</td><td>x[j] in bits 7 to 0; the higher bits are ignored; a read gives the value sign-extended.</td></tr>
+          <tr><td><code>0x30</code>–<code>0x3C</code></td><td>RESULT[i] (read)</td><td>The INT32 accumulator: each start adds y[i] = Σ W[i][j] x[j].</td></tr>
+        </tbody>
+      </table></div>
+      <p>A start keeps the NPU busy for 2N + 1 = 9 cycles: one to copy the weights into the processing elements, eight for
+        the array. Writes to CTRL, WEIGHT and ACT while it is busy are ignored, and the NPU view marks them; a program learns
+        that the run has finished only by reading STATUS. Other offsets read 0 and ignore writes; the NPU takes whole words.
+        A read of RESULT while the NPU is busy returns the partly accumulated value with a warning.</p>
+      <p>The Analysis view measures the program in the editor on the laboratory profile: <em>Offload</em> (where the cycles
+        go), <em>Compare</em> (the three laboratory templates and your program for 1, 4 and 16 vectors), <em>Roofline</em>,
+        and calculators for Amdahl's law, the MACs of a layer, the accumulator width of INT8 products and quantisation. The
+        NPU is modelled on the instruction level and the single-cycle processor only, without wait states or interrupts.</p>
+      <h2 id="cpugpu">CPU + GPU</h2>
+      <p>The CPU + GPU page, opened from the GPU Laboratory's <em>CPU + GPU</em> view, puts the GPU Laboratory's SIMT core
+        (two warps of four lanes) on the bus at <code>0x5000_1000</code>. The processor reaches it with <code>lw</code> and
+        <code>sw</code> only. The page's views are ISA, Single-cycle (the single-cycle datapath with the GPU on the data
+        bus) and GPU (the core's drawing, warps, masks and stack as the host program steps, and an Interface tab with the
+        registers and the bus log); its waveforms offer the GPU's signals. It keeps its own program, apart from this
+        laboratory's, and opens on a first visit with its template, <em>CPU + GPU: the host starts a kernel and polls the
+        GPU</em>.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Offset</th><th>Register</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>0x000</code></td><td>CTRL (write)</td><td>Bit 0 starts the kernel (warp 0 at address 0, every lane active, registers and counters 0); bit 1 clears DONE and FAULT; both bits: clear, then start.</td></tr>
+          <tr><td><code>0x004</code></td><td>STATUS (read)</td><td>Bit 0 BUSY, bit 1 DONE, bit 2 FAULT, bits 11:8 the fault code (1 to 7 the core's; 8 a deadlock at a barrier).</td></tr>
+          <tr><td><code>0x008</code>, <code>0x00C</code></td><td>ARGS, BLOCK</td><td>The identity registers kernel_args and block_index at launch.</td></tr>
+          <tr><td><code>0x010</code>–<code>0x018</code></td><td>CYCLES, ISSUED, ACTIVE (read)</td><td>The counters of the kernel.</td></tr>
+          <tr><td><code>0x400</code>–<code>0x4FC</code></td><td>IMEM</td><td>The GPU's instruction memory, 64 words.</td></tr>
+          <tr><td><code>0x800</code>–<code>0xBFC</code></td><td>DMEM</td><td>The GPU's data memory, 256 words; a read while the GPU is busy gives the word as it is then.</td></tr>
+        </tbody>
+      </table></div>
+      <p>After a start, the GPU issues one warp-instruction in every clock cycle of the processor until every warp has ended
+        or an issue faults; then BUSY is 0 and DONE 1. Writes to the GPU while it is busy are ignored, and the bus log marks
+        them; whole words only. This register map is MAVILERA's own design, one way to attach such a core; a laboratory may
+        ask for a design of your own. The assembler of this laboratory has no warp-control instructions: a kernel is written
+        in the GPU Laboratory, whose <em>CPU + GPU</em> view gives it as <code>.word</code> lines for a host program. In the
+        template, the kernel takes 28 cycles and the whole host program 231.</p>
       <h2 id="exercises">Exercises</h2>
-      <p><em>File ▸ Exercise…</em> lists 14 practice exercises written for MAVILERA — bit counting, Gray code, clamping,
+      <p><em>File ▸ Exercise…</em> lists 16 practice exercises written for MAVILERA — bit counting, Gray code, clamping,
         greatest common divisor, digit sums, Collatz steps, integer square root, reversing an array, palindromes, polynomials,
-        printing a number, and three in C — each with a starter program and tests; no solutions are included.</p>
+        printing a number, three in C, and two for the NPU on the laboratory profile — each with a starter program and tests;
+        no solutions are included.</p>
       <p>A teacher can also give a task with tests in a file. Open it with <em>File ▸ Open</em> (or <em>File ▸ Exercise…</em>):
         the task is shown, <em>Run the tests</em> runs them on the program in the editor, and each test lists what it
         checks, the expected value and your program's. The file is read in the browser and kept there until you close the
-        exercise; nothing is uploaded, and MAVILERA itself contains no exercises or answers.</p>
+        exercise; nothing is uploaded, and MAVILERA contains no answers.</p>
       <h3>The file format, for teachers</h3>
       <p>A JSON file with <code>"format": "risc-vista-exercise"</code> and <code>"version": 1</code>:</p>
 <pre><code>{
@@ -479,7 +538,8 @@ main:   la    t0, nums        # address of the array
         <code>bytes</code> at a label or address), the console <code>output</code>, the <code>exit</code> code, and
         <code>"abi": true</code> (the calling convention is kept). With <code>entry</code>, each test calls that procedure
         with the test's registers and stops at its return; without it, the program runs from its start to its exit. Tests
-        run in the ISA profile; a C program is compiled with the editor's translation settings.</p>
+        run in the ISA profile, or in the profile the file names (an optional <code>"profile"</code>, such as <code>"ch11"</code>
+        for the NPU); a C program is compiled with the editor's translation settings.</p>
 
       <h2 id="files">Files, sharing and examples</h2>
       <ul>
@@ -488,7 +548,8 @@ main:   la    t0, nums        # address of the array
           and the step or clock cycle you had reached (replayed from reset; a run of more than two million steps
           starts again from reset).</li>
         <li><strong>Templates</strong> (toolbar): short programs grouped by view (instruction level, C, single-cycle,
-          multicycle, pipelined, comparison), each opening in its view with its settings: a loop, procedures and the
+          multicycle, pipelined, comparison) and by topic (devices and traps, caches and memory, the NPU laboratory; on the
+          CPU + GPU page, its own), each opening in its view with its settings: a loop, procedures and the
           stack, recursion, a calling-convention fault, bit fields, endianness, overflow, a watchpoint, the two C
           translations, the critical path, CPI by class, forwarding, the load-use stall, the hazard unit part by part,
           branch prediction and its limits, the cost of jumps, and the speed-up of the three processors.</li>
@@ -523,7 +584,7 @@ main:   la    t0, nums        # address of the array
       <ul>
         <li>After a first visit, the hosted application opens without a network connection: the browser keeps its files
           and checks for a new version when it can.</li>
-        <li>The single-file version, offered on the home page, is one <code>.html</code> file that opens from the local
+        <li>The single-file version, offered on the Documentation and Download pages, is one <code>.html</code> file that opens from the local
           disk and makes no network request.</li>
         <li>Browsers that support it can install the application as an app from their menu.</li>
         <li>No account, no tracking, no upload: programs, data files and exports never leave the browser.</li>
@@ -566,8 +627,8 @@ main:   la    t0, nums        # address of the array
         <li>Delays, clock periods and execution times are computed from illustrative delay values.</li>
         <li>The processor views have small memories and implement a subset of RV32I; the ISA view runs the full RV32I
           and M instruction sets.</li>
-        <li>The privileged architecture (CSRs, traps, interrupts) is not simulated in this version.</li>
-        <li>What each release was checked against is listed in its validation record, linked from the home page.</li>
+        <li>CSRs, traps and interrupts are simulated only in the profile <em>ISA with traps and devices</em>, on the laboratory's own platform.</li>
+        <li>What each release was checked against is listed in its validation record, linked from the Documentation page.</li>
       </ul>
 
       <h2 id="glossary">Glossary</h2>

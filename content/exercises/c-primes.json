@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "C: count the primes below n",
  "task": "Complete the C function count_primes(n): return how many prime numbers are smaller than n (count_primes(10) = 4: 2, 3, 5 and 7).",
  "lang": "c",
- "starter": "/* count_primes -- practice exercise (RISC-VISTA).\n * Return how many primes are smaller than n.\n * Hint: test each k from 2 with divisors d while d * d <= k. */\nint count_primes(int n)\n{\n    return 0;   /* your code */\n}\n\nint main(void)\n{\n    return count_primes(10);\n}\n",
+ "starter": "/* count_primes -- practice exercise (MAVILERA).\n * Return how many primes are smaller than n.\n * Hint: test each k from 2 with divisors d while d * d <= k. */\nint count_primes(int n)\n{\n    return 0;   /* your code */\n}\n\nint main(void)\n{\n    return count_primes(10);\n}\n",
  "entry": "count_primes",
  "tests": [
   {

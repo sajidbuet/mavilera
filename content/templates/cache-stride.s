@@ -1,6 +1,6 @@
 # cache-stride.s -- Stride: touching one word per block misses every time.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Same cache as "Spatial locality" (16-byte blocks). The stride in s1 is the
 # distance in bytes between the loads. With 16, every load lands in a new

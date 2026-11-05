@@ -42,21 +42,31 @@
       "content": ["content/armv7/"]
     },
     {
+      "id": "i8086",
+      "name": "8086",
+      "description": "The Intel 8086: an assembler in the style of Intel's ASM-86 and an instruction-level simulator with the general, pointer, index and segment registers, the flags, 1 MiB of segmented memory and the I/O ports, its instructions checked against the SingleStepTests 8086 suite. A beta: the BIU and EU view steps each instruction through a teaching model, or clock by clock with the bus interface unit filling the instruction queue; the clock counts are the teaching model's, and instruction timing comes later.",
+      "tagline": "The Intel 8086: segmented memory, the flags and the I/O ports, instruction by instruction.",
+      "path": "i8086/",
+      "status": "available",
+      "preview": true,
+      "content": ["content/i8086/"]
+    },
+    {
       "id": "gpu",
       "name": "GPU",
-      "description": "A SIMT core: four or eight lanes run one stream of a seven-instruction micro-ISA, with an active mask and a two-deep mask stack for divergent branches; assembler and instruction-level simulator with the lanes' registers. A preview: the core's views come in later releases.",
-      "tagline": "A SIMT core: lanes, an active mask and divergent branches, instruction by instruction.",
+      "description": "A SIMT core of RISC-V threads in warps (two warps of four lanes, or one of eight), with an active mask, a reconvergence stack, split and join, and barriers, drawn cycle by cycle; models of data-parallel machines; practice exercises; a CPU + GPU system with the core on the RISC-V Laboratory's bus. A seven-instruction micro-ISA is kept as an introduction. A preview.",
+      "tagline": "A SIMT core: warps, an active mask and divergent branches, cycle by cycle.",
       "path": "gpu/",
       "status": "available",
       "preview": true,
+      "docs": "gpu/docs/",
       "content": ["content/gpu/"]
     },
     { "id": "6502", "name": "MOS 6502", "path": "6502/", "status": "planned" },
-    { "id": "8086", "name": "Intel 8086", "path": "8086/", "status": "planned" },
     { "id": "mips", "name": "MIPS", "path": "mips/", "status": "planned" }
   ],
   "_landing": "The order of the landing page's cards, three to a row (author, 2026-11-05): every module and tool once.",
-  "landing": ["riscv", "gpu", "npu", "sap-1", "sap-2", "armv7", "8086", "mips", "6502"],
+  "landing": ["riscv", "gpu", "npu", "sap-1", "sap-2", "armv7", "i8086", "mips", "6502"],
   "_tools": "Tools inside a module (src/shell/platform-archs.js): a card after their module's, linking into it; not built on their own.",
   "tools": [
     {

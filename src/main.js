@@ -8,11 +8,12 @@
 // Rights class: code.
 
 import { STRINGS, mergeStrings } from './ui/strings.js';
-import { el, hex8, hexAddr, download, store, scoped } from './ui/dom.js';
+import { el, hex8, hexAddr, download, store, scoped, setStorageVariant, moveToVariant } from './ui/dom.js';
 import { Editor } from './ui/editor.js';
 import { ListingPanel, FieldsTable, dataTable, symbolTable } from './ui/listing.js';
 import { RegistersPanel, MemoryPanel, CountersPanel, ConsolePanel, CallStackPanel, OUTPUT_LIMIT } from './ui/state-panels.js';
-import { STOP, capability } from './arch/contract.js';
+import { STOP, capability, withVariant, variantOf } from './arch/contract.js';
+import { VariantDialog } from './ui/variant-dialog.js';
 import { capabilityStates, gate } from './shell/capabilities.js';
 import { checkFits } from './shell/data-io.js';
 import { createShare, isShareFragment, LINK_LIMIT, normalisePlatform, defaultPlatform } from './shell/share.js';
@@ -44,11 +45,33 @@ import { endBoot } from './ui/boot.js';
 
 // The architecture this application runs (contract W-D29; one per build from phase 6, until then `?arch=<id>`). The
 // shell reads it through its descriptor only.
-const arch = (await ARCHITECTURES[ARCH_ID]()).descriptor;
-mergeStrings(arch.strings); // the architecture's interface text over the shell's (phase 4)
+const base = (await ARCHITECTURES[ARCH_ID]()).descriptor;
 // the tool this page shows (src/shell/platform-archs.js): the module, or a tool inside it (`?tool=npu`: the RISC-V
 // module opened on the Chapter 11 laboratory profile and the NPU tab, with the NPU lockup)
 const TOOL = currentTool(ARCH_ID, location.search);
+/** The platform setting this page starts with: the defaults, with the tool's devices (the CPU + GPU tool: the GPU, G30). */
+const toolPlatform = () => normalisePlatform({ ...(TOOL?.platform ?? {}) });
+// Contract v9 (§26): the variant of the profile this page starts in (a tool's, else the stored one) is resolved
+// before anything is built; a module without variants is its descriptor, unchanged. Changing to a profile of another
+// variant reloads the page (profile menu, share links).
+{ // once: what a module stored before it had variants belongs to its `legacy` variant (GPU: the micro-ISA preview)
+  const legacy = Object.entries(base.variants ?? {}).find(([, v]) => v.legacy)?.[0];
+  if (legacy && store.get('pips.v9') !== '1') {
+    const kept = store.get('pips.profile');
+    if (moveToVariant(legacy) && variantOf(base, kept) === undefined) store.set('pips.profile', base.engine.profiles.find((p) => p.variant === legacy).id);
+    store.set('pips.v9', '1');
+  }
+}
+const startProfile = [TOOL?.profile, store.get('pips.profile')].find((p) => p && variantOf(base, p) !== undefined) ?? null;
+const arch = await withVariant(base, startProfile ? variantOf(base, startProfile) : null);
+// the program, workspace and view are kept per variant (src/ui/dom.js); a hosted tool keeps its own (the CPU + GPU tool,
+// author 2026-11-05: its program is not the RISC-V Laboratory's)
+setStorageVariant(arch.activeVariant ?? (TOOL?.within ? `tool-${TOOL.id}` : null));
+/** A variant's name for the reload question: the descriptor's own is `strings.variantLabel` (else the name). */
+const variantLabel = (v) => (v ? base.variants[v].label : base.strings?.variantLabel ?? base.name);
+/** The profiles of this page's variant, in menu order; the first is the default. */
+const OWN_PROFILES = arch.engine.profiles.filter((p) => (p.variant ?? null) === arch.activeVariant);
+mergeStrings(arch.strings); // the architecture's interface text over the shell's (phase 4)
 const VIEWS = toolViews(arch, TOOL); // the views this tool shows (the NPU tool: ISA, its single-cycle view, NPU)
 // share links and settings files of this architecture (WS-F-122; what they may hold comes from the descriptor)
 const { encodeFragment, decodeFragment, settingsFile, readSettingsFile } = createShare(shareSchema(arch));
@@ -76,7 +99,7 @@ const HISTORY_LIMIT = 1_000_000; // steps kept for step back
 // architecture's engine (contract), one per loaded program.
 const session = {
   files: [{ name: `main${arch.language.extension}`, text: '' }],
-  profile: arch.engine.profiles[0].id,
+  profile: OWN_PROFILES[0].id,
   subset: null, // an option of the profile (spec §6)
   program: null,
   breakpoints: new Set(),
@@ -84,7 +107,7 @@ const session = {
   watchWords: new Set(),
   dataLoads: [],
   loadReport: { applied: [], dropped: [] },
-  platformConfig: defaultPlatform(),
+  platformConfig: toolPlatform(),
   get runnable() { return Boolean(this.program?.ok); },
   /** Keep `bytes` for the data array `label` (replacing an earlier load of it); assemble again to apply. */
   loadData(label, bytes, name) {
@@ -390,8 +413,29 @@ function setToolLabel(b, name, label, key) {
 }
 // An export of a whole run (WS-F-124 to WS-F-126); `.dp-only` items exist only in a datapath view.
 const runExport = (label, action, cls = '') => el(`button${cls}`, { type: 'button', onclick: action, title: STRINGS.exportRunTitle, text: label });
-const profileSel = el('select', { 'aria-label': STRINGS.profile, onchange: (e) => { session.profile = e.target.value; store.set('pips.profile', session.profile); syncLangControls(); doAssemble(); } },
-  arch.engine.profiles.map((p) => el('option', { value: p.id, text: p.label })));
+const profileOption = (p) => el('option', { value: p.id, text: p.label });
+const profileSel = el('select', { 'aria-label': STRINGS.profile, onchange: (e) => {
+  const id = e.target.value;
+  if (variantOf(arch, id) !== arch.activeVariant) { e.target.value = session.profile; changeVariant(id); return; } // contract v9
+  session.profile = id; store.set('pips.profile', session.profile); syncLangControls(); doAssemble();
+} },
+  // contract v9: with variants, the profiles are grouped by instruction set
+  arch.variants ? [null, ...Object.keys(arch.variants)].map((v) => el('optgroup', { label: variantLabel(v) },
+    arch.engine.profiles.filter((p) => (p.variant ?? null) === v).map(profileOption)))
+    : arch.engine.profiles.map(profileOption));
+const variantDialog = arch.variants ? new VariantDialog() : null;
+if (variantDialog) document.body.append(variantDialog.root);
+/** Contract v9: reload the page in the variant of profile `id`, if the user agrees; the workspace is saved first. */
+async function changeVariant(id) {
+  if (!(await variantDialog.ask(variantLabel(arch.activeVariant), variantLabel(variantOf(arch, id))))) return;
+  reloadIn(id);
+}
+function reloadIn(id) {
+  saveWorkspace();
+  store.set('pips.profile', id);
+  store.set('pips.variantNote', 'menu');
+  location.reload();
+}
 const speedSel = el('select', { 'aria-label': STRINGS.speed },
   el('option', { value: 'max', text: STRINGS.speedMax }), el('option', { value: 'slow', text: STRINGS.speedSlow }));
 const runBtn = tool('play', STRINGS.run, () => (running ? pause() : startRun()), { key: 'F5', cls: '.tool-run' });
@@ -442,15 +486,15 @@ async function openTemplate(t) {
   // a template of the group Devices and traps names its profile and may carry a pin script and bytes for the UART
   let stimulus = [];
   try { stimulus = t.stimulus ? parseStimulus(t.stimulus) : []; } catch (e) { consolePanel.message(STRINGS.platform.scriptError(e.message), 'error'); }
-  session.platformConfig = { ...defaultPlatform(), stimulus, rx: (t.rx ?? []).map((e) => ({ ...e })), mtimeDiv: t.mtimeDiv ?? 1 };
-  await applyShared({ view: t.view, profile: t.profile ?? arch.engine.profiles[0].id, lang: t.lang, name: t.file, source: await r.text(),
+  session.platformConfig = { ...toolPlatform(), stimulus, rx: (t.rx ?? []).map((e) => ({ ...e })), mtimeDiv: t.mtimeDiv ?? 1 };
+  await applyShared({ view: t.view, profile: t.profile ?? OWN_PROFILES[0].id, lang: t.lang, name: t.file, source: await r.text(),
     ...Object.fromEntries(SETTINGS.map((v) => [v.settings.key, t[v.settings.key] ?? null])), mem: t.mem ? readConfig(t.mem) : null },
     STRINGS.templates.opened(t.title));
 }
 /** The templates as menu items: a heading per group, a button per template. */
 function templateItems(ix, make) {
   return Object.entries(ix.groups).flatMap(([g, title]) => {
-    const items = ix.templates.filter((t) => t.group === g);
+    const items = ix.templates.filter((t) => t.group === g && (!t.tool || t.tool === TOOL?.id)); // a tool's own templates on its page only (CPU + GPU)
     return items.length ? [el('p.menu-head', { text: title }), ...items.map(make)] : [];
   });
 }
@@ -831,7 +875,7 @@ const brandReady = (async () => {
     small.classList.add('brand-logo', 'brand-icon');
     // MAVILERA goes to the landing page, the architecture part opens the switcher (docs/architecture/arch-switcher.md)
     const where = { protocol: location.protocol, href: location.href, release: !!document.querySelector('meta[name="risc-vista-edition"][content="release"]') };
-    const switcher = archSwitcher({ logo: full, targets: switchTargets(TOOL?.id ?? ARCH_ID, where), home: homeUrl(where), current: TOOL?.name ?? STRINGS.appFull,
+    const switcher = archSwitcher({ logo: full, targets: switchTargets(TOOL?.within ?? TOOL?.id ?? ARCH_ID, where), home: homeUrl(where), current: TOOL?.name ?? STRINGS.appFull,
       loadLogo: (file) => brandSvg(file), strings: STRINGS.archSwitch, nameAt: NAME_AT });
     header.querySelector('.app-logo')?.replaceChildren(switcher, small);
     header.classList.add('has-logo');
@@ -868,11 +912,11 @@ document.body.append(dataDialog.root);
 
 // the example library (WS-F-123): an example opens like a shared program, in the view of its processor
 // the view that runs an example's profile: the first view of that profile that is not the comparison (the ISA view: the first profile)
-const viewForProfile = (profile) => VIEWS.find((v) => !isCmp(v.id) && (v.profile ?? arch.engine.profiles[0].id) === profile)?.id ?? VIEWS[0].id;
+const viewForProfile = (profile) => VIEWS.find((v) => !isCmp(v.id) && (v.profile ?? OWN_PROFILES[0].id) === profile)?.id ?? VIEWS[0].id;
 const examplesDialog = new ExamplesDialog({ index: contentUrl('examples'), templates: () => loadTemplates(), onTemplate: (t) => openTemplate(t), templateItems, onOpen: async (x, text) => {
   let source = text;
   if (x.gcc) { const imps = await arch.language.importers(); source = (imps.find((i) => i.test(text)) ?? imps[0]).convert(text, x.file).text; }
-  await applyShared({ view: viewForProfile(x.profile), profile: x.profile === arch.engine.profiles[0].id ? x.profile : isaProfile,
+  await applyShared({ view: viewForProfile(x.profile), profile: x.profile === OWN_PROFILES[0].id ? x.profile : isaProfile,
     subset: profileOf(x.profile)?.subsets ? x.subset ?? profileOf(x.profile).subsets[0].id : null,
     lang: x.lang, name: x.file, source }, STRINGS.examples.opened(x.title));
   // contract v5: the view's warning when an example opens in it (RISC-V: the multicycle JALR state)
@@ -2001,6 +2045,8 @@ function saveSettings() {
 
 /** Open a shared state: keep the editor's text for File ▸ Restore, then settings, program and view. */
 async function applyShared(st, message) {
+  // contract v9: a state of another instruction set (an exercise's profile) is not applied here
+  if (variantOf(arch, st.profile) !== arch.activeVariant) { consolePanel.message(STRINGS.share.refusedVariant(profileOf(st.profile)?.label ?? st.profile), 'error'); return; }
   cancelRun();
   store.set('pips.source.before', JSON.stringify({ lang, text: editor.value }));
   for (const x of xlOpts) { const v = st.cc?.[x.o.id]; if (v) { x.sel.value = v; store.set(`pips.cc.${x.o.id}`, v); } }
@@ -2040,13 +2086,22 @@ async function openFragment() {
     const st = await decodeFragment(frag);
     await applyShared(st, STRINGS.share.opened(viewName(st.view)));
   } catch (e) {
+    if (e.code === 'variant') { // contract v9: the link's profile is of another instruction set; open it there
+      history.replaceState(null, '', `${location.pathname}${location.search}${frag}`);
+      saveWorkspace();
+      store.set('pips.profile', e.data.profile);
+      store.set('pips.variantNote', 'link');
+      location.reload();
+      return;
+    }
     consolePanel.message(STRINGS.share.refused(e.message), 'error', null, refusedNote(e));
   }
 }
 
 const viewName = (v) => viewOf(v)?.label;
-/** The hint under a refused link or file: another version, or another architecture (W-D29 decision 4). */
-const refusedNote = (e) => (e.code === 'version' ? STRINGS.share.refusedVersion : e.code === 'arch' ? STRINGS.share.refusedArch(e.data.arch) : null);
+/** The hint under a refused link or file: another version, architecture (W-D29 decision 4) or instruction set (v9). */
+const refusedNote = (e) => (e.code === 'version' ? STRINGS.share.refusedVersion : e.code === 'arch' ? STRINGS.share.refusedArch(e.data.arch)
+  : e.code === 'variant' ? STRINGS.share.refusedVariant(profileOf(e.data.profile)?.label ?? e.data.profile) : null);
 
 function restoreBefore() {
   let b = null;
@@ -2089,12 +2144,12 @@ async function runExerciseTests() {
   let text = editor.value;
   if (lang === XID) {
     if (!(await loadExtra())) return null;
-    const c = cc.compile(editor.value, { name: cName, profile: arch.engine.profiles[0].id, options: xlValues() });
+    const c = cc.compile(editor.value, { name: cName, profile: OWN_PROFILES[0].id, options: xlValues() });
     if (!c.ok) { consolePanel.message(STRINGS.cc.errors, 'error'); return null; }
     text = c.text;
   }
   // an exercise of the laboratory profile (NPU-4) is assembled for it: its data lie in the laboratory RAM
-  const p = arch.language.assemble([{ name: lang === XID ? stem(cName) + arch.language.extension : session.files[0].name, text }], { profile: exercise.profile ?? arch.engine.profiles[0].id });
+  const p = arch.language.assemble([{ name: lang === XID ? stem(cName) + arch.language.extension : session.files[0].name, text }], { profile: exercise.profile ?? OWN_PROFILES[0].id });
   if (!(p.assembled ?? p.ok)) { consolePanel.message(STRINGS.asmErrors(errorCount(p)), 'error'); return null; }
   return arch.exercises.run(p, exercise);
 }
@@ -2102,7 +2157,7 @@ const exerciseDialog = new ExerciseDialog({
   onRun: () => runExerciseTests(),
   onStarter: async (source, l) => {
     exerciseDialog.root.close();
-    await applyShared({ view: mode, profile: exercise?.profile ?? arch.engine.profiles[0].id, lang: l, name: `exercise${l === XID ? XL.extension : arch.language.extension}`, source }, STRINGS.exercise.starterLoaded);
+    await applyShared({ view: mode, profile: exercise?.profile ?? OWN_PROFILES[0].id, lang: l, name: `exercise${l === XID ? XL.extension : arch.language.extension}`, source }, STRINGS.exercise.starterLoaded);
   },
   onClose: () => { exercise = null; store.set('pips.exercise', ''); exerciseBtn.hidden = true; refit(); },
   onOpenFile: () => { exerciseDialog.root.close(); fileInput.click(); },
@@ -2159,7 +2214,7 @@ async function openFile(file) {
     editor.value = text;
     store.set(sourceKey(), text);
     syncLangControls();
-    const first = arch.engine.profiles[0].id; // imported code is for the whole ISA
+    const first = OWN_PROFILES[0].id; // imported code is for the whole ISA
     if (gccReport && mode === VIEWS[0].id && session.profile !== first) { session.profile = first; isaProfile = first; profileSel.value = first; store.set('pips.profile', first); }
     doAssemble();
     if (gccReport) reportImport(file.name, gccReport.report);
@@ -2214,6 +2269,8 @@ function saveWorkspace() {
       ...(!uv() && engine?.inputs?.().length ? { inputs: engine.inputs() } : {}) }, // the panel inputs to replay (contract v8)
     platform: session.platformConfig, // the pin script and the trap settings: a replay needs them
   };
+  // contract v9: what this page stores is never storage of before v9 (cleared storage written again at pagehide)
+  if (base.variants) store.set('pips.v9', '1');
   const loads = session.dataLoads.map((l) => ({ label: l.label, name: l.name, b64: toB64(l.bytes) }));
   try {
     localStorage.setItem(scoped(WS_KEY), JSON.stringify({ ...st, dataLoads: loads }));
@@ -2321,10 +2378,12 @@ for (const node of document.querySelectorAll('[data-string]')) {
 const theme = store.get('pips.theme');
 if (theme) document.documentElement.dataset.theme = theme;
 const savedProfile = store.get('pips.profile');
-if (savedProfile && profileOf(savedProfile)) session.profile = savedProfile;
-if (TOOL?.profile && profileOf(TOOL.profile)) session.profile = TOOL.profile; // a tool's profile, not kept as the user's choice
+const ownProfile = (p) => Boolean(p && profileOf(p) && variantOf(arch, p) === arch.activeVariant); // contract v9
+if (ownProfile(savedProfile)) session.profile = savedProfile;
+if (ownProfile(TOOL?.profile)) session.profile = TOOL.profile; // a tool's profile, not kept as the user's choice
 profileSel.value = session.profile;
 if (XL && store.get('pips.lang') === XID && (await loadExtra())) lang = XID;
+const firstVisit = store.get(sourceKey()) === null; // nothing stored yet: a tool with a template opens it (below)
 editor.value = store.get(sourceKey()) ?? (lang === XID ? XL.example : EXAMPLE);
 const kept = isShareFragment(location.hash) ? null : keptWorkspace();
 restoreEditorState(kept);
@@ -2340,6 +2399,18 @@ else if (TOOL?.view && viewOf(TOOL.view)) await setMode(TOOL.view); // a tool in
 else if (viewOf(store.get('pips.view')) && store.get('pips.view') !== VIEWS[0].id) await setMode(store.get('pips.view'));
 restoreRunState(kept);
 restoring = false;
+// a tool's first visit opens with its template (the CPU + GPU tool: the host and its kernel), not the module's example
+if (firstVisit && TOOL?.template && !isShareFragment(location.hash)) {
+  const t = (await loadTemplates().catch(() => null))?.templates.find((x) => x.id === TOOL.template);
+  if (t) await openTemplate(t);
+}
+{ // contract v9: after a reload in another instruction set, say so once
+  const why = store.get('pips.variantNote');
+  if (why) {
+    store.set('pips.variantNote', '');
+    consolePanel.message(why === 'link' ? STRINGS.variant.link(variantLabel(arch.activeVariant)) : STRINGS.variant.loaded(variantLabel(arch.activeVariant)), 'ok');
+  }
+}
 { // an exercise kept from an earlier visit
   let raw = null;
   try { raw = JSON.parse(store.get('pips.exercise') || 'null'); } catch { /* none */ }

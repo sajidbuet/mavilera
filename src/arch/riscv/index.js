@@ -6,6 +6,7 @@
 // Rights class: code.
 
 import { CONTRACT_VERSION, STOP as CONTRACT_STOP } from '../contract.js';
+import { GPU_BASE } from '../../mem/gpu.js'; // the GPU device of the CPU + GPU tool (GPU-7): loading it provides it to the platform
 import { assemble as rvAssemble, usage, hexImage } from '../../asm/assembler.js';
 import { disassemble, disassembleAlias, readWords } from '../../asm/disassembler.js';
 import { ABI_NAMES, INSTRUCTIONS, HALT_WORD, CLASSES, decodeMnemonic, formatOf, fields as rvFields } from '../../isa/encoding.js';
@@ -365,6 +366,7 @@ export const descriptor = {
       { name: 'RAM', base: 0x0000_0000, size: 0x4000_0000, kind: 'ram' },
       { name: 'Devices (iss-priv)', base: 0x4000_0000, size: 0x1000_0000, kind: 'device' }, // W-D26: the platform's window (GPIO, timer, UART)
       { name: 'NPU', base: 0x5000_0000, size: 0x1000, kind: 'device' }, // decision G1: the Chapter 11 NPU, outside the window
+      { name: 'GPU (CPU + GPU tool)', base: GPU_BASE, size: 0x1000, kind: 'device' }, // decision G30: on the tool's pages only
     ],
   },
   engine: {
@@ -423,6 +425,20 @@ export const descriptor = {
       const [{ AnalysisView, loadAnalysisContent }, w] = await Promise.all([import('./ui/analysis-view.js'), import('./views.js')]);
       const content = await loadAnalysisContent(BASE);
       return { create: () => w.analysis(new AnalysisView(content)) };
+    } },
+    // the CPU + GPU tool (GPU-7, decision G30; shown only there, src/shell/platform-archs.js HOSTED_TOOLS): the
+    // single-cycle processor with the GPU module's SIMT core on its data bus at 0x5000_1000, and the GPU itself
+    { id: 'gpu-single', label: RV.viewSingle, icon: 'clock', kind: 'datapath', profile: 'ch06', names: 'x', load: async () => {
+      const [{ SingleView, loadSingleContent }, w, { GPU_DP }] = await Promise.all([import('./ui/single-view.js'), import('./views.js'), import('./gpu-datapath.js')]);
+      const content = await loadSingleContent(BASE);
+      const extend = { geom: GPU_DP.extend, info: GPU_DP.info, values: GPU_DP.values, path: GPU_DP.path };
+      return { create: (ctx) => w.gpuSingle(new SingleView(content, { extend }), ctx) };
+    } },
+    { id: 'gpu-host', label: RV.viewGpu, icon: 'chip', kind: 'datapath', profile: 'ch06', names: 'x', load: async () => {
+      const [{ SingleView, loadSingleContent }, { GpuHostView, loadCoreContent }, w] = await Promise.all([import('./ui/single-view.js'),
+        import('./ui/gpu-host-view.js'), import('./views.js')]);
+      const [content, core] = await Promise.all([loadSingleContent(BASE), loadCoreContent(BASE)]);
+      return { create: (ctx) => w.gpuHost(new SingleView(content), new GpuHostView(core), ctx) };
     } },
   ],
   content: { examples: 'content/examples/index.json', templates: 'content/templates/index.json', help: 'content/help/help.json', exercises: 'content/exercises/index.json',

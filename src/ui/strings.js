@@ -75,6 +75,16 @@ export const STRINGS = {
   speedMax: 'Full speed',
   speedSlow: 'Animated',
   profile: 'Architecture', // the profile selector (author, 2026-10-30)
+  // contract v9 (arch-contract.md §26): a profile of another instruction set reloads the page in it, after asking
+  variant: Object.freeze({
+    title: 'Change the instruction set?',
+    text: (from, to) => `The profile you chose uses the ${to} instruction set, not ${from}. The page reloads in it.`,
+    kept: (from) => `Your ${from} program is kept, and comes back when you choose a ${from} profile again.`,
+    reload: 'Reload',
+    cancel: 'Cancel',
+    loaded: (name) => `Opened in the ${name} instruction set.`,
+    link: (name) => `The link was made for the ${name} instruction set: the page reloaded in it.`,
+  }),
   file: 'File',
   open: 'Open…',
   save: (ext) => `Save ${ext}`, // the language's extension
@@ -399,6 +409,7 @@ export const STRINGS = {
     control: 'Control signals',
     data: 'Data signals',
     npu: 'NPU (platform device, at 0x5000_0000)',
+    gpu: 'GPU (at 0x5000_1000, the CPU + GPU tool)',
     note: 'The signals of each clock cycle run so far, from reset; the same records as the VCD export. The axis orders the cycles; it is not hardware timing. Select a cycle to go to it.',
     plotLabel: 'Waveforms; select a cycle to go to it',
     cyclesLabel: 'Cycles of the waveforms',
@@ -768,6 +779,7 @@ export const STRINGS = {
     refused: (why) => `This link or file was not opened: ${why}.`,
     refusedVersion: 'It was made by another version of MAVILERA. Ask for a new link, or open the program as a plain .s or .c file.',
     refusedArch: (id) => `It belongs to another MAVILERA simulator (architecture ${id}). Open it there.`,
+    refusedVariant: (profile) => `It was made for the profile ${profile}, which uses another instruction set. Choose that profile in the Architecture menu, then open the file again.`,
     restored: 'The text from before the link is back in the editor.',
     nothingToRestore: 'There is no earlier text to restore.',
   }),

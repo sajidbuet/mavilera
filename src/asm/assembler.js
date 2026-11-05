@@ -317,7 +317,20 @@ function expand(mn, ops, symbols) {
 // --- encoding ------------------------------------------------------------------------
 const LITERAL_OFFSET = /^(-?\d+|0[xX][0-9a-fA-F]+)$/;
 
-function encode(mn, ops, here, symbols) {
+/**
+ * A custom instruction of `options.custom.instructions` (the GPU's warp control, decision G18): R-type with rd = x0
+ * and the register operands it names (`rs1`, `rs2`), the others x0.
+ */
+function encodeCustom(mn, d, ops) {
+  const names = d.operands ?? [];
+  if (ops.length !== names.length) {
+    throw new AsmError(`${mn} expects ${names.length} operand(s), got ${ops.length}`, 'operands', null, { usage: names.join(', '), got: ops.length });
+  }
+  const reg = (k) => (names.includes(k) ? regNumber(ops[names.indexOf(k)]) : 0);
+  return packR(d.opcode, d.f3, d.f7 ?? 0, 0, reg('rs1'), reg('rs2'));
+}
+
+function encode(mn, ops, here, symbols, csrs = CSR_NUMBERS) {
   const ev = (e) => evaluate(e, symbols);
   const d = INSTRUCTIONS[mn];
   if (!d) throw new AsmError(`unknown mnemonic '${mn}'`, 'mnemonic', mn);
@@ -403,7 +416,7 @@ function encode(mn, ops, here, symbols) {
     case 'csr': case 'csri': {
       need(3);
       const name = ops[1].trim().toLowerCase();
-      const num = name in CSR_NUMBERS ? CSR_NUMBERS[name] : ev(ops[1]);
+      const num = name in csrs ? csrs[name] : ev(ops[1]);
       if (!(num >= 0 && num <= 0xfff)) throw new AsmError(`CSR number 0x${num.toString(16)} outside 0..0xfff`, 'csr', ops[1]);
       let src;
       if (d.syntax === 'csri') {
@@ -474,13 +487,60 @@ function dataBytes(it, symbols) {
  * @param {Array<{name: string, text: string}>|string} sources
  * @param {{profile?: string, textBase?: number, dataBase?: number}} options
  */
+/**
+ * GNU numeric local labels (`1:` defined any number of times; `1f` the next definition, `1b` the latest one), for
+ * `options.custom.localLabels`: each line without its comment, with the labels and references renamed `.L<n>_<k>`.
+ * A reference with no such definition is left as it is (the assembler reports it).
+ */
+function localLabels(lines) {
+  const code = lines.map(stripComment);
+  const defs = new Map(); // n -> [line index of each definition]
+  const DEF = /^(\s*)(\d+):/;
+  code.forEach((c, i) => {
+    let rest = c;
+    for (let m = DEF.exec(rest); m; m = DEF.exec(rest)) {
+      if (!defs.has(m[2])) defs.set(m[2], []);
+      defs.get(m[2]).push(i);
+      rest = rest.slice(m[0].length);
+    }
+  });
+  const seen = new Map();
+  return code.map((c, i) => {
+    let head = '';
+    let rest = c;
+    for (let m = DEF.exec(rest); m; m = DEF.exec(rest)) {
+      const k = seen.get(m[2]) ?? 0;
+      seen.set(m[2], k + 1);
+      head += `${m[1]}.L${m[2]}_${k}:`;
+      rest = rest.slice(m[0].length);
+    }
+    rest = rest.replace(/\b(\d+)([fb])\b/g, (all, n, dir) => {
+      const at = defs.get(n) ?? [];
+      const k = dir === 'f' ? at.findIndex((d) => d > i) : at.findLastIndex((d) => d <= i);
+      return k < 0 ? all : `.L${n}_${k}`;
+    });
+    return head + rest;
+  });
+}
+
+/**
+ * `options.custom` (decision G18, the GPU's RISC-V SIMT core; absent for RISC-V, whose assembly it leaves unchanged):
+ * `machine`, a profile-like object used instead of PROFILES (`isa` null: no mnemonic check; `dataWords`: the data
+ * memory's size when it differs from `words`); `instructions`, extra mnemonics {mn: {opcode, f3, f7, operands}}
+ * (encodeCustom); `symbols`, names defined before the program (as by `.equ`); `csrs`, extra CSR names; `includes`,
+ * the file names `.include` accepts because their content is built in (simt.inc); `localLabels`, GNU numeric
+ * local labels (localLabels above).
+ */
 export function assemble(sources, options = {}) {
   const files = typeof sources === 'string' ? [{ name: '<input>', text: sources }] : sources;
-  const profile = PROFILES[options.profile ?? 'iss'];
+  const custom = options.custom ?? null;
+  const profile = custom?.machine ?? PROFILES[options.profile ?? 'iss'];
   const isa = (options.subset && profile.subsets?.[options.subset]) || profile.isa;
   const textBase = options.textBase ?? profile.textBase;
   const dataBase = options.dataBase ?? profile.dataBase;
-  const symbols = new Map();
+  const extra = custom?.instructions ?? {};
+  const csrs = custom?.csrs ? { ...CSR_NUMBERS, ...custom.csrs } : CSR_NUMBERS;
+  const symbols = new Map(Object.entries(custom?.symbols ?? {}));
   const symbolInfo = [];
   const lc = { text: textBase, data: dataBase };
   const items = [];
@@ -523,9 +583,10 @@ export function assemble(sources, options = {}) {
   for (const { name: file, text } of files) {
     let section = 'text';
     const lines = text.split(/\r\n|\r|\n/);
+    const local = custom?.localLabels ? localLabels(lines) : null;
     lines.forEach((raw, idx) => {
       const lineNo = idx + 1;
-      let line = stripComment(raw);
+      let line = local ? local[idx] : stripComment(raw);
       let col = 0;
       const stmt = { col: 0, mnemonic: null, operands: [] };
       try {
@@ -554,6 +615,11 @@ export function assemble(sources, options = {}) {
         const base = { file, line: lineNo, column: col + 1, text: raw, operands };
         if (mn.startsWith('.')) {
           if (IGNORED.has(mn)) return;
+          if (mn === '.include' && custom) {
+            const name = (ops[0] ?? '').replace(/^"(.*)"$/, '$1');
+            if (custom.includes?.includes(name)) return; // its names and instructions are built in
+            throw new AsmError(`.include ${ops[0] ?? ''}: only ${(custom.includes ?? []).map((n) => `"${n}"`).join(', ') || 'no file'} can be included; its content is built in`, 'include', ops[0] ?? null);
+          }
           if (mn === '.text') { section = 'text'; return; }
           if (DATA_SECTIONS.has(mn)) { section = 'data'; return; }
           if (mn === '.section') { section = (ops[0] ?? '').startsWith('.text') ? 'text' : 'data'; return; }
@@ -586,7 +652,7 @@ export function assemble(sources, options = {}) {
           return;
         }
         if (section !== 'text') throw new AsmError('instruction outside .text', 'section', head[1]);
-        if (!(mn in INSTRUCTIONS) && !PSEUDOS.includes(mn)) {
+        if (!(mn in INSTRUCTIONS) && !PSEUDOS.includes(mn) && !Object.hasOwn(extra, mn)) {
           // "loop  beqz t0, done": a label without its colon?
           const nextWord = /^([A-Za-z.][\w.]*)/.exec(line.slice(head[0].length))?.[1]?.toLowerCase();
           const missingColon = Boolean(nextWord && (nextWord in INSTRUCTIONS || PSEUDOS.includes(nextWord)
@@ -629,11 +695,11 @@ export function assemble(sources, options = {}) {
     }
     try {
       if (it.kind === 'insn') {
-        const word = encode(it.mn, it.ops, it.addr, symbols);
+        const word = Object.hasOwn(extra, it.mn) ? encodeCustom(it.mn, extra[it.mn], it.ops) : encode(it.mn, it.ops, it.addr, symbols, csrs);
         text.push(word & 0xff, (word >>> 8) & 0xff, (word >>> 16) & 0xff, word >>> 24);
         listing.push({ address: it.addr, word, mnemonic: it.mn, source: it.source, file: it.file,
           line: it.line, text: it.text, part: it.part, parts: it.parts, operands: it.operands });
-        if (!isa.has(it.mn)) {
+        if (isa && !isa.has(it.mn)) {
           profileErrors.push({ file: it.file, line: it.line, column: it.column, mnemonic: it.mn,
             profile: profile.id, chapter: profile.chapter });
         }
@@ -666,8 +732,11 @@ export function assemble(sources, options = {}) {
         ? `the code runs into the data at 0x${dataBase.toString(16)} of the ${profile.processor}'s ${where}`
         : `the ${profile.processor}'s ${where} holds ${profile.words} words`);
     }
-    const d = items.find((it) => it.section === 'data' && it.addr + it.size > size);
-    if (d) over(d, size, `the ${profile.processor}'s data memory holds ${profile.words} words`);
+    // a separate data memory of its own size (options.custom.machine.dataWords), from dataBase; else as before
+    const dWords = profile.dataWords ?? profile.words;
+    const dLimit = profile.dataWords ? dataBase + 4 * profile.dataWords : size;
+    const d = items.find((it) => it.section === 'data' && it.addr + it.size > dLimit);
+    if (d) over(d, dLimit, `the ${profile.processor}'s data memory holds ${dWords} words`);
   }
 
   const lineOf = new Map(listing.filter((l) => l.part === 0 || l.parts === 1).map((l) => [l.address, l.text.trim()]));

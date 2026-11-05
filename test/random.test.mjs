@@ -22,6 +22,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SIM = process.env.MES_BOOK_SIM ?? join(ROOT, '..', 'book-MES', 'code', 'sim');
 const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
 const skip = !existsSync(join(SIM, 'rvsim.py')) ? 'book repository not found beside this one'
+  : !existsSync(join(ROOT, 'tools', 'ref_trace.py')) ? 'tools/ref_trace.py is in the private repository only'
   : spawnSync(PYTHON, ['--version']).status !== 0 ? 'Python 3 not found' : false;
 
 function prng(seed) { // xorshift32

@@ -46,11 +46,13 @@ export class WaveformPanel {
     this.labels = el('div.wave-labels', { 'aria-hidden': 'true' });
     this.plot = el('div.wave-plot', { tabindex: '0', 'aria-label': W.plotLabel });
     this.cycles = el('div.wave-cycles', { role: 'toolbar', 'aria-label': W.cyclesLabel });
-    this.table = el('table.sr-only');
+    this.table = el('table');
     this.root = el('div.wave', {},
       el('div.panel-tools.wave-tools', {}, this.picker, el('span.note', { text: W.note, title: W.note })),
       el('div.wave-body', {}, this.labels, this.plot),
-      this.cycles, this.table);
+      // the screen readers' table, hidden in a 1-pixel box: a table is never narrower than its cells, so the box (not
+      // the table) is the visually hidden element; a wide table would otherwise widen the page (GPU-3, 18 signals)
+      this.cycles, el('div.sr-only', {}, this.table));
     this.first = 0;
     this.cw = CW_MIN;
     this.plot.addEventListener('click', (e) => { // the column under the pointer, whatever shape is on top
@@ -79,7 +81,7 @@ export class WaveformPanel {
       const list = signals.filter((s) => s.kind === kind);
       return list.length ? el('fieldset.wave-group', {}, el('legend', { text: title }), list.map(pick)) : null;
     };
-    this.picks.replaceChildren(...[group('control', W.control), group('data', W.data), group('npu', W.npu)].filter(Boolean));
+    this.picks.replaceChildren(...[group('control', W.control), group('data', W.data), group('npu', W.npu), group('gpu', W.gpu)].filter(Boolean));
   }
 
   /** The records of cycles 0 to `current` (frames[k]: the signals of cycle k). */

@@ -1,6 +1,6 @@
 # speedup.s -- One program on three processors.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # Fills 16 words and finds the largest. Try: open the Compare view: the
 # single-cycle processor needs one long cycle per instruction, the multicycle

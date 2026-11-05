@@ -1,0 +1,81 @@
+{
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). RISC-V SIMT laboratory templates (GPU-2), written by tools/gpu/lab-templates.mjs; what each gives is checked by test/gpu-rvsimt.test.mjs.",
+  "groups": {
+    "lab": "The laboratory programs",
+    "faults": "Faults"
+  },
+  "templates": [
+    {
+      "id": "uniform",
+      "file": "uniform.s",
+      "group": "lab",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab",
+      "title": "No divergence: every thread takes the same path"
+    },
+    {
+      "id": "ifelse",
+      "file": "ifelse.s",
+      "group": "lab",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab",
+      "title": "An if/else with split and join"
+    },
+    {
+      "id": "ifelse8",
+      "file": "ifelse8.s",
+      "group": "lab",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab-l8",
+      "title": "The if/else on one warp of eight lanes"
+    },
+    {
+      "id": "nested",
+      "file": "nested.s",
+      "group": "lab",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab",
+      "title": "Nested divergence: a split inside a split"
+    },
+    {
+      "id": "vadd_tail",
+      "file": "vadd_tail.s",
+      "group": "lab",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab",
+      "title": "Vector add with a tail: threads past n switched off"
+    },
+    {
+      "id": "reverse_bar",
+      "file": "reverse_bar.s",
+      "group": "lab",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab",
+      "title": "Reverse an array through a barrier"
+    },
+    {
+      "id": "fault_div",
+      "file": "fault_div.s",
+      "group": "faults",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab",
+      "title": "Fault: a divergent branch"
+    },
+    {
+      "id": "fault_join",
+      "file": "fault_join.s",
+      "group": "faults",
+      "view": "isa",
+      "lang": "asm",
+      "profile": "lab",
+      "title": "Fault: join on an empty stack"
+    }
+  ]
+}

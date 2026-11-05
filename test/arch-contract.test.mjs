@@ -9,22 +9,30 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ARCHITECTURES } from '../src/arch/registry.js';
-import { validateDescriptor, capability, CAPABILITIES, STOP, ENGINE_HOOKS, STEP_OVER_HOOKS } from '../src/arch/contract.js';
+import { validateDescriptor, capability, CAPABILITIES, STOP, ENGINE_HOOKS, STEP_OVER_HOOKS, withVariant } from '../src/arch/contract.js';
 
-const ENTRIES = { ...ARCHITECTURES, acc4: () => import('./fixtures/arch/acc4/index.js') };
+const MODULES = { ...ARCHITECTURES, acc4: () => import('./fixtures/arch/acc4/index.js') };
 const BUDGET = 1_000_000;
 
+// contract v9: every variant of a module runs the suite as a descriptor of its own (`gpu@microisa`)
+const ENTRIES = {};
+for (const [key, load] of Object.entries(MODULES)) {
+  const { descriptor } = await load();
+  ENTRIES[key] = { arch: key, get: () => withVariant(descriptor, null) };
+  for (const v of Object.keys(descriptor.variants ?? {})) ENTRIES[`${key}@${v}`] = { arch: key, get: () => withVariant(descriptor, v) };
+}
+
 const regIds = (d) => d.registers.groups.flatMap((g) => g.registers.map((r) => r.id));
-const program = (d) => d.language.assemble([{ name: `main${d.language.extension}`, text: d.language.defaultSource }]);
+/** The default program, for the variant's first profile when the module has variants (unchanged otherwise). */
+const program = (d) => d.language.assemble([{ name: `main${d.language.extension}`, text: d.language.defaultSource }],
+  d.variants ? { profile: d.engine.profiles.find((p) => (p.variant ?? null) === d.activeVariant).id } : undefined);
 const memory = (d, e) => d.addressSpace.regions.filter((r) => r.kind !== 'device').map((r) => [...e.peek(r.base, Math.min(r.size, 4096))]);
 
-for (const [key, load] of Object.entries(ENTRIES)) {
-  const get = async () => (await load()).descriptor;
-
+for (const [key, { arch, get }] of Object.entries(ENTRIES)) {
   test(`${key}: the descriptor has the contract's shape`, async () => {
     const d = await get();
     assert.deepEqual(validateDescriptor(d), []);
-    assert.equal(d.id, key);
+    assert.equal(d.id, arch);
   });
 
   test(`${key}: the default program assembles; the listing disassembles`, async () => {
@@ -208,7 +216,7 @@ test('the validator reports a malformed descriptor', () => {
   const bad = validateDescriptor({ contract: 1, id: 'X', name: '', strings: {}, capabilities: { teleport: true },
     language: { describe: 1 }, registers: { groups: [], pc: 'pc', roles: { sp: 'x2' } }, addressSpace: {},
     engine: { profiles: [{ id: 'p', memory: 'flat' }] }, views: [{ id: 'dp', kind: 'datapath', profile: 'q', settings: { key: 'dp', defaults: { a: 'z' }, values: { a: ['y'] } } }] });
-  for (const want of ['contract 1, expected 8', 'id "X"', 'name', 'capability teleport is not in CAPABILITIES', 'language.assemble and language.disassemble',
+  for (const want of ['contract 1, expected 9','id "X"', 'name', 'capability teleport is not in CAPABILITIES', 'language.assemble and language.disassemble',
     'language.describe is a function', 'registers.groups', 'registers.roles.sp x2 is no register', 'profile p: memory flat',
     'engine.create', 'views: the first is of kind isa', 'view dp: profile q is not in engine.profiles',
     'view dp: setting a: default among values']) assert.ok(bad.includes(want), `${want} in ${bad.join('; ')}`);

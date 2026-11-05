@@ -1,0 +1,64 @@
+<!doctype html>
+<!-- Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: code. -->
+<!-- preview-datapath.html -- the draft 8086 BIU/EU drawing (milestone 8086-B4), for the author's review before it is
+     wired into the application (roadmap B4 prerequisite, SAP-2 precedent): one teaching-model step per case. Served by
+     `npm run dev`: open /tools/i8086/preview-datapath.html?case=0 (cases below). Development only. -->
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8086 BIU/EU drawing preview</title>
+<link rel="stylesheet" href="../../src/ui/theme.css">
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 12px 16px; background: var(--surface, Canvas); color: var(--text, CanvasText); font: 14px system-ui, sans-serif; }
+  h1 { font-size: 15px; margin: 0 0 6px; }
+  #host { width: 100%; }
+  #host .i8-view { height: auto; }
+  #steps { margin-top: 8px; font-size: 12px; }
+</style>
+</head>
+<body>
+<h1 id="title"></h1>
+<div id="host"></div>
+<div id="steps"></div>
+<script type="module">
+import { BiuEuView } from '../../src/arch/i8086/ui/biu-eu-view.js';
+import { descriptor } from '../../src/arch/i8086/index.js';
+
+// [title, program, instructions to run first, the step to stop before (a predicate on the next step)]
+const CASES = [
+  ['The complete drawing (no program)', null, 0, null],
+  ['MOV AX, [BX+SI+4]: the effective address, tmpA + tmpC into IND', 'MOV BX, 100H\nMOV SI, 20H\nMOV AX, [BX+SI+4]\nHLT', 2, (s) => s.kind === 'alu' && s.transfers[0]?.to === 'IND'],
+  ['MOV AX, [BX+SI+4]: memory read at DS:IND into OPR', 'MOV BX, 100H\nMOV SI, 20H\nMOV AX, [BX+SI+4]\nHLT', 2, (s) => s.kind === 'bus'],
+  ['ADD AX, BX: the ALU adds tmpA and tmpB, Σ to AX, the flags into FLAGS', 'MOV AX, 7FFFH\nMOV BX, 1\nADD AX, BX\nHLT', 2, (s) => s.kind === 'alu'],
+  ['PUSH AX: a memory write at SS:SP (an offset other than IND)', 'MOV AX, 1234H\nPUSH AX\nHLT', 1, (s) => s.kind === 'bus'],
+  ['MOV CX, 3: an immediate byte from the queue onto the ALU data bus', 'MOV CX, 3\nHLT', 0, (s) => s.kind === 'queue' && s.transfers[0].to !== 'decode'],
+  ['MOV CX, 3: the op code from the queue to the decoder', 'MOV CX, 3\nHLT', 0, (s) => s.kind === 'queue'],
+  ['OUT 0E9H, AL: an I/O write', 'MOV AL, 41H\nOUT 0E9H, AL\nHLT', 1, (s) => s.kind === 'bus'],
+  ['LOOP: the condition (CX ≠ 0?) tested by the control', 'MOV CX, 2\nagain: LOOP again\nHLT', 1, (s) => s.alu?.op === 'condition'],
+  ['LOOP taken: IP ← tmpB, the queue flushed', 'MOV CX, 2\nagain: LOOP again\nHLT', 1, (s) => s.kind === 'jump'],
+  ['SHL AX, CL: one place per iteration, tmpC counting down', 'MOV AX, 1\nMOV CL, 3\nSHL AX, CL\nHLT', 2, (s) => s.iteration?.n === 2],
+  ['CLC: handled without microcode', 'STC\nCLC\nHLT', 1, (s) => s.kind === 'hardwired'],
+];
+const q = new URLSearchParams(location.search);
+const k = Number(q.get('case') ?? 0);
+const [title, text, skip, at] = CASES[k];
+document.getElementById('title').textContent = `Case ${k}: ${title}`;
+const v = new BiuEuView();
+document.getElementById('host').append(v.root);
+document.getElementById('steps').append(v.stepsBox);
+if (text) {
+  const p = descriptor.language.assemble([{ name: 'p.asm', text }], { profile: 'flat' });
+  if (!p.ok) throw new Error(JSON.stringify(p.diagnostics));
+  v.load(p);
+  const m = v.model;
+  for (let i = 0; i < skip; i++) m.stepInstruction();
+  for (let i = 0; i < 500 && m.next && !at(m.next); i++) m.step();
+  if (!m.next || !at(m.next)) throw new Error(`case ${k}: step not found`);
+  v.render();
+} else v.load(null);
+document.body.dataset.ready = '1';
+</script>
+</body>
+</html>

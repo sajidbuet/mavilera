@@ -46,7 +46,8 @@ export function formatValue(v, fmt, bits = 32) {
   if (bits < 32) {
     const u = (v >>> 0) % 2 ** bits;
     switch (fmt) {
-      case 'signed': return String(u >= 2 ** (bits - 1) ? u - 2 ** bits : u);
+      // a one-bit register (a flag, done, fault) reads 0 or 1, not -1 (decision G28, author 2026-11-05)
+      case 'signed': return String(bits > 1 && u >= 2 ** (bits - 1) ? u - 2 ** bits : u);
       case 'unsigned': return String(u);
       case 'binary': return u.toString(2).padStart(bits, '0').replace(/(?=(.{8})+$)(?!^)/g, ' ');
       default: return `0x${u.toString(16).padStart(Math.ceil(bits / 4), '0')}`;
@@ -72,8 +73,40 @@ export function download(name, data, type = 'text/plain') {
 // Each architecture keeps its own settings and workspace (W-D29: the applications share an origin); RISC-V keeps the
 // historical keys. The theme, the projector mode and the place of the execution controls are the platform's.
 const SHARED_KEYS = new Set(['pips.theme', 'pips.projector', 'pips.toolbarDock']);
-/** The storage key of a setting for this page's architecture. */
-export const scoped = (key) => (ARCH_ID === 'riscv' || SHARED_KEYS.has(key) ? key : key.replace(/^pips\./, `pips.${ARCH_ID}.`));
+// Contract v9 (arch-contract.md §26): in a variant other than the descriptor's own, the program text, the kept
+// workspace, the view, the subset, the language and the exercise are the variant's (the key gets `@<variant>`); the
+// profile, which chooses the variant, and the layout stay the architecture's. The descriptor's own variant keeps the
+// keys it always had.
+const VARIANT_SCOPED = /^pips\.(source|workspace|view|subset|lang|exercise)(\.|$)/;
+let VARIANT = null;
+/** The variant this page runs (main.js, before anything is read from storage). */
+export function setStorageVariant(v) { VARIANT = v ?? null; }
+/**
+ * Contract v9: once per architecture, move what was stored before variants existed (the keys that are now kept per
+ * variant) to `variant`, the variant that holds the module's former profiles (GPU: the micro-ISA, published as a
+ * preview in 1.2.0). Returns whether anything was moved. RISC-V, whose keys carry no architecture prefix, never has
+ * variants.
+ */
+export function moveToVariant(variant) {
+  if (ARCH_ID === 'riscv') return false;
+  let moved = false;
+  try {
+    const prefix = `pips.${ARCH_ID}.`;
+    for (const k of Object.keys(localStorage)) {
+      if (!k.startsWith(prefix) || k.includes('@') || !VARIANT_SCOPED.test(`pips.${k.slice(prefix.length)}`)) continue;
+      const to = `${k}@${variant}`;
+      if (localStorage.getItem(to) === null) localStorage.setItem(to, localStorage.getItem(k));
+      localStorage.removeItem(k);
+      moved = true;
+    }
+  } catch { /* storage unavailable */ }
+  return moved;
+}
+/** The storage key of a setting for this page's architecture (and variant). */
+export const scoped = (key) => {
+  const k = ARCH_ID === 'riscv' || SHARED_KEYS.has(key) ? key : key.replace(/^pips\./, `pips.${ARCH_ID}.`);
+  return VARIANT && VARIANT_SCOPED.test(key) ? `${k}@${VARIANT}` : k;
+};
 
 /** Read storage without failing where it is blocked (WS-U-010). */
 export const store = {

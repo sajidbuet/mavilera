@@ -16,6 +16,10 @@ export function shareSchema(arch) {
     arch: arch.id,
     views: arch.views.map((v) => v.id),
     profiles: arch.engine.profiles.map((p) => p.id),
+    // contract v9: each profile's variant, the variant of this page and its first profile (the default of a link)
+    variantOf: Object.fromEntries(arch.engine.profiles.map((p) => [p.id, p.variant ?? null])),
+    activeVariant: arch.activeVariant ?? null,
+    defaultProfile: arch.engine.profiles.find((p) => (p.variant ?? null) === (arch.activeVariant ?? null))?.id,
     subsets: [...new Set(arch.engine.profiles.flatMap((p) => (p.subsets ?? []).map((s) => s.id)))],
     langs: ['asm', ...extra.map((x) => x.id)],
     options: (extra[0]?.options ?? []).map((o) => [o.id, o.values.map((v) => v.id)]),

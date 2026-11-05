@@ -1,6 +1,6 @@
 # watch-overrun.s -- Catching a write past the end of an array.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # The loop is meant to clear buf[0..3] but runs five times, and its last store
 # lands on limit, the word after the array. Try: in the Memory pane type limit,

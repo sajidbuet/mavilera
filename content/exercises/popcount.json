@@ -1,11 +1,11 @@
 {
- "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for RISC-VISTA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec W-D24), not taken from the textbook; produced by tools/make-exercises.mjs.",
  "format": "risc-vista-exercise",
  "version": 1,
  "title": "Count the 1 bits",
  "task": "Write the procedure popcount: a0 holds a 32-bit word; return in a0 how many of its bits are 1. Keep the calling convention.",
  "lang": "asm",
- "starter": "# popcount -- practice exercise (RISC-VISTA)\n# Return in a0 the number of 1 bits of a0.\n# Hint: test the lowest bit, then shift right; srli does not copy the sign.\n        .text\npopcount:\n        # a0 = the word\n        li   a0, 0              # replace with your code\n        ret\n",
+ "starter": "# popcount -- practice exercise (MAVILERA)\n# Return in a0 the number of 1 bits of a0.\n# Hint: test the lowest bit, then shift right; srli does not copy the sign.\n        .text\npopcount:\n        # a0 = the word\n        li   a0, 0              # replace with your code\n        ret\n",
  "entry": "popcount",
  "tests": [
   {

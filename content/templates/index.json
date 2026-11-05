@@ -1,5 +1,5 @@
 {
-  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). Teaching templates written for RISC-VISTA (list approved by the author, 2026-10-27); each opens in its view with its settings. What each one shows is checked by test/templates.test.mjs.",
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). Teaching templates written for MAVILERA (list approved by the author, 2026-10-27); each opens in its view with its settings. What each one shows is checked by test/templates.test.mjs.",
   "groups": {
     "isa": "Instruction level",
     "c": "C to assembly",
@@ -9,7 +9,8 @@
     "devices": "Devices and traps",
     "cache": "Caches and memory",
     "compare": "Comparison",
-    "lab": "Laboratory: the NPU"
+    "lab": "Laboratory: the NPU",
+    "gpu": "Laboratory: CPU + GPU"
   },
   "templates": [
     {
@@ -528,6 +529,20 @@
       "profile": "ch11",
       "lang": "asm",
       "title": "y = W x in software with mul (instruction level only)"
+    },
+    {
+      "id": "cpu-gpu-abs",
+      "file": "cpu-gpu-abs.s",
+      "group": "gpu",
+      "tool": "cpu-gpu",
+      "view": "gpu-host",
+      "lang": "asm",
+      "title": "CPU + GPU: the host starts a kernel and polls the GPU",
+      "mem": {
+        "mode": "ideal",
+        "words": 1024,
+        "devices": true
+      }
     }
   ]
 }

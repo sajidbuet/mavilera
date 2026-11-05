@@ -1,0 +1,29 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). The practice exercises of the GPU Laboratory (W-D24), written for MAVILERA; produced by tools/gpu/make-exercises.mjs.",
+ "groups": {
+  "simt": "RISC-V SIMT core"
+ },
+ "exercises": [
+  {
+   "id": "gpu-difference",
+   "file": "gpu-difference.json",
+   "group": "simt",
+   "title": "Two warps: the difference of two arrays",
+   "lang": "asm"
+  },
+  {
+   "id": "gpu-clamp",
+   "file": "gpu-clamp.json",
+   "group": "simt",
+   "title": "Clamp to a range with split and join",
+   "lang": "asm"
+  },
+  {
+   "id": "gpu-sign",
+   "file": "gpu-sign.json",
+   "group": "simt",
+   "title": "The sign of each element: a split inside a split",
+   "lang": "asm"
+  }
+ ]
+}

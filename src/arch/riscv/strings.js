@@ -593,6 +593,38 @@ export const RISCV_STRINGS = Object.freeze({
     npuName: 'the NPU view',
   },
   viewAnalysis: 'Analysis',
+  // the CPU + GPU tool (GPU-7, decision G30): the GPU module's SIMT core as a device at 0x5000_1000. Its register map is
+  // MAVILERA's design, and the interface says so (decision G3).
+  viewGpu: 'GPU',
+  gpuView: {
+    panel: 'GPU on the single-cycle processor',
+    singlePanel: 'Single-cycle datapath with the GPU on the data bus',
+    info: 'Cycle details',
+    note: 'The program runs on the single-cycle processor with the platform devices and the GPU on the bus (the SIMT core of the GPU Laboratory, two warps of four lanes, at 0x5000_1000). One step is one clock cycle: while a kernel runs, the GPU issues one warp-instruction in it. The register map is MAVILERA’s own design, one way to attach such a core; it is not the only one.',
+    about: 'About this view',
+    gpuName: 'the GPU view',
+    tabIssue: 'Issue', tabMasks: 'Masks', tabStack: 'Stack', tabInterface: 'Interface',
+    idle: 'The GPU is idle: no kernel has been started. The host writes the kernel to IMEM, the data to DMEM, and 1 to CTRL.',
+    running: (cycles) => `Kernel running: ${cycles} cycle${cycles === 1 ? '' : 's'} so far.`,
+    ended: (cycles, issued) => `The kernel ended after ${cycles} cycles, ${issued} warp-instructions; STATUS reads DONE.`,
+    faulted: (code, name) => `The kernel stopped on fault ${code} (${name}); STATUS reads DONE and FAULT.`,
+    deadlock: 'The kernel stopped: every running warp waits at a barrier that no other warp reaches (code 8, MAVILERA’s).',
+    regsCaption: 'Registers of the GPU at 0x5000_1000 (MAVILERA’s register map)',
+    regCols: ['Offset', 'Register', 'Value', 'Meaning'],
+    regMeaning: {
+      CTRL: 'write 1: start (launch the kernel); write 2: clear DONE and FAULT',
+      STATUS: (busy, done, fault, code) => `BUSY ${busy}, DONE ${done}, FAULT ${fault}${fault ? `, code ${code}` : ''}`,
+      ARGS: 'kernel_args at launch', BLOCK: 'block_index at launch',
+      CYCLES: 'cycles of the kernel', ISSUED: 'warp-instructions issued', ACTIVE: 'active lane-slots',
+      IMEM: 'instruction memory, 64 words (0x400 to 0x4FC)', DMEM: 'data memory, 256 words (0x800 to 0xBFC)',
+    },
+    busCaption: 'Bus log: the host’s accesses to the GPU, the latest last',
+    busCols: ['Cycle', 'Access', 'Register', 'Value', 'Note'],
+    busNone: 'No bus access to the GPU yet.',
+    busKinds: { read: 'read', write: 'write' },
+    busIgnored: 'ignored: busy',
+    busMore: (n) => `${n} earlier accesses not shown.`,
+  },
 
   // the NPU tool's Analysis view (NPU-4): measured and analytical panels (ui/analysis-view.js). The tool names no
   // book or chapter (author, 2026-11-04); explanations stand behind each panel's i button.

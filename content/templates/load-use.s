@@ -1,6 +1,6 @@
 # load-use.s -- The load-use stall, and how scheduling avoids it.
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
-# Rights class: content (a RISC-VISTA template, written for the application).
+# Rights class: content (a MAVILERA template, written for the application).
 #
 # A loaded value is ready only at the end of MEM, too late to forward to the
 # instruction right behind the load: that instruction waits one cycle (a bubble).
