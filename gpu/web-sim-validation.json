@@ -2,7 +2,7 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-04T16:04:08.661Z",
+ "date": "2026-11-05T04:49:50.934Z",
  "version": "1.2.0",
  "pass": true,
  "summary": {
@@ -10,7 +10,7 @@
   "passed": 1179,
   "failed": 0,
   "skipped": 0,
-  "seconds": 1189,
+  "seconds": 1238,
   "smoke": "pass"
  },
  "environment": {
@@ -22,12 +22,12 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "8e1d12d4393c57b188fea1dab19446190a1d7cd6",
-  "uncommitted": 0,
+  "commit": "b6b47d33b7c3b99ec47b7ad6afafd5a9718d6fd0",
+  "uncommitted": 1,
   "sources": {
-   "sha256": "1296919647035fafab501f18a8ef4c37ca309d588491914741ab13d0961d75f7",
+   "sha256": "3cf3a51677f217e408b71067c3798d02649a4e906364649d89a7df2df09129d1",
    "files": {
-    "index.html": "32df75d62e0daa89b93c863d9e4272a2bc75a6caf1b738686bd5e5d256555da9",
+    "index.html": "176bb7d2d0c4bcf346961d11c20ad2ede932d6300473d525e18e187f3f52be8f",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
     "src/arch/armv7/engine.js": "68a30488a130cb760bbe208545cb44aeda9c46effd2453be6e9f94fe5ceb12e4",
     "src/arch/armv7/exercise.js": "20aa89229ec128e9a8512ae9256a7ba0d5e14f6977322c58f44d6f4cdd98bdd8",
@@ -153,7 +153,7 @@
     "src/ui/analytic-panels.js": "a481262d210708100ddbfa58aeea4ddf45042197de8c36354d381b30bb34cfcb",
     "src/ui/arch-switcher.js": "b82d00f2e7b7459db4641ef1f7bcbbe2983b89f966283b7180e5fa29d841c852",
     "src/ui/assist.js": "db64986d6b396abcad2b636a57adc6eed2ff168b1ac3a16eb324300b1c421f2e",
-    "src/ui/boot.js": "781bf65dd97e756d75e69352f4605771ec52cdab448cf75ca1e2de1679d8b938",
+    "src/ui/boot.js": "4efcb84c315c9ef52e1b12a96cf74d065dc6d64f0913c7b43c0e629846135f2e",
     "src/ui/cache-anim-model.js": "afe2ae3677a1d4f6487dca1915722d3c9f60704e631c11946362df566525f79d",
     "src/ui/cache-anim.js": "94790809307fb41bfb16d3a20398413c3d6981ca9296b64827444b0fbea4899d",
     "src/ui/cache-view.js": "b46669beefc5d442afc68d4a8c0db73360b886b5ea947238768a9ec55e5bdd85",
@@ -181,7 +181,7 @@
     "src/ui/split.js": "ea902fd6f182c5eca158625effc1c1f136ff97e789a114817b5144aa38c8783d",
     "src/ui/state-panels.js": "806309285b257eb4bdbc89e0c04463c2c6f61557158deb34cf04c11c9f87d61e",
     "src/ui/strings.js": "b4176a59a3622067d2b441ef3ec74f8cbd291505f458d0417afa157409605063",
-    "src/ui/theme.css": "e29ae6a39e11de1d3a25a2e5d4f150ede0ea4754c0230f24b17e845c956ca68c",
+    "src/ui/theme.css": "46ae6e0159b860fbaeed1f36dad08ae72df71dec70e7aeebd6ad6d53652d9c44",
     "src/ui/view-mode.js": "f4f703b6888cc419a12303595941decd730fad34332b8bc0898a050a58a07b1a",
     "src/ui/waveform.js": "5368ec558e8e00689a44710e89d9c31fa15b61bdc6345b7d4fa943e95714d3ad",
     "src/ui/wire-colours.js": "8b9e402a48835295370b5c888b2da6135bd6122c19452dfbea55122ddf05bac4",
@@ -390,12 +390,12 @@
    }
   },
   "corpus": {
-   "sha256": "34d4989c49a1bae1fef542e607f911001ee5e195dcbe5fc00cb4cc5578b52565",
+   "sha256": "c1943500329184982161913fd3f63d60a48dce36322266ebb79130d199b2e0cd",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
     "test/arch-contract.test.mjs": "13f524e678a203b5caeef29e006b1c406b49e2865c2601ba6b0a0c6d8b0b575a",
     "test/arch-riscv.test.mjs": "e5d2c2e2ee4652fe9fde85cb0362ca22af2c283e194c5bb050db48d7c7957369",
-    "test/arch-switcher.test.mjs": "791f7459b15fcd3e8c385612f5b55800d4b5f9d4e55d356751c43dc4b320cd5a",
+    "test/arch-switcher.test.mjs": "fd5fb131d58b6c92040a5276a1ac5e1baad8ed33ddc8a7e69d8c972fa432d97d",
     "test/armv7-engine.test.mjs": "1b39155e1328969cca9a0643235c0706a8a17933e15dd7d0cb265be4ecf0cd76",
     "test/armv7-equivalence.test.mjs": "aa4880cc750ec6580a90b3461083f1322fd5ecb91b39f01d225ef8afb4bb372b",
     "test/armv7-gnu-oracle.test.mjs": "a3c1006add7d634db8ab34d22b7b5e69b31bc1e63af4753355021ab9e24d9f87",
@@ -497,7 +497,7 @@
     "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
     "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
     "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
-    "test/platform.test.mjs": "0955378fb87d172af350f85fda3925629f844b89b883d72cca8950936e8d0e7f",
+    "test/platform.test.mjs": "0dd8b3e84b4033a7eb8b2a49a91c97d1d65df99abdabdfabd000b3b61a9bb750",
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
@@ -535,7 +535,7 @@
    }
   },
   "tools": {
-   "sha256": "1e765c3c807c9f82266b2804fc3fe93ba91d47f7c934a3c6371de1e0edc79625",
+   "sha256": "e7b57ae8fb53bd7bb0568a44438747b4732adaaa57df89b109c32dcdbb038815",
    "files": {
     "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
     "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
@@ -556,20 +556,25 @@
     "tools/armv7/preview-single.html": "8d3505b1ba2fb3f496149166e6dd61de8d8a1943f03b50805d3b4f431d2f61de",
     "tools/armv7/preview-single.mjs": "ee92e3577f35afd87e8af647a71064cb9dd06b41402c780f8da5d67428d330dc",
     "tools/armv7/single-smoke.mjs": "5b25e4c9a04ecc83d6e56d8123042bf0a12ade6f4709bc82f544704f8eadafb1",
-    "tools/browser-smoke.mjs": "60243c34143fe98e25c024c69bef581dec91756e49cafe0d57ea0e6a1c160f6f",
+    "tools/browser-smoke.mjs": "d5c40dba1531d010598274992c7645d5044d0845f1a0068f5c550985dbf1e192",
     "tools/browser.mjs": "bdfb9016c4e657546371a233980d41ba41264f99b1f3add9bdfcbc664175018d",
     "tools/dock-smoke.mjs": "284e1d6da94633addcb394f5c46dae2420f8a861887b675ef96a7b537c914bb7",
     "tools/header-smoke.mjs": "edd8f6d526fb18a78accd98589c041175fa3b17753c09e61a59304648ba6d6cd",
     "tools/logo/README.md": "67ccec66ea403acafbecdde7b5e97c16092adeebb6d92000db7fc363536289a9",
+    "tools/logo/compare-parts.mjs": "081c5ed9b574f2fbf2eecf13d39496f64984dfa1b1ad2abd158589ecb190970b",
     "tools/logo/finish.py": "30d3d97a717dc07acd3be71d7ea86630b3797213c53b37a69ac6385c757f7e05",
     "tools/logo/fitlib.py": "e4e23d6ed99d0ba7292eb2ef3984a516e5b3ecd522d4f77804793b50f6821abc",
     "tools/logo/geom.py": "849fdbab03ba21665659b00da867d8b136e2a55c8e962abebe136f8ee0d2e4ed",
+    "tools/logo/hero-logo.mjs": "76b05e86674f8419b015a2bdf74f62a2f97710617ecd22a73d7d18e351327e68",
+    "tools/logo/hero-variants.js": "fdc287e1dbaff28e47374e8d459b06953e91d5dac872bc53c4b56b9e0d6427e3",
+    "tools/logo/lockup-parts.mjs": "04f1c6f2b474d5fcc66080320aa87a7a1ea326207e706a5ed897576f6bff606d",
+    "tools/logo/make-hero-variants.mjs": "e1a15d33ff93bd5f96db598bd88daf5a0a22b6c05ce2400c77d2752f2f34ed2d",
     "tools/logo/make_logo.py": "6777d1fb05e7f75308a6db329dc168366db3d2702ed6b71636f63a1b3719c8ee",
     "tools/logo/mark.json": "7cda5546946400fcc89ffd6fac072265e57c27ddec00fd2a554d76a81923a496",
     "tools/logo/markfit.py": "3aaae38a8ce17fd4e8520c835e4d719c79e0666a5af9971a6138b4df1014acad",
     "tools/logo/seg.py": "966e267dabda7f2e49bd60296c0e4f3f712526d1160e2143c504b6fbd2ac76bf",
     "tools/logo/svgo.config.mjs": "5c03a29148d1674b45a3dad2a3459ed5c2fead60121a95dd1518a8541249c60b",
-    "tools/make-boot-screen.mjs": "cb4b3e7ea17b03eab321e7359765412c66f01ac876bd082cf50d9a23fd282177",
+    "tools/make-boot-screen.mjs": "bfe0ff7e2a98d4a12c9b4d8a956b87f9969b3a589a40f43643cccda9e8bb3421",
     "tools/make-exercises.mjs": "24c89b6c8e6e4ced0191adc15a3ce7f902ab55a18c8ffddae9910fa03b8a4f1b",
     "tools/make-mavilera-brand.mjs": "6fd62add66b082ec613453df1ce0438a4fefe01cfb24788d8e745e9ef9034817",
     "tools/make-sap1-exercises.mjs": "e8c754b46ecf83398bf030f48b2ba2f40a34dee52d03e40fdf49ba19845d57bc",
@@ -581,7 +586,7 @@
     "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
     "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
-    "tools/release.mjs": "cf165a359eb46a2316e49912bd1456edba48a8a65ec6e7bd07c61424eb7b776c",
+    "tools/release.mjs": "97e44840a08b08d54a130745afd77893117b1ba2d316fd2a765af2c5b56ac958",
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
     "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
@@ -593,7 +598,7 @@
  },
  "reference": {
   "repository": "book repository (private; paths not listed)",
-  "commit": "c2dc4c4892163ae96951a8584bf5b9ce7e55b490",
+  "commit": "43371e4b9f802a2cfca81b07d4a41c7aa100e3c4",
   "uncommitted": 0,
   "groups": {
    "chapter 6 reference RTL and model": {
@@ -633,7 +638,7 @@
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1185,\"pass\":1185,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1149,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1185,\"pass\":1185,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1205,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -1128,7 +1133,7 @@
   },
   {
    "file": "test/arch-switcher.test.mjs",
-   "name": "the loading screen: in the page itself, written from the logo file, with the slow-load line and the no-script rule",
+   "name": "the loading screen: in the page itself, the lockup animated as on the landing page (variant A), with the slow-load line and the no-script rule",
    "ok": true
   },
   {

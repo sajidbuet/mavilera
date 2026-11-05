@@ -1,0 +1,208 @@
+<!doctype html>
+<!--
+  site/docs.html -- the MAVILERA documentation page, published at /mavilera/docs/ (author, 2026-11-05): every
+  laboratory's documentation, its single-file offline version, and the release's tested browsers and validation
+  record. tools/release.mjs fills the {{...}} fields from site/architectures.json and the builds; it refuses to build
+  while any field is unfilled. Paths are relative to docs/.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA Documentation</title>
+  <meta name="description" content="Documentation and offline versions of the MAVILERA laboratories.">
+  <meta name="theme-color" content="#0b2a55">
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../brand/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../brand/mavilera-icon.svg">
+  <link rel="apple-touch-icon" href="../brand/apple-touch-icon.png">
+  <style>
+/*
+  site/site.css -- the styles the MAVILERA landing page (site/index.html) and the documentation page (site/docs.html)
+  share: tokens, header, buttons and footer. tools/release.mjs writes it into each page's <style> (the SITE_CSS field).
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+*/
+/* tokens: the values of src/ui/theme.css, light and dark */
+:root {
+  --primary: #1a4f8b; --primary-hover: #2263a8; --primary-on: #ffffff; --primary-soft: #e6f0fa;
+  --insight: #1f4e79; --amber: #a85a00;
+  --bg: #f2f5fa; --surface: #ffffff; --surface-2: #f7f9fc; --border: #d8e0eb;
+  --text: #0b2a55; --text-2: #5a6b82;
+  --shadow: 0 8px 24px rgba(11, 42, 85, 0.14);
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #5b9bd5; --primary-hover: #74acdf; --primary-on: #071a33; --primary-soft: #132a45;
+    --insight: #8fb4dc; --amber: #e3a453;
+    --bg: #0a1120; --surface: #101a2b; --surface-2: #142034; --border: #24344d;
+    --text: #e3eaf4; --text-2: #94a5bd;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+a { color: var(--primary); text-underline-offset: 2px; }
+a:hover { color: var(--primary-hover); }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+img { max-width: 100%; height: auto; display: block; }
+code { font-family: var(--font-code); font-size: 0.92em; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+.note { color: var(--text-2); font-size: 14px; margin: 0; }
+
+/* header: the logo and four links, on phones too (they wrap under the logo) */
+.top { border-bottom: 1px solid var(--border); background: var(--surface); }
+.top .wrap { display: flex; align-items: center; gap: 8px 16px; min-height: 60px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.top .brand img { height: 26px; width: auto; }
+.top nav { margin-left: auto; display: flex; gap: 4px 18px; flex-wrap: wrap; align-items: center; }
+.top nav a { color: var(--text); text-decoration: none; font-size: 15px; padding: 4px 0; }
+.top nav a:hover { color: var(--primary); text-decoration: underline; }
+.top nav a[aria-current="page"] { color: var(--primary); font-weight: 600; }
+@media (max-width: 600px) { .top nav { margin-left: 0; width: 100%; gap: 4px 16px; } .top nav a { font-size: 14px; } }
+/* the header logo: a light sweeps across it on hover or focus; it lifts a little (no movement under reduced motion) */
+.top .brand { position: relative; display: inline-block; overflow: hidden; border-radius: 4px; }
+.top .brand img { display: block; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
+.top .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+                     background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat;
+                     background-size: 250% 100%; }
+.top .brand:hover img, .top .brand:focus-visible img { filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25)); }
+@media (prefers-reduced-motion: no-preference) {
+  .top .brand:hover img, .top .brand:focus-visible img { transform: translateY(-1px); }
+  .top .brand:hover::after, .top .brand:focus-visible::after { animation: mv-shine 0.9s ease-out; }
+}
+@keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-weight: 600;
+       text-decoration: none; border: 1px solid transparent; font-size: 16px; }
+.btn-primary { background: var(--primary); color: var(--primary-on); }
+.btn-primary:hover { background: var(--primary-hover); color: var(--primary-on); }
+.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+/* sections and the status tags */
+section { padding: 48px 0; border-top: 1px solid var(--border); }
+h2 { font-size: 26px; margin: 0 0 8px; line-height: 1.25; }
+h3 { font-size: 18px; margin: 0; line-height: 1.3; }
+.section-lead { color: var(--text-2); margin: 0 0 24px; max-width: 46em; }
+.status { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 8px;
+          border-radius: 99px; border: 1px solid var(--border); color: var(--text-2); white-space: nowrap; }
+.status.preview { color: var(--insight); border-color: var(--insight); }
+
+footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
+footer p { margin: 4px 0; }
+
+    .page-head { padding-top: 40px; padding-bottom: 32px; }
+    h1 { font-size: 32px; margin: 0 0 8px; line-height: 1.2; }
+    .docs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 1000px) { .docs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .docs { grid-template-columns: 1fr; } }
+    .doc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .doc h3 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .doc-logo { height: 30px; width: auto; max-width: 100%; }
+    .doc ul { list-style: none; margin: 0; padding: 0; font-size: 15px; }
+    .doc li + li { margin-top: 6px; }
+    .doc .none { color: var(--text-2); }
+    dl.facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+    dl.facts dt { font-weight: 600; }
+    dl.facts dd { margin: 0; }
+    @media (max-width: 600px) { dl.facts { grid-template-columns: 1fr; } dl.facts dd { margin-bottom: 8px; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="../" aria-label="MAVILERA home"><img src="../brand/mavilera-wordmark.svg" alt="" width="1590" height="192"></a>
+      <nav aria-label="Site">
+        <a href="../#laboratories">Laboratories</a>
+        <a href="../#learn">Learn</a>
+        <a href="./" aria-current="page">Documentation</a>
+        <a href="https://github.com/sajidbuet/mavilera">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap page-head">
+      <h1>Documentation</h1>
+      <p class="section-lead">The guide of each laboratory, and a single-file version of it that runs offline: save the file and open it
+        in a browser.</p>
+    </div>
+
+    <section id="laboratories" aria-labelledby="h-labs">
+      <div class="wrap">
+        <h2 id="h-labs">Laboratories</h2>
+        <div class="docs">
+          <article class="doc"><h3><img class="doc-logo" src="../brand/mavilera-name-riscv.svg" alt="RISC-V Laboratory" width="1233" height="192"></h3>
+            <ul>
+              <li><a href="../riscv/docs/">Documentation</a></li>
+              <li><a href="../riscv/">Open the laboratory</a></li>
+              <li><a href="../riscv/mavilera-riscv-1.2.0.html" download>Offline version</a> (2103 kB)</li>
+            </ul></article>
+          <article class="doc"><h3><img class="doc-logo" src="../brand/mavilera-name-gpu.svg" alt="GPU Laboratory" width="820" height="192"><span class="status preview">Preview</span></h3>
+            <ul>
+              <li><span class="none">Documentation: not yet available</span></li>
+              <li><a href="../gpu/">Open the laboratory</a></li>
+              <li><a href="../gpu/mavilera-gpu-1.2.0.html" download>Offline version</a> (671 kB)</li>
+            </ul></article>
+          <article class="doc"><h3><img class="doc-logo" src="../brand/mavilera-name-npu.svg" alt="NPU Laboratory" width="840" height="192"><span class="status">In RISC-V</span></h3>
+            <ul>
+              <li><span class="none">Documentation: not yet available</span></li>
+              <li><a href="../riscv/?tool=npu">Open the laboratory</a></li>
+              <li><span class="none">No separate offline version</span></li>
+            </ul></article>
+          <article class="doc"><h3><img class="doc-logo" src="../brand/mavilera-name-sap-1.svg" alt="SAP-1 Laboratory" width="1096" height="192"></h3>
+            <ul>
+              <li><a href="../sap-1/docs/">Documentation</a></li>
+              <li><a href="../sap-1/">Open the laboratory</a></li>
+              <li><a href="../sap-1/mavilera-sap-1-1.2.0.html" download>Offline version</a> (781 kB)</li>
+            </ul></article>
+          <article class="doc"><h3><img class="doc-logo" src="../brand/mavilera-name-sap-2.svg" alt="SAP-2 Laboratory" width="1145" height="192"></h3>
+            <ul>
+              <li><a href="../sap-2/docs/">Documentation</a></li>
+              <li><a href="../sap-2/">Open the laboratory</a></li>
+              <li><a href="../sap-2/mavilera-sap-2-1.2.0.html" download>Offline version</a> (826 kB)</li>
+            </ul></article>
+          <article class="doc"><h3><img class="doc-logo" src="../brand/mavilera-name-armv7.svg" alt="Armv7 Laboratory" width="1373" height="192"></h3>
+            <ul>
+              <li><a href="../armv7/docs/">Documentation</a></li>
+              <li><a href="../armv7/">Open the laboratory</a></li>
+              <li><a href="../armv7/mavilera-armv7-1.2.0.html" download>Offline version</a> (1540 kB)</li>
+            </ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="release" aria-labelledby="h-release">
+      <div class="wrap">
+        <h2 id="h-release">This release</h2>
+        <dl class="facts">
+          <dt>Release</dt><dd>1.2.0, 2026-11-04</dd>
+          <dt>Laboratories</dt><dd>RISC-V Laboratory, SAP-1 Laboratory, SAP-2 Laboratory, Armv7 Laboratory, GPU Laboratory</dd>
+          <dt>Tested browsers</dt><dd>Chrome 156, Edge 151. Only the browsers listed were tested.</dd>
+          <dt>Validation record</dt><dd><a href="../riscv/web-sim-validation.json">web-sim-validation.json</a></dd>
+          <dt>Source</dt><dd><a href="https://github.com/sajidbuet/mavilera">https://github.com/sajidbuet/mavilera</a></dd>
+        </dl>
+        <p class="note" style="margin-top:16px">A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="../riscv/LICENSE">Apache License, Version 2.0</a> · <a href="../">MAVILERA home</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
+      <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
+    </div>
+  </footer>
+</body>
+</html>

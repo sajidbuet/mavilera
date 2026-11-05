@@ -1,8 +1,10 @@
 <!doctype html>
 <!--
   site/index.html -- the MAVILERA landing page, published at /mavilera/ (spec W-D25). tools/release.mjs
-  fills the {{...}} fields and builds the architecture cards from site/architectures.json; it refuses to
-  build while any field is unfilled. Paths are relative, so the page works under any base path.
+  fills the {{...}} fields: the laboratories' tiles and the learning paths from site/architectures.json, the
+  shared styles from site/site.css; it refuses to build while any field is unfilled. Paths are relative, so the
+  page works under any base path. Minimal layout (author, 2026-11-05): each laboratory appears once, in one tile;
+  the learning paths by topic; downloads, tested browsers and the validation record on the documentation page.
   Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
   Rights class: code.
 -->
@@ -23,260 +25,335 @@
   <link rel="icon" type="image/svg+xml" href="brand/mavilera-icon.svg">
   <link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
   <style>
-    /* tokens: the values of src/ui/theme.css, light and dark */
-    :root {
-      --primary: #1a4f8b; --primary-hover: #2263a8; --primary-on: #ffffff; --primary-soft: #e6f0fa;
-      --insight: #1f4e79; --amber: #a85a00;
-      --bg: #f2f5fa; --surface: #ffffff; --surface-2: #f7f9fc; --border: #d8e0eb;
-      --text: #0b2a55; --text-2: #5a6b82;
-      --shadow: 0 8px 24px rgba(11, 42, 85, 0.14);
-      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
-      color-scheme: light;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --primary: #5b9bd5; --primary-hover: #74acdf; --primary-on: #071a33; --primary-soft: #132a45;
-        --insight: #8fb4dc; --amber: #e3a453;
-        --bg: #0a1120; --surface: #101a2b; --surface-2: #142034; --border: #24344d;
-        --text: #e3eaf4; --text-2: #94a5bd;
-        --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        color-scheme: dark;
-      }
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
-    a { color: var(--primary); text-underline-offset: 2px; }
-    a:hover { color: var(--primary-hover); }
-    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
-    img { max-width: 100%; height: auto; display: block; }
-    code { font-family: var(--font-code); font-size: 0.92em; }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
-    .skip { position: absolute; left: -9999px; }
-    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+/*
+  site/site.css -- the styles the MAVILERA landing page (site/index.html) and the documentation page (site/docs.html)
+  share: tokens, header, buttons and footer. tools/release.mjs writes it into each page's <style> (the SITE_CSS field).
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+*/
+/* tokens: the values of src/ui/theme.css, light and dark */
+:root {
+  --primary: #1a4f8b; --primary-hover: #2263a8; --primary-on: #ffffff; --primary-soft: #e6f0fa;
+  --insight: #1f4e79; --amber: #a85a00;
+  --bg: #f2f5fa; --surface: #ffffff; --surface-2: #f7f9fc; --border: #d8e0eb;
+  --text: #0b2a55; --text-2: #5a6b82;
+  --shadow: 0 8px 24px rgba(11, 42, 85, 0.14);
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #5b9bd5; --primary-hover: #74acdf; --primary-on: #071a33; --primary-soft: #132a45;
+    --insight: #8fb4dc; --amber: #e3a453;
+    --bg: #0a1120; --surface: #101a2b; --surface-2: #142034; --border: #24344d;
+    --text: #e3eaf4; --text-2: #94a5bd;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+a { color: var(--primary); text-underline-offset: 2px; }
+a:hover { color: var(--primary-hover); }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+img { max-width: 100%; height: auto; display: block; }
+code { font-family: var(--font-code); font-size: 0.92em; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+.note { color: var(--text-2); font-size: 14px; margin: 0; }
 
-    /* header */
-    .top { border-bottom: 1px solid var(--border); background: var(--surface); }
-    .top .wrap { display: flex; align-items: center; gap: 16px; min-height: 60px; flex-wrap: wrap; }
-    .top .brand img { height: 26px; width: auto; }
-    .top nav { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
-    .top nav a { color: var(--text); text-decoration: none; font-size: 15px; }
-    .top nav a:hover { color: var(--primary); text-decoration: underline; }
+/* header: the logo and four links, on phones too (they wrap under the logo) */
+.top { border-bottom: 1px solid var(--border); background: var(--surface); }
+.top .wrap { display: flex; align-items: center; gap: 8px 16px; min-height: 60px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.top .brand img { height: 26px; width: auto; }
+.top nav { margin-left: auto; display: flex; gap: 4px 18px; flex-wrap: wrap; align-items: center; }
+.top nav a { color: var(--text); text-decoration: none; font-size: 15px; padding: 4px 0; }
+.top nav a:hover { color: var(--primary); text-decoration: underline; }
+.top nav a[aria-current="page"] { color: var(--primary); font-weight: 600; }
+@media (max-width: 600px) { .top nav { margin-left: 0; width: 100%; gap: 4px 16px; } .top nav a { font-size: 14px; } }
+/* the header logo: a light sweeps across it on hover or focus; it lifts a little (no movement under reduced motion) */
+.top .brand { position: relative; display: inline-block; overflow: hidden; border-radius: 4px; }
+.top .brand img { display: block; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
+.top .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+                     background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat;
+                     background-size: 250% 100%; }
+.top .brand:hover img, .top .brand:focus-visible img { filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25)); }
+@media (prefers-reduced-motion: no-preference) {
+  .top .brand:hover img, .top .brand:focus-visible img { transform: translateY(-1px); }
+  .top .brand:hover::after, .top .brand:focus-visible::after { animation: mv-shine 0.9s ease-out; }
+}
+@keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
 
-    /* buttons */
-    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-weight: 600;
-           text-decoration: none; border: 1px solid transparent; font-size: 16px; }
-    .btn-primary { background: var(--primary); color: var(--primary-on); }
-    .btn-primary:hover { background: var(--primary-hover); color: var(--primary-on); }
-    .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
-    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
-    .top nav a.btn { padding: 7px 14px; font-size: 15px; color: var(--primary-on); text-decoration: none; }
+/* buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-weight: 600;
+       text-decoration: none; border: 1px solid transparent; font-size: 16px; }
+.btn-primary { background: var(--primary); color: var(--primary-on); }
+.btn-primary:hover { background: var(--primary-hover); color: var(--primary-on); }
+.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+/* sections and the status tags */
+section { padding: 48px 0; border-top: 1px solid var(--border); }
+h2 { font-size: 26px; margin: 0 0 8px; line-height: 1.25; }
+h3 { font-size: 18px; margin: 0; line-height: 1.3; }
+.section-lead { color: var(--text-2); margin: 0 0 24px; max-width: 46em; }
+.status { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 8px;
+          border-radius: 99px; border: 1px solid var(--border); color: var(--text-2); white-space: nowrap; }
+.status.preview { color: var(--insight); border-color: var(--insight); }
+
+footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
+footer p { margin: 4px 0; }
 
     /* hero */
-    .hero { padding-top: 56px; padding-bottom: 40px; }
-    @media (max-width: 600px) { .top nav a:not(.btn) { display: none; } }
-    .hero h1 { margin: 0; }
-   .tagline { margin: 18px 0 6px; font-size: 20px; font-weight: 600; color: var(--insight); letter-spacing: 0.02em; }
-    .lead { font-size: 18px; max-width: 46em; margin: 0 0 24px; }
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-    .note { color: var(--text-2); font-size: 14px; margin: 0; }
-    .shot { margin: 40px 0 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
-            background: var(--surface); }
-    figcaption { padding: 8px 14px; font-size: 14px; color: var(--text-2); border-top: 1px solid var(--border); }
-
-    /* sections */
-    section { padding: 48px 0; border-top: 1px solid var(--border); }
-    h2 { font-size: 26px; margin: 0 0 20px; line-height: 1.25; }
-    h3 { font-size: 18px; margin: 0 0 6px; }
-.module-head { margin: 20px 0 10px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
-    .card p { margin: 0; color: var(--text); }
-    .card h3::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 10px; border-radius: 2px;
-                       background: var(--primary); vertical-align: 1px; }
-    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-    @media (max-width: 760px) { .two { grid-template-columns: 1fr; } .hero { padding-top: 32px; } }
-    dl.facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
-    dl.facts dt { font-weight: 600; }
-    dl.facts dd { margin: 0; }
-    ul.plain { margin: 0; padding-left: 20px; }
-    ul.plain li + li { margin-top: 4px; }
-
-    .status { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-2); margin-left: 8px; vertical-align: 2px; }
-    .status.ok { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
-    .arch { display: flex; flex-direction: column; gap: 10px; }
-    .arch.planned { background: var(--surface-2); }
-    .arch.planned h3::before { background: var(--text-2); }
-    .arch .actions { margin: 6px 0 0; }
-    .btn-disabled { background: transparent; color: var(--text-2); border: 1px dashed var(--border); cursor: not-allowed; }
-    .path { margin: 0; color: var(--text-2); font-size: 14px; }
+    .hero { padding-top: 48px; padding-bottom: 44px; }
+    @media (max-width: 760px) { .hero { padding-top: 28px; } }
     .hero-logo { margin: 0; }
-    .hero-logo img { width: min(640px, 100%); height: auto; }
+    .hero-logo svg { display: block; width: min(640px, 100%); height: auto; }
+    .lead { font-size: 18px; max-width: 46em; margin: 18px 0 24px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    /* the animated lockup (variant A, approved 2026-11-05; tools/logo/hero-logo.mjs): the intro plays once per visit */
+.mvh .mv-n { fill: var(--mv-navy, #0b2a55); } .mvh .mv-l { fill: var(--mv-blue, #5b9bd5); } .mvh .mv-p { fill: var(--mv-pale, #c8e1f4); }
+.mvh { overflow: visible; } .mvh path { transform-box: fill-box; transform-origin: 50% 50%; }
+.mvh .p-m-left, .mvh .p-m-right { transform-origin: 50% 100%; }
+.mvh .p-wires-left, .mvh .p-wires-right, .mvh .p-arrow-in, .mvh .mv-l[class*="p-card-"], .mvh .mv-p[class*="p-card-"] { transform-origin: 0 50%; }
+@keyframes mvh-slide { from { transform: translateX(-46px); opacity: 0; } }
+@keyframes mvh-grow { from { transform: scaleX(0); } }
+@keyframes mvh-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes mvh-wipe-up { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes mvh-rise { from { transform: translateY(50px) scaleY(.35); opacity: 0; } }
+@keyframes mvh-drop { from { transform: translateY(-14px); opacity: 0; } }
+@keyframes mvh-letter { from { clip-path: inset(0 100% 0 0); opacity: .2; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
+@keyframes mvh-pop { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.18); opacity: 1; } 100% { transform: none; opacity: 1; } }
+@keyframes mvh-flash { 0%, 100% { filter: none; } 35% { filter: brightness(1.9) saturate(1.3); } }
+@keyframes mvh-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes mvh-up { from { opacity: 0; transform: translateY(6px); } }
+@keyframes mvh-flash-loop { 0%, 22%, 100% { filter: none; } 8% { filter: brightness(1.9) saturate(1.3); } }
+.mvh-play .p-card-0 { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(0ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-0.mv-l, .mvh-play .p-card-0.mv-p { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(0ms * var(--mvh-t, 1)) both, mvh-grow calc(320ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(220ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-1 { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(60ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-1.mv-l, .mvh-play .p-card-1.mv-p { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(60ms * var(--mvh-t, 1)) both, mvh-grow calc(320ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(280ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-2 { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(120ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-2.mv-l, .mvh-play .p-card-2.mv-p { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(120ms * var(--mvh-t, 1)) both, mvh-grow calc(320ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(340ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-3 { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(180ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-3.mv-l, .mvh-play .p-card-3.mv-p { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(180ms * var(--mvh-t, 1)) both, mvh-grow calc(320ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(400ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-4 { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(240ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-card-4.mv-l, .mvh-play .p-card-4.mv-p { animation: mvh-slide calc(380ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(240ms * var(--mvh-t, 1)) both, mvh-grow calc(320ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(460ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-wires-left { animation: mvh-wipe calc(420ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(420ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-m-left { animation: mvh-rise calc(620ms * var(--mvh-t, 1)) cubic-bezier(.34,1.56,.64,1) calc(760ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-m-right { animation: mvh-rise calc(620ms * var(--mvh-t, 1)) cubic-bezier(.34,1.56,.64,1) calc(860ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-m-road { animation: mvh-wipe-up calc(520ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1080ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-arrow-in, .mvh-play .p-wires-right { animation: mvh-wipe calc(480ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1220ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-stage-if { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1300ms * var(--mvh-t, 1)) both, mvh-flash calc(420ms * var(--mvh-t, 1)) ease-in-out calc(1760ms * var(--mvh-t, 1)) both; }
+.mvh-beat .p-stage-if { animation: mvh-flash 420ms ease-in-out 0ms both; }
+.mvh-play.mvh-loop .p-stage-if { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1300ms * var(--mvh-t, 1)) both, mvh-flash-loop 2s ease-in-out calc(calc(1760ms * var(--mvh-t, 1)) + 0ms) infinite; }
+.mvh-play .p-stage-id { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1370ms * var(--mvh-t, 1)) both, mvh-flash calc(420ms * var(--mvh-t, 1)) ease-in-out calc(1870ms * var(--mvh-t, 1)) both; }
+.mvh-beat .p-stage-id { animation: mvh-flash 420ms ease-in-out 110ms both; }
+.mvh-play.mvh-loop .p-stage-id { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1370ms * var(--mvh-t, 1)) both, mvh-flash-loop 2s ease-in-out calc(calc(1760ms * var(--mvh-t, 1)) + 110ms) infinite; }
+.mvh-play .p-stage-ex { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1440ms * var(--mvh-t, 1)) both, mvh-flash calc(420ms * var(--mvh-t, 1)) ease-in-out calc(1980ms * var(--mvh-t, 1)) both; }
+.mvh-beat .p-stage-ex { animation: mvh-flash 420ms ease-in-out 220ms both; }
+.mvh-play.mvh-loop .p-stage-ex { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1440ms * var(--mvh-t, 1)) both, mvh-flash-loop 2s ease-in-out calc(calc(1760ms * var(--mvh-t, 1)) + 220ms) infinite; }
+.mvh-play .p-stage-mem { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1510ms * var(--mvh-t, 1)) both, mvh-flash calc(420ms * var(--mvh-t, 1)) ease-in-out calc(2090ms * var(--mvh-t, 1)) both; }
+.mvh-beat .p-stage-mem { animation: mvh-flash 420ms ease-in-out 330ms both; }
+.mvh-play.mvh-loop .p-stage-mem { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1510ms * var(--mvh-t, 1)) both, mvh-flash-loop 2s ease-in-out calc(calc(1760ms * var(--mvh-t, 1)) + 330ms) infinite; }
+.mvh-play .p-stage-wb { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1580ms * var(--mvh-t, 1)) both, mvh-flash calc(420ms * var(--mvh-t, 1)) ease-in-out calc(2200ms * var(--mvh-t, 1)) both; }
+.mvh-beat .p-stage-wb { animation: mvh-flash 420ms ease-in-out 440ms both; }
+.mvh-play.mvh-loop .p-stage-wb { animation: mvh-drop calc(300ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1580ms * var(--mvh-t, 1)) both, mvh-flash-loop 2s ease-in-out calc(calc(1760ms * var(--mvh-t, 1)) + 440ms) infinite; }
+.mvh-play .p-stage-arrows { animation: mvh-wipe calc(400ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1420ms * var(--mvh-t, 1)) both, mvh-blink calc(600ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1840ms * var(--mvh-t, 1)) both; }
+.mvh-beat .p-stage-arrows { animation: mvh-blink 600ms ease 80ms both; }
+.mvh-play .p-letter-0 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1580ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-letter-1 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1635ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-letter-2 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1690ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-letter-3 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1745ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-letter-4 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1800ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-letter-5 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1855ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-letter-6 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1910ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-letter-7 { animation: mvh-letter calc(340ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1965ms * var(--mvh-t, 1)) both; }
+.mvh-play .p-tri-1 { animation: mvh-pop calc(360ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(2060ms * var(--mvh-t, 1)) both; } .mvh-play .p-tri-2 { animation: mvh-pop calc(360ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(2150ms * var(--mvh-t, 1)) both; }
+.mvh-play .hero-expansion { animation: mvh-up calc(520ms * var(--mvh-t, 1)) cubic-bezier(.2,.7,.2,1) calc(1900ms * var(--mvh-t, 1)) both; }
+@media (prefers-reduced-motion: reduce) { .mvh *, .mvh-play .hero-expansion { animation: none !important; } }
+    .mvh-seen .mvh-play .mvh path, .mvh-seen .mvh-play .hero-expansion { animation: none !important; }
+    #hero svg.mvh { cursor: pointer; border-radius: 6px; }
+    #hero svg.mvh:focus { outline: none; } /* a click gives it focus: no border then */
+    #hero svg.mvh:focus-visible { outline: 3px solid var(--primary); outline-offset: 6px; } /* reached by the keyboard: a ring */
+    @media (prefers-reduced-motion: reduce) { #hero svg.mvh { cursor: default; } }
     /* the full form of the name, as text after it (author, 2026-11-04): the logo is the lockup without its subtitle */
     .hero-expansion { margin: 10px 0 0; font-size: 18px; font-weight: 600; letter-spacing: 0.01em; color: var(--text-2); max-width: 40em; }
     .hero-expansion b { color: var(--primary); font-weight: 700; }
     @media (max-width: 600px) { .hero-expansion { font-size: 15px; } }
-    /* the header logo: a light sweeps across it on hover or focus; it lifts a little (no movement under reduced motion) */
-    .top .brand { position: relative; display: inline-block; overflow: hidden; border-radius: 4px; }
-    .top .brand img { display: block; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
-    .top .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
-                         background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat;
-                         background-size: 250% 100%; }
-    .top .brand:hover img, .top .brand:focus-visible img { filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25)); }
-    @media (prefers-reduced-motion: no-preference) {
-      .top .brand:hover img, .top .brand:focus-visible img { transform: translateY(-1px); }
-      .top .brand:hover::after, .top .brand:focus-visible::after { animation: mv-shine 0.9s ease-out; }
-    }
-    @keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
-    /* the module logos on the cards (name lockups: chip and name) */
-    .card-logo { display: block; align-self: flex-start; height: 34px; width: auto; max-width: 100%; margin: 0 0 4px; }
-    .status.preview { color: var(--insight); border-color: var(--insight); }
-    .arch.tool { border-left: 4px solid var(--primary); }
-    .descriptor { margin: 10px 0 0; font-size: 22px; color: var(--text); }
-    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
-    footer p { margin: 4px 0; }
+
+    /* laboratories: one tile each, the whole tile opens it; three to a row in the author's order */
+    .labs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 1000px) { .labs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .labs { grid-template-columns: 1fr; } }
+    .lab { position: relative; display: flex; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--border);
+           border-radius: 10px; padding: 18px 20px; transition: border-color 0.15s, box-shadow 0.15s; }
+    .lab:hover, .lab:focus-within { border-color: var(--primary); box-shadow: var(--shadow); }
+    .lab h3 { margin: 0; }
+    .lab-link { display: inline-block; color: var(--text); text-decoration: none; }
+    .lab-link::after { content: ""; position: absolute; inset: 0; border-radius: 10px; } /* the whole tile is the link */
+    .lab-link:focus-visible { outline: none; }
+    .lab:has(.lab-link:focus-visible) { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .lab-logo { height: 34px; width: auto; max-width: 100%; }
+    .lab p { margin: 0; }
+    .lab-tagline { flex: 1; }
+    .lab-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; }
+    .lab-meta a { position: relative; z-index: 1; } /* above the tile's link */
+    .lab-go { margin-left: auto; color: var(--primary); font-weight: 600; }
+    .coming { margin: 16px 0 0; color: var(--text-2); font-size: 15px; }
+
+    /* learning paths by topic (author, 2026-11-05) */
+    .paths { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 760px) { .paths { grid-template-columns: 1fr; } }
+    .path { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+    .path > p { margin: 4px 0 12px; color: var(--text-2); }
+    .steps { list-style: none; counter-reset: step; margin: 0; padding: 0; }
+    .steps li { counter-increment: step; position: relative; padding: 0 0 12px 38px; }
+    .steps li:last-child { padding-bottom: 0; }
+    .steps li::before { content: counter(step); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%;
+                        background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: 14px; text-align: center; line-height: 26px; }
+    .steps li:not(:last-child)::after { content: ""; position: absolute; left: 12px; top: 30px; bottom: 2px; width: 2px; background: var(--border); }
+    .steps a { font-weight: 600; }
+    .step-view { color: var(--text-2); font-weight: 600; }
+    .steps span.step-text { display: block; font-size: 15px; }
   </style>
+  <script>
+    // the hero's intro plays on the first visit of a session; later visits show the logo at rest from the first paint
+    try { if (sessionStorage.getItem('mavilera.hero') === '1') document.documentElement.classList.add('mvh-seen'); else sessionStorage.setItem('mavilera.hero', '1'); } catch (e) { /* no storage: it plays */ }
+  </script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <div class="wrap">
       <a class="brand" href="./" aria-label="MAVILERA home"><img src="brand/mavilera-wordmark.svg" alt="" width="1590" height="192"></a>
-      <nav aria-label="Page">
-        <a href="#architectures">Architectures</a>
-        <a href="#learning">Learning</a>
-        <a href="#about">About</a>
-        <a href="riscv/docs/">RISC-V documentation</a>
+      <nav aria-label="Site">
+        <a href="#laboratories">Laboratories</a>
+        <a href="#learn">Learn</a>
+        <a href="docs/">Documentation</a>
         <a href="https://github.com/sajidbuet/mavilera">GitHub</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
-    <div class="wrap hero">
-      <h1 class="hero-logo"><img src="brand/mavilera-lockup.svg" width="1614" height="588" alt="MAVILERA"></h1>
+    <div class="wrap hero mvh-play" id="hero">
+      <h1 class="hero-logo"><svg class="mvh" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1614 588" width="1614" height="588" role="img" aria-label="MAVILERA"><g transform="translate(-81.9 -110.28)"><path class="mv-n p-m-left" d="M411.75 470.56L518.03 225.64C527.79 203.18 543.39 150.94 570.69 146.81C573.18 146.44 576.99 147.65 579.38 148.43C603.43 156.22 614.44 183.37 627.16 202.69C633.94 213 639.32 224.4 645.27 235.2L679.01 297.73C696.05 329.8 713.08 361.86 729.31 394.4L742.24 419.48L694.8 447.01C689.75 438.1 686.98 427.36 683.22 417.82L649.15 331.43C644.99 321.38 639.2 300.96 632.89 293.12C625.67 304.12 615.1 338.48 610.19 352.55L585.15 423.68C582.38 431.52 578.84 439.16 576.94 447.28C570.77 451.81 549.52 469.09 544.14 470.96C539.71 472.51 531.67 472.05 524.92 471.67C522.25 471.52 519.77 471.38 517.81 471.38L457.8 471.38C455.76 471.38 452.4 471.49 448.39 471.62C435.47 472.06 415.8 472.73 411.75 470.56M576.8 141.45C588.03 136.35 602.02 137.39 613.99 135.5C620.52 134.47 627.15 134.53 633.8 134.59L638.63 134.62C661.01 134.62 679.74 135.07 699.08 148.04C712.96 157.35 720.43 171.98 729.85 185.2C751.35 215.38 770.29 247.58 792.65 277.13L814.17 280.25C810.65 283.11 807 282.89 803.14 282.66C801.22 282.55 799.24 282.43 797.21 282.7L839.31 345.53C824.46 368.37 786.05 393.26 762.4 407.28C753.94 398.91 737.57 369.49 730.18 357.84C707.74 322.46 685.55 286.76 664.64 250.45C649.31 223.86 622.5 172.36 600.16 153.59C593.05 147.62 584.35 146.14 576.8 141.45"/><path class="mv-n p-m-right" d="M941.72 301.68C942.38 292.7 955.4 270.55 959.74 261.21C974 230.56 986.8 197.87 1005.8 169.75C1013.95 157.68 1032.66 138.88 1047.91 151.66C1057.3 159.51 1060.54 172.3 1064.77 183.15L1086.59 242.64L1139.61 389.73C1148.19 413.68 1164.69 452.71 1170.1 475.89C1161.28 477.7 1120.92 477.06 1094.18 476.63C1085.44 476.49 1078.16 476.38 1073.91 476.38C1071.81 476.38 1068.35 476.48 1064.27 476.61C1052.59 476.97 1035.83 477.49 1031.52 476.1C1029.62 475.48 998.22 449.09 997.21 447.22C994.97 443.03 992.65 425.43 991.43 419.62C988.94 407.75 984.8 396.13 982.68 384.19L982.68 374.77C981.8 363.16 979.56 351.77 975.22 340.81C970.41 328.67 961.11 316.94 951.15 308.58Z"/><path class="mv-n p-letter-0" d="M106 506L164 506L240.75 579L317.5 506L375.5 506L375.5 674L324.25 674L324.25 565L240.75 644L157.25 565L157.25 674L106 674Z"/><path class="mv-n p-letter-1" d="M385.9 674L499.05 506L533.55 506L646.7 674L591.8 674L516.3 568L440.8 674Z"/><path class="mv-n p-letter-2" d="M575.9 506L634.5 506L706.8 611.5L779.1 506L837.7 506L727.1 674L686.5 674Z"/><path class="mv-n p-letter-3" d="M851 506L901.5 506L901.5 674L851 674Z"/><path class="mv-n p-letter-4" d="M933 506L984 506L984 621A7 7 0 0 0 991 628L1083.5 628L1083.5 674L971 674A38 38 0 0 1 933 636Z"/><path class="mv-n p-letter-5" d="M1099 506L1256.5 506L1256.5 553L1151 553L1151 570L1226.7 570L1226.7 610L1151 610L1151 628L1256.5 628L1256.5 674L1099 674Z"/><path class="mv-n p-letter-6" d="M1276 506L1393 506A57 57 0 0 1 1402.99 619.12L1445.8 674L1386.2 674L1344.08 620L1327 620L1327 674L1276 674ZM1327 553L1327 576.2L1386.4 576.2A11.6 11.6 0 1 0 1386.4 553Z"/><path class="mv-n p-letter-7" d="M1575.55 506L1671.8 666.2L1671.8 674L1628.2 674L1559.3 568L1490.4 674L1453.2 674L1446.88 665.9L1543.05 506Z"/><path class="mv-n p-card-1" d="M113 260.3L311.8 260.3A7 7 0 0 1 318.8 267.3L318.8 295.7A7 7 0 0 1 311.8 302.7L113 302.7A7 7 0 0 1 106 295.7L106 267.3A7 7 0 0 1 113 260.3M205.3 276.2A5.5 5.5 0 1 0 205.3 287.2L296.7 287.2A5.5 5.5 0 1 0 296.7 276.2ZM142.75 292.2L147.55 292.2L150.26 281.72Q150.75 279.86 151.01 277.85L151.17 276.74L151.36 277.93Q151.67 279.97 152.11 281.72L154.83 292.2L159.62 292.2L165.14 271.7L160.54 271.7L158.16 281.78Q157.89 283.05 157.63 284.49Q157.38 285.93 157.15 287.38L157.06 287.95L156.96 287.38L156.44 284.49Q156.18 283.05 155.86 281.78L153.37 271.7L149.01 271.7L146.51 281.78Q146.19 283.05 145.93 284.49L145.42 287.38L145.32 288L145.22 287.38L144.74 284.49Q144.5 283.05 144.21 281.78L141.83 271.7L137.25 271.7ZM124 292.2L137.04 292.2L137.04 288.72L128.2 288.72L128.2 271.7L124 271.7Z"/><path class="mv-n p-card-2" d="M113 310.5L311.8 310.5A7 7 0 0 1 318.8 317.5L318.8 345.9A7 7 0 0 1 311.8 352.9L113 352.9A7 7 0 0 1 106 345.9L106 317.5A7 7 0 0 1 113 310.5M205.3 326.4A5.5 5.5 0 1 0 205.3 337.4L296.7 337.4A5.5 5.5 0 1 0 296.7 326.4ZM145.96 342.4L150.76 342.4L153.47 331.92Q153.95 330.06 154.22 328.05L154.38 326.94L154.56 328.13Q154.87 330.17 155.31 331.92L158.04 342.4L162.83 342.4L168.34 321.9L163.75 321.9L161.37 331.98Q161.09 333.25 160.84 334.69Q160.58 336.13 160.36 337.58L160.27 338.15L160.16 337.58L159.65 334.69Q159.39 333.25 159.07 331.98L156.58 321.9L152.22 321.9L149.71 331.98Q149.4 333.25 149.14 334.69Q148.87 336.13 148.63 337.58L148.52 338.2L148.42 337.58L147.95 334.69Q147.71 333.25 147.42 331.98L145.04 321.9L140.45 321.9ZM132.2 342.7Q134.69 342.7 136.47 341.95Q138.24 341.19 139.18 339.81Q140.12 338.43 140.11 336.57Q140.11 335.27 139.65 334.28Q139.19 333.29 138.35 332.57Q137.51 331.85 136.4 331.35Q135.28 330.86 133.99 330.57L132.13 330.11Q131.26 329.91 130.51 329.6Q129.76 329.29 129.3 328.79Q128.84 328.29 128.84 327.53Q128.84 326.84 129.24 326.3Q129.64 325.77 130.4 325.46Q131.16 325.15 132.21 325.16Q133.78 325.16 134.72 325.83Q135.67 326.51 135.78 327.75L139.84 327.75Q139.81 325.94 138.86 324.56Q137.91 323.18 136.22 322.4Q134.53 321.62 132.26 321.62Q130.03 321.62 128.29 322.4Q126.55 323.17 125.55 324.56Q124.55 325.94 124.55 327.8Q124.55 330.03 126.02 331.39Q127.49 332.75 130.09 333.37L132.35 333.94Q133.48 334.2 134.26 334.54Q135.05 334.89 135.47 335.36Q135.89 335.84 135.89 336.54Q135.89 337.32 135.42 337.91Q134.95 338.5 134.12 338.83Q133.29 339.16 132.16 339.15Q131.03 339.14 130.14 338.81Q129.25 338.48 128.71 337.77Q128.17 337.08 128.09 336.04L124 336.04Q124.06 338.22 125.07 339.7Q126.09 341.19 127.91 341.95Q129.74 342.7 132.2 342.7"/><path class="mv-n p-card-0" d="M113 210.1L311.8 210.1A7 7 0 0 1 318.8 217.1L318.8 245.5A7 7 0 0 1 311.8 252.5L113 252.5A7 7 0 0 1 106 245.5L106 217.1A7 7 0 0 1 113 210.1M205.3 226A5.5 5.5 0 1 0 205.3 237L296.7 237A5.5 5.5 0 1 0 296.7 226ZM170.76 242Q173.89 242 176.13 240.77Q178.37 239.54 179.57 237.24Q180.77 234.94 180.77 231.74Q180.77 228.54 179.57 226.25Q178.37 223.96 176.15 222.73Q173.93 221.5 170.85 221.5L163.57 221.5L163.57 242ZM151.92 242Q155.04 242 157.28 240.77Q159.52 239.54 160.72 237.24Q161.92 234.94 161.92 231.74Q161.92 228.54 160.72 226.25Q159.52 223.96 157.3 222.73Q155.08 221.5 152 221.5L144.72 221.5L144.72 242ZM124 242L128.64 242L130.16 237.24L137.44 237.24L139.02 242L143.69 242L136.51 221.5L131 221.5ZM148.92 238.38L148.92 225.12L151.75 225.12Q153.72 225.12 155.05 225.82Q156.38 226.52 157.05 227.99Q157.74 229.45 157.74 231.74Q157.74 234.03 157.06 235.51Q156.39 236.98 155.05 237.68Q153.7 238.38 151.72 238.38ZM167.76 238.38L167.76 225.12L170.6 225.12Q172.57 225.12 173.89 225.82Q175.22 226.52 175.9 227.99Q176.58 229.45 176.58 231.74Q176.58 234.03 175.91 235.51Q175.24 236.99 173.89 237.68Q172.54 238.37 170.57 238.38ZM136.35 233.95L131.21 233.95L131.8 232.11Q132.37 230.24 132.94 227.95L133.71 224.79Q134.13 226.44 134.53 227.92Q135.14 230.2 135.74 232.11Z"/><path class="mv-n p-card-3" d="M113 360.7L311.8 360.7A7 7 0 0 1 318.8 367.7L318.8 396.1A7 7 0 0 1 311.8 403.1L113 403.1A7 7 0 0 1 106 396.1L106 367.7A7 7 0 0 1 113 360.7M205.3 376.6A5.5 5.5 0 1 0 205.3 387.6L296.7 387.6A5.5 5.5 0 1 0 296.7 376.6ZM165.76 392.88Q167.76 392.88 169.46 392.2L171.15 394.31L175.07 394.31L172.12 390.57Q173.27 389.53 174.06 388.05Q175.32 385.69 175.32 382.36Q175.32 379.03 174.06 376.66Q172.8 374.29 170.64 373.06Q168.48 371.83 165.76 371.82Q163.04 371.81 160.88 373.06Q158.72 374.31 157.45 376.66Q156.18 379.01 156.19 382.36Q156.19 385.69 157.45 388.05Q158.71 390.4 160.88 391.64Q163.05 392.88 165.76 392.88M124 392.6L132.65 392.6Q134.98 392.6 136.54 391.86Q138.1 391.13 138.9 389.85Q139.7 388.57 139.7 386.96Q139.7 385.43 139.06 384.34Q138.42 383.24 137.39 382.63Q136.36 382.02 135.21 381.98L135.21 381.77Q136.27 381.52 137.1 380.95Q137.94 380.38 138.42 379.48Q138.9 378.58 138.9 377.37Q138.9 375.83 138.15 374.65Q137.4 373.47 135.89 372.78Q134.38 372.09 132.13 372.1L124 372.1ZM141.14 392.6L154.89 392.6L154.89 389.12L145.34 389.12L145.34 383.96L154.13 383.96L154.13 380.53L145.34 380.53L145.34 375.58L154.86 375.58L154.86 372.1L141.14 372.1ZM164.46 385.56L167.08 389Q166.46 389.15 165.76 389.15Q164.17 389.15 162.98 388.36Q161.78 387.58 161.12 386.06Q160.46 384.54 160.46 382.36Q160.46 380.16 161.12 378.64Q161.78 377.12 162.98 376.34Q164.17 375.55 165.76 375.55Q167.35 375.55 168.54 376.33Q169.73 377.11 170.39 378.63Q171.05 380.15 171.05 382.36Q171.05 384.55 170.39 386.07Q170.04 386.87 169.55 387.47L168.05 385.56ZM128.2 389.15L128.2 383.59L131.94 383.59Q133 383.59 133.77 383.97Q134.54 384.34 134.96 385.01Q135.38 385.68 135.38 386.56Q135.38 387.72 134.53 388.43Q133.67 389.15 131.83 389.15ZM128.2 380.71L128.2 375.53L131.59 375.53Q133.07 375.53 133.86 376.23Q134.65 376.93 134.65 378.04Q134.65 378.87 134.24 379.47Q133.83 380.07 133.12 380.39Q132.41 380.71 131.51 380.71Z"/><path class="mv-n p-card-4" d="M113 410.9L311.8 410.9A7 7 0 0 1 318.8 417.9L318.8 446.3A7 7 0 0 1 311.8 453.3L113 453.3A7 7 0 0 1 106 446.3L106 417.9A7 7 0 0 1 113 410.9M205.3 426.8A5.5 5.5 0 1 0 205.3 437.8L296.7 437.8A5.5 5.5 0 1 0 296.7 426.8ZM138.71 442.8L143.34 442.8L144.87 438.04L152.15 438.04L153.73 442.8L158.4 442.8L151.21 422.3L145.71 422.3ZM130.87 443.08Q134.04 443.08 135.86 441.4Q137.68 439.73 137.68 436.62L137.68 422.3L133.52 422.3L133.52 436.69Q133.52 438.18 132.81 438.93Q132.09 439.69 130.87 439.69Q129.64 439.69 128.92 438.93Q128.2 438.18 128.2 436.71L128.2 435.44L124 435.44L124 436.64Q124 439.73 125.84 441.4Q127.67 443.08 130.87 443.08M159.43 442.8L172.47 442.8L172.47 439.32L163.62 439.32L163.62 422.3L159.43 422.3ZM151.06 434.75L145.92 434.75L146.51 432.91Q147.07 431.04 147.64 428.75L148.42 425.59Q148.84 427.24 149.24 428.72Q149.85 431 150.44 432.91Z"/><path class="mv-n p-stage-wb" d="M1594 287L1661.8 287A8 8 0 0 1 1669.8 295L1669.8 383.8A8 8 0 0 1 1661.8 391.8L1594 391.8A8 8 0 0 1 1586 383.8L1586 347.16L1593.8 339.8L1586 332.44L1586 295A8 8 0 0 1 1594 287M1610.74 351L1615.77 351L1618.62 340Q1619.12 338.06 1619.4 335.95L1619.57 334.79L1619.76 336.03Q1620.09 338.17 1620.55 340L1623.41 351L1628.43 351L1634.21 329.5L1629.4 329.5L1626.9 340.08Q1626.61 341.4 1626.34 342.91Q1626.08 344.42 1625.84 345.94L1625.74 346.55L1625.64 345.94L1625.1 342.91Q1624.82 341.4 1624.49 340.08L1621.88 329.5L1617.3 329.5L1614.68 340.08Q1614.35 341.4 1614.07 342.91L1613.54 345.94L1613.43 346.59L1613.32 345.94Q1613.08 344.42 1612.82 342.91Q1612.57 341.4 1612.27 340.08L1609.77 329.5L1604.97 329.5ZM1635.37 351L1644.45 351Q1646.88 351 1648.52 350.23Q1650.16 349.46 1651 348.11Q1651.83 346.77 1651.83 345.08Q1651.83 343.48 1651.16 342.34Q1650.49 341.2 1649.42 340.55Q1648.35 339.9 1647.13 339.86L1647.13 339.64Q1648.24 339.38 1649.11 338.79Q1649.99 338.19 1650.49 337.24Q1651 336.3 1651 335.03Q1651 333.41 1650.21 332.17Q1649.42 330.93 1647.84 330.21Q1646.26 329.49 1643.9 329.5L1635.37 329.5ZM1639.77 347.38L1639.77 341.55L1643.7 341.55Q1644.81 341.55 1645.61 341.95Q1646.42 342.34 1646.86 343.04Q1647.3 343.74 1647.3 344.67Q1647.3 345.88 1646.41 346.63Q1645.51 347.38 1643.58 347.38ZM1639.77 338.53L1639.77 333.09L1643.33 333.09Q1644.88 333.09 1645.71 333.83Q1646.54 334.56 1646.54 335.73Q1646.54 336.6 1646.11 337.23Q1645.69 337.85 1644.94 338.19Q1644.19 338.53 1643.25 338.53Z"/><path class="mv-n p-stage-ex" d="M1400 287L1460.8 287A8 8 0 0 1 1468.8 295L1468.8 333.3L1463.8 333.3L1463.8 346.3L1468.8 346.3L1468.8 383.8A8 8 0 0 1 1460.8 391.8L1400 391.8A8 8 0 0 1 1392 383.8L1392 347.16L1399.8 339.8L1392 332.44L1392 295A8 8 0 0 1 1400 287M1413.11 351L1427.52 351L1427.52 347.35L1417.51 347.35L1417.51 341.94L1426.73 341.94L1426.73 338.35L1417.51 338.35L1417.51 333.15L1427.49 333.15L1427.49 329.5L1413.11 329.5ZM1428.35 351L1433.44 351L1436.53 346.5Q1437.13 345.59 1437.51 344.95L1438.19 343.73L1438.52 343.11L1438.86 343.75Q1439.15 344.32 1439.52 344.95Q1439.89 345.59 1440.48 346.5L1443.47 351L1448.69 351L1441.09 339.88L1448.06 329.5L1443.06 329.5L1440.67 333.11Q1440.01 334.13 1439.57 334.95Q1439.14 335.78 1438.78 336.53L1438.57 336.95L1438.37 336.52Q1438.01 335.76 1437.59 334.95Q1437.17 334.14 1436.5 333.11L1434.15 329.5L1429.04 329.5L1436.07 340.01Z"/><path class="mv-n p-stage-if" d="M1217 287L1275.8 287A8 8 0 0 1 1283.8 295L1283.8 333.3L1278.8 333.3L1278.8 346.3L1283.8 346.3L1283.8 383.8A8 8 0 0 1 1275.8 391.8L1217 391.8A8 8 0 0 1 1209 383.8L1209 295A8 8 0 0 1 1217 287M1243.23 351L1247.63 351L1247.63 342.75L1256.42 342.75L1256.42 339.15L1247.63 339.15L1247.63 333.15L1257.37 333.15L1257.37 329.5L1243.23 329.5ZM1240.83 329.5L1236.43 329.5L1236.43 351L1240.83 351Z"/><path class="mv-n p-m-road" d="M928.84 303.26C941.16 303.34 959.45 328.55 964.49 338.75C982.39 374.98 972.48 414.31 962.63 451.29C960.44 459.53 958.76 468.32 955.02 476.03L881.92 476.03C885.21 467.07 893.84 458.88 899.27 451.02L903.65 444.73C925.22 413.83 960.85 362.78 947.23 327.85C943.21 317.52 935.78 311.31 928.84 303.26M708.79 475.95C715.45 469.15 735.4 458.82 744.45 452.99C749.64 449.64 755.7 443.42 761.71 441.84C767.09 440.43 784.48 440.96 797.24 441.35C801.98 441.5 806.07 441.62 808.69 441.62C811.18 441.62 814.33 441.49 817.76 441.34C827.03 440.93 838.33 440.44 844.23 442.33L808.82 475.95ZM878.27 337.49C882.05 335.24 910.46 334.3 916 334.9C917.03 341.61 916.54 348.82 913.29 354.86L870.76 354.86ZM844.82 294.27C853.89 291.18 864.03 288.9 872.2 295.54C864.4 299.93 851.54 301.09 844.82 294.27M815.79 285.66C821.8 282.08 834 281.29 839.25 286.54C831.16 290.13 823.82 288.72 815.79 285.66"/><path class="mv-n p-wires-right" d="M1150.81 386.8L1146.95 376L1173.66 376C1176.13 376 1178.53 376.88 1180.41 378.49L1226.69 418L1472.8 418L1472.8 428.8L1226.54 428.8C1224.07 428.8 1221.67 427.92 1219.79 426.31L1173.51 386.8ZM1120.78 302.8L1116.92 292L1172.58 292L1219.9 253.35A10.4 10.4 0 0 1 1226.48 251L1376.11 251A12.5 12.5 0 0 0 1383.25 261.8L1226.62 261.8L1179.3 300.45A10.4 10.4 0 0 1 1172.72 302.8ZM1162.11 418.4L1158.24 407.6L1170.84 407.6C1173.08 407.6 1175.26 408.32 1177.06 409.66L1225.79 446L1375.4 446A5.4 5.4 0 0 1 1375.4 456.8L1225.66 456.8C1223.42 456.8 1221.24 456.08 1219.44 454.74L1170.71 418.4ZM1109.7 271.8L1105.83 261L1165.66 261L1218.55 220.17A10.4 10.4 0 0 1 1224.91 218L1317.8 218L1317.8 228.8L1225.04 228.8L1172.15 269.63A10.4 10.4 0 0 1 1165.79 271.8ZM1328.6 207.6L1353.2 207.6A3.5 3.5 0 0 1 1356.7 211.1L1356.7 235.7A3.5 3.5 0 0 1 1353.2 239.2L1328.6 239.2A3.5 3.5 0 0 1 1325.1 235.7L1325.1 211.1A3.5 3.5 0 0 1 1328.6 207.6M1393.95 261.8A12.5 12.5 0 0 0 1401.09 251L1472.6 251L1472.6 261.8ZM1538 428.8L1538 418L1573.95 418L1591.58 399.1L1606.34 399.1L1581.44 425.81A9.4 9.4 0 0 1 1574.56 428.8ZM1538 261.8L1538 251L1574.56 251A9.4 9.4 0 0 1 1581.44 253.99L1605.32 279.6L1590.55 279.6L1573.95 261.8ZM1333.1 215.6L1333.1 231.2L1348.7 231.2L1348.7 215.6ZM1484.6 418L1499 418L1499 428.8L1484.6 428.8ZM1511.6 418L1526 418L1526 428.8L1511.6 428.8ZM1538 225.5L1552.4 225.5L1552.4 236.3L1538 236.3ZM1484.6 251L1499 251L1499 261.8L1484.6 261.8ZM1511.6 251L1526 251L1526 261.8L1511.6 261.8Z"/><path class="mv-n p-wires-left" d="M327 237.4L327 226.6L365.12 226.6C378.26 226.6 390.32 233.88 396.45 245.51L406.31 264.26A24.6 24.6 0 0 0 428.08 277.4L482.29 277.4L477.69 288.2L428.08 288.2A35.4 35.4 0 0 1 396.75 269.29L386.89 250.54A24.6 24.6 0 0 0 365.12 237.4ZM327 283.9L327 273.1L346.18 273.1A35.4 35.4 0 0 1 377.5 292.01L380.05 296.86A24.6 24.6 0 0 0 401.82 310L468.4 310L463.8 320.8L401.82 320.8A35.4 35.4 0 0 1 370.5 301.89L367.95 297.04A24.6 24.6 0 0 0 346.18 283.9ZM327 431.7L327 420.9L344.67 420.9A24.6 24.6 0 0 0 366.44 407.76L373.2 394.91A35.4 35.4 0 0 1 404.53 376L440.29 376L435.69 386.8L404.53 386.8A24.6 24.6 0 0 0 382.76 399.94L376 412.79A35.4 35.4 0 0 1 344.67 431.7Z"/><path class="mv-l p-m-right" d="M792.83 267.77C797.79 258.54 830.23 226.77 839.54 217.11C862.53 193.25 898.77 149.6 929.36 138.84C942.11 134.35 955.01 134.47 968.23 134.59Q971.42 134.62 974.64 134.62C987.68 134.62 1024.33 134.89 1034.17 142.74C1026.74 144.86 1019.76 146.24 1013.38 151.15C991.15 168.28 961.67 236.45 949.13 264C944.3 274.62 940.34 288.15 932.89 297.2C926.38 296.21 919.94 291.81 913.67 289.6C900.99 285.11 887.45 281.07 874.24 278.53A641 641 0 0 0 827.64 271.46C816.19 270.12 804.01 270.74 792.83 267.77"/><path class="mv-l p-stage-mem" d="M1492 287L1561.8 287A8 8 0 0 1 1569.8 295L1569.8 334L1577.3 334L1577.3 329.8L1587.8 339.8L1577.3 349.8L1577.3 345.6L1569.8 345.6L1569.8 383.8A8 8 0 0 1 1561.8 391.8L1492 391.8A8 8 0 0 1 1484 383.8L1484 347.16L1491.8 339.8L1484 332.44L1484 295A8 8 0 0 1 1492 287M1536.82 351L1541.19 351L1541.19 340.86L1541.17 339.07L1541.11 336.78L1541.04 334.32L1541.02 333.47L1541.32 334.56L1542 337.03Q1542.34 338.23 1542.65 339.22L1543.16 340.86L1546.79 351L1550.5 351L1554.06 340.86Q1554.28 340.21 1554.58 339.2L1555.22 337Q1555.56 335.81 1555.89 334.53Q1556.06 333.9 1556.2 333.29L1556.18 334.38L1556.12 336.84L1556.06 339.11L1556.04 340.86L1556.04 351L1560.47 351L1560.47 329.5L1553.68 329.5L1550.25 339.37Q1550.03 340.06 1549.75 341.17Q1549.47 342.28 1549.18 343.55Q1548.9 344.78 1548.66 345.94L1548.13 343.53Q1547.84 342.26 1547.56 341.16Q1547.28 340.06 1547.06 339.37L1543.57 329.5L1536.82 329.5ZM1494.33 351L1498.71 351L1498.71 340.86Q1498.71 340.13 1498.68 339.07L1498.63 336.78L1498.56 334.32L1498.54 333.47L1498.84 334.56L1499.52 337.03Q1499.86 338.23 1500.16 339.22L1500.68 340.86L1504.3 351L1508.01 351L1511.58 340.86L1512.1 339.2L1512.74 337Q1513.08 335.81 1513.41 334.53L1513.72 333.29L1513.7 334.38L1513.64 336.84L1513.58 339.11Q1513.55 340.16 1513.55 340.86L1513.55 351L1517.98 351L1517.98 329.5L1511.2 329.5L1507.77 339.37Q1507.55 340.06 1507.27 341.17Q1506.99 342.28 1506.7 343.55Q1506.42 344.78 1506.18 345.94L1505.65 343.53Q1505.36 342.26 1505.08 341.16Q1504.8 340.06 1504.58 339.37L1501.09 329.5L1494.33 329.5ZM1520.37 351L1534.78 351L1534.78 347.35L1524.77 347.35L1524.77 341.94L1533.99 341.94L1533.99 338.35L1524.77 338.35L1524.77 333.15L1534.75 333.15L1534.75 329.5L1520.37 329.5Z"/><path class="mv-l p-stage-id" d="M1308 287L1368.8 287A8 8 0 0 1 1376.8 295L1376.8 334L1383.3 334L1383.3 329.8L1393.8 339.8L1383.3 349.8L1383.3 345.6L1376.8 345.6L1376.8 383.8A8 8 0 0 1 1368.8 391.8L1308 391.8A8 8 0 0 1 1300 383.8L1300 347.16L1307.8 339.8L1300 332.44L1300 295A8 8 0 0 1 1308 287M1340.83 351Q1344.1 351 1346.45 349.71Q1348.8 348.42 1350.06 346.01Q1351.32 343.6 1351.32 340.24Q1351.32 336.88 1350.06 334.49Q1348.81 332.08 1346.48 330.79Q1344.15 329.5 1340.91 329.5L1333.28 329.5L1333.28 351ZM1337.68 347.21L1337.68 333.29L1340.65 333.29Q1342.72 333.29 1344.11 334.03Q1345.5 334.77 1346.22 336.3Q1346.93 337.84 1346.93 340.24Q1346.93 342.65 1346.22 344.19Q1345.52 345.73 1344.11 346.47Q1342.7 347.21 1340.62 347.21ZM1330.88 329.5L1326.48 329.5L1326.48 351L1330.88 351Z"/><path class="mv-l p-tri-1" d="M470.8 674L516.3 608L561.8 674Z"/><path class="mv-l p-tri-2" d="M1517.6 674L1559.3 609L1601 674Z"/><path class="mv-l p-m-road" d="M783.86 427.8C786.84 424.11 820.02 399.53 824.27 397.98C827.93 396.64 881.73 397 886.19 398.26C884.04 402.56 864.45 426.51 860.79 427.99C857.42 429.35 850.31 428.94 844.59 428.61C842.41 428.49 840.44 428.38 838.95 428.38C835.57 428.38 830.81 428.52 825.46 428.69C810.74 429.14 791.52 429.73 783.86 427.8M861.18 364.86L909.03 364.86L894.86 387.96L837.78 387.96ZM874.75 316.24L903.12 312.64C908.23 314.86 913 322.17 913.98 327.64L879.15 327.64ZM863.89 303.95C873.81 298.25 886.71 298.46 895.23 306.29C891.71 309.54 875.46 311.3 870.27 311.27Z"/><path class="mv-l p-arrow-in" d="M1128.79 325.2L1181.5 325.2L1181.5 319L1203.8 339.5L1181.5 360L1181.5 353.8L1139.01 353.8Z"/><path class="mv-l p-wires-left" d="M327 386.8L327 376L342.57 376A24.6 24.6 0 0 0 364.34 362.86L365.1 361.41A35.4 35.4 0 0 1 396.43 342.5L454.56 342.5L449.96 353.3L396.43 353.3A24.6 24.6 0 0 0 374.66 366.44L373.9 367.89A35.4 35.4 0 0 1 342.57 386.8ZM327 325L355 325L355 319L370.8 331L355 343L355 337L327 337Z"/><path class="mv-l p-wires-right" d="M1393.3 250.4A5.4 5.4 0 0 1 1382.5 250.4L1382.5 239.9A14.4 14.4 0 0 1 1396.9 225.5L1472.6 225.5L1472.6 236.3L1396.9 236.3A3.6 3.6 0 0 0 1393.3 239.9ZM1472.6 445.5L1472.6 456.3L1399.2 456.3A10.4 10.4 0 0 1 1388.8 445.9L1388.8 443.4A5.4 5.4 0 0 1 1399.6 443.4L1399.6 445.5ZM1484.6 225.5L1499 225.5L1499 236.3L1484.6 236.3ZM1511.6 225.5L1526 225.5L1526 236.3L1511.6 236.3ZM1484.6 445.5L1499 445.5L1499 456.3L1484.6 456.3ZM1511.6 445.5L1526 445.5L1526 456.3L1511.6 456.3ZM1538 445.5L1552.4 445.5L1552.4 456.3L1538 456.3Z"/><path class="mv-l p-card-3" d="M205.3 376.6L253.6 376.6L253.6 387.6L205.3 387.6A5.5 5.5 0 1 1 205.3 376.6"/><path class="mv-l p-card-0" d="M205.3 226L253.6 226L253.6 237L205.3 237A5.5 5.5 0 1 1 205.3 226"/><path class="mv-l p-card-1" d="M205.3 276.2L253.6 276.2L253.6 287.2L205.3 287.2A5.5 5.5 0 1 1 205.3 276.2"/><path class="mv-l p-card-2" d="M205.3 326.4L253.6 326.4L253.6 337.4L205.3 337.4A5.5 5.5 0 1 1 205.3 326.4"/><path class="mv-l p-card-4" d="M205.3 426.8L253.6 426.8L253.6 437.8L205.3 437.8A5.5 5.5 0 1 1 205.3 426.8"/><path class="mv-l p-stage-arrows" d="M1279.4 334L1291.3 334L1291.3 329.8L1301.8 339.8L1291.3 349.8L1291.3 345.6L1279.4 345.6ZM1464.4 334L1475.3 334L1475.3 329.8L1485.8 339.8L1475.3 349.8L1475.3 345.6L1464.4 345.6Z"/><path class="mv-p p-card-1" d="M253.6 276.2L296.7 276.2A5.5 5.5 0 1 1 296.7 287.2L253.6 287.2Z"/><path class="mv-p p-card-2" d="M253.6 326.4L296.7 326.4A5.5 5.5 0 1 1 296.7 337.4L253.6 337.4Z"/></g></svg></h1>
       <p class="hero-expansion"><b>M</b>icroprocessor <b>A</b>rchitecture <b>V</b>isualizer for <b>I</b>nteractive <b>L</b>earning, <b>E</b>xecution, and <b>R</b>untime <b>A</b>nalysis</p>
-      <p class="descriptor">Interactive Microprocessor Architecture Laboratory</p>
-      <p class="tagline">Visualize. Execute. Understand.</p>
+      <script>
+        // after the intro (tools/logo/hero-logo.mjs HERO_MS, 2.5 s) the logo rests; then a pulse through the pipeline
+        // every 8 s while it is on screen, and one on hover; a click (or Enter or Space on it) plays the intro again
+        // (author, 2026-11-05); nothing moves under reduced motion
+        (() => {
+          const hero = document.getElementById('hero');
+          const svg = hero.querySelector('svg.mvh');
+          const still = matchMedia('(prefers-reduced-motion: reduce)');
+          let timer = 0;
+          const rest = () => hero.classList.remove('mvh-play');
+          if (document.documentElement.classList.contains('mvh-seen') || still.matches) rest(); else timer = setTimeout(rest, 2700);
+          const replay = () => {
+            if (still.matches) return;
+            clearTimeout(timer);
+            document.documentElement.classList.remove('mvh-seen'); // that class only keeps a later visit at rest
+            svg.classList.remove('mvh-beat');
+            rest();
+            svg.getBoundingClientRect(); // the animations restart from their first frame
+            hero.classList.add('mvh-play');
+            timer = setTimeout(rest, 2700);
+          };
+          svg.setAttribute('tabindex', '0');
+          svg.addEventListener('click', replay);
+          svg.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); replay(); } });
+          let visible = true;
+          if ('IntersectionObserver' in window) new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(svg);
+          const beat = () => {
+            if (still.matches || hero.classList.contains('mvh-play')) return;
+            svg.classList.remove('mvh-beat'); svg.getBoundingClientRect(); svg.classList.add('mvh-beat');
+          };
+          setInterval(() => { if (visible && !document.hidden) beat(); }, 8000);
+          svg.addEventListener('pointerenter', beat);
+        })();
+      </script>
       <p class="lead">MAVILERA is an open-source educational platform for exploring microprocessor architecture through
-        interactive simulation, visualization, and instruction execution.</p>
+        interactive simulation, visualization, and instruction execution. It runs entirely in your browser: no account,
+        no installation, and no program or data is uploaded.</p>
       <div class="actions">
-        <a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a>
-        <a class="btn btn-secondary" href="riscv/?tool=npu">Launch NPU Laboratory</a>
-        <a class="btn btn-secondary" href="sap-1/">Launch SAP-1 Laboratory</a>
-        <a class="btn btn-secondary" href="sap-2/">Launch SAP-2 Laboratory</a>
-        <a class="btn btn-secondary" href="armv7/">Launch Armv7 Laboratory</a>
-        <a class="btn btn-secondary" href="gpu/">Launch GPU Laboratory (preview)</a>
-        <a class="btn btn-secondary" href="#architectures">Explore Architectures</a>
+        <a class="btn btn-primary" href="#laboratories">Choose a laboratory</a>
+        <a class="btn btn-secondary" href="#learn">Start learning</a>
       </div>
-      <p class="note">Runs entirely in your browser: no account, no installation, and no program or data is uploaded.</p>
-
-      <figure class="shot">
-        <picture>
-          <source srcset="screens/workspace-dark.jpg" media="(prefers-color-scheme: dark)">
-          <img src="screens/workspace-light.jpg" width="1568" height="737"
-               alt="The MAVILERA RISC-V Laboratory in the instruction-level view: an assembly program in the editor, the listing with addresses and machine words, the instruction inspector, the registers, call stack, counters, memory and console.">
-        </picture>
-        <figcaption>The RISC-V Laboratory, the first MAVILERA module.</figcaption>
-      </figure>
     </div>
 
-    <section id="architectures" aria-labelledby="h-arch">
+    <section id="laboratories" aria-labelledby="h-labs">
       <div class="wrap">
-        <h2 id="h-arch">Architectures</h2>
-        <p class="note" style="margin-bottom:16px">Each architecture is a separate simulator with its own address. Only the available ones can be launched.</p>
-        <div class="grid">
-          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-riscv.svg" alt="" width="1233" height="192"><h3>RISC-V<span class="status ok">Available</span></h3><p>RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths. With the NPU tool: a 4 × 4 systolic-array accelerator on the bus, shown from the system down to one processing element.</p>
-            <p class="path">Address: <code>/mavilera/riscv/</code></p>
-            <div class="actions"><a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a><a class="btn btn-secondary" href="riscv/docs/">Documentation</a></div></article>
-          <article class="card arch available tool"><img class="card-logo" src="brand/mavilera-name-npu.svg" alt="" width="840" height="192"><h3>NPU<span class="status ok">Available</span></h3><p>A 4 × 4 weight-stationary systolic array of INT8 processing elements on the RISC-V processor's bus: the subsystem, the systolic array, one processing element and the system, with each cycle's transfers animated, an RTL-checked cycle model, and an analysis of offload, roofline and Amdahl's law.</p>
-            <p class="path">Address: <code>/mavilera/riscv/?tool=npu</code> (a tool of the RISC-V Laboratory)</p>
-            <div class="actions"><a class="btn btn-primary" href="riscv/?tool=npu">Launch NPU Laboratory</a></div></article>
-          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-sap-1.svg" alt="" width="1096" height="192"><h3>SAP-1<span class="status ok">Available</span></h3><p>The simple-as-possible computer: five instructions, sixteen bytes of memory, an accumulator and an adder-subtracter on one bus, each instruction stepped through its six timing states on a drawing of the bus and its controller.</p>
-            <p class="path">Address: <code>/mavilera/sap-1/</code></p>
-            <div class="actions"><a class="btn btn-primary" href="sap-1/">Launch SAP-1 Laboratory</a><a class="btn btn-secondary" href="sap-1/docs/">Documentation</a></div></article>
-          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-sap-2.svg" alt="" width="1145" height="192"><h3>SAP-2<span class="status ok">Available</span></h3><p>The simple-as-possible computer, version 2: 43 instructions, 64K bytes of memory, a flag pair, CALL and RET, and input and output ports with a keys-and-serial panel; each instruction stepped through its timing states on a drawing of the bus and its controller.</p>
-            <p class="path">Address: <code>/mavilera/sap-2/</code></p>
-            <div class="actions"><a class="btn btn-primary" href="sap-2/">Launch SAP-2 Laboratory</a><a class="btn btn-secondary" href="sap-2/docs/">Documentation</a></div></article>
-          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-armv7.svg" alt="" width="1373" height="192"><h3>Armv7<span class="status ok">Available</span></h3><p>The 32-bit ARM instruction set of Harris and Harris's ARM edition: assembler and instruction-level simulator, and the textbook's single-cycle, multicycle and pipelined processors animated on their datapaths, each with an Extended datapath for the Chapter 7 exercise extensions.</p>
-            <p class="path">Address: <code>/mavilera/armv7/</code></p>
-            <div class="actions"><a class="btn btn-primary" href="armv7/">Launch Armv7 Laboratory</a><a class="btn btn-secondary" href="armv7/docs/">Documentation</a></div></article>
-          <article class="card arch available"><img class="card-logo" src="brand/mavilera-name-gpu.svg" alt="" width="820" height="192"><h3>GPU<span class="status preview">Preview</span></h3><p>A SIMT core: four or eight lanes run one stream of a seven-instruction micro-ISA, with an active mask and a two-deep mask stack for divergent branches; assembler and instruction-level simulator with the lanes' registers. A preview: the core's views come in later releases.</p>
-            <p class="path">Address: <code>/mavilera/gpu/</code></p>
-            <div class="actions"><a class="btn btn-primary" href="gpu/">Launch GPU Laboratory</a></div></article>
-          <article class="card arch planned"><h3>MOS 6502<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
-            <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>
-          <article class="card arch planned"><h3>Intel 8086<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
-            <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>
-          <article class="card arch planned"><h3>MIPS<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
-            <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>
+        <h2 id="h-labs">Laboratories</h2>
+        <p class="section-lead">Each laboratory is a separate simulator. Open one to write a program and watch it run.</p>
+        <div class="labs">
+          <article class="lab"><h3><a class="lab-link" href="riscv/"><img class="lab-logo" src="brand/mavilera-name-riscv.svg" alt="RISC-V Laboratory" width="1233" height="192"></a></h3>
+            <p class="lab-tagline">RV32I with M: an assembler, a C subset, and single-cycle, multicycle and pipelined processors on their datapaths.</p>
+            <p class="lab-meta"><a href="riscv/docs/">Documentation</a><span class="lab-go" aria-hidden="true">Open →</span></p></article>
+          <article class="lab"><h3><a class="lab-link" href="gpu/"><img class="lab-logo" src="brand/mavilera-name-gpu.svg" alt="GPU Laboratory" width="820" height="192"></a></h3>
+            <p class="lab-tagline">A SIMT core: lanes, an active mask and divergent branches, instruction by instruction.</p>
+            <p class="lab-meta"><span class="status preview">Preview</span><span class="lab-go" aria-hidden="true">Open →</span></p></article>
+          <article class="lab"><h3><a class="lab-link" href="riscv/?tool=npu"><img class="lab-logo" src="brand/mavilera-name-npu.svg" alt="NPU Laboratory" width="840" height="192"></a></h3>
+            <p class="lab-tagline">A 4 × 4 systolic array on the RISC-V processor's bus, driven by your program, cycle by cycle.</p>
+            <p class="lab-meta"><span class="status">In RISC-V</span><span class="lab-go" aria-hidden="true">Open →</span></p></article>
+          <article class="lab"><h3><a class="lab-link" href="sap-1/"><img class="lab-logo" src="brand/mavilera-name-sap-1.svg" alt="SAP-1 Laboratory" width="1096" height="192"></a></h3>
+            <p class="lab-tagline">The simple-as-possible computer: five instructions on one bus, each stepped through six timing states.</p>
+            <p class="lab-meta"><a href="sap-1/docs/">Documentation</a><span class="lab-go" aria-hidden="true">Open →</span></p></article>
+          <article class="lab"><h3><a class="lab-link" href="sap-2/"><img class="lab-logo" src="brand/mavilera-name-sap-2.svg" alt="SAP-2 Laboratory" width="1145" height="192"></a></h3>
+            <p class="lab-tagline">Forty-three instructions, input and output ports, CALL and RET, stepped state by state.</p>
+            <p class="lab-meta"><a href="sap-2/docs/">Documentation</a><span class="lab-go" aria-hidden="true">Open →</span></p></article>
+          <article class="lab"><h3><a class="lab-link" href="armv7/"><img class="lab-logo" src="brand/mavilera-name-armv7.svg" alt="Armv7 Laboratory" width="1373" height="192"></a></h3>
+            <p class="lab-tagline">The 32-bit ARM instruction set on single-cycle, multicycle and pipelined processors, with an Extended datapath.</p>
+            <p class="lab-meta"><a href="armv7/docs/">Documentation</a><span class="lab-go" aria-hidden="true">Open →</span></p></article>
         </div>
+        <p class="coming">Coming: Intel 8086 · MIPS · MOS 6502</p>
       </div>
     </section>
 
-    <section id="learning" aria-labelledby="h-learning">
+    <section id="learn" aria-labelledby="h-learn">
       <div class="wrap">
-        <h2 id="h-learning">Learning by observing</h2>
-        <p>These are the activities the laboratories support today.</p>
-        <h3 class="module-head">RISC-V Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>Interactive execution</h3><p>Assemble a program, then step forwards and backwards, run to a breakpoint or a watchpoint, and see each instruction's effect.</p></div>
-          <div class="card"><h3>Datapath observation</h3><p>Single-cycle, multicycle and five-stage pipelined processors, animated signal by signal on their datapath drawings.</p></div>
-          <div class="card"><h3>Processor-state inspection</h3><p>Registers, memory, call stack, counters and the console, updated as the program runs.</p></div>
-          <div class="card"><h3>Control-flow visualization</h3><p>The controller's state diagram, the pipeline diagram, forwarding, stalls, flushes and branch prediction.</p></div>
-          <div class="card"><h3>Experiments with instructions</h3><p>Short teaching programs and practice exercises, each opening in the view that shows its idea; a comparison of one program on the three processors.</p></div>
+        <h2 id="h-learn">Start learning</h2>
+        <p class="section-lead">Choose a topic and take its steps in order. Each step opens a laboratory; where a step names a view,
+          choose that view at the top of the laboratory.</p>
+        <div class="paths">
+          <article class="path"><h3>How a computer works</h3><p>A bus, a few registers and a controller, one clock state at a time.</p>
+            <ol class="steps">
+              <li><a href="sap-1/">SAP-1</a><span class="step-text">Five instructions stepped through their fetch and execute states, with the control word of every state.</span></li>
+              <li><a href="sap-2/">SAP-2</a><span class="step-text">More instructions, input and output ports, and subroutines with CALL and RET.</span></li>
+            </ol></article>
+          <article class="path"><h3>Instruction sets</h3><p>Write assembly, step it forwards and backwards, and watch the registers and memory change.</p>
+            <ol class="steps">
+              <li><a href="riscv/">RISC-V</a> <span class="step-view">· ISA view</span><span class="step-text">RV32I with the M extension: the encoding of every instruction, and a C subset compiled to assembly.</span></li>
+              <li><a href="armv7/">Armv7</a> <span class="step-view">· Instructions view</span><span class="step-text">Conditional execution, the flags N, Z, C and V, and R15 as the program counter.</span></li>
+            </ol></article>
+          <article class="path"><h3>Datapaths and pipelining</h3><p>One program on three processors, animated signal by signal.</p>
+            <ol class="steps">
+              <li><a href="riscv/">RISC-V</a> <span class="step-view">· Single-cycle view</span><span class="step-text">Every instruction in one clock cycle on the datapath drawing.</span></li>
+              <li><a href="riscv/">RISC-V</a> <span class="step-view">· Multicycle view</span><span class="step-text">The controller's state diagram and the cycles each instruction takes.</span></li>
+              <li><a href="riscv/">RISC-V</a> <span class="step-view">· Pipelined view</span><span class="step-text">Five stages with forwarding, stalls, flushes and branch prediction.</span></li>
+              <li><a href="riscv/">RISC-V</a> <span class="step-view">· Compare view</span><span class="step-text">One program run on the three processors and compared.</span></li>
+              <li><a href="armv7/">Armv7</a> <span class="step-view">· Pipelined view</span><span class="step-text">The same ideas on the ARM pipeline: the hazard unit's forwarding, stalls and flushes.</span></li>
+            </ol></article>
+          <article class="path"><h3>Parallel hardware</h3><p>Many processing elements, or many lanes, working on one task.</p>
+            <ol class="steps">
+              <li><a href="riscv/?tool=npu">NPU</a><span class="step-text">A systolic array driven by a RISC-V program: where the cycles go when the work is offloaded.</span></li>
+              <li><a href="gpu/">GPU</a><span class="step-text">Lanes running one instruction stream: the active mask and divergent branches. A preview.</span></li>
+            </ol></article>
         </div>
-        <h3 class="module-head">SAP-1 Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>One bus, six timing states</h3><p>Each instruction stepped clock by clock through its fetch and execute states on a drawing of the bus, the registers and the controller, with the control word of every state.</p></div>
-          <div class="card"><h3>Programming the simple-as-possible computer</h3><p>Five instructions in sixteen bytes of memory: assemble, step forwards and backwards, run to a breakpoint or a watched register, and encode or decode a byte.</p></div>
-          <div class="card"><h3>Waveforms and files</h3><p>The control signals, the bus and the registers as waveforms and VCD; memory images, traces, a dump of the output, and data files loaded into a program.</p></div>
-          <div class="card"><h3>Practice exercises</h3><p>Short tasks with tests that run on your program and show expected against actual values.</p></div>
-        </div>
-        <h3 class="module-head">SAP-2 Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>Instruction by instruction, state by state</h3><p>Forty-three instructions with their timing states, stepped on a drawing of the bus, the registers and the controller, with the microinstruction and the signals of every state.</p></div>
-          <div class="card"><h3>Programming with ports and subroutines</h3><p>Sixty-four kilobytes of memory with a read-only region, two flags, CALL and RET, and input and output ports: assemble, step forwards and backwards, run to a breakpoint, and encode or decode bytes.</p></div>
-          <div class="card"><h3>Keys, serial ports and files</h3><p>A panel of keys and a serial switch that feed the input ports, with the output ports shown as bytes and bits; waveforms, VCD, memory images, traces and a dump of the port writes and memory.</p></div>
-          <div class="card"><h3>Templates and practice exercises</h3><p>Short programs that open in the view that shows their idea, and tasks with tests that run on your program and show expected against actual values.</p></div>
-        </div>
-        <h3 class="module-head">Armv7 Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>Conditional execution and R15</h3><p>The 32-bit ARM instruction set one instruction at a time: every instruction conditional, the flags N, Z, C and V, R15 as the program counter, shifted operands, block transfers and subroutines.</p></div>
-          <div class="card"><h3>Three processors on their datapaths</h3><p>The textbook's single-cycle, multicycle and pipelined processors stepped clock by clock, with the controller's states, the hazard unit's forwarding, stalls and flushes, and what each stage does in every cycle.</p></div>
-          <div class="card"><h3>The Extended datapath and timing</h3><p>A design of the laboratory's own for the instructions of the textbook's Chapter 7 exercises, drawn over each processor; critical paths and clock periods from delays you can edit.</p></div>
-          <div class="card"><h3>Templates and practice exercises</h3><p>Short programs that open in the view that shows their idea, and tasks in three groups, for the base processor, the Extended datapath and the full instruction set, with tests that run on your program.</p></div>
-        </div>
-        <p class="note" style="margin-top:16px">A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.
-          Tested browsers for this release: Chrome 156, Edge 151. Only the browsers listed were tested.</p>
-        <p style="margin-top:12px"><a href="riscv/mavilera-riscv-1.2.0.html" download>Download the single-file offline version of the RISC-V Laboratory (2101 kB)</a> ·
-          <a href="sap-1/mavilera-sap-1-1.2.0.html" download>Download the single-file offline version of the SAP-1 Laboratory (778 kB)</a> ·
-          <a href="sap-2/mavilera-sap-2-1.2.0.html" download>Download the single-file offline version of the SAP-2 Laboratory (823 kB)</a> ·
-          <a href="armv7/mavilera-armv7-1.2.0.html" download>Download the single-file offline version of the Armv7 Laboratory (1538 kB)</a> ·
-          <a href="gpu/mavilera-gpu-1.2.0.html" download>Download the single-file offline version of the GPU Laboratory (668 kB)</a> ·
-          <a href="riscv/web-sim-validation.json">validation record</a></p>
-      </div>
-    </section>
-
-    <section id="about" aria-labelledby="h-about">
-      <div class="wrap">
-        <h2 id="h-about">About</h2>
-        <p>MAVILERA stands for <strong>M</strong>icroprocessor <strong>A</strong>rchitecture <strong>V</strong>isualizer
-          for <strong>I</strong>nteractive <strong>L</strong>earning, <strong>E</strong>xecution, and <strong>R</strong>untime
-          <strong>A</strong>nalysis. It is written by Sajid Muhaimin Choudhury. The simulators are independent of one another:
-          each has its own execution engine, tests and build, and is deployed at its own address. MAVILERA needs no textbook,
-          course or account.</p>
-        <p>MAVILERA is a provisional project name, pending legal clearance.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <p><strong>MAVILERA</strong> · Interactive Microprocessor Architecture Laboratory · release 1.2.0, 2026-11-04: RISC-V Laboratory, SAP-1 Laboratory, SAP-2 Laboratory, Armv7 Laboratory, GPU Laboratory</p>
-      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="riscv/docs/">RISC-V documentation</a> · <a href="https://github.com/sajidbuet/mavilera">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
+      <p><strong>MAVILERA</strong> · release 1.2.0, 2026-11-04 · written by Sajid Muhaimin Choudhury. Each laboratory is an
+        independent simulator with its own execution engine, tests and address; none needs a textbook, course or account.</p>
+      <p>A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.</p>
+      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="docs/">Documentation</a> · <a href="https://github.com/sajidbuet/mavilera">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
       <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
     </div>
   </footer>
