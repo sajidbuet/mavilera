@@ -10,7 +10,8 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLATFORM_ARCHS, switchTargets, homeUrl, archUrl, currentTool, toolViews, NAME_AT } from '../src/shell/platform-archs.js';
-import { withBootScreen, bootSvg } from '../tools/make-boot-screen.mjs';
+import { withBootScreen, withHeroCss, bootSvg } from '../tools/make-boot-screen.mjs';
+import { HERO_MS } from '../tools/logo/hero-logo.mjs';
 import { endBoot, MIN_MS } from '../src/ui/boot.js';
 import { STRINGS } from '../src/ui/strings.js';
 
@@ -118,20 +119,24 @@ test('strings: the switcher\'s labels are British English text in the shell stri
   assert.doesNotMatch(read('src/ui/theme.css'), /home-link/);
 });
 
-test('the loading screen: in the page itself, written from the logo file, with the slow-load line and the no-script rule', () => {
+test('the loading screen: in the page itself, the lockup animated as on the landing page (variant A), with the slow-load line and the no-script rule', () => {
   const index = read('index.html');
-  const logo = read('content/branding/mavilera/mavilera-full.svg');
+  const logo = read('content/branding/mavilera/mavilera-lockup.svg');
   assert.equal(withBootScreen(index, logo), index, 'run node tools/make-boot-screen.mjs');
+  const css = read('src/ui/theme.css');
+  assert.equal(withHeroCss(css), css, 'run node tools/make-boot-screen.mjs (the animation\'s CSS in theme.css)');
   assert.ok(index.indexOf('id="boot"') < index.indexOf('class="app-header"'), 'first in the body');
+  assert.match(index, /<div id="boot" class="boot mvh-play mvh-loop"/, 'it plays from the first paint and pulses until the tool is ready');
   assert.match(index, /<noscript><style>\.boot \{ display: none; \}<\/style><\/noscript>/);
   assert.match(index, /class="boot-slow"/);
   const svg = bootSvg(logo);
-  assert.equal((svg.match(/<path pathLength="1" /g) ?? []).length, 3);
+  for (const part of ['card-0', 'card-4', 'wires-left', 'm-left', 'm-right', 'm-road', 'stage-if', 'stage-wb', 'letter-0', 'letter-7', 'tri-1', 'tri-2']) assert.match(svg, new RegExp(`p-${part}"`), part);
   assert.doesNotMatch(svg, /<title|role=|aria-labelledby/);
   assert.match(svg, /aria-hidden="true"/);
-  const css = read('src/ui/theme.css');
-  assert.match(css, /@keyframes boot-draw/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[^}]*\.boot/s);
+  assert.match(css, /\.boot \{[^}]*--mvh-t: 0\.6;/);
+  assert.match(css, /@keyframes mvh-slide/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.mvh \*/);
+  assert.equal(MIN_MS, Math.ceil(HERO_MS * 0.6 / 50) * 50, 'the screen stays until the shortened intro has played');
   assert.match(read('src/main.js'), /endBoot\(brandReady\)/);
 });
 
@@ -169,6 +174,6 @@ test('endBoot: waits for the minimum and for the tool, then fades and removes; r
     await endBoot(Promise.resolve(), { now: () => 0 });
     assert.deepEqual(calls, ['removed']);
     assert.equal(classes.size, 0);
-    assert.equal(MIN_MS, 1200);
+    assert.equal(MIN_MS, 1550);
   } finally { delete globalThis.document; delete globalThis.matchMedia; }
 });

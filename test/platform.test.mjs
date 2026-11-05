@@ -39,9 +39,26 @@ test('registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-
 
 test('landing page: the required wording, the card slot, no claims for planned modules, no old name', () => {
   const html = read('site/index.html');
-  for (const s of ['Interactive Microprocessor Architecture Laboratory', 'Visualize. Execute. Understand.',
-    'MAVILERA is an open-source educational platform for exploring microprocessor architecture through interactive simulation, visualization, and instruction execution.',
-    'Launch RISC-V Laboratory', 'Explore Architectures', '{{CARDS}}']) assert.ok(html.includes(s), s);
+  // the hero (author, 2026-11-05): the logo, its full form and one introduction; no tagline, no small print
+  const flat = html.slice(html.indexOf('<body')).replace(/\s+/g, ' '); // the visible page (the link preview's text is the head's)
+  assert.ok(flat.includes('MAVILERA is an open-source educational platform for exploring microprocessor architecture through interactive simulation, visualization, and instruction execution. It runs entirely in your browser: no account, no installation, and no program or data is uploaded.'));
+  assert.ok(!flat.includes('Visualize. Execute. Understand.') && !flat.includes('provisional project name') && !/<p class="(descriptor|note)">Runs entirely/.test(flat));
+  // minimal layout (author, 2026-11-05): the tiles in the author's order, every module and tool once; no screenshot,
+  // no row of launch buttons, no tabs; learning paths by topic; one documentation page for every laboratory
+  const reg = JSON.parse(read('site/architectures.json'));
+  assert.deepEqual(reg.landing, ['riscv', 'gpu', 'npu', 'sap-1', 'sap-2', 'armv7', '8086', 'mips', '6502']);
+  assert.deepEqual([...reg.landing].sort(), [...registry.map((a) => a.id), ...reg.tools.map((t) => t.id)].sort());
+  for (const s of ['{{LABS}}', '{{COMING}}', '{{LEARN}}', '{{SITE_CSS}}', '{{HERO_LOGO}}', '{{HERO_CSS}}', 'mvh-play',
+    'href="#laboratories"', 'href="#learn"', 'href="docs/"']) assert.ok(html.includes(s), s);
+  for (const s of ['{{CARDS}}', '{{LAUNCH_OTHERS}}', '{{DOWNLOADS}}', 'screens/workspace', 'lab-panel', 'riscv/docs/']) assert.ok(!html.includes(s), s);
+  // each available module and tool has a tagline for its tile
+  for (const a of [...registry.filter((x) => x.status === 'available'), ...reg.tools]) assert.ok(a.tagline, a.id);
+  // the learning paths by topic: every step opens an available module or a tool
+  const open = new Set([...registry.filter((x) => x.status === 'available').map((a) => a.id), ...reg.tools.map((t) => t.id)]);
+  assert.deepEqual(reg.learn.map((p) => p.title), ['How a computer works', 'Instruction sets', 'Datapaths and pipelining', 'Parallel hardware']);
+  for (const p of reg.learn) for (const s of p.steps) assert.ok(open.has(s.lab) && s.text, `${p.title}: ${s.lab}`);
+  const docs = read('site/docs.html');
+  for (const s of ['{{DOC_CARDS}}', '{{BROWSERS}}', '{{SITE_CSS}}', 'aria-current="page"']) assert.ok(docs.includes(s), s);
   assert.ok(!/RISC-VISTA|riscvista/i.test(html));
   // planned modules are never linked from the page template
   for (const a of registry.filter((x) => x.status !== 'available')) assert.ok(!html.includes(`href="${a.path}"`), a.id);
@@ -49,7 +66,7 @@ test('landing page: the required wording, the card slot, no claims for planned m
 
 test('paths stay relative: no root-absolute asset or link in the pages, the manifest or the service worker source', () => {
   const rootAbsolute = /\b(?:href|src|action)\s*=\s*["']\/(?!\/)/i;
-  for (const f of ['index.html', 'site/index.html', 'content/help/docs/index.html']) assert.doesNotMatch(read(f), rootAbsolute, f);
+  for (const f of ['index.html', 'site/index.html', 'site/docs.html', 'content/help/docs/index.html']) assert.doesNotMatch(read(f), rootAbsolute, f);
   const m = JSON.parse(read('manifest.webmanifest'));
   assert.equal(m.start_url, './');
   assert.equal(m.scope, './');

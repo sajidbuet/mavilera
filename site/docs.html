@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+  site/docs.html -- the MAVILERA documentation page, published at /mavilera/docs/ (author, 2026-11-05): every
+  laboratory's documentation, its single-file offline version, and the release's tested browsers and validation
+  record. tools/release.mjs fills the {{...}} fields from site/architectures.json and the builds; it refuses to build
+  while any field is unfilled. Paths are relative to docs/.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA Documentation</title>
+  <meta name="description" content="Documentation and offline versions of the MAVILERA laboratories.">
+  <meta name="theme-color" content="#0b2a55">
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../brand/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../brand/mavilera-icon.svg">
+  <link rel="apple-touch-icon" href="../brand/apple-touch-icon.png">
+  <style>
+{{SITE_CSS}}
+    .page-head { padding-top: 40px; padding-bottom: 32px; }
+    h1 { font-size: 32px; margin: 0 0 8px; line-height: 1.2; }
+    .docs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 1000px) { .docs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .docs { grid-template-columns: 1fr; } }
+    .doc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .doc h3 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .doc-logo { height: 30px; width: auto; max-width: 100%; }
+    .doc ul { list-style: none; margin: 0; padding: 0; font-size: 15px; }
+    .doc li + li { margin-top: 6px; }
+    .doc .none { color: var(--text-2); }
+    dl.facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+    dl.facts dt { font-weight: 600; }
+    dl.facts dd { margin: 0; }
+    @media (max-width: 600px) { dl.facts { grid-template-columns: 1fr; } dl.facts dd { margin-bottom: 8px; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="../" aria-label="MAVILERA home"><img src="../brand/mavilera-wordmark.svg" alt="" width="1590" height="192"></a>
+      <nav aria-label="Site">
+        <a href="../#laboratories">Laboratories</a>
+        <a href="../#learn">Learn</a>
+        <a href="./" aria-current="page">Documentation</a>
+        <a href="{{REPO_URL}}">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap page-head">
+      <h1>Documentation</h1>
+      <p class="section-lead">The guide of each laboratory, and a single-file version of it that runs offline: save the file and open it
+        in a browser.</p>
+    </div>
+
+    <section id="laboratories" aria-labelledby="h-labs">
+      <div class="wrap">
+        <h2 id="h-labs">Laboratories</h2>
+        <div class="docs">
+{{DOC_CARDS}}
+        </div>
+      </div>
+    </section>
+
+    <section id="release" aria-labelledby="h-release">
+      <div class="wrap">
+        <h2 id="h-release">This release</h2>
+        <dl class="facts">
+          <dt>Release</dt><dd>{{VERSION}}, {{DATE}}</dd>
+          <dt>Laboratories</dt><dd>{{MODULES}}</dd>
+          <dt>Tested browsers</dt><dd>{{BROWSERS}}. Only the browsers listed were tested.</dd>
+          <dt>Validation record</dt><dd><a href="../riscv/web-sim-validation.json">web-sim-validation.json</a></dd>
+          <dt>Source</dt><dd><a href="{{REPO_URL}}">{{REPO_URL}}</a></dd>
+        </dl>
+        <p class="note" style="margin-top:16px">A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="../riscv/LICENSE">Apache License, Version 2.0</a> · <a href="../">MAVILERA home</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
+      <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
+    </div>
+  </footer>
+</body>
+</html>

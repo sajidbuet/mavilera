@@ -1,8 +1,10 @@
 <!doctype html>
 <!--
   site/index.html -- the MAVILERA landing page, published at /mavilera/ (spec W-D25). tools/release.mjs
-  fills the {{...}} fields and builds the architecture cards from site/architectures.json; it refuses to
-  build while any field is unfilled. Paths are relative, so the page works under any base path.
+  fills the {{...}} fields: the laboratories' tiles and the learning paths from site/architectures.json, the
+  shared styles from site/site.css; it refuses to build while any field is unfilled. Paths are relative, so the
+  page works under any base path. Minimal layout (author, 2026-11-05): each laboratory appears once, in one tile;
+  the learning paths by topic; downloads, tested browsers and the validation record on the documentation page.
   Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
   Rights class: code.
 -->
@@ -23,229 +25,156 @@
   <link rel="icon" type="image/svg+xml" href="brand/mavilera-icon.svg">
   <link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
   <style>
-    /* tokens: the values of src/ui/theme.css, light and dark */
-    :root {
-      --primary: #1a4f8b; --primary-hover: #2263a8; --primary-on: #ffffff; --primary-soft: #e6f0fa;
-      --insight: #1f4e79; --amber: #a85a00;
-      --bg: #f2f5fa; --surface: #ffffff; --surface-2: #f7f9fc; --border: #d8e0eb;
-      --text: #0b2a55; --text-2: #5a6b82;
-      --shadow: 0 8px 24px rgba(11, 42, 85, 0.14);
-      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
-      color-scheme: light;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --primary: #5b9bd5; --primary-hover: #74acdf; --primary-on: #071a33; --primary-soft: #132a45;
-        --insight: #8fb4dc; --amber: #e3a453;
-        --bg: #0a1120; --surface: #101a2b; --surface-2: #142034; --border: #24344d;
-        --text: #e3eaf4; --text-2: #94a5bd;
-        --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        color-scheme: dark;
-      }
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
-    a { color: var(--primary); text-underline-offset: 2px; }
-    a:hover { color: var(--primary-hover); }
-    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
-    img { max-width: 100%; height: auto; display: block; }
-    code { font-family: var(--font-code); font-size: 0.92em; }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
-    .skip { position: absolute; left: -9999px; }
-    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
-
-    /* header */
-    .top { border-bottom: 1px solid var(--border); background: var(--surface); }
-    .top .wrap { display: flex; align-items: center; gap: 16px; min-height: 60px; flex-wrap: wrap; }
-    .top .brand img { height: 26px; width: auto; }
-    .top nav { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
-    .top nav a { color: var(--text); text-decoration: none; font-size: 15px; }
-    .top nav a:hover { color: var(--primary); text-decoration: underline; }
-
-    /* buttons */
-    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-weight: 600;
-           text-decoration: none; border: 1px solid transparent; font-size: 16px; }
-    .btn-primary { background: var(--primary); color: var(--primary-on); }
-    .btn-primary:hover { background: var(--primary-hover); color: var(--primary-on); }
-    .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
-    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
-    .top nav a.btn { padding: 7px 14px; font-size: 15px; color: var(--primary-on); text-decoration: none; }
-
+{{SITE_CSS}}
     /* hero */
-    .hero { padding-top: 56px; padding-bottom: 40px; }
-    @media (max-width: 600px) { .top nav a:not(.btn) { display: none; } }
-    .hero h1 { margin: 0; }
-   .tagline { margin: 18px 0 6px; font-size: 20px; font-weight: 600; color: var(--insight); letter-spacing: 0.02em; }
-    .lead { font-size: 18px; max-width: 46em; margin: 0 0 24px; }
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-    .note { color: var(--text-2); font-size: 14px; margin: 0; }
-    .shot { margin: 40px 0 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
-            background: var(--surface); }
-    figcaption { padding: 8px 14px; font-size: 14px; color: var(--text-2); border-top: 1px solid var(--border); }
-
-    /* sections */
-    section { padding: 48px 0; border-top: 1px solid var(--border); }
-    h2 { font-size: 26px; margin: 0 0 20px; line-height: 1.25; }
-    h3 { font-size: 18px; margin: 0 0 6px; }
-.module-head { margin: 20px 0 10px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
-    .card p { margin: 0; color: var(--text); }
-    .card h3::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 10px; border-radius: 2px;
-                       background: var(--primary); vertical-align: 1px; }
-    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-    @media (max-width: 760px) { .two { grid-template-columns: 1fr; } .hero { padding-top: 32px; } }
-    dl.facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
-    dl.facts dt { font-weight: 600; }
-    dl.facts dd { margin: 0; }
-    ul.plain { margin: 0; padding-left: 20px; }
-    ul.plain li + li { margin-top: 4px; }
-
-    .status { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-2); margin-left: 8px; vertical-align: 2px; }
-    .status.ok { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
-    .arch { display: flex; flex-direction: column; gap: 10px; }
-    .arch.planned { background: var(--surface-2); }
-    .arch.planned h3::before { background: var(--text-2); }
-    .arch .actions { margin: 6px 0 0; }
-    .btn-disabled { background: transparent; color: var(--text-2); border: 1px dashed var(--border); cursor: not-allowed; }
-    .path { margin: 0; color: var(--text-2); font-size: 14px; }
+    .hero { padding-top: 48px; padding-bottom: 44px; }
+    @media (max-width: 760px) { .hero { padding-top: 28px; } }
     .hero-logo { margin: 0; }
-    .hero-logo img { width: min(640px, 100%); height: auto; }
+    .hero-logo svg { display: block; width: min(640px, 100%); height: auto; }
+    .lead { font-size: 18px; max-width: 46em; margin: 18px 0 24px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    /* the animated lockup (variant A, approved 2026-11-05; tools/logo/hero-logo.mjs): the intro plays once per visit */
+{{HERO_CSS}}
+    .mvh-seen .mvh-play .mvh path, .mvh-seen .mvh-play .hero-expansion { animation: none !important; }
+    #hero svg.mvh { cursor: pointer; border-radius: 6px; }
+    #hero svg.mvh:focus { outline: none; } /* a click gives it focus: no border then */
+    #hero svg.mvh:focus-visible { outline: 3px solid var(--primary); outline-offset: 6px; } /* reached by the keyboard: a ring */
+    @media (prefers-reduced-motion: reduce) { #hero svg.mvh { cursor: default; } }
     /* the full form of the name, as text after it (author, 2026-11-04): the logo is the lockup without its subtitle */
     .hero-expansion { margin: 10px 0 0; font-size: 18px; font-weight: 600; letter-spacing: 0.01em; color: var(--text-2); max-width: 40em; }
     .hero-expansion b { color: var(--primary); font-weight: 700; }
     @media (max-width: 600px) { .hero-expansion { font-size: 15px; } }
-    /* the header logo: a light sweeps across it on hover or focus; it lifts a little (no movement under reduced motion) */
-    .top .brand { position: relative; display: inline-block; overflow: hidden; border-radius: 4px; }
-    .top .brand img { display: block; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
-    .top .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
-                         background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat;
-                         background-size: 250% 100%; }
-    .top .brand:hover img, .top .brand:focus-visible img { filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25)); }
-    @media (prefers-reduced-motion: no-preference) {
-      .top .brand:hover img, .top .brand:focus-visible img { transform: translateY(-1px); }
-      .top .brand:hover::after, .top .brand:focus-visible::after { animation: mv-shine 0.9s ease-out; }
-    }
-    @keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
-    /* the module logos on the cards (name lockups: chip and name) */
-    .card-logo { display: block; align-self: flex-start; height: 34px; width: auto; max-width: 100%; margin: 0 0 4px; }
-    .status.preview { color: var(--insight); border-color: var(--insight); }
-    .arch.tool { border-left: 4px solid var(--primary); }
-    .descriptor { margin: 10px 0 0; font-size: 22px; color: var(--text); }
-    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
-    footer p { margin: 4px 0; }
+
+    /* laboratories: one tile each, the whole tile opens it; three to a row in the author's order */
+    .labs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 1000px) { .labs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .labs { grid-template-columns: 1fr; } }
+    .lab { position: relative; display: flex; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--border);
+           border-radius: 10px; padding: 18px 20px; transition: border-color 0.15s, box-shadow 0.15s; }
+    .lab:hover, .lab:focus-within { border-color: var(--primary); box-shadow: var(--shadow); }
+    .lab h3 { margin: 0; }
+    .lab-link { display: inline-block; color: var(--text); text-decoration: none; }
+    .lab-link::after { content: ""; position: absolute; inset: 0; border-radius: 10px; } /* the whole tile is the link */
+    .lab-link:focus-visible { outline: none; }
+    .lab:has(.lab-link:focus-visible) { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .lab-logo { height: 34px; width: auto; max-width: 100%; }
+    .lab p { margin: 0; }
+    .lab-tagline { flex: 1; }
+    .lab-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; }
+    .lab-meta a { position: relative; z-index: 1; } /* above the tile's link */
+    .lab-go { margin-left: auto; color: var(--primary); font-weight: 600; }
+    .coming { margin: 16px 0 0; color: var(--text-2); font-size: 15px; }
+
+    /* learning paths by topic (author, 2026-11-05) */
+    .paths { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 760px) { .paths { grid-template-columns: 1fr; } }
+    .path { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+    .path > p { margin: 4px 0 12px; color: var(--text-2); }
+    .steps { list-style: none; counter-reset: step; margin: 0; padding: 0; }
+    .steps li { counter-increment: step; position: relative; padding: 0 0 12px 38px; }
+    .steps li:last-child { padding-bottom: 0; }
+    .steps li::before { content: counter(step); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%;
+                        background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: 14px; text-align: center; line-height: 26px; }
+    .steps li:not(:last-child)::after { content: ""; position: absolute; left: 12px; top: 30px; bottom: 2px; width: 2px; background: var(--border); }
+    .steps a { font-weight: 600; }
+    .step-view { color: var(--text-2); font-weight: 600; }
+    .steps span.step-text { display: block; font-size: 15px; }
   </style>
+  <script>
+    // the hero's intro plays on the first visit of a session; later visits show the logo at rest from the first paint
+    try { if (sessionStorage.getItem('mavilera.hero') === '1') document.documentElement.classList.add('mvh-seen'); else sessionStorage.setItem('mavilera.hero', '1'); } catch (e) { /* no storage: it plays */ }
+  </script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <div class="wrap">
       <a class="brand" href="./" aria-label="MAVILERA home"><img src="brand/mavilera-wordmark.svg" alt="" width="1590" height="192"></a>
-      <nav aria-label="Page">
-        <a href="#architectures">Architectures</a>
-        <a href="#learning">Learning</a>
-        <a href="#about">About</a>
-        <a href="riscv/docs/">RISC-V documentation</a>
+      <nav aria-label="Site">
+        <a href="#laboratories">Laboratories</a>
+        <a href="#learn">Learn</a>
+        <a href="docs/">Documentation</a>
         <a href="{{REPO_URL}}">GitHub</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
-    <div class="wrap hero">
-      <h1 class="hero-logo"><img src="brand/mavilera-lockup.svg" width="1614" height="588" alt="MAVILERA"></h1>
+    <div class="wrap hero mvh-play" id="hero">
+      <h1 class="hero-logo">{{HERO_LOGO}}</h1>
       <p class="hero-expansion"><b>M</b>icroprocessor <b>A</b>rchitecture <b>V</b>isualizer for <b>I</b>nteractive <b>L</b>earning, <b>E</b>xecution, and <b>R</b>untime <b>A</b>nalysis</p>
-      <p class="descriptor">Interactive Microprocessor Architecture Laboratory</p>
-      <p class="tagline">Visualize. Execute. Understand.</p>
+      <script>
+        // after the intro (tools/logo/hero-logo.mjs HERO_MS, 2.5 s) the logo rests; then a pulse through the pipeline
+        // every 8 s while it is on screen, and one on hover; a click (or Enter or Space on it) plays the intro again
+        // (author, 2026-11-05); nothing moves under reduced motion
+        (() => {
+          const hero = document.getElementById('hero');
+          const svg = hero.querySelector('svg.mvh');
+          const still = matchMedia('(prefers-reduced-motion: reduce)');
+          let timer = 0;
+          const rest = () => hero.classList.remove('mvh-play');
+          if (document.documentElement.classList.contains('mvh-seen') || still.matches) rest(); else timer = setTimeout(rest, 2700);
+          const replay = () => {
+            if (still.matches) return;
+            clearTimeout(timer);
+            document.documentElement.classList.remove('mvh-seen'); // that class only keeps a later visit at rest
+            svg.classList.remove('mvh-beat');
+            rest();
+            svg.getBoundingClientRect(); // the animations restart from their first frame
+            hero.classList.add('mvh-play');
+            timer = setTimeout(rest, 2700);
+          };
+          svg.setAttribute('tabindex', '0');
+          svg.addEventListener('click', replay);
+          svg.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); replay(); } });
+          let visible = true;
+          if ('IntersectionObserver' in window) new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(svg);
+          const beat = () => {
+            if (still.matches || hero.classList.contains('mvh-play')) return;
+            svg.classList.remove('mvh-beat'); svg.getBoundingClientRect(); svg.classList.add('mvh-beat');
+          };
+          setInterval(() => { if (visible && !document.hidden) beat(); }, 8000);
+          svg.addEventListener('pointerenter', beat);
+        })();
+      </script>
       <p class="lead">MAVILERA is an open-source educational platform for exploring microprocessor architecture through
-        interactive simulation, visualization, and instruction execution.</p>
+        interactive simulation, visualization, and instruction execution. It runs entirely in your browser: no account,
+        no installation, and no program or data is uploaded.</p>
       <div class="actions">
-        <a class="btn btn-primary" href="riscv/">Launch RISC-V Laboratory</a>
-{{LAUNCH_OTHERS}}
-        <a class="btn btn-secondary" href="#architectures">Explore Architectures</a>
+        <a class="btn btn-primary" href="#laboratories">Choose a laboratory</a>
+        <a class="btn btn-secondary" href="#learn">Start learning</a>
       </div>
-      <p class="note">Runs entirely in your browser: no account, no installation, and no program or data is uploaded.</p>
-
-      <figure class="shot">
-        <picture>
-          <source srcset="screens/workspace-dark.jpg" media="(prefers-color-scheme: dark)">
-          <img src="screens/workspace-light.jpg" width="1568" height="737"
-               alt="The MAVILERA RISC-V Laboratory in the instruction-level view: an assembly program in the editor, the listing with addresses and machine words, the instruction inspector, the registers, call stack, counters, memory and console.">
-        </picture>
-        <figcaption>The RISC-V Laboratory, the first MAVILERA module.</figcaption>
-      </figure>
     </div>
 
-    <section id="architectures" aria-labelledby="h-arch">
+    <section id="laboratories" aria-labelledby="h-labs">
       <div class="wrap">
-        <h2 id="h-arch">Architectures</h2>
-        <p class="note" style="margin-bottom:16px">Each architecture is a separate simulator with its own address. Only the available ones can be launched.</p>
-        <div class="grid">
-{{CARDS}}
+        <h2 id="h-labs">Laboratories</h2>
+        <p class="section-lead">Each laboratory is a separate simulator. Open one to write a program and watch it run.</p>
+        <div class="labs">
+{{LABS}}
         </div>
+{{COMING}}
       </div>
     </section>
 
-    <section id="learning" aria-labelledby="h-learning">
+    <section id="learn" aria-labelledby="h-learn">
       <div class="wrap">
-        <h2 id="h-learning">Learning by observing</h2>
-        <p>These are the activities the laboratories support today.</p>
-        <h3 class="module-head">RISC-V Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>Interactive execution</h3><p>Assemble a program, then step forwards and backwards, run to a breakpoint or a watchpoint, and see each instruction's effect.</p></div>
-          <div class="card"><h3>Datapath observation</h3><p>Single-cycle, multicycle and five-stage pipelined processors, animated signal by signal on their datapath drawings.</p></div>
-          <div class="card"><h3>Processor-state inspection</h3><p>Registers, memory, call stack, counters and the console, updated as the program runs.</p></div>
-          <div class="card"><h3>Control-flow visualization</h3><p>The controller's state diagram, the pipeline diagram, forwarding, stalls, flushes and branch prediction.</p></div>
-          <div class="card"><h3>Experiments with instructions</h3><p>Short teaching programs and practice exercises, each opening in the view that shows its idea; a comparison of one program on the three processors.</p></div>
+        <h2 id="h-learn">Start learning</h2>
+        <p class="section-lead">Choose a topic and take its steps in order. Each step opens a laboratory; where a step names a view,
+          choose that view at the top of the laboratory.</p>
+        <div class="paths">
+{{LEARN}}
         </div>
-        <h3 class="module-head">SAP-1 Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>One bus, six timing states</h3><p>Each instruction stepped clock by clock through its fetch and execute states on a drawing of the bus, the registers and the controller, with the control word of every state.</p></div>
-          <div class="card"><h3>Programming the simple-as-possible computer</h3><p>Five instructions in sixteen bytes of memory: assemble, step forwards and backwards, run to a breakpoint or a watched register, and encode or decode a byte.</p></div>
-          <div class="card"><h3>Waveforms and files</h3><p>The control signals, the bus and the registers as waveforms and VCD; memory images, traces, a dump of the output, and data files loaded into a program.</p></div>
-          <div class="card"><h3>Practice exercises</h3><p>Short tasks with tests that run on your program and show expected against actual values.</p></div>
-        </div>
-        <h3 class="module-head">SAP-2 Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>Instruction by instruction, state by state</h3><p>Forty-three instructions with their timing states, stepped on a drawing of the bus, the registers and the controller, with the microinstruction and the signals of every state.</p></div>
-          <div class="card"><h3>Programming with ports and subroutines</h3><p>Sixty-four kilobytes of memory with a read-only region, two flags, CALL and RET, and input and output ports: assemble, step forwards and backwards, run to a breakpoint, and encode or decode bytes.</p></div>
-          <div class="card"><h3>Keys, serial ports and files</h3><p>A panel of keys and a serial switch that feed the input ports, with the output ports shown as bytes and bits; waveforms, VCD, memory images, traces and a dump of the port writes and memory.</p></div>
-          <div class="card"><h3>Templates and practice exercises</h3><p>Short programs that open in the view that shows their idea, and tasks with tests that run on your program and show expected against actual values.</p></div>
-        </div>
-        <h3 class="module-head">Armv7 Laboratory</h3>
-        <div class="grid">
-          <div class="card"><h3>Conditional execution and R15</h3><p>The 32-bit ARM instruction set one instruction at a time: every instruction conditional, the flags N, Z, C and V, R15 as the program counter, shifted operands, block transfers and subroutines.</p></div>
-          <div class="card"><h3>Three processors on their datapaths</h3><p>The textbook's single-cycle, multicycle and pipelined processors stepped clock by clock, with the controller's states, the hazard unit's forwarding, stalls and flushes, and what each stage does in every cycle.</p></div>
-          <div class="card"><h3>The Extended datapath and timing</h3><p>A design of the laboratory's own for the instructions of the textbook's Chapter 7 exercises, drawn over each processor; critical paths and clock periods from delays you can edit.</p></div>
-          <div class="card"><h3>Templates and practice exercises</h3><p>Short programs that open in the view that shows their idea, and tasks in three groups, for the base processor, the Extended datapath and the full instruction set, with tests that run on your program.</p></div>
-        </div>
-        <p class="note" style="margin-top:16px">A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.
-          Tested browsers for this release: {{BROWSERS}}. Only the browsers listed were tested.</p>
-        <p style="margin-top:12px">{{DOWNLOADS}} ·
-          <a href="riscv/web-sim-validation.json">validation record</a></p>
-      </div>
-    </section>
-
-    <section id="about" aria-labelledby="h-about">
-      <div class="wrap">
-        <h2 id="h-about">About</h2>
-        <p>MAVILERA stands for <strong>M</strong>icroprocessor <strong>A</strong>rchitecture <strong>V</strong>isualizer
-          for <strong>I</strong>nteractive <strong>L</strong>earning, <strong>E</strong>xecution, and <strong>R</strong>untime
-          <strong>A</strong>nalysis. It is written by Sajid Muhaimin Choudhury. The simulators are independent of one another:
-          each has its own execution engine, tests and build, and is deployed at its own address. MAVILERA needs no textbook,
-          course or account.</p>
-        <p>MAVILERA is a provisional project name, pending legal clearance.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <p><strong>MAVILERA</strong> · Interactive Microprocessor Architecture Laboratory · release {{VERSION}}, {{DATE}}: {{MODULES}}</p>
-      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="riscv/docs/">RISC-V documentation</a> · <a href="{{REPO_URL}}">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
+      <p><strong>MAVILERA</strong> · release {{VERSION}}, {{DATE}} · written by Sajid Muhaimin Choudhury. Each laboratory is an
+        independent simulator with its own execution engine, tests and address; none needs a textbook, course or account.</p>
+      <p>A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.</p>
+      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="riscv/LICENSE">Apache License, Version 2.0</a> · <a href="docs/">Documentation</a> · <a href="{{REPO_URL}}">Source repository</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
       <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
     </div>
   </footer>

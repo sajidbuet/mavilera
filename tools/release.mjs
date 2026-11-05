@@ -1,6 +1,7 @@
 // release.mjs -- builds the published site in dist/, which GitHub Pages serves as
 // https://sajidlab.org/mavilera/ (BASE_PATH, default /mavilera/; every path in the output is relative):
-//   index.html                     MAVILERA landing page (site/index.html with the cards of site/architectures.json)
+//   index.html                     MAVILERA landing page (site/index.html with the tiles and learning paths of site/architectures.json)
+//   docs/index.html                the documentation page (site/docs.html): each laboratory's guide and offline version
 //   brand/, favicon.ico, icon.svg  the logo files and icons (content/branding/mavilera/)
 //   screens/                       screenshots of the landing page (site/screens/)
 // and for each module of the registry whose status is `available`, built from src/arch/<id> (W-D29, phase 6;
@@ -30,6 +31,7 @@ import { pathToFileURL } from 'node:url';
 import { ROOT, listFiles, registry, archFiles, archPage, hashFiles, hashOfHashes, sha256 } from './site-files.mjs';
 import { buildOffline } from './offline.mjs';
 import { minify } from './minify.mjs';
+import { heroSvg, heroCss } from './logo/hero-logo.mjs';
 
 const DIST = join(ROOT, 'dist');
 const SIZE_LIMIT = 2097152; // WS-N-004 as raised by W-D38 (draft, 2026-11-04; 1.25 MB by W-D31): 2 MB per application, without examples
@@ -187,53 +189,89 @@ for (const p of listFiles(join(ROOT, 'content/branding/mavilera'))) {
   mkdirSync(dirname(to), { recursive: true });
   cpSync(join(ROOT, p), to);
 }
-// the architecture registry (site/architectures.json) is the source of the cards; a module is linked
-// only when it is available and its build is present, and a planned one must not have a route
+// the architecture registry (site/architectures.json) is the source of the landing page's tiles and learning paths and
+// of the documentation page; a module is linked only when it is available and its build is present, and a planned one
+// must not have a route. Minimal layout (author, 2026-11-05): each laboratory once, as one tile; the planned ones in
+// one line; the learning paths by topic; documentation, offline versions and the release record on docs/.
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-// each card shows its module's name lockup (chip and name) where one exists (author, 2026-11-04); the name stays text
-const logoOf = (id) => (existsSync(join(ROOT, 'content/branding/mavilera', `mavilera-name-${id}.svg`))
-  ? `<img class="card-logo" src="brand/mavilera-name-${id}.svg" alt="" width="${(/viewBox="0 0 (\d+) 192"/.exec(read(`content/branding/mavilera/mavilera-name-${id}.svg`)) ?? [0, 820])[1]}" height="192">` : '');
-// a tool inside a module (the NPU in RISC-V): its card follows its module's and links into it; it is not built on its own
-const tools = JSON.parse(read('site/architectures.json')).tools ?? [];
-const toolCard = (t) => `          <article class="card arch available tool">${logoOf(t.id)}<h3>${esc(t.name)}<span class="status ok">Available</span></h3><p>${esc(t.description)}</p>
-            <p class="path">Address: <code>${BASE}${esc(t.path)}</code> (a tool of the ${esc(registry().find((a) => a.id === t.module)?.name ?? t.module)} Laboratory)</p>
-            <div class="actions"><a class="btn btn-primary" href="${esc(t.path)}">Launch ${esc(t.name)} Laboratory</a></div></article>`;
-const cards = registry().map((a) => {
+const site = JSON.parse(read('site/architectures.json'));
+const tools = site.tools ?? [];
+// a module's name lockup (chip and name) where one exists (author, 2026-11-04); `alt` names the link it stands in
+const logoOf = (id, cls, alt, up = '') => (existsSync(join(ROOT, 'content/branding/mavilera', `mavilera-name-${id}.svg`))
+  ? `<img class="${cls}" src="${up}brand/mavilera-name-${id}.svg" alt="${esc(alt)}" width="${(/viewBox="0 0 (\d+) 192"/.exec(read(`content/branding/mavilera/mavilera-name-${id}.svg`)) ?? [0, 820])[1]}" height="192">` : '');
+// the laboratories that can be opened: the built modules and the tools inside them (the NPU in RISC-V, which links into it)
+const labOf = new Map();
+for (const a of registry()) {
   const built = existsSync(join(DIST, a.path, 'index.html'));
   if (a.status === 'available' && !built) gates.push(`registry: ${a.id} is available but ${a.path}index.html is not built`);
   if (a.status !== 'available' && built) gates.push(`registry: ${a.id} is ${a.status} but its build is present`);
-  const own = tools.filter((t) => t.module === a.id && a.status === 'available').map(toolCard);
-  if (a.status === 'available') {
-    const badge = a.preview ? '<span class="status preview">Preview</span>' : '<span class="status ok">Available</span>';
-    return [`          <article class="card arch available">${logoOf(a.id)}<h3>${esc(a.name)}${badge}</h3><p>${esc(a.description ?? '')}</p>
-            <p class="path">Address: <code>${BASE}${a.path}</code></p>
-            <div class="actions"><a class="btn btn-primary" href="${a.path}">Launch ${esc(a.name)} Laboratory</a>${a.docs ? `<a class="btn btn-secondary" href="${a.docs}">Documentation</a>` : ''}</div></article>`, ...own].join('\n');
-  }
-  return `          <article class="card arch planned"><h3>${esc(a.name)}<span class="status">Planned</span></h3><p class="note">Not yet available.</p>
-            <div class="actions"><span class="btn btn-disabled" aria-disabled="true">Not yet available</span></div></article>`;
-}).join('\n');
-for (const t of tools) if (registry().find((a) => a.id === t.module)?.status !== 'available') gates.push(`registry: the tool ${t.id} lives in ${t.module}, which is not available`);
-// the landing page names every available module (author, 2026-10-29): RISC-V's launch button is the template's own,
-// the others' follow it; one offline download per module; the footer lists the modules of the release
+  if (a.status === 'available') labOf.set(a.id, { ...a, href: a.path, build: builds.find((b) => b.entry.id === a.id) });
+}
+for (const t of tools) {
+  const m = labOf.get(t.module);
+  if (!m) gates.push(`registry: the tool ${t.id} lives in ${t.module}, which is not available`);
+  else labOf.set(t.id, { ...t, href: t.path, within: m.name });
+}
+for (const [id, e] of labOf) if (!e.tagline) gates.push(`registry: ${id} needs a tagline for its landing tile`);
+// the order of the registry's `landing` list (author, 2026-11-05: three to a row): every module and tool once
+const planned = registry().filter((a) => a.status !== 'available');
+const order = site.landing ?? [...labOf.keys(), ...planned.map((a) => a.id)];
+const named = [...labOf.keys(), ...planned.map((a) => a.id)];
+const unordered = named.filter((id) => !order.includes(id));
+const unknown = order.filter((id) => !named.includes(id));
+if (unordered.length || unknown.length || new Set(order).size !== order.length) {
+  gates.push(`registry: the landing order must name every module and tool once (missing: ${unordered.join(', ') || 'none'}; unknown: ${unknown.join(', ') || 'none'})`);
+}
+const labIds = [...order.filter((id) => labOf.has(id)), ...unordered.filter((id) => labOf.has(id))];
+const labName = (e) => `${e.name} Laboratory`;
+const tagsOf = (e) => `${e.preview ? '<span class="status preview">Preview</span>' : ''}${e.within ? `<span class="status">In ${esc(e.within)}</span>` : ''}`;
+const tile = (e) => `          <article class="lab"><h3><a class="lab-link" href="${esc(e.href)}">${logoOf(e.id, 'lab-logo', labName(e)) || esc(labName(e))}</a></h3>
+            <p class="lab-tagline">${esc(e.tagline ?? '')}</p>
+            <p class="lab-meta">${tagsOf(e)}${e.docs ? `<a href="${e.docs}">Documentation</a>` : ''}<span class="lab-go" aria-hidden="true">Open →</span></p></article>`;
+const plannedNames = order.map((id) => planned.find((a) => a.id === id)).filter(Boolean).map((a) => esc(a.name));
+// the learning paths by topic (author, 2026-11-05): each step opens a laboratory and names the view to choose there
+const learn = (site.learn ?? []).map((p) => `          <article class="path"><h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p>
+            <ol class="steps">
+${p.steps.map((s) => {
+    const e = labOf.get(s.lab);
+    if (!e) { gates.push(`learn: "${p.title}" opens ${s.lab}, which is not available`); return ''; }
+    return `              <li><a href="${esc(e.href)}">${esc(e.name)}</a>${s.view ? ` <span class="step-view">· ${esc(s.view)} view</span>` : ''}<span class="step-text">${esc(s.text)}</span></li>`;
+  }).filter(Boolean).join('\n')}
+            </ol></article>`).join('\n');
+if (!site.learn?.length) gates.push('learn: the registry names no learning path');
+// the documentation page: each laboratory's guide (or that it has none yet) and its single-file offline version
+const kB = (b) => Math.round(Buffer.byteLength(b.offline.html) / 1024);
+const docCard = (e) => `          <article class="doc"><h3>${logoOf(e.id, 'doc-logo', labName(e), '../') || esc(labName(e))}${tagsOf(e)}</h3>
+            <ul>
+              <li>${e.docs ? `<a href="../${e.docs}">Documentation</a>` : '<span class="none">Documentation: not yet available</span>'}</li>
+              <li><a href="../${esc(e.href)}">Open the laboratory</a></li>
+              <li>${e.build ? `<a href="../${e.path}${e.build.offlineFile}" download>Offline version</a> (${kB(e.build)} kB)` : '<span class="none">No separate offline version</span>'}</li>
+            </ul></article>`;
 const unfilled = '[not built]';
-const lab = (b) => `${esc(b.entry.name)} Laboratory`;
 const fields = {
+  SITE_CSS: read('site/site.css'),
   VERSION: version,
-  CARDS: cards,
   SITE_URL,
   REPO_URL,
   DATE: conf.date ?? unfilled,
   BROWSERS: browsers.length ? browsers.join(', ') : unfilled,
-  LAUNCH_OTHERS: [...tools.map((t) => `        <a class="btn btn-secondary" href="${esc(t.path)}">Launch ${esc(t.name)} Laboratory</a>`),
-    ...builds.filter((b) => b.entry.id !== 'riscv').map((b) => `        <a class="btn btn-secondary" href="${b.entry.path}">Launch ${lab(b)}${b.entry.preview ? ' (preview)' : ''}</a>`)].join('\n'),
-  DOWNLOADS: builds.map((b) => `<a href="${b.entry.path}${b.offlineFile}" download>Download the single-file offline version of the ${lab(b)} `
-    + `(${Math.round(Buffer.byteLength(b.offline.html) / 1024)} kB)</a>`).join(' ·\n          '),
-  MODULES: builds.map((b) => lab(b)).join(', '),
+  // the hero's animated lockup (variant A, approved 2026-11-05): the same parts and CSS as the tools' loading screen
+  HERO_LOGO: heroSvg(read('content/branding/mavilera/mavilera-lockup.svg'), { label: 'MAVILERA' }),
+  HERO_CSS: heroCss(),
+  LABS: labIds.map((id) => tile(labOf.get(id))).join('\n'),
+  COMING: plannedNames.length ? `        <p class="coming">Coming: ${plannedNames.join(' · ')}</p>` : '',
+  LEARN: learn,
+  DOC_CARDS: labIds.map((id) => docCard(labOf.get(id))).join('\n'),
+  MODULES: builds.map((b) => esc(labName(b.entry))).join(', '),
 };
-const landing = read('site/index.html').replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => fields[k] ?? m);
-const left = landing.match(/\{\{[A-Z_]+\}\}/g);
-if (left) gates.push(`landing page fields unfilled: ${[...new Set(left)].join(' ')}`);
-put('index.html', landing);
+const fill = (template, out) => {
+  const page = read(template).replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => fields[k] ?? m);
+  const left = page.match(/\{\{[A-Z_]+\}\}/g);
+  if (left) gates.push(`${template}: fields unfilled: ${[...new Set(left)].join(' ')}`);
+  put(out, page);
+};
+fill('site/index.html', 'index.html');
+fill('site/docs.html', 'docs/index.html');
 // the icons at the site root, for the documentation (and browsers that ask for /favicon.ico there)
 cpSync(join(ROOT, 'content/branding/mavilera/favicon.ico'), join(DIST, 'favicon.ico'));
 cpSync(join(ROOT, 'content/branding/mavilera/mavilera-icon.svg'), join(DIST, 'icon.svg'));

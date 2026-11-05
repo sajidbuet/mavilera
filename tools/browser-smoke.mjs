@@ -501,7 +501,7 @@ async function checks(b, base) {
   if (release) await check('release site: the landing page and the documentation load and pass the axe-core scan in both themes (WS-U-034)', async () => {
     const out = [];
     for (const colorScheme of ['light', 'dark']) {
-      for (const page of ['../', 'docs/']) {
+      for (const page of ['../', '../docs/', 'docs/']) { // the landing page, the documentation page, RISC-V's guide
         const s = await b.newPage({ colorScheme });
         await s.goto(new URL(page, base).href);
         await s.eval(axe);

@@ -1,10 +1,11 @@
-// boot.js -- the loading screen of index.html (#boot: the full MAVILERA logo, animated by theme.css) is taken away once the
-// tool is ready, and not before MIN_MS have passed since the page began to load, so that the animation completes
-// (docs/architecture/arch-switcher.md, AS-6). With reduced motion there is no animation and no minimum.
+// boot.js -- the loading screen of index.html (#boot: the MAVILERA lockup, animated by theme.css as on the landing page) is
+// taken away once the tool is ready, and not before MIN_MS have passed since the page began to load, so that the animation
+// completes (docs/architecture/arch-switcher.md, AS-6). With reduced motion there is no animation and no minimum.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-export const MIN_MS = 1200;
+/** The intro at 0.6 of its time (theme.css .boot --mvh-t; tools/logo/hero-logo.mjs HERO_MS 2510 ms), with a little margin. */
+export const MIN_MS = 1550;
 const FADE_MS = 250;
 
 /** Wait until `ready` has settled and the minimum has passed, then fade the screen out and remove it. */

@@ -5,6 +5,7 @@
       "id": "riscv",
       "name": "RISC-V",
       "description": "RV32I with the M extension: assembler, C-subset compiler, and single-cycle, multicycle and five-stage pipelined processors animated on their datapaths. With the NPU tool: a 4 × 4 systolic-array accelerator on the bus, shown from the system down to one processing element.",
+      "tagline": "RV32I with M: an assembler, a C subset, and single-cycle, multicycle and pipelined processors on their datapaths.",
       "path": "riscv/",
       "status": "available",
       "docs": "riscv/docs/",
@@ -14,6 +15,7 @@
       "id": "sap-1",
       "name": "SAP-1",
       "description": "The simple-as-possible computer: five instructions, sixteen bytes of memory, an accumulator and an adder-subtracter on one bus, each instruction stepped through its six timing states on a drawing of the bus and its controller.",
+      "tagline": "The simple-as-possible computer: five instructions on one bus, each stepped through six timing states.",
       "path": "sap-1/",
       "status": "available",
       "docs": "sap-1/docs/",
@@ -23,6 +25,7 @@
       "id": "sap-2",
       "name": "SAP-2",
       "description": "The simple-as-possible computer, version 2: 43 instructions, 64K bytes of memory, a flag pair, CALL and RET, and input and output ports with a keys-and-serial panel; each instruction stepped through its timing states on a drawing of the bus and its controller.",
+      "tagline": "Forty-three instructions, input and output ports, CALL and RET, stepped state by state.",
       "path": "sap-2/",
       "status": "available",
       "docs": "sap-2/docs/",
@@ -32,6 +35,7 @@
       "id": "armv7",
       "name": "Armv7",
       "description": "The 32-bit ARM instruction set of Harris and Harris's ARM edition: assembler and instruction-level simulator, and the textbook's single-cycle, multicycle and pipelined processors animated on their datapaths, each with an Extended datapath for the Chapter 7 exercise extensions.",
+      "tagline": "The 32-bit ARM instruction set on single-cycle, multicycle and pipelined processors, with an Extended datapath.",
       "path": "armv7/",
       "status": "available",
       "docs": "armv7/docs/",
@@ -41,6 +45,7 @@
       "id": "gpu",
       "name": "GPU",
       "description": "A SIMT core: four or eight lanes run one stream of a seven-instruction micro-ISA, with an active mask and a two-deep mask stack for divergent branches; assembler and instruction-level simulator with the lanes' registers. A preview: the core's views come in later releases.",
+      "tagline": "A SIMT core: lanes, an active mask and divergent branches, instruction by instruction.",
       "path": "gpu/",
       "status": "available",
       "preview": true,
@@ -50,6 +55,8 @@
     { "id": "8086", "name": "Intel 8086", "path": "8086/", "status": "planned" },
     { "id": "mips", "name": "MIPS", "path": "mips/", "status": "planned" }
   ],
+  "_landing": "The order of the landing page's cards, three to a row (author, 2026-11-05): every module and tool once.",
+  "landing": ["riscv", "gpu", "npu", "sap-1", "sap-2", "armv7", "8086", "mips", "6502"],
   "_tools": "Tools inside a module (src/shell/platform-archs.js): a card after their module's, linking into it; not built on their own.",
   "tools": [
     {
@@ -57,8 +64,47 @@
       "name": "NPU",
       "module": "riscv",
       "description": "A 4 × 4 weight-stationary systolic array of INT8 processing elements on the RISC-V processor's bus: the subsystem, the systolic array, one processing element and the system, with each cycle's transfers animated, an RTL-checked cycle model, and an analysis of offload, roofline and Amdahl's law.",
+      "tagline": "A 4 × 4 systolic array on the RISC-V processor's bus, driven by your program, cycle by cycle.",
       "path": "riscv/?tool=npu",
       "since": "1.2.0"
+    }
+  ],
+  "_learn": "The landing page's learning paths by topic (author, 2026-11-05): each step opens a laboratory or tool (`lab`, an id of `architectures` or `tools`) and names the view to choose there (`view`, as the application labels it). tools/release.mjs refuses a step whose laboratory is not available.",
+  "learn": [
+    {
+      "title": "How a computer works",
+      "summary": "A bus, a few registers and a controller, one clock state at a time.",
+      "steps": [
+        { "lab": "sap-1", "text": "Five instructions stepped through their fetch and execute states, with the control word of every state." },
+        { "lab": "sap-2", "text": "More instructions, input and output ports, and subroutines with CALL and RET." }
+      ]
+    },
+    {
+      "title": "Instruction sets",
+      "summary": "Write assembly, step it forwards and backwards, and watch the registers and memory change.",
+      "steps": [
+        { "lab": "riscv", "view": "ISA", "text": "RV32I with the M extension: the encoding of every instruction, and a C subset compiled to assembly." },
+        { "lab": "armv7", "view": "Instructions", "text": "Conditional execution, the flags N, Z, C and V, and R15 as the program counter." }
+      ]
+    },
+    {
+      "title": "Datapaths and pipelining",
+      "summary": "One program on three processors, animated signal by signal.",
+      "steps": [
+        { "lab": "riscv", "view": "Single-cycle", "text": "Every instruction in one clock cycle on the datapath drawing." },
+        { "lab": "riscv", "view": "Multicycle", "text": "The controller's state diagram and the cycles each instruction takes." },
+        { "lab": "riscv", "view": "Pipelined", "text": "Five stages with forwarding, stalls, flushes and branch prediction." },
+        { "lab": "riscv", "view": "Compare", "text": "One program run on the three processors and compared." },
+        { "lab": "armv7", "view": "Pipelined", "text": "The same ideas on the ARM pipeline: the hazard unit's forwarding, stalls and flushes." }
+      ]
+    },
+    {
+      "title": "Parallel hardware",
+      "summary": "Many processing elements, or many lanes, working on one task.",
+      "steps": [
+        { "lab": "npu", "text": "A systolic array driven by a RISC-V program: where the cycles go when the work is offloaded." },
+        { "lab": "gpu", "text": "Lanes running one instruction stream: the active mask and divergent branches. A preview." }
+      ]
     }
   ]
 }
