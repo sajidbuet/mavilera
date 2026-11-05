@@ -1,0 +1,193 @@
+<!doctype html>
+<!--
+  site/download.html -- the MAVILERA download page, published at /mavilera/download/ (author, 2026-11-05): the
+  release's two archives, which are attached to its GitHub release and not hosted on the site
+  (tools/release-zips.mjs), and each laboratory's single-file version. tools/release.mjs fills the {{...}} fields;
+  it refuses to build while any field is unfilled. Paths are relative to download/.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Download MAVILERA</title>
+  <meta name="description" content="Download the MAVILERA laboratories to run them on your own computer, offline.">
+  <meta name="theme-color" content="#0b2a55">
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../brand/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../brand/mavilera-icon.svg">
+  <link rel="apple-touch-icon" href="../brand/apple-touch-icon.png">
+  <style>
+/*
+  site/site.css -- the styles the MAVILERA landing page (site/index.html) and the documentation page (site/docs.html)
+  share: tokens, header, buttons and footer. tools/release.mjs writes it into each page's <style> (the SITE_CSS field).
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: code.
+*/
+/* tokens: the values of src/ui/theme.css, light and dark */
+:root {
+  --primary: #1a4f8b; --primary-hover: #2263a8; --primary-on: #ffffff; --primary-soft: #e6f0fa;
+  --insight: #1f4e79; --amber: #a85a00;
+  --bg: #f2f5fa; --surface: #ffffff; --surface-2: #f7f9fc; --border: #d8e0eb;
+  --text: #0b2a55; --text-2: #5a6b82;
+  --shadow: 0 8px 24px rgba(11, 42, 85, 0.14);
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #5b9bd5; --primary-hover: #74acdf; --primary-on: #071a33; --primary-soft: #132a45;
+    --insight: #8fb4dc; --amber: #e3a453;
+    --bg: #0a1120; --surface: #101a2b; --surface-2: #142034; --border: #24344d;
+    --text: #e3eaf4; --text-2: #94a5bd;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+a { color: var(--primary); text-underline-offset: 2px; }
+a:hover { color: var(--primary-hover); }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+img { max-width: 100%; height: auto; display: block; }
+code { font-family: var(--font-code); font-size: 0.92em; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+.note { color: var(--text-2); font-size: 14px; margin: 0; }
+
+/* header: the logo and four links, on phones too (they wrap under the logo) */
+.top { border-bottom: 1px solid var(--border); background: var(--surface); }
+.top .wrap { display: flex; align-items: center; gap: 8px 16px; min-height: 60px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.top .brand img { height: 26px; width: auto; }
+.top nav { margin-left: auto; display: flex; gap: 4px 18px; flex-wrap: wrap; align-items: center; }
+.top nav a { color: var(--text); text-decoration: none; font-size: 15px; padding: 4px 0; }
+.top nav a:hover { color: var(--primary); text-decoration: underline; }
+.top nav a[aria-current="page"] { color: var(--primary); font-weight: 600; }
+@media (max-width: 600px) { .top nav { margin-left: 0; width: 100%; gap: 4px 16px; } .top nav a { font-size: 14px; } }
+/* the header logo: a light sweeps across it on hover or focus; it lifts a little (no movement under reduced motion) */
+.top .brand { position: relative; display: inline-block; overflow: hidden; border-radius: 4px; }
+.top .brand img { display: block; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
+.top .brand::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+                     background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.6) 50%, transparent 62%) no-repeat;
+                     background-size: 250% 100%; }
+.top .brand:hover img, .top .brand:focus-visible img { filter: drop-shadow(0 2px 3px rgb(11 42 85 / 0.25)); }
+@media (prefers-reduced-motion: no-preference) {
+  .top .brand:hover img, .top .brand:focus-visible img { transform: translateY(-1px); }
+  .top .brand:hover::after, .top .brand:focus-visible::after { animation: mv-shine 0.9s ease-out; }
+}
+@keyframes mv-shine { 0% { opacity: 1; background-position: 140% 0; } 100% { opacity: 1; background-position: -40% 0; } }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-weight: 600;
+       text-decoration: none; border: 1px solid transparent; font-size: 16px; }
+.btn-primary { background: var(--primary); color: var(--primary-on); }
+.btn-primary:hover { background: var(--primary-hover); color: var(--primary-on); }
+.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+/* sections and the status tags */
+section { padding: 48px 0; border-top: 1px solid var(--border); }
+h2 { font-size: 26px; margin: 0 0 8px; line-height: 1.25; }
+h3 { font-size: 18px; margin: 0; line-height: 1.3; }
+.section-lead { color: var(--text-2); margin: 0 0 24px; max-width: 46em; }
+.status { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 8px;
+          border-radius: 99px; border: 1px solid var(--border); color: var(--text-2); white-space: nowrap; }
+.status.preview { color: var(--insight); border-color: var(--insight); }
+
+footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
+footer p { margin: 4px 0; }
+
+    .page-head { padding-top: 40px; padding-bottom: 32px; }
+    h1 { font-size: 32px; margin: 0 0 8px; line-height: 1.2; }
+    .options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 760px) { .options { grid-template-columns: 1fr; } }
+    .option { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+    .option p { margin: 0; }
+    .option ol { margin: 0; padding-left: 22px; }
+    .option ol li + li { margin-top: 4px; }
+    .option .btn { align-self: flex-start; margin-top: auto; }
+    pre { margin: 0; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; }
+    .more { margin: 20px 0 0; }
+    ul.files { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px 24px; }
+    ul.files li { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="../" aria-label="MAVILERA home"><img src="../brand/mavilera-wordmark.svg" alt="" width="1590" height="192"></a>
+      <nav aria-label="Site">
+        <a href="../#laboratories">Laboratories</a>
+        <a href="../#learn">Learn</a>
+        <a href="../docs/">Documentation</a>
+        <a href="./" aria-current="page">Download</a>
+        <a href="https://github.com/sajidbuet/mavilera">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap page-head">
+      <h1>Download</h1>
+      <p class="section-lead">Run MAVILERA on your own computer, without a network connection. Nothing to install and no
+        account: the laboratories run in your web browser, as they do here.</p>
+    </div>
+
+    <section id="release" aria-labelledby="h-release">
+      <div class="wrap">
+        <h2 id="h-release">Release 1.2.0</h2>
+        <p class="section-lead">2026-11-04. The archives are attached to the <a href="https://github.com/sajidbuet/mavilera/releases/tag/v1.2.0">release on GitHub</a>.</p>
+        <div class="options">
+          <article class="option">
+            <h3>The laboratories, offline</h3>
+            <p>Every laboratory as one HTML file, with a start page.</p>
+            <ol>
+              <li>Download and unzip the archive.</li>
+              <li>Open <code>index.html</code> in a web browser.</li>
+              <li>Choose a laboratory.</li>
+            </ol>
+            <a class="btn btn-primary" href="https://github.com/sajidbuet/mavilera/releases/download/v1.2.0/mavilera-1.2.0-offline.zip">Download mavilera-1.2.0-offline.zip</a>
+          </article>
+          <article class="option">
+            <h3>The complete site</h3>
+            <p>The laboratories, their documentation and these pages. Browsers do not load the site's program modules from
+              files opened directly, so it needs a local web server, for example Python's:</p>
+            <pre><code>python -m http.server 8000</code></pre>
+            <p>Run it in the unzipped folder, then open <code>http://localhost:8000/</code>.</p>
+            <a class="btn btn-secondary" href="https://github.com/sajidbuet/mavilera/releases/download/v1.2.0/mavilera-1.2.0-site.zip">Download mavilera-1.2.0-site.zip</a>
+          </article>
+        </div>
+        <p class="more"><a href="https://github.com/sajidbuet/mavilera/releases">All releases</a> · <a href="https://github.com/sajidbuet/mavilera">Source code</a> ·
+          Tested browsers: Chrome 156, Edge 151.</p>
+      </div>
+    </section>
+
+    <section id="single-files" aria-labelledby="h-single">
+      <div class="wrap">
+        <h2 id="h-single">One laboratory</h2>
+        <p class="section-lead">Each laboratory's single file, from this site. Save it and open it in a web browser.</p>
+        <ul class="files">
+          <li><a href="../riscv/mavilera-riscv-1.2.0.html" download>RISC-V Laboratory</a> (2103 kB)</li>
+          <li><a href="../sap-1/mavilera-sap-1-1.2.0.html" download>SAP-1 Laboratory</a> (781 kB)</li>
+          <li><a href="../sap-2/mavilera-sap-2-1.2.0.html" download>SAP-2 Laboratory</a> (826 kB)</li>
+          <li><a href="../armv7/mavilera-armv7-1.2.0.html" download>Armv7 Laboratory</a> (1540 kB)</li>
+          <li><a href="../gpu/mavilera-gpu-1.2.0.html" download>GPU Laboratory</a> (671 kB)</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>A simulation is a teaching model; it is not evidence of how a hardware implementation behaves.</p>
+      <p>© 2026 Sajid Muhaimin Choudhury · Licensed under the <a href="../riscv/LICENSE">Apache License, Version 2.0</a> · <a href="../">MAVILERA home</a> · <a href="https://sajidlab.org/">sajidlab.org</a></p>
+      <p>The names and the logo are not licensed as trademarks. RISC-V, Arm, Intel, MOS, MIPS and other architecture names belong to their owners; they identify architectures only. MAVILERA is independent of those organisations and is not endorsed by them.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-05T04:49:50.934Z",
+ "date": "2026-11-05T06:19:44.681Z",
  "version": "1.2.0",
  "pass": true,
  "summary": {
-  "checks": 1179,
-  "passed": 1179,
+  "checks": 1181,
+  "passed": 1181,
   "failed": 0,
   "skipped": 0,
-  "seconds": 1238,
+  "seconds": 1327,
   "smoke": "pass"
  },
  "environment": {
@@ -22,8 +22,8 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "b6b47d33b7c3b99ec47b7ad6afafd5a9718d6fd0",
-  "uncommitted": 1,
+  "commit": "f28849d96df0751c44477a641bbef1b0651f7a17",
+  "uncommitted": 0,
   "sources": {
    "sha256": "3cf3a51677f217e408b71067c3798d02649a4e906364649d89a7df2df09129d1",
    "files": {
@@ -390,7 +390,7 @@
    }
   },
   "corpus": {
-   "sha256": "c1943500329184982161913fd3f63d60a48dce36322266ebb79130d199b2e0cd",
+   "sha256": "dbf0005417d016f8a046e09641c298ecc68b026a6f62edbdabc869a4aed08683",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
     "test/arch-contract.test.mjs": "13f524e678a203b5caeef29e006b1c406b49e2865c2601ba6b0a0c6d8b0b575a",
@@ -497,7 +497,7 @@
     "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
     "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
     "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
-    "test/platform.test.mjs": "0dd8b3e84b4033a7eb8b2a49a91c97d1d65df99abdabdfabd000b3b61a9bb750",
+    "test/platform.test.mjs": "88cb540fcea57c68e9b569404c52638a1b83873f7acb996b8c431eb57fe28ee0",
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
@@ -531,11 +531,12 @@
     "test/view-mode.test.mjs": "71efd4ef3157af058ce6068eb7a964f1fbdaab173293d82ebd539d4390cdeebe",
     "test/wire-colours.test.mjs": "ab8c01ea4d3a9bb40e8c800203ba4b19b80354411b0bc6bfabbf1251d959e673",
     "test/workspaces.test.mjs": "59903c7db8c97d4c83e9d4963a8d4750e2165e73467a6f559690d56c8d8baa40",
+    "test/zip.test.mjs": "0a6206256fdb0685cd376c12e48f07c15f65695c7920a0a2521a289f776ff2f5",
     "(not published: tests that need the private book repository or hold exercise solutions)": "45 files, sha256 5e3dba2ff95ea4279387ea983b0eedd437d84871ccb33024b2bf27fb4976d53c"
    }
   },
   "tools": {
-   "sha256": "e7b57ae8fb53bd7bb0568a44438747b4732adaaa57df89b109c32dcdbb038815",
+   "sha256": "2d5f55590d64ff68833bf397919b1a09724eb69b74d0d8298a6221d15e212564",
    "files": {
     "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
     "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
@@ -556,7 +557,7 @@
     "tools/armv7/preview-single.html": "8d3505b1ba2fb3f496149166e6dd61de8d8a1943f03b50805d3b4f431d2f61de",
     "tools/armv7/preview-single.mjs": "ee92e3577f35afd87e8af647a71064cb9dd06b41402c780f8da5d67428d330dc",
     "tools/armv7/single-smoke.mjs": "5b25e4c9a04ecc83d6e56d8123042bf0a12ade6f4709bc82f544704f8eadafb1",
-    "tools/browser-smoke.mjs": "d5c40dba1531d010598274992c7645d5044d0845f1a0068f5c550985dbf1e192",
+    "tools/browser-smoke.mjs": "3365c0e61005313b6fb9f8016d0272d3fa9cf7619c614b73c509b835b8848f0c",
     "tools/browser.mjs": "bdfb9016c4e657546371a233980d41ba41264f99b1f3add9bdfcbc664175018d",
     "tools/dock-smoke.mjs": "284e1d6da94633addcb394f5c46dae2420f8a861887b675ef96a7b537c914bb7",
     "tools/header-smoke.mjs": "edd8f6d526fb18a78accd98589c041175fa3b17753c09e61a59304648ba6d6cd",
@@ -586,12 +587,14 @@
     "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
     "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
-    "tools/release.mjs": "97e44840a08b08d54a130745afd77893117b1ba2d316fd2a765af2c5b56ac958",
+    "tools/release-zips.mjs": "1561fe8cd612e9f505acdb881d0fc3046a3b6c229e4be328e08357b3a576f78e",
+    "tools/release.mjs": "c1073137739a635449f6da4a2fbeb9d5c9e6acde5b3f7ed30485209d318b5d1f",
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
     "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
     "tools/site-files.mjs": "96838dcdde03af9accfe0361c5328596f5614da8ca80d3b015e0ebf123134ea9",
     "tools/view-mode-smoke.mjs": "90f72bc0e92b337ea622d7f82a7f67f1a338892e228ed617571e84aac10377d3",
+    "tools/zip.mjs": "ead8c71f183e52385ce4dd42a4b921731a435bcb19b6c6d84ce3e4fec4dc09d4",
     "(not published: scripts that read the private book repository, and the publication scripts)": "16 files, sha256 6de41b6619a410916365b3c5b240ea0067080c4b2a5c32919b3eeee4ba3eaabd"
    }
   }
@@ -638,7 +641,7 @@
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1185,\"pass\":1185,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1205,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1187,\"pass\":1187,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1205,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -6529,6 +6532,16 @@
   {
    "file": "test/workspaces.test.mjs",
    "name": "the status and unread strings read well",
+   "ok": true
+  },
+  {
+   "file": "test/zip.test.mjs",
+   "name": "zip: names that leave the archive folder are refused",
+   "ok": true
+  },
+  {
+   "file": "test/zip.test.mjs",
+   "name": "zip: read back, the same names and bytes; text deflated, random bytes stored; deterministic",
    "ok": true
   }
  ],
