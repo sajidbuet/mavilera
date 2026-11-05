@@ -2,6 +2,8 @@
 // https://sajidlab.org/mavilera/ (BASE_PATH, default /mavilera/; every path in the output is relative):
 //   index.html                     MAVILERA landing page (site/index.html with the tiles and learning paths of site/architectures.json)
 //   docs/index.html                the documentation page (site/docs.html): each laboratory's guide and offline version
+//   download/index.html            the download page (site/download.html): links to the archives of the GitHub release
+//                                  v<version> (tools/release-zips.mjs makes them) and the single files
 //   brand/, favicon.ico, icon.svg  the logo files and icons (content/branding/mavilera/)
 //   screens/                       screenshots of the landing page (site/screens/)
 // and for each module of the registry whose status is `available`, built from src/arch/<id> (W-D29, phase 6;
@@ -263,6 +265,13 @@ const fields = {
   LEARN: learn,
   DOC_CARDS: labIds.map((id) => docCard(labOf.get(id))).join('\n'),
   MODULES: builds.map((b) => esc(labName(b.entry))).join(', '),
+  // the download page (author, 2026-11-05): the archives of tools/release-zips.mjs live on the GitHub release v<version>,
+  // not on the site; the single files are the site's own
+  RELEASES_URL: `${REPO_URL}/releases`,
+  RELEASE_URL: `${REPO_URL}/releases/tag/v${version}`,
+  ZIP_OFFLINE: `${REPO_URL}/releases/download/v${version}/mavilera-${version}-offline.zip`,
+  ZIP_SITE: `${REPO_URL}/releases/download/v${version}/mavilera-${version}-site.zip`,
+  SINGLE_FILES: builds.map((b) => `          <li><a href="../${b.entry.path}${b.offlineFile}" download>${esc(labName(b.entry))}</a> (${kB(b)} kB)</li>`).join('\n'),
 };
 const fill = (template, out) => {
   const page = read(template).replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => fields[k] ?? m);
@@ -272,6 +281,7 @@ const fill = (template, out) => {
 };
 fill('site/index.html', 'index.html');
 fill('site/docs.html', 'docs/index.html');
+fill('site/download.html', 'download/index.html');
 // the icons at the site root, for the documentation (and browsers that ask for /favicon.ico there)
 cpSync(join(ROOT, 'content/branding/mavilera/favicon.ico'), join(DIST, 'favicon.ico'));
 cpSync(join(ROOT, 'content/branding/mavilera/mavilera-icon.svg'), join(DIST, 'icon.svg'));

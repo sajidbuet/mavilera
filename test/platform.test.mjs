@@ -58,7 +58,15 @@ test('landing page: the required wording, the card slot, no claims for planned m
   assert.deepEqual(reg.learn.map((p) => p.title), ['How a computer works', 'Instruction sets', 'Datapaths and pipelining', 'Parallel hardware']);
   for (const p of reg.learn) for (const s of p.steps) assert.ok(open.has(s.lab) && s.text, `${p.title}: ${s.lab}`);
   const docs = read('site/docs.html');
-  for (const s of ['{{DOC_CARDS}}', '{{BROWSERS}}', '{{SITE_CSS}}', 'aria-current="page"']) assert.ok(docs.includes(s), s);
+  for (const s of ['{{DOC_CARDS}}', '{{BROWSERS}}', '{{SITE_CSS}}', 'aria-current="page"', 'href="../download/"']) assert.ok(docs.includes(s), s);
+  // the download page (author, 2026-11-05): the archives from the GitHub release, never hosted on the site; the single files
+  const dl = read('site/download.html');
+  for (const s of ['{{ZIP_OFFLINE}}', '{{ZIP_SITE}}', '{{RELEASE_URL}}', '{{SINGLE_FILES}}', '{{SITE_CSS}}', 'aria-current="page"']) assert.ok(dl.includes(s), s);
+  assert.ok(!/href="[^"]*\.zip"/.test(dl), 'no archive on the site');
+  assert.ok(html.includes('href="download/"'));
+  const rel = read('tools/release.mjs');
+  assert.match(rel, /ZIP_OFFLINE: `\$\{REPO_URL\}\/releases\/download\/v\$\{version\}\/mavilera-\$\{version\}-offline\.zip`/);
+  assert.match(read('tools/release-zips.mjs'), /mavilera-\$\{VERSION\}-offline/);
   assert.ok(!/RISC-VISTA|riscvista/i.test(html));
   // planned modules are never linked from the page template
   for (const a of registry.filter((x) => x.status !== 'available')) assert.ok(!html.includes(`href="${a.path}"`), a.id);
@@ -66,7 +74,7 @@ test('landing page: the required wording, the card slot, no claims for planned m
 
 test('paths stay relative: no root-absolute asset or link in the pages, the manifest or the service worker source', () => {
   const rootAbsolute = /\b(?:href|src|action)\s*=\s*["']\/(?!\/)/i;
-  for (const f of ['index.html', 'site/index.html', 'site/docs.html', 'content/help/docs/index.html']) assert.doesNotMatch(read(f), rootAbsolute, f);
+  for (const f of ['index.html', 'site/index.html', 'site/docs.html', 'site/download.html', 'content/help/docs/index.html']) assert.doesNotMatch(read(f), rootAbsolute, f);
   const m = JSON.parse(read('manifest.webmanifest'));
   assert.equal(m.start_url, './');
   assert.equal(m.scope, './');
