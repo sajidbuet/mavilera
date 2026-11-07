@@ -1,0 +1,96 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap 8086-B8), not taken from a textbook; produced by tools/i8086/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "i8086",
+ "title": "Print a packed BCD byte",
+ "task": "The byte at value holds two decimal digits in packed BCD (00H to 99H: the high four bits are the tens). Print them on the console as two characters, tens first, with OUT 0E9H, AL, then HLT. Keep the label value and its DB line.",
+ "lang": "asm",
+ "starter": "; print-bcd -- practice exercise (MAVILERA, 8086)\n; Print the two BCD digits of value on the console (OUT 0E9H, AL).\n; Hint: SHR AL, CL with CL = 4 for the tens; AND AL, 0FH for the units; ADD AL, '0'.\n        HLT                     ; replace with your code\n\nvalue   DB   0                  ; the tests write the packed BCD byte here\n",
+ "tests": [
+  {
+   "name": "42H",
+   "memory": [
+    {
+     "at": "value",
+     "bytes": [
+      66
+     ]
+    }
+   ],
+   "expect": {
+    "output": "42"
+   }
+  },
+  {
+   "name": "07H",
+   "memory": [
+    {
+     "at": "value",
+     "bytes": [
+      7
+     ]
+    }
+   ],
+   "expect": {
+    "output": "07"
+   }
+  },
+  {
+   "name": "99H",
+   "memory": [
+    {
+     "at": "value",
+     "bytes": [
+      153
+     ]
+    }
+   ],
+   "expect": {
+    "output": "99"
+   }
+  },
+  {
+   "name": "00H",
+   "memory": [
+    {
+     "at": "value",
+     "bytes": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "output": "00"
+   }
+  },
+  {
+   "name": "50H",
+   "memory": [
+    {
+     "at": "value",
+     "bytes": [
+      80
+     ]
+    }
+   ],
+   "expect": {
+    "output": "50"
+   }
+  },
+  {
+   "name": "86H",
+   "memory": [
+    {
+     "at": "value",
+     "bytes": [
+      134
+     ]
+    }
+   ],
+   "expect": {
+    "output": "86"
+   }
+  }
+ ]
+}

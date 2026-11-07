@@ -9,7 +9,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ARCHITECTURES } from '../src/arch/registry.js';
-import { validateDescriptor, capability, CAPABILITIES, STOP, ENGINE_HOOKS, STEP_OVER_HOOKS, withVariant } from '../src/arch/contract.js';
+import { validateDescriptor, capability, CAPABILITIES, STOP, ENGINE_HOOKS, STEP_OVER_HOOKS, withVariant, CONTRACT_VERSION } from '../src/arch/contract.js';
 
 const MODULES = { ...ARCHITECTURES, acc4: () => import('./fixtures/arch/acc4/index.js') };
 const BUDGET = 1_000_000;
@@ -216,7 +216,7 @@ test('the validator reports a malformed descriptor', () => {
   const bad = validateDescriptor({ contract: 1, id: 'X', name: '', strings: {}, capabilities: { teleport: true },
     language: { describe: 1 }, registers: { groups: [], pc: 'pc', roles: { sp: 'x2' } }, addressSpace: {},
     engine: { profiles: [{ id: 'p', memory: 'flat' }] }, views: [{ id: 'dp', kind: 'datapath', profile: 'q', settings: { key: 'dp', defaults: { a: 'z' }, values: { a: ['y'] } } }] });
-  for (const want of ['contract 1, expected 9','id "X"', 'name', 'capability teleport is not in CAPABILITIES', 'language.assemble and language.disassemble',
+  for (const want of [`contract 1, expected ${CONTRACT_VERSION}`, 'id "X"', 'name', 'capability teleport is not in CAPABILITIES', 'language.assemble and language.disassemble',
     'language.describe is a function', 'registers.groups', 'registers.roles.sp x2 is no register', 'profile p: memory flat',
     'engine.create', 'views: the first is of kind isa', 'view dp: profile q is not in engine.profiles',
     'view dp: setting a: default among values']) assert.ok(bad.includes(want), `${want} in ${bad.join('; ')}`);

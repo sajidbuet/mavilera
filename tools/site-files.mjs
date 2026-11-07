@@ -36,7 +36,8 @@ export function shippedFiles(root = ROOT) {
 
 /** Shipped files that a release leaves out: the optional JALR state, which is the answer of an
  *  exercise (spec W-D20), and the site documentation, published beside the application. */
-export const RELEASE_EXCLUDE = (p) => p === 'content/data/ch07-jalr.json' || /^content\/(?:[\w-]+\/)?help\/docs\//.test(p);
+export const RELEASE_EXCLUDE = (p) => p === 'content/data/ch07-jalr.json' || /^content\/(?:[\w-]+\/)?help\/docs\//.test(p)
+  || p.startsWith('src/arch/pico2/'); // the pico2 module: registered for the development page only (?arch=pico2, P1-M1); no release carries it until it is released and given its site/architectures.json entry (research ADR-0008); remove this line then
 
 /**
  * Modules one architecture's build takes from another's folder, by decision (W-D29 allows no other sharing):
@@ -56,7 +57,8 @@ export const SHARED = Object.freeze({
  *  scripts that read the private book repository, the tests that need it or hold exercise solutions,
  *  the verification script and the publication scripts. The validation record lists them as one group. */
 export const PRIVATE_ONLY = (p) => /^tools\/[\w.-]+\.py$/.test(p) || p === 'tools/gpu/model_batch.py' || /^tools\/(verify|export-public|make-brand-proposals)\.mjs$/.test(p)
-  || p.startsWith('test/fixtures/exercise-solutions/') || /^test\/(rtl|rtl-multi|rtl-pipe|rtl-npu|conformance|priv-conformance|practice-exercises|sap[12]-exercises|armv7-exercises|gpu-exercises)\.test\.mjs$/.test(p);
+  || p === 'tools/i8086/crosscheck.mjs' // runs z8086 outside the repository (8086-B8 review §3)
+  || p.startsWith('test/fixtures/exercise-solutions/') || /^test\/(rtl|rtl-multi|rtl-pipe|rtl-npu|conformance|priv-conformance|practice-exercises|sap[12]-exercises|armv7-exercises|gpu-exercises|i8086-exercises)\.test\.mjs$/.test(p);
 
 /** The application files of a release. */
 export const releaseFiles = (root = ROOT) => shippedFiles(root).filter((p) => !RELEASE_EXCLUDE(p));

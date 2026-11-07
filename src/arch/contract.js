@@ -12,8 +12,10 @@
 // `content.logo`, §19) approved on 2026-10-29; version 7 (`ViewInstance.diagrams`, pan and zoom, §20) approved on
 // 2026-10-29; version 8 (inputs between steps and the architecture's panels, for SAP-2's ports, §25) approved on
 // 2026-10-30; version 9 (profile variants with their own language, registers and address space, for the GPU's two
-// instruction sets, §26) approved on 2026-11-04. A change raises
-// CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
+// instruction sets, §26) approved on 2026-11-04; version 10 (a paced real-time Worker, an audio sink, an optional
+// SharedArrayBuffer transport and `.wasm` assets, for the `pico2` module, §27) DRAFTED 2026-11-06, the four extensions
+// approved in principle by the author on 2026-11-05 (ADR-0008 in the research repository), the field shapes awaiting
+// approval. A change raises CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
 //
 // Decisions of 2026-10-28 that the shell implements on this contract:
 // - the fields inspector uses Language.fields(); without it the inspector is disabled with a reason;
@@ -24,7 +26,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-export const CONTRACT_VERSION = 9;
+export const CONTRACT_VERSION = 10;
 
 /**
  * The output an engine keeps (author, 2026-10-29): when its output passes twice this many characters, the oldest are
@@ -80,7 +82,12 @@ export const CAPABILITIES = Object.freeze([
   'exportGolden', // golden-dump export (WS-F-124)
   'exportImage', // .hex and .bin export
   'worker', // long runs in a Worker (the engine's snapshot is structured-clonable)
+  'realtime', // v10: a paced real-time run in a Worker with devices present (needs Descriptor.realtime, Engine.advance)
+  'audio', // v10: audio output through an AudioWorklet (needs Descriptor.audio, Engine.drainAudio)
 ]);
+
+/** v10. The transports a real-time run may use between the Worker and the page; the shell picks 'sab' only when the page is crossOriginIsolated. */
+export const REALTIME_TRANSPORTS = Object.freeze(['postMessage', 'sab']);
 
 /** The kinds of view the shell can host; the view draws itself inside the pane the shell gives it. */
 export const VIEW_KINDS = Object.freeze(['isa', 'datapath', 'bus', 'compare']);
@@ -111,6 +118,16 @@ export const VIEW_KINDS = Object.freeze(['isa', 'datapath', 'bus', 'compare']);
  *           (withVariant) and reloads the page to change it (§26); `legacy` (at most one): the variant that holds the
  *           module's profiles of before v9, to which the shell moves the program and workspace stored then, once
  * @property {string | null} [activeVariant]  v9: set by withVariant on the merged descriptor (null: the descriptor's own)
+ * @property {{floorHz: number, transports?: string[]}} [realtime]  v10 (capability realtime): the real-time run. `floorHz`:
+ *           the guaranteed floor of simulated instructions or cycles per second in real-time mode (ADR-0005: 1e6); the
+ *           shell's Worker paces the engine by calling Engine.advance and reports the achieved rate. `transports`: from
+ *           REALTIME_TRANSPORTS, in order of preference (default ['postMessage']); the shell uses 'sab' only when the
+ *           page is crossOriginIsolated and falls back to postMessage otherwise
+ * @property {{sampleRate: number, channels?: number, processor: string}} [audio]  v10 (capability audio): the audio sink.
+ *           `sampleRate` in Hz of the frames Engine.drainAudio returns; `channels` (default 1); `processor`: the
+ *           AudioWorklet module, a path relative to the application, loaded by the shell on the first run
+ * @property {{wasm?: string[]}} [assets]  v10: files other than JavaScript, CSS and JSON that the module loads; `wasm`:
+ *           WebAssembly modules, relative paths ending '.wasm'. They count in the module's 2 MB budget (WS-N-004)
  */
 
 /**
@@ -346,7 +363,14 @@ export async function withVariant(d, variant) {
  *           architecture by id, calls engine.create(program, options) and restore(snapshot), runs, and returns
  *           snapshot(); the page restores it
  * @property {(snapshot: object) => void} restore
- * @property {() => number} [callDepth]       v2 (capability stepOver needs the three call hooks)
+ * @property {(budget: {cycles: number}) => {cycles: number, stop: string}} [advance]  v10 (capability realtime): run for
+ *           about `budget.cycles` of the architecture's clock without recording step-back history, and return the cycles
+ *           actually run and a STOP value (CHUNK: the budget is used up). Device events due within the slice happen
+ *           in order. Inputs given with Engine.input between slices carry the cycle they arrive at (deterministic replay)
+ * @property {(maxFrames: number) => {frames: Float32Array[], atCycle: number} | null} [drainAudio]  v10 (capability audio):
+ *           the audio frames produced since the last call, one array per channel, at Descriptor.audio.sampleRate (at
+ *           most `maxFrames`), with the cycle of the first frame; null if none
+ * @property {() => number} [callDepth]      v2 (capability stepOver needs the three call hooks)
  * @property {() => number | null} [stepOverTarget]  v2: the address after a call at the PC, or null
  * @property {() => number | null} [stepOutTarget]   v2: the return address of the innermost call, or null
  * @property {() => {from: number, to: number} | null} [loopRange]  v2: addresses of the last instructions before
@@ -436,8 +460,9 @@ export async function withVariant(d, variant) {
  *           third element is called when the tab is shown. The shell adds the waveform, listing and memory tabs after them
  * @property {string} [memoryTab]             v4: the name of the tab that opens the shared memory panel
  * @property {() => void} [reset]             v4 (default: load the same program again)
- * @property {{defaults: string[], format?: (signal: string, value: number) => string | null}} [waveform]  v4
- *           (capability waveform, with exportModel)
+ * @property {{defaults: string[], format?: (signal: string, value: number) => string | null, base?: number}} [waveform]  v4
+ *           (capability waveform, with exportModel); `base` (optional, default 0; added 2026-11-06 for the 8086, no version
+ *           change): the number the panel shows for the first frame
  * @property {() => string} [revision]        v4: changes when a setting of the view changes its model
  * @property {Element} [headerTools]
  * @property {SVGSVGElement[]} [diagrams]    v7: the drawings the shell pans and zooms, fixed for the instance's life.
@@ -484,7 +509,7 @@ const EXPORT_HOOKS = ['trace', 'traceJsonLines', 'traceCsv', 'golden', 'image'];
 /** The ViewInstance fields every view gives (v4). */
 export const VIEW_REQUIRED = Object.freeze(['root', 'title', 'infoTitle', 'tabs', 'load', 'step', 'back', 'state', 'render']);
 export const ENGINE_HOOKS = Object.freeze(['callDepth', 'stepOverTarget', 'stepOutTarget', 'loopRange', 'diagnostics', 'counters',
-  'callStack', 'dataAccess', 'platform', 'input', 'inputs']);
+  'callStack', 'dataAccess', 'platform', 'input', 'inputs', 'advance', 'drainAudio']);
 /** The engine hooks capability stepOver needs. */
 export const STEP_OVER_HOOKS = Object.freeze(['callDepth', 'stepOverTarget', 'stepOutTarget']);
 
@@ -576,6 +601,33 @@ export function validateDescriptor(d) {
     }
     need(Object.values(d.variants ?? {}).filter((v) => v?.legacy).length <= 1, 'variants: at most one is legacy');
     need((d.engine?.profiles ?? []).some((p) => p.variant === undefined), 'variants: the descriptor\'s own variant has no profile');
+  }
+  { // v10: realtime, audio, assets
+    const relative = (p) => typeof p === 'string' && p !== '' && !p.startsWith('/') && !p.includes('..') && !p.includes('\\') && !/^[a-z][a-z0-9+.-]*:/i.test(p);
+    if (d.realtime !== undefined) {
+      need(d.realtime && typeof d.realtime === 'object', 'realtime: an object');
+      need(Number.isFinite(d.realtime?.floorHz) && d.realtime.floorHz > 0, 'realtime.floorHz: a positive number');
+      const t = d.realtime?.transports;
+      if (t !== undefined) need(Array.isArray(t) && t.length > 0 && t.every((x) => REALTIME_TRANSPORTS.includes(x)) && new Set(t).size === t.length,
+        `realtime.transports: a non-empty list without repeats from ${REALTIME_TRANSPORTS.join(', ')}`);
+    }
+    need((d.capabilities?.realtime === true) === (d.realtime !== undefined), 'capability realtime true needs Descriptor.realtime, and the reverse');
+    if (d.audio !== undefined) {
+      const a = d.audio;
+      need(a && typeof a === 'object', 'audio: an object');
+      need(Number.isInteger(a?.sampleRate) && a.sampleRate >= 8000 && a.sampleRate <= 192000, 'audio.sampleRate: an integer from 8000 to 192000');
+      if (a?.channels !== undefined) need(Number.isInteger(a.channels) && a.channels >= 1 && a.channels <= 2, 'audio.channels: 1 or 2');
+      need(relative(a?.processor) && a.processor.endsWith('.js'), 'audio.processor: a relative path ending .js');
+    }
+    need((d.capabilities?.audio === true) === (d.audio !== undefined), 'capability audio true needs Descriptor.audio, and the reverse');
+    if (d.assets !== undefined) {
+      need(d.assets && typeof d.assets === 'object' && !Array.isArray(d.assets), 'assets: an object');
+      const w = d.assets?.wasm;
+      if (w !== undefined) need(Array.isArray(w) && w.every((p) => relative(p) && p.endsWith('.wasm')) && new Set(w).size === w.length,
+        'assets.wasm: relative paths ending .wasm, without repeats');
+      const extra = Object.keys(d.assets ?? {}).filter((k) => k !== 'wasm');
+      need(!extra.length, `assets.${extra.join(', assets.')} is not in the contract`);
+    }
   }
   const active = d.activeVariant ?? null;
   const profiles = new Set();

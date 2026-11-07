@@ -51,6 +51,7 @@ test('the switcher lists the available modules, in the registry order, then the 
     PLATFORM_ARCHS.filter((a) => registry.find((r) => r.id === a.id)?.status === 'planned').map((a) => a.id));
   assert.equal(registry.find((r) => r.id === 'gpu').status, 'available');
   assert.equal(registry.find((r) => r.id === 'armv7').status, 'available');
+  assert.equal(registry.find((r) => r.id === 'i8086').status, 'available', 'the 8086 from 1.4.0 (publication gate met, author 2026-11-07)');
   // the NPU is a tool of the RISC-V module (decision G2), on a view that module has (NPU-3, 2026-11-04)
   const npu = PLATFORM_ARCHS.find((a) => a.id === 'npu');
   assert.equal(npu.module, 'riscv');
@@ -82,12 +83,12 @@ test('the targets leave out the current tool and keep the order; the NPU opens t
   assert.deepEqual(switchTargets('armv7', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2', 'i8086', 'npu', 'gpu']);
   assert.deepEqual(switchTargets('npu', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu']);
   assert.deepEqual(switchTargets('gpu', dev).map((t) => t.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'npu']);
-  // a release page and the offline file offer the same tools, without the 8086 beta (development page only)
+  // a release page and the offline file offer the same tools (the 8086 available from 1.4.0)
   const rel = { protocol: 'https:', href: 'https://sajidlab.org/mavilera/riscv/', release: true };
-  assert.deepEqual(switchTargets('riscv', rel).map((t) => t.id), ['sap-1', 'sap-2', 'armv7', 'npu', 'gpu']);
+  assert.deepEqual(switchTargets('riscv', rel).map((t) => t.id), ['sap-1', 'sap-2', 'armv7', 'i8086', 'npu', 'gpu']);
   assert.equal(switchTargets('riscv', rel).find((t) => t.id === 'npu').url, 'https://sajidlab.org/mavilera/riscv/?tool=npu');
   const file = { protocol: 'file:', href: 'file:///x.html', release: true };
-  assert.deepEqual(switchTargets('sap-1', file).map((t) => t.id), ['riscv', 'sap-2', 'armv7', 'npu', 'gpu']);
+  assert.deepEqual(switchTargets('sap-1', file).map((t) => t.id), ['riscv', 'sap-2', 'armv7', 'i8086', 'npu', 'gpu']);
   assert.equal(switchTargets('sap-1', file).find((t) => t.id === 'npu').url, 'https://sajidlab.org/mavilera/riscv/?tool=npu');
   assert.ok(switchTargets('riscv', dev).every((t) => Object.keys(t).join() === 'id,name,logo,url'));
 });

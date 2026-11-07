@@ -21,7 +21,7 @@ registered trademark (see [`TRADEMARKS.md`](TRADEMARKS.md)).
 | **Armv7 Laboratory** | available (from 1.1.0) | `https://sajidlab.org/mavilera/armv7/` |
 | **NPU** (a tool of the RISC-V Laboratory) | available (from 1.2.0) | `https://sajidlab.org/mavilera/riscv/?tool=npu` |
 | **GPU Laboratory** | available (from 1.3.0; a preview in 1.2.0) | `https://sajidlab.org/mavilera/gpu/` |
-| Intel 8086 | beta, not published | — |
+| **8086 Laboratory** | available (from 1.4.0) | `https://sajidlab.org/mavilera/i8086/` |
 | MOS 6502, MIPS | planned, not built | — |
 
 The landing page is `https://sajidlab.org/mavilera/`. Each simulator is

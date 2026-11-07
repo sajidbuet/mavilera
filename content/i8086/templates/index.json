@@ -3,7 +3,8 @@
   "groups": {
     "isa": "Instructions and flags",
     "memory": "Memory, segments and the stack",
-    "control": "Subroutines and interrupts"
+    "control": "Subroutines and interrupts",
+    "biu": "The bus interface unit and the queue"
   },
   "templates": [
     { "id": "sum-table", "file": "sum-table.asm", "group": "isa", "view": "isa", "lang": "asm", "title": "Add the words of a table" },
@@ -11,6 +12,9 @@
     { "id": "strings", "file": "strings.asm", "group": "memory", "view": "isa", "lang": "asm", "title": "Copy and compare strings with REP" },
     { "id": "segments", "file": "segments.asm", "group": "memory", "view": "isa", "lang": "asm", "title": "Segments and physical addresses" },
     { "id": "decimal", "file": "decimal.asm", "group": "control", "view": "isa", "lang": "asm", "title": "Print a number in decimal" },
-    { "id": "interrupts", "file": "interrupts.asm", "group": "control", "view": "isa", "lang": "asm", "title": "Install interrupt handlers" }
+    { "id": "interrupts", "file": "interrupts.asm", "group": "control", "view": "isa", "lang": "asm", "title": "Install interrupt handlers" },
+    { "id": "interrupt-inputs", "file": "interrupt-inputs.asm", "group": "control", "view": "isa", "lang": "asm", "title": "NMI and INTR from the Interrupts panel" },
+    { "id": "single-step", "file": "single-step.asm", "group": "control", "view": "isa", "lang": "asm", "title": "The trap flag: single-step" },
+    { "id": "overlap", "file": "overlap.asm", "group": "biu", "view": "biu-eu", "lang": "asm", "title": "Fetch while executing: the queue at work" }
   ]
 }

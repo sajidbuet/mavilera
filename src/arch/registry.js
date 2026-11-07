@@ -11,4 +11,5 @@ export const ARCHITECTURES = Object.freeze({
   armv7: () => import('./armv7/index.js'),
   i8086: () => import('./i8086/index.js'),
   gpu: () => import('./gpu/index.js'),
+  pico2: () => import('./pico2/index.js'),
 });

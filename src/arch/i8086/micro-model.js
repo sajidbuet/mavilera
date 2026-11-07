@@ -3,7 +3,13 @@
 // microops.js (runMicro, [EDU], approved B3) on a copy of the state; the state after every step is rebuilt from the
 // step records (`replay`), and the instruction's result is committed when its `end` step is performed. A step is not a
 // clock (B3 design §1). Step back goes one step, or one instruction (`backInstruction`). The machine is the engine's
-// (engine.js): the same reset, console port and empty-vector stop. The simulator's own code (C4). No DOM.
+// (engine.js): the same reset, console port and empty-vector stop.
+//
+// Interrupt inputs (8086-B8, B8-Q8; rules in interrupts.js): the model runs an interrupt entry as an item of its own,
+// like an instruction (runMicro's `entry`); `items` counts both, `retired` only instructions. An input given at the
+// start of an item takes effect there; one given inside an item arrives at its end ([EDU], the view's choice: an item's
+// steps are worked out when it starts). A delay counts instructions and REP repetitions, as in the engine, so an
+// interrupt inside a string instruction is placed with a delay. The simulator's own code (C4). No DOM.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -11,7 +17,9 @@ import { runMicro } from './microops.js';
 import { phys, CPU_REGS } from './cpu.js';
 import { hexH } from './isa.js';
 import { memoryImage } from './language.js';
-import { initialRegisters, CONSOLE_PORT } from './engine.js';
+import { initialRegisters, CONSOLE_PORT, irqRegisters } from './engine.js';
+import { initialInputs, copyInputs, applyInput, tick, arriveAll, boundaryAfter, REP_BOUNDARY, due, repStopper, take,
+  loadsSegment } from './interrupts.js';
 import { I8086_STRINGS as S } from './strings.js';
 
 const MASK = 0xfffff;
@@ -81,12 +89,16 @@ export class MicroModel {
     this.halted = false;
     this.error = null;
     this.retired = 0;
+    this.items = 0; // instructions and interrupt entries completed
     this.count = 0; // steps performed
     this.dropped = 0; // steps no longer kept for step back
+    this.irq = initialInputs();
+    this.pending = []; // inputs given inside an item: they arrive at its end
+    this.log = []; // the inputs, {at (the step count then), ...input}
     this.prepare();
   }
 
-  /** Run the instruction at CS:IP on a copy; its steps and the state after each. */
+  /** Run the item at CS:IP (an interrupt entry when one is due, else the instruction) on a copy; its steps and states. */
   prepare() {
     this.k = 0;
     const cc = { ...this.c };
@@ -95,10 +107,38 @@ export class MicroModel {
     const read = (a) => (overlay.has(a & MASK) ? overlay.get(a & MASK) : this.mem[a & MASK]);
     const out = [];
     const bus = { read, peek: read, write: (a, v) => overlay.set(a & MASK, v & 0xff), output: (port, v) => out.push([port, v]) };
-    const res = runMicro(cc, bus, { emptyVector: true, temps: tt });
+    const irq = copyInputs(this.irq); // the inputs' state after the item
+    const kind = this.halted ? null : due(irq, this.c.FLAGS);
+    let res;
+    if (kind) res = runMicro(cc, bus, { emptyVector: true, temps: tt, entry: { kind, type: take(irq, kind) } });
+    else {
+      irq.boundary = null;
+      res = runMicro(cc, bus, { emptyVector: true, temps: tt, repStop: repStopper(irq, () => cc.FLAGS) });
+      if (!res.error) {
+        tick(irq);
+        irq.boundary = res.repInterrupted ? { ...REP_BOUNDARY } : boundaryAfter(this.c.FLAGS, res.d.entry.mnem, loadsSegment(res.d));
+      }
+    }
     const start = { ...this.c, ...this.temps };
-    this.cur = { res, start, after: res.error ? [] : replay(start, res.steps), final: { c: cc, temps: tt, overlay, out },
-      pc: phys(this.c.CS, this.c.IP), cs: this.c.CS, ip: this.c.IP };
+    this.cur = { res, start, after: res.error ? [] : replay(start, res.steps), final: { c: cc, temps: tt, overlay, out, irq },
+      pc: phys(this.c.CS, this.c.IP), cs: this.c.CS, ip: this.c.IP, entry: res.entry ?? null };
+  }
+
+  /**
+   * An input of the Interrupts panel (contract v8, through the view): at the start of an item it takes effect at once
+   * (the item is worked out again: an entry may now come first, a halted processor may wake); inside an item it waits
+   * for the item's end.
+   */
+  input(x) {
+    const e = { at: this.count, ...x };
+    this.log.push(e);
+    if (this.k > 0) { this.pending.push(e); return; }
+    applyInput(this.irq, x);
+    if (this.halted && !this.error) {
+      arriveAll(this.irq);
+      if (due(this.irq, this.c.FLAGS)) this.halted = false;
+    }
+    if (!this.halted) this.prepare();
   }
 
   /** The steps of the current instruction; k is the index of the step the next `step()` performs. */
@@ -128,50 +168,64 @@ export class MicroModel {
     this.count += 1;
     if (this.k < this.steps.length) return 'step';
     // commit
-    const { c, temps, overlay, out } = this.cur.final;
+    const { c, temps, overlay, out, irq } = this.cur.final;
     const undo = [];
     for (const [a, v] of overlay) { undo.push([a, this.mem[a]]); this.mem[a] = v; }
-    this.history.push({ c: { ...this.c }, temps: { ...this.temps }, undo, outLen: this.output.length, n: this.steps.length });
+    this.history.push({ c: { ...this.c }, temps: { ...this.temps }, undo, outLen: this.output.length, n: this.steps.length,
+      irq: copyInputs(this.irq), pending: this.pending.slice(), retires: !this.cur.entry && !res.repInterrupted });
     if (this.history.length > HISTORY_MAX) { // the oldest instructions can no longer be stepped back
       for (const h of this.history.splice(0, 1000)) this.dropped += h.n;
     }
     for (const [port, v] of out) if (port === CONSOLE_PORT) this.output += String.fromCharCode(v & 0xff);
     this.c = { ...c };
     this.temps = { ...temps };
-    this.retired += 1;
-    const halt = Boolean(res.halt);
+    if (this.history.at(-1).retires) this.retired += 1;
+    this.items += 1;
+    this.irq = copyInputs(irq);
+    for (const x of this.pending) applyInput(this.irq, x); // inputs given inside the item arrive at its end
+    this.pending = [];
+    // HLT: the processor waits, unless an interrupt is due at once
+    const halt = Boolean(res.halt) && due(this.irq, this.c.FLAGS) === null;
     this.lastResult = res;
     this.prepare();
     if (halt) { this.halted = true; return 'halt'; }
     return 'step';
   }
 
-  /** Run to the end of the current instruction. */
+  /** Run to the end of the current item (an instruction or an interrupt entry). */
   stepInstruction() {
-    const n = this.retired;
+    const n = this.items;
     let r = 'step';
-    while (r === 'step' && this.retired === n) r = this.step();
+    while (r === 'step' && this.items === n) r = this.step();
     return r;
   }
 
   /** One step back; at the start of an instruction, to the step before the previous instruction's `end`. */
   back() {
     if (this.error) { this.error = null; this.halted = false; return true; }
-    if (this.k > 0) { this.k -= 1; this.count -= 1; this.halted = false; return true; }
+    if (this.k > 0) { this.k -= 1; this.count -= 1; this.halted = false; this.withdraw(); return true; }
     if (!this.uncommit()) return false;
     this.k = this.steps.length - 1;
     this.count -= 1;
+    this.withdraw();
     return true;
   }
 
   /** Back to the start of the current instruction, or of the previous one when at the start. */
   backInstruction() {
     if (this.error) { this.error = null; this.halted = false; }
-    if (this.k > 0) { this.count -= this.k; this.k = 0; this.halted = false; return true; }
+    if (this.k > 0) { this.count -= this.k; this.k = 0; this.halted = false; this.withdraw(); return true; }
     if (!this.uncommit()) return false;
     this.count -= this.steps.length;
     this.k = 0;
+    this.withdraw();
     return true;
+  }
+
+  /** The inputs given after the present step count are withdrawn (as the engine's, contract v8). */
+  withdraw() {
+    this.log = this.log.filter((x) => x.at <= this.count);
+    this.pending = this.pending.filter((x) => x.at <= this.count);
   }
 
   uncommit() {
@@ -180,19 +234,25 @@ export class MicroModel {
     for (let i = h.undo.length - 1; i >= 0; i--) this.mem[h.undo[i][0]] = h.undo[i][1];
     this.c = h.c; this.temps = h.temps;
     this.output = this.output.slice(0, h.outLen);
-    this.retired -= 1;
+    if (h.retires) this.retired -= 1;
+    this.items -= 1;
+    this.irq = copyInputs(h.irq); this.pending = h.pending.slice();
     this.halted = false;
     this.prepare();
     return true;
   }
 
-  /** The 14 registers as the view shows them (after k steps). */
-  registers() { return Object.fromEntries(CPU_REGS.map((k) => [k, this.regs[k]])); }
+  /** The 14 registers as the view shows them (after k steps), and the interrupt inputs' state for the panel. */
+  registers() {
+    const next = this.halted || this.k > 0 ? null : this.cur.entry?.kind ?? null;
+    return { ...Object.fromEntries(CPU_REGS.map((k) => [k, this.regs[k]])), ...irqRegisters(this.irq, next, this.halted && !this.error) };
+  }
 }
 
 /** The engine's wording of an instruction that cannot run (engine.js errorText). */
 function errorText(res, cur) {
   const at = `${hexH(cur.cs, 4)}:${hexH(cur.ip, 4)}`;
+  if (res.entry) return S.interrupts.noHandler(res.entry.kind, res.entry.type, at);
   if (res.error === 'noHandler') return res.vector === 0 && res.d.entry?.mnem !== 'INT' ? S.engine.divideNoHandler(at) : S.engine.noHandler(res.vector, at);
   const bytes = (res.d.bytes ?? []).map((b) => hexH(b, 2)).join(' ');
   return S.engine.notRun(S.engine.status[res.error] ?? res.error, bytes, at);

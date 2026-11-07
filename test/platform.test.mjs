@@ -28,7 +28,7 @@ test('registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-
     }
   }
   // updated deliberately (docs/ADDING-SIMULATORS.md): SAP-1 since phase 6 of the architecture contract (W-D29), SAP-2 since step 6 of its plan
-  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'gpu']);
+  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu']);
   // `gpu` reserved as planned at GPU-0 (DECISIONS.md G9), published as a preview from 1.2.0 (author, 2026-11-04), complete
   // from 1.3.0 (author, 2026-11-05); the planned `8086` became `i8086` (the beta of 8086-B0 to B2; author, 2026-11-05: id
   // i8086, no contract change), planned again for the site until its documentation is approved (publication gate)

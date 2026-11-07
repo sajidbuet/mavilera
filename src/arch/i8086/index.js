@@ -11,7 +11,7 @@
 
 import { CONTRACT_VERSION } from '../contract.js';
 import { assemble, disassemble, fields, describe, editor, image, loadImage, scratch } from './language.js';
-import { create } from './engine.js';
+import { create, IRQ_REGS } from './engine.js';
 import { trace, traceJsonLines, traceCsv } from './exports.js';
 import { I8086_STRINGS as S } from './strings.js';
 
@@ -48,15 +48,15 @@ export const descriptor = {
   strings: S, // merged over the shell's
   capabilities: {
     ...Object.fromEntries(['assembler', 'backStep', 'breakpoints', 'watchpoints', 'stepOver', 'callStack', 'runToCursor', 'share', 'worker',
-      'exportImage', 'imageImport', 'exportTrace', 'scratch'].map((k) => [k, true])),
+      'exportImage', 'imageImport', 'exportTrace', 'scratch',
+      'waveform', // the Waveforms tab and the VCD export of the BIU and EU view (8086-B6, B6-Q7)
+      'exercises'].map((k) => [k, true])), // practice exercises (8086-B8, B8-Q9)
     cLanguage: off('cRiscvOnly'),
     memoryModel: off('noMemorySystem'),
     cache: off('noMemorySystem'),
     devices: off('noMemorySystem'),
     traps: off('beta'),
     compare: off('oneProcessor'),
-    waveform: off('beta'),
-    exercises: off('beta'),
     dataIO: off('beta'),
     gccImport: off('cRiscvOnly'),
     exportGolden: off('beta'),
@@ -72,6 +72,8 @@ export const descriptor = {
       { id: 'pointer', label: S.pointerGroup, registers: ['SP', 'BP', 'SI', 'DI'].map((r) => ({ id: r, name: r, width: 16 })) },
       { id: 'segment', label: S.segmentGroup, registers: ['CS', 'DS', 'ES', 'SS'].map((r) => ({ id: r, name: r, width: 16 })) },
       { id: 'control', label: S.controlGroup, registers: [{ id: 'IP', name: 'IP', width: 16 }, { id: 'FLAGS', name: 'FLAGS', width: 16 }] },
+      // 8086-B8: the interrupt inputs' state for the Interrupts panel (engine.js IRQ_REGS), not shown in the registers panel
+      { id: 'interrupts', label: S.interrupts.tab, registers: IRQ_REGS.map(([id, width]) => ({ id, name: id, width, hidden: true })) },
     ],
     pc: 'pc', // the physical address CS × 16 + IP (EngineState.pc)
     status: { id: 'FLAGS', fields: [
@@ -94,14 +96,26 @@ export const descriptor = {
     { id: 'isa', label: S.viewIsa, icon: 'chip', kind: 'isa' },
     // the BIU and EU drawn from IFUM Fig 4-3's partition, one teaching-model step per click (8086-B4; drawing approved
     // by the author 2026-11-05), or one clock of the BIU and queue model in clock mode (8086-B5, L2, with 0 to 3 wait
-    // states; B5-Q3 to Q6 approved 2026-11-05); loaded with its tab (WS-N-011)
+    // states; B5-Q3 to Q6 approved 2026-11-05), or one clock calibrated to the P80C86A-2 traces (8086-B7, L3, B7-Q1 to
+    // Q8 decided 2026-11-06; timing.js); loaded with its tab (WS-N-011)
     { id: 'biu-eu', label: S.datapath.tab, icon: 'steps', kind: 'bus',
-      settings: { key: 'i8biu', defaults: { mode: 'step', wait: '0' }, values: { mode: ['step', 'clock'], wait: ['0', '1', '2', '3'] } },
+      settings: { key: 'i8biu', defaults: { mode: 'step', wait: '0' }, values: { mode: ['step', 'clock', 'calibrated'], wait: ['0', '1', '2', '3'] } },
       load: async () => {
       const { BiuEuView, biuEuInstance } = await import('./ui/biu-eu-view.js');
       return { create: (ctx) => biuEuInstance(new BiuEuView(), ctx) };
     } },
   ],
-  exports: { image, trace: (program, { cap }) => trace(program, { cap }), traceJsonLines, traceCsv },
-  content: { templates: 'content/i8086/templates/index.json', logo: 'mavilera-logo-8086.svg' },
+  exports: { image, trace: (program, { cap, inputs }) => trace(program, { cap, inputs }), traceJsonLines, traceCsv },
+  // exercise files (WS-F-148; 8086-B8): the module is loaded with the first exercise (WS-N-011)
+  exercises: {
+    parse: async (raw) => (await import('./exercise.js')).parseExercise(raw),
+    run: async (program, exercise) => (await import('./exercise.js')).runExercise(program, exercise),
+  },
+  // v8: the interrupt inputs (8086-B8, roadmap §12 question 9), a tab of the memory pane like SAP-2's ports
+  panels: [{ id: 'interrupts', label: S.interrupts.tab, load: async () => {
+    const { InterruptPanel } = await import('./ui/interrupt-panel.js');
+    return { create: (ctx) => new InterruptPanel(ctx) };
+  } }],
+  content: { templates: 'content/i8086/templates/index.json', exercises: 'content/i8086/exercises/index.json', logo: 'mavilera-logo-8086.svg',
+    help: 'content/i8086/help/help.json', docs: 'content/i8086/help/docs/index.html' }, // 8086-B8: the documentation of the publication gate
 };

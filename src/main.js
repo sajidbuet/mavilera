@@ -1369,7 +1369,7 @@ const waves = {};
 const waveRec = {};
 async function waveTab(id, v) {
   const { WaveformPanel } = await import('./ui/waveform.js');
-  waves[id] = new WaveformPanel({ id, signals: v.exportModel().signals, defaults: v.waveform.defaults, format: v.waveform.format ?? null, onGoTo: (k) => goToCycle(k) });
+  waves[id] = new WaveformPanel({ id, signals: v.exportModel().signals, defaults: v.waveform.defaults, format: v.waveform.format ?? null, base: v.waveform.base ?? 0, onGoTo: (k) => goToCycle(k) });
   return [STRINGS.wave.title, waves[id].root, () => refreshWave(true)];
 }
 let waveShownAt = 0;

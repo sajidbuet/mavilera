@@ -1,0 +1,274 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap 8086-B8), not taken from a textbook; produced by tools/i8086/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "i8086",
+ "title": "Count a character with REPNE SCASB",
+ "task": "text holds len bytes (0 to 32). Store at found, as a word, how many of them equal the byte at key, then HLT. REPNE SCASB compares AL with the bytes at ES:DI and stops after the first that matches (ZF = 1) or when CX reaches 0; search again from there. ES = DS in this program (one segment). Keep the labels key, len, text and found.",
+ "lang": "asm",
+ "starter": "; count-char -- practice exercise (MAVILERA, 8086)\n; Store at found how many of the len bytes of text equal key.\n; Hint: AL <- key, DI <- the offset of text, CX <- len; REPNE SCASB; JNE when it found none; JCXZ.\n        HLT                     ; replace with your code\n\nkey     DB   0                  ; the tests write the character here\nlen     DW   0                  ; ... the length of the text (0 to 32)\ntext    DB   32 DUP (0)         ; ... and the text\nfound   DW   0                  ; your result\n",
+ "tests": [
+  {
+   "name": "\"hello, world\" and 'o'",
+   "memory": [
+    {
+     "at": "key",
+     "bytes": [
+      111
+     ]
+    },
+    {
+     "at": "len",
+     "words": [
+      12
+     ]
+    },
+    {
+     "at": "text",
+     "bytes": [
+      104,
+      101,
+      108,
+      108,
+      111,
+      44,
+      32,
+      119,
+      111,
+      114,
+      108,
+      100
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "found",
+      "words": [
+       2
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "\"\" and 'a'",
+   "memory": [
+    {
+     "at": "key",
+     "bytes": [
+      97
+     ]
+    },
+    {
+     "at": "len",
+     "words": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "found",
+      "words": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "\"aaaa\" and 'a'",
+   "memory": [
+    {
+     "at": "key",
+     "bytes": [
+      97
+     ]
+    },
+    {
+     "at": "len",
+     "words": [
+      4
+     ]
+    },
+    {
+     "at": "text",
+     "bytes": [
+      97,
+      97,
+      97,
+      97
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "found",
+      "words": [
+       4
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "\"Mississippi\" and 's'",
+   "memory": [
+    {
+     "at": "key",
+     "bytes": [
+      115
+     ]
+    },
+    {
+     "at": "len",
+     "words": [
+      11
+     ]
+    },
+    {
+     "at": "text",
+     "bytes": [
+      77,
+      105,
+      115,
+      115,
+      105,
+      115,
+      115,
+      105,
+      112,
+      112,
+      105
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "found",
+      "words": [
+       4
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "\"abc\" and 'z'",
+   "memory": [
+    {
+     "at": "key",
+     "bytes": [
+      122
+     ]
+    },
+    {
+     "at": "len",
+     "words": [
+      3
+     ]
+    },
+    {
+     "at": "text",
+     "bytes": [
+      97,
+      98,
+      99
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "found",
+      "words": [
+       0
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "\"a\" and 'a'",
+   "memory": [
+    {
+     "at": "key",
+     "bytes": [
+      97
+     ]
+    },
+    {
+     "at": "len",
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": "text",
+     "bytes": [
+      97
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "found",
+      "words": [
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "\"8086 or 8088\" and '8'",
+   "memory": [
+    {
+     "at": "key",
+     "bytes": [
+      56
+     ]
+    },
+    {
+     "at": "len",
+     "words": [
+      12
+     ]
+    },
+    {
+     "at": "text",
+     "bytes": [
+      56,
+      48,
+      56,
+      54,
+      32,
+      111,
+      114,
+      32,
+      56,
+      48,
+      56,
+      56
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "found",
+      "words": [
+       5
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

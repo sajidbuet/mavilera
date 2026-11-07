@@ -1,0 +1,163 @@
+{
+  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). In-app help of the MAVILERA 8086 Laboratory, written for the application (8086-B8, publication gate of the roadmap); shown by the Help dialog (src/ui/help-dialog.js). The detailed documentation is content/i8086/help/docs/. Sources: docs/references/INTEL-8086-SOURCE-INDEX.md.",
+  "sections": [
+    {
+      "id": "about",
+      "title": "About the 8086 Laboratory",
+      "blocks": [
+        { "brand": true },
+        { "p": "The Intel 8086 is a 16-bit microprocessor. Its programs address 1 MiB of memory through four segment registers, and it is divided into two units that work at the same time: the bus interface unit (BIU) fetches instruction bytes ahead into a six-byte queue while the execution unit (EU) executes. Intel describes it in The 8086 Family User's Manual (order number 9800722-03, October 1979), chapters 2 and 4." },
+        { "p": "The laboratory assembles and runs 8086 programs one instruction at a time, and shows each instruction inside the processor: as the simulator's own teaching steps, clock by clock with the BIU filling the queue ahead of the EU, or with clock counts calibrated to recorded traces of a real chip for the instructions that have been checked." },
+        { "p": "Why it matters: the 8086 is where segmented addressing, a prefetch queue overlapping fetch with execution, and a microcoded execution unit meet in one small, well-documented processor." },
+        { "refs": [
+          ["The 8086 Family User's Manual", null, "Intel Corporation, October 1979, order number 9800722-03. Chapters 2 (the 8086 and 8088 central processing units) and 4 (hardware reference). No DOI."],
+          ["Ken Shirriff's articles on the 8086 die", "https://www.righto.com/", "Reverse engineering of the 8086's microcode, prefetch queue, bus interface and internal registers. Names marked RE in the drawing come from them."],
+          ["SingleStepTests/8086", "https://github.com/SingleStepTests/8086", "Single-instruction tests recorded on an Intel P80C86A-2 (a CMOS 80C86), MIT licence; used here for checking only, not copied."]
+        ] },
+        { "notice": "MAVILERA reproduces no text or figure of Intel's manual or of the cited articles: its simulator, teaching steps, drawing, help and programs are its own, and the drawing follows the partition of Intel's Figure 4-3 in its own layout. It is not affiliated with or endorsed by Intel or the authors cited. Intel and 8086 are trademarks of Intel Corporation or its subsidiaries; the instruction mnemonics are Intel's." }
+      ]
+    },
+    {
+      "id": "start",
+      "title": "Getting started",
+      "blocks": [
+        { "p": "The laboratory runs in your browser. Nothing is installed and nothing is uploaded." },
+        { "ol": [
+          "Type a program in the editor, or open one from Templates in the toolbar: short programs that each show one idea, with a note at the top on what to try.",
+          "Press Assemble (Ctrl+Enter). Errors are marked in the editor and explained in the console.",
+          "Step through the program with Step (F10) and Step back (Shift+F10), or run it with Run (F5). HLT stops the run.",
+          "Watch the registers, the flags, the memory and the console: OUT 0E9H, AL writes the character in AL there (the simulator's console port, not an 8086 feature).",
+          "Open the BIU and EU view to see the same program inside the processor."
+        ] },
+        { "p": "In the default profile, \"8086 · one segment\", CS, DS, ES and SS all start at 1000H and SP at 0FFFEH, so a program is one 64K segment. The profile \"8086 · segments set by the program\" starts DS, ES, SS and SP at 0: the program loads them itself." }
+      ]
+    },
+    {
+      "id": "views",
+      "title": "The views and panels",
+      "blocks": [
+        { "dl": [
+          ["Instructions", "One instruction per step: the editor, the listing with each instruction's bytes and fields, the registers and flags, the call stack, the counters, the memory and the console."],
+          ["BIU and EU", "The drawing of the bus interface unit and the execution unit (after the partition of Intel's Figure 4-3), with three Modes: Steps, Clocks and Calibrated clocks."],
+          ["Steps (tab)", "The steps of the present instruction and what each one moves."],
+          ["Queue (tab)", "In clock mode: the six queue bytes, the bus cycle in progress and the last clocks."],
+          ["Timeline (tab)", "In clock mode: the bus cycles and the EU's work clock by clock, to see fetching overlap execution."],
+          ["Waveforms (tab)", "Chosen signals over the clocks or steps run so far, as a timing diagram; export as VCD."],
+          ["Interrupts (memory pane)", "The NMI button and the INTR switch with its type number: see Interrupt inputs."]
+        ] }
+      ]
+    },
+    {
+      "id": "biu-eu",
+      "title": "The BIU and EU view",
+      "blocks": [
+        { "dl": [
+          ["Steps", "One click is one step of the simulator's teaching model: a queue byte, a transfer, an ALU operation or a bus request. These steps are the simulator's own description, not the 8086's microcode, and their number is not its number of clocks."],
+          ["Clocks", "One click is one clock of the teaching model: the BIU fetches words into the queue when two bytes are free, gives the EU's bus requests priority, and runs each bus cycle as T1 to T4 with optional wait states; the EU takes one step per clock and waits for the queue or the bus. The rules are Intel's documented ones; the clock counts are the model's, not the 8086's."],
+          ["Calibrated clocks (P80C86A-2)", "One click is one clock, timed as recorded on a P80C86A-2, a CMOS 80C86, for the instructions listed in the documentation; any other instruction, and every interrupt entry, keeps the teaching model's timing and is marked \"not calibrated\"."]
+        ] },
+        { "p": "Each element of the drawing has a source, shown in its tooltip: Intel (the manual), RE (reverse engineering, not documented by Intel: the names IND, OPR, tmpA, tmpB, tmpC and the ALU result Σ) or added by the simulator (dashed: the instruction decoder place and two shortcut links)." }
+      ]
+    },
+    {
+      "id": "interrupts",
+      "title": "Interrupt inputs",
+      "blocks": [
+        { "p": "The Interrupts tab of the memory pane drives the 8086's interrupt inputs, following Intel's manual, pp. 2-22 to 2-27." },
+        { "dl": [
+          ["NMI", "A press is a rising edge: it is latched and taken at the next instruction boundary, even with IF = 0 (type 2)."],
+          ["INTR and Type", "A level: while the switch is on and IF = 1, the processor takes an interrupt of the type given, after two INTA cycles. It stays on until you turn it off, so a handler runs again after its IRET if INTR is still on."],
+          ["Delay", "The input arrives after this many instructions; each repetition of a REP string instruction counts as one, so an interrupt can be placed inside one (the simulator's choice, for teaching)."]
+        ] },
+        { "ul": [
+          "Order: the instruction's own interrupt (INT n, INTO, a divide error) first, then NMI, INTR and single-step; each entry pushes FLAGS, CS and IP, clears IF and TF, and loads CS:IP from the vector at 4 × type.",
+          "No interrupt between a prefix and its instruction, or after MOV or POP to a segment register until after the next instruction; after STI and IRET, INTR waits one instruction (as Intel's manual states; not checked against hardware).",
+          "A REP string instruction accepts NMI and INTR between repetitions and resumes at the prefix just before the string op code, the only prefix restored (Intel application note AP-67).",
+          "Single-step: with TF = 1, a type 1 interrupt follows each instruction (TF is set with PUSHF, OR and POPF).",
+          "HLT stops the run; an NMI, or INTR with IF = 1, wakes the processor and the handler returns past the HLT.",
+          "Every input is kept with the step at which it was given: stepping back past it withdraws it, and a reload or an export replays it there. In the BIU and EU view an input given inside an instruction arrives at its end."
+        ] }
+      ]
+    },
+    {
+      "id": "programs",
+      "title": "Writing programs",
+      "blocks": [
+        { "ul": [
+          "Instructions: the documented 8086 instructions in Intel's mnemonics, with BYTE PTR or WORD PTR where the size is not clear, SHORT, NEAR and FAR. Point at a mnemonic in the editor for its operands and operation; completion suggests mnemonics and registers.",
+          "Data: DB places bytes and strings, DW words, DUP repeats; EQU names a value; ORG sets the offset of what follows; OFFSET gives a label's offset. A label may end with a colon; a comment starts with a semicolon. ASSUME is accepted and ignored; SEGMENT is not supported.",
+          "Numbers: decimal, hexadecimal with H (0FFH), binary with B (1100B), or a character ('A').",
+          "Undocumented and undefined op codes stop the run with a message; ESC does nothing, and WAIT and LOCK have no effect.",
+          "An interrupt through a vector that is still 0000:0000 stops the run with a message instead of jumping to address 0.",
+          "The scratch line above the instruction fields turns one instruction into its bytes, or bytes into their instruction, without changing the program."
+        ] }
+      ]
+    },
+    {
+      "id": "debug",
+      "title": "Running and debugging",
+      "blocks": [
+        { "ul": [
+          "Breakpoints: click a line number in the editor or an address in the listing (B on a row).",
+          "Watchpoints: tick a register's eye to stop when it is written; double-click a memory byte, or use Watch, to stop when that byte is written.",
+          "Step back undoes one step at a time, back to the start of the run.",
+          "Step over runs a CALL, INT or INTO to its return; Step out runs to the return of the present call; Run to cursor stops at the editor's line.",
+          "The call stack follows CALL, INT, interrupt entries and their returns, not the stack's contents: a program that changes SP itself can make it differ.",
+          "A run that does not halt stops after a large number of steps and says so in the console."
+        ] }
+      ]
+    },
+    {
+      "id": "keys",
+      "title": "Keyboard",
+      "blocks": [
+        { "dl": [
+          ["Ctrl+Enter", "Assemble"],
+          ["F5", "Run or pause"],
+          ["F10 / Shift+F10", "Step / step back (in the BIU and EU view, one step or one clock)"],
+          ["F11 / Shift+F11", "Step over / step out"],
+          ["Ctrl+F10", "Run to the editor's line"],
+          ["Ctrl+F", "Find in the editor"],
+          ["Esc, then Tab", "Leave the editor (Tab inside it indents)"],
+          ["↑ ↓, Enter, B", "In the listing: move, show the fields, set a breakpoint"],
+          ["↑ ↓, W", "In the registers: move, watch"],
+          ["Arrow keys on a divider", "Resize panes (Shift for larger steps; Enter restores)"],
+          ["Enter on a drawn element", "Open its details in the BIU and EU view"]
+        ] }
+      ]
+    },
+    {
+      "id": "files",
+      "title": "Files, exercises and exports",
+      "blocks": [
+        { "ul": [
+          "Your work is kept in this browser: after a refresh or a closed tab, the program, its file name, the cursor, breakpoints, watchpoints and the step you had reached come back.",
+          "File ▸ Copy share link puts the program, the view and its settings into a link. They travel in the part after #, which the browser never sends to a server.",
+          "File ▸ Save program and settings… writes a .json file; File ▸ Open reads it back, and also .asm files.",
+          "Exports: the code segment as a memory image (.hex and .bin), the listing, traces (JSON lines, CSV, with the interrupt inputs replayed) and, from the BIU and EU view, waveforms as VCD. File ▸ Import .hex/.bin… loads an image at offset 0000H.",
+          "Exercises: File ▸ Exercise… lists practice exercises written for MAVILERA, each with a starter program; Run the tests checks your program and shows expected against actual. No solutions are included."
+        ] }
+      ]
+    },
+    {
+      "id": "limits",
+      "title": "What the model is and is not",
+      "blocks": [
+        { "ul": [
+          "The Instructions view's results were checked against 552,483 single-instruction tests recorded on a P80C86A-2 (a CMOS 80C86), with no failure; flags the tests call undefined are not compared.",
+          "Clock mode follows Intel's documented queue and bus rules, but its clock counts are the teaching model's. Calibrated mode matches the recorded traces clock by clock only for the instructions listed in the documentation.",
+          "The steps are not Intel's microcode, and the recorded traces come from a CMOS chip, not the original NMOS 8086.",
+          "Not modelled: the 8087 coprocessor (ESC does nothing), WAIT and LOCK, bus hold and request/grant, minimum- and maximum-mode pins, and the HLT bus state; interrupt-entry timing is the teaching model's.",
+          "A simulation shows what the model does; it is not evidence of how a hardware build behaves."
+        ] }
+      ]
+    },
+    {
+      "id": "privacy",
+      "title": "Offline use and privacy",
+      "blocks": [
+        { "p": "Every computation runs in your browser. MAVILERA has no account, sends no telemetry and uploads nothing. After a first visit the hosted version also opens without a network connection, and a single-file version can be downloaded for computers that have none." }
+      ]
+    }
+  ]
+}

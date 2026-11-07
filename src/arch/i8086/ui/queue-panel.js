@@ -21,8 +21,8 @@ const xx = (v) => (v & 0xff).toString(16).toUpperCase().padStart(2, '0');
 /** A bus cycle in words: "code fetch, 16 bits at 10100H". */
 export function cycleText(c) {
   if (!c) return '';
-  const where = c.kind === 'in' || c.kind === 'out' ? `port ${hexH(c.address, 4)}` : hexH(c.address, 5);
-  return `${D.cycleKinds[c.kind]}, ${c.size} bits at ${where}${c.discard ? `; ${D.discarded}` : ''}`;
+  const where = c.kind === 'inta' ? '' : c.kind === 'in' || c.kind === 'out' ? `port ${hexH(c.address, 4)}` : hexH(c.address, 5);
+  return `${D.cycleKinds[c.kind]}, ${c.size} bits${where ? ` at ${where}` : ''}${c.discard ? `; ${D.discarded}` : ''}`;
 }
 
 /** The six cells: for each, the queued byte in it ({a, v}) or null; the read and write pointers (design §3 choice 6). */

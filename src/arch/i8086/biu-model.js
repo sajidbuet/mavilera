@@ -27,10 +27,12 @@ const JOURNAL_KEEP = 1_000_000;
 /**
  * The bus cycles of one EU request (a `bus` step's record): a byte, or a word at an even address, is one cycle; a word
  * at an odd address, or one whose second byte wraps, is two byte cycles ([INTEL] PDF 73). I/O ports likewise.
- * Each cycle: {kind: 'read'|'write'|'in'|'out', address, size: 8|16}.
+ * Each cycle: {kind: 'read'|'write'|'in'|'out'|'inta', address, size: 8|16}. An INTA request (8086-B8) is the two
+ * interrupt-acknowledge cycles of IFUM p. 2-24 (the type comes on the second); they carry no address ([EDU] 0).
  */
 export function busCycles(r) {
   const kind = r.op;
+  if (kind === 'inta') return [{ kind, address: 0, size: 8 }, { kind, address: 0, size: 8 }];
   if (kind === 'in' || kind === 'out') {
     const p = r.port & 0xffff;
     if (r.size === 8) return [{ kind, address: p, size: 8 }];
@@ -227,10 +229,13 @@ export class ClockModel {
       get step() { return mm.next; },
       get regs() { return mm.regs; },
       get prefixes() { return mm.cur.res.d?.prefixes?.length ?? 0; },
-      perform() { const n = mm.retired; mm.step(); return mm.retired !== n; },
+      perform() { const n = mm.items; mm.step(); return mm.items !== n; }, // an instruction or an interrupt entry (B8)
     };
     this.reset();
   }
+
+  /** An input of the Interrupts panel (8086-B8), to the step model; the BIU goes on as it was. */
+  input(x) { this.mm.input(x); }
 
   reset() {
     this.mm.reset();
@@ -251,18 +256,32 @@ export class ClockModel {
     if (mm.halted) return mm.error ? 'error' : 'halt';
     if (!mm.next) { mm.step(); return mm.error ? 'error' : 'halt'; } // an instruction that cannot run: the model's error
     const snap = this.core.save();
+    const at = this.instruction();
     const rec = this.core.clock(this.driver);
-    this.journal.push({ snap, rec });
+    this.journal.push({ snap, rec, at });
     if (this.journal.length > JOURNAL_KEEP) { this.journal.splice(0, 1000); this.dropped += 1000; }
     if (mm.halted) return mm.error ? 'error' : 'halt';
     return 'step';
   }
 
-  /** Clocks until the current instruction is finished. */
+  /**
+   * The instruction the EU is in, as the journal keeps it with each clock (the timeline, B6): {pc, cs, ip, d} (d: the
+   * decoded instruction, null if it cannot run), one shared object per instruction.
+   */
+  instruction() {
+    const cur = this.mm.cur;
+    if (this.atCur !== cur) {
+      this.atCur = cur;
+      this.at = Object.freeze({ pc: cur.pc, cs: cur.cs, ip: cur.ip, d: cur.res.error ? null : cur.res.d ?? null, entry: cur.entry ?? null });
+    }
+    return this.at;
+  }
+
+  /** Clocks until the current instruction (or interrupt entry) is finished. */
   stepInstruction() {
-    const n = this.mm.retired;
+    const n = this.mm.items;
     let r = 'step';
-    while (r === 'step' && this.mm.retired === n) r = this.clock();
+    while (r === 'step' && this.mm.items === n) r = this.clock();
     return r;
   }
 

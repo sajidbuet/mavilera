@@ -27,10 +27,12 @@ const hex = (v, width) => `${(v >>> 0).toString(16).padStart(Math.ceil(width / 4
 export class WaveformPanel {
   /**
    * @param {{id: string, signals: Array<{name, width, kind}>, defaults: string[],
-   *   format?: (name: string, v: number) => string|null, onGoTo: (cycle: number) => void}} o
+   *   format?: (name: string, v: number) => string|null, base?: number, onGoTo: (cycle: number) => void}} o
+   *   `base`: the number shown for the first frame (default 0; the 8086 numbers its clocks from 1, author 2026-11-06).
+   *   Frames are indexed from 0 inside the panel and in onGoTo; only the numbers shown change.
    */
-  constructor({ id, signals, defaults, format = null, onGoTo }) {
-    Object.assign(this, { id, format, onGoTo });
+  constructor({ id, signals, defaults, format = null, base = 0, onGoTo }) {
+    Object.assign(this, { id, format, base, onGoTo });
     const W = STRINGS.wave;
     const key = `pips.wave.${id}`;
     let saved = null;
@@ -76,9 +78,11 @@ export class WaveformPanel {
       this.chosen = [...order(e.target.checked ? [...others, s.name] : others), ...others.filter((n) => !known.has(n))];
       store.set(this.key, JSON.stringify(this.chosen));
       this.render();
-    } }), ` ${s.name}`);
+    } }), ` ${s.label ?? s.name}`); // label: an architecture's longer name for the picker (the 8086's bus modes)
+    // a signal of another kind, or of none (SAP-1/SAP-2: the T state, the bus, the registers), is listed with the data
+    const OWN = ['control', 'npu', 'gpu'];
     const group = (kind, title) => {
-      const list = signals.filter((s) => s.kind === kind);
+      const list = signals.filter((s) => (kind === 'data' ? !OWN.includes(s.kind) : s.kind === kind));
       return list.length ? el('fieldset.wave-group', {}, el('legend', { text: title }), list.map(pick)) : null;
     };
     this.picks.replaceChildren(...[group('control', W.control), group('data', W.data), group('npu', W.npu), group('gpu', W.gpu)].filter(Boolean));
@@ -100,6 +104,7 @@ export class WaveformPanel {
 
   render() {
     const W = STRINGS.wave;
+    const b = this.base; // the number shown for frame 0
     const sigs = this.chosen.map((n) => this.signals.find((s) => s.name === n)).filter(Boolean);
     const n = this.frames.length;
     const first = Math.max(0, n - MAX_SHOWN);
@@ -117,13 +122,13 @@ export class WaveformPanel {
     const width = shown.length * CW;
     const height = AXIS + sigs.length * RH;
     const g = svg('svg', { class: 'wave-svg', width, height, viewBox: `0 0 ${width} ${height}`, role: 'img',
-      'aria-label': W.summary(sigs.length, first, n - 1) });
+      'aria-label': W.summary(sigs.length, first + b, n - 1 + b) });
     // the cycle columns: axis numbers, the current one marked, a target for clicks
     shown.forEach((_, i) => {
       const k = first + i;
       const x = i * CW;
       g.append(svg('rect', { class: `wave-col${k === this.current ? ' now' : ''}`, x, y: 0, width: CW, height, 'data-cycle': k }));
-      if (k % (shown.length > 60 ? 5 : 1) === 0) g.append(svg('text', { class: 'wave-num', x: x + CW / 2, y: 12 }, String(k)));
+      if ((k + b) % (shown.length > 60 ? 5 : 1) === 0) g.append(svg('text', { class: 'wave-num', x: x + CW / 2, y: 12 }, String(k + b)));
     });
     sigs.forEach((s, r) => {
       const top = AXIS + r * RH;
@@ -150,7 +155,7 @@ export class WaveformPanel {
         const m = (hi + lo) / 2;
         const label = this.text(s, v);
         g.append(svg('path', { class: 'wave-bus', d: `M${x0},${m}L${x0 + 3},${hi}L${x1 - 3},${hi}L${x1},${m}L${x1 - 3},${lo}L${x0 + 3},${lo}Z` },
-          svg('title', {}, `${s.name} = ${label} (${W.cycleRange(first + i, first + j - 1)})`)));
+          svg('title', {}, `${s.name} = ${label} (${W.cycleRange(first + i + b, first + j - 1 + b)})`)));
         if (label.length * 6.4 < x1 - x0 - 6) g.append(svg('text', { class: 'wave-val', x: (x0 + x1) / 2, y: m + 3.5 }, label));
         i = j;
       }
@@ -163,12 +168,12 @@ export class WaveformPanel {
     // keyboard: earlier, later; and the table of the last cycles for screen readers
     this.cycles.replaceChildren(
       el('button', { type: 'button', text: W.earlier, disabled: this.current <= 0, onclick: () => this.onGoTo(this.current - 1) }),
-      el('span.note', { text: W.at(this.current, n - 1) }),
+      el('span.note', { text: W.at(this.current + b, n - 1 + b) }),
       el('button', { type: 'button', text: W.later, disabled: this.current >= n - 1, onclick: () => this.onGoTo(this.current + 1) }));
     const last = this.frames.slice(Math.max(0, n - 16));
     const from = n - last.length;
-    this.table.replaceChildren(el('caption', { text: W.tableCaption(from, n - 1) }),
-      el('thead', {}, el('tr', {}, el('th', { text: W.signal }), last.map((_, i) => el('th', { text: String(from + i) })))),
+    this.table.replaceChildren(el('caption', { text: W.tableCaption(from + b, n - 1 + b) }),
+      el('thead', {}, el('tr', {}, el('th', { text: W.signal }), last.map((_, i) => el('th', { text: String(from + i + b) })))),
       el('tbody', {}, sigs.map((s) => el('tr', {}, el('th', { text: s.name }), last.map((f) => el('td', { text: this.text(s, f[s.name] ?? 0) }))))));
   }
 }

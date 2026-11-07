@@ -19,7 +19,8 @@ const S = { capability: { ...STRINGS.capability, ...RISCV_STRINGS.capability } }
 test('RISC-V: every capability on but traps, which its profile with traps turns on (and the Worker off)', () => {
   const st = capabilityStates(riscv, S);
   assert.deepEqual(Object.keys(st), [...CAPABILITIES]);
-  for (const k of CAPABILITIES) assert.equal(st[k].enabled, k !== 'traps', k);
+  const off = new Set(['traps', 'realtime', 'audio']); // v10: the real-time run and audio belong to the pico2 module
+  for (const k of CAPABILITIES) assert.equal(st[k].enabled, !off.has(k), k);
   assert.equal(st.traps.text, RISCV_STRINGS.capability.trapsNeedPriv);
   const priv = riscv.engine.profiles.find((p) => p.id === 'iss-priv');
   const sp = capabilityStates(riscv, S, priv);
@@ -57,8 +58,10 @@ test('gate: an item whose capability is off is disabled, with the reason as its 
 test('the shell handles every capability of the contract', () => {
   const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   // decided elsewhere: compare (the views are the architecture's, validateDescriptor ties kind compare to it),
-  // traps and uninitCheck (the engine's), worker (read with the profile in startRun)
-  const elsewhere = new Set(['compare', 'traps', 'uninitCheck']);
+  // traps and uninitCheck (the engine's), worker (read with the profile in startRun);
+  // v10 (§27, draft): realtime and audio wait for the paced runner and the audio host of P1-M4 (no module sets them
+  // yet; validateDescriptor ties each to its descriptor field). Remove them from this list when the shell handles them.
+  const elsewhere = new Set(['compare', 'traps', 'uninitCheck', 'realtime', 'audio']);
   for (const k of CAPABILITIES.filter((c) => !elsewhere.has(c))) {
     assert.ok(new RegExp(`CAP\\.${k}\\b|can\\('${k}'\\)|capability\\(arch, '${k}'`).test(main), `main.js does not handle ${k}`);
   }

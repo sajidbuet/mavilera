@@ -1,0 +1,38 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap 8086-B8), not taken from a textbook; produced by tools/i8086/make-exercises.mjs.",
+ "groups": {
+  "data": "Data and the flags",
+  "strings": "Strings",
+  "stack": "Subroutines and the stack"
+ },
+ "exercises": [
+  {
+   "id": "largest",
+   "file": "largest.json",
+   "group": "data",
+   "title": "The largest signed word of a table",
+   "lang": "asm"
+  },
+  {
+   "id": "count-char",
+   "file": "count-char.json",
+   "group": "strings",
+   "title": "Count a character with REPNE SCASB",
+   "lang": "asm"
+  },
+  {
+   "id": "print-bcd",
+   "file": "print-bcd.json",
+   "group": "data",
+   "title": "Print a packed BCD byte",
+   "lang": "asm"
+  },
+  {
+   "id": "keep-registers",
+   "file": "keep-registers.json",
+   "group": "stack",
+   "title": "A subroutine that keeps the registers",
+   "lang": "asm"
+  }
+ ]
+}

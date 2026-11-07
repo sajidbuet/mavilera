@@ -4,7 +4,8 @@
 ;
 ; Try: the vector of type n is at 4 × n: its offset, then its segment. INT 80H pushes FLAGS, CS and IP and jumps to the
 ; handler; IRET returns. Dividing by 0 is a divide error, type 0: the 8086 pushes the address of the next instruction,
-; so the handler here returns past the DIV. Watch SP and the call stack.
+; so the handler here returns past the DIV. Watch SP and the call stack. The interrupts from outside the processor,
+; NMI and INTR, come from the Interrupts panel: see the template "NMI and INTR from the Interrupts panel".
         XOR  AX, AX
         MOV  ES, AX             ; ES <- 0: the interrupt vector table
         MOV  WORD PTR ES:[4*80H], OFFSET say_hi

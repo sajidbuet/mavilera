@@ -27,7 +27,37 @@ const EXPECT = {
   segments: (s) => assert.equal(s.output, 'A'),
   decimal: (s) => assert.equal(s.output, '51966\r\n'),
   interrupts: (s) => assert.equal(s.output, 'HE!'),
+  overlap: (s) => assert.equal(s.registers.DI, 609),
+  'interrupt-inputs': (s) => assert.equal(s.output, '>'), // halted, waiting for the panel's inputs (8086-B8)
+  'single-step': (s) => assert.equal(s.registers.BX, 12),
 };
+
+test('i8086: the interrupt-inputs template does what its comment says with the panel\'s inputs (8086-B8)', () => {
+  const text = readFileSync(new URL('interrupt-inputs.asm', dir), 'utf8');
+  const p = descriptor.language.assemble([{ name: 'interrupt-inputs.asm', text }], { profile: 'flat' });
+  assert.ok(p.ok, JSON.stringify(p.diagnostics));
+  const run = (e) => { let s; do s = e.run({ chunk: 1_000_000 }); while (s === STOP.CHUNK); return s; };
+  // NMI with a delay of 14 at the reset: after the second repetition of REP MOVSB, which resumes at its REP prefix
+  const e = descriptor.engine.create(p);
+  e.input({ nmi: true, delay: 14 });
+  let rec;
+  do rec = e.step(); while (!rec.trap);
+  assert.equal(rec.trap.cause, 2);
+  assert.equal(e.state().registers.CX, 3, 'cut with CX = 3');
+  assert.equal(run(e), STOP.HALT);
+  assert.equal(e.state().output, 'N>');
+  assert.equal(String.fromCharCode(...e.peek(p.symbols.copy, 5)), 'HELLO');
+  // halted: NMI wakes it; INTR on prints I again and again until it is turned off
+  e.input({ nmi: true });
+  assert.equal(run(e), STOP.HALT);
+  assert.equal(e.state().output, 'N>N');
+  assert.equal(e.peek(p.symbols.nmis, 1)[0], 2);
+  e.input({ intr: true, type: 0x20 });
+  for (let i = 0; i < 40; i++) e.step();
+  e.input({ intr: false });
+  assert.equal(run(e), STOP.HALT);
+  assert.match(e.state().output, /^N>NI{3,}$/);
+});
 
 test('i8086: every template is listed, has the copyright line, and shows what it says', () => {
   assert.deepEqual(index.templates.map((t) => t.id).sort(), Object.keys(EXPECT).sort());

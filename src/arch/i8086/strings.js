@@ -16,8 +16,9 @@ export const I8086_STRINGS = Object.freeze({
     + 'assembles and runs programs for the Intel 8086: its general, pointer, index and segment registers, its flags, '
     + 'segmented 1 MiB memory and its I/O ports, one instruction at a time; the BIU and EU view steps each instruction '
     + 'through the simulator\'s teaching model of its internal steps, or clock by clock with the bus interface unit '
-    + 'filling the instruction queue ahead of the execution unit. This is a beta: the clock counts are the teaching '
-    + 'model\'s, not the 8086\'s, and instruction timing is not shown yet.',
+    + 'filling the instruction queue ahead of the execution unit, or with clock counts calibrated to recorded traces of a '
+    + 'P80C86A-2 (a CMOS 80C86) for the instructions checked; the Interrupts panel drives NMI and INTR. Clock counts '
+    + 'outside calibrated mode are the teaching model\'s, not the 8086\'s.',
   viewIsa: 'Instructions',
   // the shell's wording of a clocked view, for the BIU/EU view: its unit is a teaching-model step (B4-Q4) or, in clock
   // mode (B5), a clock of the teaching model; the shell's label is one for both, the view's counter says which
@@ -35,9 +36,9 @@ export const I8086_STRINGS = Object.freeze({
   controlGroup: 'IP and flags',
   capability: Object.freeze({
     cRiscvOnly: 'The C compiler targets RISC-V only; the 8086 is programmed in its assembly language.',
-    noMemorySystem: 'The 8086 module has 1 MiB of memory on its bus: no timing model, caches or devices in this beta.',
-    oneProcessor: 'The 8086 module has one processor view in this beta; there is nothing to compare.',
-    beta: 'Not in the 8086 beta.',
+    noMemorySystem: 'The 8086 module has 1 MiB of memory on its bus: no caches or devices.',
+    oneProcessor: 'The 8086 module has one processor; there is nothing to compare.',
+    beta: 'Not available in the 8086 module.',
   }),
   callUnknown: 'not known',
   calls: Object.freeze({
@@ -81,6 +82,59 @@ export const I8086_STRINGS = Object.freeze({
     noHandler: (n, pc) => `INT ${hex(n, 2)} at ${pc}: its vector at ${hex(4 * n, 5)} is 0000:0000, so no handler is installed. Store the handler's offset and segment there first.`,
     divideNoHandler: (pc) => `Divide error at ${pc}: the quotient does not fit, or the divisor is 0, and the vector of type 0 at 00000H is 0000:0000 (no handler).`,
     console: 'The simulator\'s console port: OUT 0E9H, AL writes the character in AL.',
+  }),
+  // the interrupt inputs (8086-B8: interrupts.js, engine.js, ui/interrupt-panel.js)
+  interrupts: Object.freeze({
+    label: Object.freeze({
+      nmi: () => 'NMI (type 2)',
+      intr: (t) => `INTR (type ${hex(t, 2)})`,
+      trap: () => 'single-step (type 1)',
+    }),
+    noHandler: (kind, t, pc) => `${kind === 'nmi' ? 'NMI' : kind === 'intr' ? 'INTR' : 'The single-step trap'} before the instruction at ${pc}: `
+      + `the vector of type ${hex(t, 2)} at ${hex(4 * t, 5)} is 0000:0000, so no handler is installed. Store the handler's offset and segment there first.`,
+    tab: 'Interrupts',
+    nmi: 'NMI',
+    nmiTitle: 'Raise NMI: a rising edge, latched until the processor takes it (type 2, cannot be masked)',
+    intr: 'INTR',
+    intrTitle: 'The INTR line: while it is on and IF = 1, the processor takes an interrupt of the type below at the next boundary. It stays on until you turn it off.',
+    type: 'Type',
+    typeTitle: 'The type byte returned on the second INTA cycle, 00H to 0FFH (hexadecimal)',
+    delay: 'Delay',
+    delayTitle: 'The input arrives after this many instructions (each repetition of a REP string counts as one); 0 = before the next instruction',
+    badType: (t) => `'${t}' is not a type: write 00 to FF in hexadecimal.`,
+    badDelay: (t) => `'${t}' is not a delay: write 0 to 999.`,
+    on: 'on', off: 'off',
+    latched: 'latched', notLatched: 'not latched',
+    pending: (n) => `${n} input${n === 1 ? '' : 's'} on the way`,
+    sentNmi: (steps, delay) => `NMI raised at step ${steps}${delay ? `, arriving after ${delay} instruction${delay === 1 ? '' : 's'}` : ''}.`,
+    sentIntr: (on, t, steps, delay) => `INTR ${on ? `on, type ${hex(t, 2)}` : 'off'} at step ${steps}${delay ? `, after ${delay} instruction${delay === 1 ? '' : 's'}` : ''}.`,
+    sentRun: 'Input given during the run.',
+    due: Object.freeze({
+      nmi: 'Next: the NMI entry (type 2).',
+      intr: (t) => `Next: the INTR entry (type ${hex(t, 2)}): two INTA cycles, then the vector.`,
+      trap: 'Next: the single-step entry (type 1): TF was 1 when the last instruction started.',
+    }),
+    waitIf: 'INTR is on but IF = 0: it waits until STI (or IRET) sets IF.',
+    waitShadow: 'Held back for one instruction: after MOV or POP to a segment register no interrupt is taken; after STI or IRET, no INTR.',
+    halted: 'Halted (HLT). An NMI, or INTR with IF = 1, wakes the processor: the handler returns past the HLT.',
+    noInput: 'This view does not take interrupt inputs.',
+    noProgram: 'Assemble a program to use the inputs.',
+    note: 'Rules from Intel\'s 8086 Family User\'s Manual, pp. 2-22 to 2-27: NMI before INTR before single-step; none between a '
+      + 'prefix and its instruction or after MOV or POP to a segment register; INTR only after the instruction after STI or IRET. '
+      + 'A REP string instruction accepts NMI and INTR between repetitions and resumes at the prefix just before the string op code. '
+      + 'Each entry pushes FLAGS, CS and IP, clears IF and TF, and loads CS:IP from the vector at 4 × type.',
+  }),
+  // the exercise files (exercise.js; 8086-B8, B8-Q9)
+  exercise: Object.freeze({
+    notI8086: 'This exercise is not for the 8086: its file has no "arch": "i8086".',
+    noRegisterInputs: (where) => `${where}: an 8086 test cannot set a register before a run; set memory words or bytes instead.`,
+    notRegister: (where, k) => `${where}: "${k}" is not an 8086 register (AX to DI, the segment registers, IP) or flag (CF, PF, AF, ZF, SF, TF, IF, DF, OF).`,
+    wordsOrBytes: (where) => `${where}: each memory block needs "at" and either "words" or "bytes".`,
+    notHere: (where, k) => `${where}: "${k}" is a RISC-V exercise field; 8086 tests set memory and check registers, flags, memory and the console.`,
+    noLabel: (t) => `the program has no label "${t}"`,
+    outside: (a) => `address ${a} is outside the 1 MiB memory`,
+    noHalt: (n) => `no HLT within ${n.toLocaleString('en-GB')} instructions`,
+    output: 'console',
   }),
   counterNames: Object.freeze({ instructions: 'Instructions' }),
   // the scratch line (language.js scratch), over the shell's
@@ -298,7 +352,9 @@ export const I8086_STRINGS = Object.freeze({
       flags: 'the ALU\'s flags into FLAGS', condition: 'FLAGS to the EU control (a condition)',
     }),
     kinds: Object.freeze({ queue: 'queue byte', move: 'transfer', alu: 'ALU', bus: 'bus request', jump: 'jump (queue flushed)', hardwired: 'without microcode', end: 'end' }),
-    busOps: Object.freeze({ read: 'memory read', write: 'memory write', in: 'I/O read', out: 'I/O write' }),
+    busOps: Object.freeze({ read: 'memory read', write: 'memory write', in: 'I/O read', out: 'I/O write', inta: 'interrupt acknowledge (INTA ×2)' }),
+    entry: (label) => `Interrupt entry: ${label}`,
+    entryBefore: (cs, ip) => `before ${cs}:${ip}`,
     stepOf: (k, n) => `step ${k} of ${n}`,
     counts: (n, k) => `${n} instruction${n === 1 ? '' : 's'} · ${k} step${k === 1 ? '' : 's'} (steps are not clocks)`,
     iteration: (n, of) => `iteration ${n} of ${of}`,
@@ -316,16 +372,22 @@ export const I8086_STRINGS = Object.freeze({
     // clock mode (milestone 8086-B5, L2; design docs/architecture/i8086-biu.md, B5-Q3 to Q6 approved 2026-11-05)
     mode: 'Mode',
     modeTitle: 'Steps: one click performs one teaching-model step. Clocks: one click is one clock of the teaching model, '
-      + 'with the bus interface unit fetching ahead into the queue.',
-    modes: Object.freeze({ step: 'Steps', clock: 'Clocks' }),
+      + 'with the bus interface unit fetching ahead into the queue. Calibrated clocks: one click is one clock, timed as '
+      + 'recorded on a P80C86A-2 for the instructions listed in the verification record.',
+    // B7-Q8 (approved 2026-11-06): the Mode option, the counter and the notice of calibrated mode
+    modes: Object.freeze({ step: 'Steps', clock: 'Clocks', calibrated: 'Calibrated clocks (P80C86A-2)' }),
     waitStates: 'Wait states',
-    waitTitle: 'Wait states (Tw) in every bus cycle, between T3 and T4; for slow memory or I/O. Used in clock mode.',
+    waitTitle: 'Wait states (Tw) in every bus cycle, between T3 and T4; for slow memory or I/O. Used in clock mode; '
+      + 'calibrated mode runs without wait states.',
     clockLabel: 'Next clock',
     clockOf: (n) => `clock ${n + 1}`,
+    // busy: an EU clock of calibrated mode without a teaching step (B7-Q2, approved 2026-11-06: "EU busy (calibrated)")
     eu: Object.freeze({ step: 'performs its step', 'queue-wait': 'waits for the queue (empty)', 'bus-wait': 'waits for the bus',
-      idle: 'idle', halt: 'halted' }),
-    euShort: Object.freeze({ step: 'step', 'queue-wait': 'waits: queue', 'bus-wait': 'waits: bus', idle: 'idle', halt: 'halted' }),
-    cycleKinds: Object.freeze({ code: 'code fetch', read: 'memory read', write: 'memory write', in: 'I/O read', out: 'I/O write' }),
+      idle: 'idle', halt: 'halted', busy: 'busy (calibrated)' }),
+    euShort: Object.freeze({ step: 'step', 'queue-wait': 'waits: queue', 'bus-wait': 'waits: bus', idle: 'idle', halt: 'halted', busy: 'busy (cal.)' }),
+    // B7-Q4 (approved 2026-11-06): an instruction without a calibrated row keeps the teaching model's timing, marked
+    notCalibrated: 'not calibrated',
+    cycleKinds: Object.freeze({ code: 'code fetch', read: 'memory read', write: 'memory write', in: 'I/O read', out: 'I/O write', inta: 'interrupt acknowledge (INTA)' }),
     busIdleT: 'Ti: bus idle',
     discarded: 'bytes discarded (queue flushed)',
     tState: (t, w) => (t === 'Tw' && w ? `Tw (wait state ${w})` : t),
@@ -341,6 +403,10 @@ export const I8086_STRINGS = Object.freeze({
     clockNotice: 'In clock mode the simulator gives each step one clock and each bus cycle four (more with wait states); '
       + 'these counts are not the 8086\'s.',
     haltedAtClock: (at, n, k) => `Halted at ${at} after ${n} instruction${n === 1 ? '' : 's'} and ${k} clock${k === 1 ? '' : 's'} of the teaching model (clock counts are not historical).`,
+    calibratedCounts: (n, k) => `${n} clock${n === 1 ? '' : 's'} · ${k} instruction${k === 1 ? '' : 's'} (calibrated to P80C86A-2 traces)`,
+    calibratedNotice: 'In calibrated mode the clock counts follow recorded traces of a P80C86A-2, a CMOS 80C86, for the '
+      + 'instructions listed in the verification record; other instructions keep the teaching model\'s counts and are marked.',
+    haltedAtCalibrated: (at, n, k) => `Halted at ${at} after ${n} instruction${n === 1 ? '' : 's'} and ${k} clock${k === 1 ? '' : 's'} (calibrated to P80C86A-2 traces; instructions marked "not calibrated" keep the teaching model's counts).`,
     stepClock: 'Clock ▶',
     // the queue panel (B5-Q4)
     tabQueue: 'Queue',
@@ -373,5 +439,59 @@ export const I8086_STRINGS = Object.freeze({
       + 'when two or more bytes are free and the execution unit makes no bus request; words are fetched, a single byte '
       + 'after a jump to an odd address; a jump empties the queue. A bus cycle is T1 to T4, with wait states between T3 '
       + 'and T4. The execution unit\'s timing is the simulator\'s.',
+  }),
+  // the shell's waveform panel, for the 8086 (milestone 8086-B6, B6-Q5 approved 2026-11-05)
+  wave: Object.freeze({
+    note: 'One value per clock of the teaching model (in step mode, per step); edges inside a clock are not shown; '
+      + 'minimum- and maximum-mode pins are both offered, a real 8086 has one set. Select a clock to go to it.',
+  }),
+  // the waveform signals (B6-Q1, Q2: both bus modes, labelled; electrical levels, _n = active low)
+  waveform: Object.freeze({
+    labels: Object.freeze({
+      T: 'T: T state (teaching model)',
+      cycle: 'cycle: kind of bus cycle',
+      address: 'address: of the bus cycle (held between cycles)',
+      ALE: 'ALE · minimum mode (in maximum mode from the 8288)',
+      BHE_n: 'BHE_n · both modes (in T1)',
+      M_IO: 'M_IO · minimum mode (1 memory, 0 I/O)',
+      RD_n: 'RD_n · both modes',
+      WR_n: 'WR_n · minimum mode',
+      DT_R: 'DT_R · minimum mode (1 transmit, 0 receive)',
+      DEN_n: 'DEN_n · minimum mode',
+      S: 'S2 S1 S0 · maximum mode (111 passive)',
+      QS: 'QS1 QS0 · maximum mode (one clock after the event)',
+      queue: 'queue: bytes queued at the end of the clock',
+      EU: 'EU: what the execution unit does',
+      step: 'step: kind of teaching-model step',
+      calibrated: 'calibrated: 1 when the clock\'s instruction has calibrated timing (calibrated mode)',
+    }),
+    eu: Object.freeze({ step: 'step', 'queue-wait': 'waits: queue', 'bus-wait': 'waits: bus', idle: 'idle', halt: 'halted', busy: 'busy (calibrated)' }),
+    calibrated: Object.freeze(['not calibrated', 'calibrated']),
+  }),
+  // the Timeline tab (milestone 8086-B6, B6-Q4 and Q5 approved 2026-11-05)
+  timeline: Object.freeze({
+    tab: 'Timeline',
+    heading: 'Fetch and execute overlap, clock by clock',
+    notPipeline: 'Two units joined by a six-byte queue, not a stage pipeline: the BIU fetches while the EU executes. '
+      + 'Teaching model; clock counts are not historical.',
+    notPipelineCalibrated: 'Two units joined by a six-byte queue, not a stage pipeline: the BIU fetches while the EU executes.',
+    stepMode: 'The timeline shows the clocks of the bus interface unit and the execution unit; it needs clock mode.',
+    toClock: 'Switch to clock mode',
+    lanes: Object.freeze({ biu: 'BIU: bus', eu: 'EU', queue: 'Queue (0–6)', events: 'Queue events' }),
+    shown: 'Clocks shown',
+    plotLabel: 'Timeline; select a clock to go to it',
+    showTable: 'Show as a table',
+    figureLabel: (a, b) => `Timeline of clocks ${a} to ${b}: bus cycles of the bus interface unit, steps and waits of the `
+      + 'execution unit, the queue length and the queue events',
+    empty: 'No clock run yet. Step in clock mode: each clock adds a column.',
+    next: 'next clock',
+    caption: (a, b) => `Clocks ${a} to ${b}`,
+    cols: Object.freeze(['Clock', 'T state', 'Bus cycle', 'Execution unit', 'Instruction', 'Bytes queued', 'Queue event']),
+    goTo: (n) => `Go to clock ${n}`,
+    cycleShort: Object.freeze({ code: 'fetch', read: 'read', write: 'write', in: 'in', out: 'out', inta: 'INTA' }),
+    flush: 'queue flushed',
+    legend: Object.freeze({ qwait: 'EU waits for the queue', bwait: 'EU waits for the bus', discard: 'fetch discarded (flush)' }),
+    eventsNote: 'F, S and E (Intel\'s queue-status codes, Table 4-4) are drawn in the clock in which they happen; the 8086\'s '
+      + 'QS pins show them one clock later (the Waveforms tab does).',
   }),
 });

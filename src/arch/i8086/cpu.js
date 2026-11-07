@@ -45,14 +45,45 @@ export function condition(m, f) {
 }
 
 /**
+ * An interrupt entry outside an instruction (8086-B8: NMI, INTR, single-step; IFUM p. 2-26, PDF 49): the vector of
+ * `type` is read, then FLAGS, CS and IP are pushed, IF and TF cleared, and CS:IP loaded from the vector. The return
+ * address is the present CS:IP. The order of the reads and pushes is that of the [TEST] interrupts (see execute).
+ * `emptyVector` as in execute. Returns {writes, reads, interrupt, call: 1} or {error: 'noHandler', vector}.
+ */
+export function enterInterrupt(c, bus, type, { emptyVector = false } = {}) {
+  const at = 4 * (type & 0xff);
+  if (emptyVector && [0, 1, 2, 3].every((k) => bus.read(at + k) === 0)) return { error: 'noHandler', vector: type };
+  const writes = []; const reads = [{ address: at, size: 2 }, { address: at + 2, size: 2 }];
+  const old = bus.peek ?? bus.read;
+  const word = (a) => bus.read(a) | (bus.read(a + 1) << 8);
+  const ip = word(at); const cs = word(at + 2);
+  const push = (v) => {
+    c.SP = (c.SP - 2) & 0xffff;
+    const a = phys(c.SS, c.SP); const b = phys(c.SS, c.SP + 1);
+    if (b === a + 1) writes.push({ address: a, size: 2, old: old(a) | (old(b) << 8), value: v & 0xffff });
+    else writes.push({ address: a, size: 1, old: old(a), value: v & 0xff }, { address: b, size: 1, old: old(b), value: (v >> 8) & 0xff });
+    bus.write(a, v & 0xff); bus.write(b, (v >> 8) & 0xff);
+  };
+  push(c.FLAGS);
+  c.FLAGS &= ~(FLAG.IF | FLAG.TF);
+  push(c.CS);
+  push(c.IP);
+  c.IP = ip; c.CS = cs;
+  return { writes, reads, interrupt: type, call: 1 };
+}
+
+/**
  * Run the instruction at CS:IP. `cpu` holds the registers of CPU_REGS (numbers, 16 bits) and is changed in place;
  * `bus` has read(address) and write(address, byte) on the 20-bit memory, and optionally input(port, size) and
  * output(port, value, size). Options: `emptyVector` true stops (error 'noHandler') at an interrupt whose vector is
- * 0000:0000 rather than jumping there. Returns {d (the decoded instruction), length, writes [{address, size, old, value}],
+ * 0000:0000 rather than jumping there; `repStop` (8086-B8), called after each repetition of a REP string instruction
+ * that would go on, may return true to stop it there for an interrupt: IP then points at the prefix immediately before
+ * the string op code, the only prefix restored on return (AP-67, p. A-27, PDF 331), and `repInterrupted` gives the
+ * repetitions done. Returns {d (the decoded instruction), length, writes [{address, size, old, value}],
  * reads [{address, size}], call (+1, -1 or 0), halt?, trap? {cause, label}, interrupt? (vector), out? [{port, value,
- * size}]} or {error, d} with nothing changed.
+ * size}], repInterrupted?} or {error, d} with nothing changed.
  */
-export function execute(c, bus, { emptyVector = false } = {}) {
+export function execute(c, bus, { emptyVector = false, repStop = null } = {}) {
   const csBase = c.CS << 4;
   const startIP = c.IP;
   const d = decode((k) => bus.read((csBase + ((startIP + k) & 0xffff)) & 0xfffff));
@@ -375,14 +406,21 @@ export function execute(c, bus, { emptyVector = false } = {}) {
 
     default:
       if (JCC.includes(m)) { if (condition(m, c.FLAGS)) c.IP = (next + o0.value) & 0xffff; break; }
-      if (STRING.has(m)) { strings(c, d, m, rd, wr, sub); break; }
+      if (STRING.has(m)) {
+        const done = strings(c, d, m, rd, wr, sub, repStop);
+        if (done) { c.IP = (startIP + d.prefixes.length - 1) & 0xffff; res.repInterrupted = done; }
+        break;
+      }
       throw new Error(`no semantics for ${m}`);
   }
   return res;
 }
 
-/** MOVS, CMPS, SCAS, LODS and STOS, with REP, REPE or REPNE (IFUM pp. 2-40 to 2-43): all iterations in one step. */
-function strings(c, d, m, rd, wr, sub) {
+/**
+ * MOVS, CMPS, SCAS, LODS and STOS, with REP, REPE or REPNE (IFUM pp. 2-40 to 2-43): all iterations in one step, unless
+ * `repStop` stops it between two; then returns the repetitions done (else 0).
+ */
+function strings(c, d, m, rd, wr, sub, repStop) {
   const size = m.endsWith('B') ? 8 : 16;
   const delta = (c.FLAGS & FLAG.DF ? -1 : 1) * (size / 8);
   const src = d.seg ? c[d.seg] : c.DS; // DS:SI may be overridden; ES:DI may not
@@ -395,11 +433,15 @@ function strings(c, d, m, rd, wr, sub) {
       default: wr(c.ES, c.DI, size === 8 ? c.AX & 0xff : c.AX, size); c.DI = (c.DI + delta) & 0xffff; break; // STOS
     }
   };
-  if (!d.rep) { once(); return; }
+  if (!d.rep) { once(); return 0; }
   const compares = m.startsWith('CMPS') || m.startsWith('SCAS');
+  let n = 0;
   while (c.CX !== 0) {
     once();
+    n += 1;
     c.CX = (c.CX - 1) & 0xffff;
     if (compares && (d.rep === 'REP' ? !(c.FLAGS & FLAG.ZF) : c.FLAGS & FLAG.ZF)) break;
+    if (c.CX !== 0 && repStop && repStop()) return n;
   }
+  return 0;
 }

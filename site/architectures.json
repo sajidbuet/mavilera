@@ -44,11 +44,11 @@
     {
       "id": "i8086",
       "name": "8086",
-      "description": "The Intel 8086: an assembler in the style of Intel's ASM-86 and an instruction-level simulator with the general, pointer, index and segment registers, the flags, 1 MiB of segmented memory and the I/O ports, its instructions checked against the SingleStepTests 8086 suite. A beta: the BIU and EU view steps each instruction through a teaching model, or clock by clock with the bus interface unit filling the instruction queue; the clock counts are the teaching model's, and instruction timing comes later.",
-      "tagline": "The Intel 8086: segmented memory, the flags and the I/O ports, instruction by instruction.",
+      "description": "The Intel 8086: an assembler in the style of Intel's ASM-86 and an instruction-level simulator with segmented memory, the flags, the I/O ports and NMI and INTR inputs, checked against the SingleStepTests 8086 suite. The BIU and EU view steps each instruction through a teaching model, clock by clock with the bus interface unit filling the instruction queue, or with clock counts calibrated to recorded P80C86A-2 traces.",
+      "tagline": "The Intel 8086: segmented memory, the prefetch queue and interrupts, instruction by instruction and clock by clock.",
       "path": "i8086/",
-      "status": "planned",
-      "_status": "A beta, built on the development page only: not published until its full documentation is approved (publication gate, author 2026-11-05).",
+      "status": "available",
+      "docs": "i8086/docs/",
       "content": ["content/i8086/"]
     },
     {

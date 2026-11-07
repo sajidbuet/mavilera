@@ -9,6 +9,9 @@
 // cycle of the next clock, the EU control whether the EU performs its step or waits; the Queue tab (queue-panel.js)
 // lists the cells, pointers and the last clocks. Wait states 0 to 3. Clock counts are the teaching model's, not the
 // 8086's. The simulator's own drawing (C4).
+// Timeline and waveforms (milestone 8086-B6, B6-Q1 to Q8 approved 2026-11-05; design docs/architecture/i8086-timeline.md):
+// the Timeline tab (overlap-timeline.js) draws the clocks run as BIU and EU lanes; the shell's Waveforms tab and VCD
+// export take their frames from waveform.js (clocks in clock mode, steps in step mode).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -16,14 +19,17 @@ import { STOP } from '../../contract.js';
 import { el, store } from '../../../ui/dom.js';
 import { MicroModel } from '../micro-model.js';
 import { ClockModel } from '../biu-model.js';
+import { CalibratedClockModel } from '../timing.js';
 import { format, hexH } from '../isa.js';
 import { I8086_STRINGS } from '../strings.js';
 import { VIEW, FRAMES, BUS, SPINE, UNITS, DECODER, CELLS, FLAG_CELLS, STUBS, LINKS, ALU_INPUTS, PLACE_UNIT, PLACE_ROW, rowBox } from './layout.js';
 import { QueuePanel, cycleText } from './queue-panel.js';
+import { OverlapTimeline } from './overlap-timeline.js';
+import { CLOCK_SIGNALS, CALIBRATED_SIGNALS, STEP_SIGNALS, CLOCK_DEFAULTS, STEP_DEFAULTS, formatValue, clockExportModel, stepExportModel } from '../waveform.js';
 
 const D = I8086_STRINGS.datapath;
 /** The view's settings (contract v5 View.settings, key `i8biu`): stored as the shell stores them. */
-export const MODES = Object.freeze(['step', 'clock']);
+export const MODES = Object.freeze(['step', 'clock', 'calibrated']); // calibrated: B7 (timing.js, L3)
 export const WAITS = Object.freeze(['0', '1', '2', '3']);
 const KEY = 'pips.i8biu.';
 const NS = 'http://www.w3.org/2000/svg';
@@ -155,7 +161,7 @@ export function activity(step) {
   if (step.bus) {
     const r = step.bus;
     on.units.add('BUSCTL'); on.links.add('address'); on.links.add('external');
-    if (r.op === 'read' || r.op === 'in') { on.links.add('opr-in'); on.rows.add('OPR'); on.units.add('ICR'); } else { on.links.add('opr-out'); on.rows.add('OPR'); on.units.add('ICR'); }
+    if (r.op === 'read' || r.op === 'in' || r.op === 'inta') { on.links.add('opr-in'); on.rows.add('OPR'); on.units.add('ICR'); } else { on.links.add('opr-out'); on.rows.add('OPR'); on.units.add('ICR'); }
     if (r.op === 'read' || r.op === 'write') {
       on.units.add('ADDER');
       if (typeof r.segment === 'string' && PLACE_UNIT[r.segment] === 'SEG') { on.links.add('segment'); on.units.add('SEG'); on.rows.add(r.segment); }
@@ -181,6 +187,8 @@ export class BiuEuView {
     this.status = el('span.dp-status.mono');
     this.stepsBox = el('div.i8-tab.scroll');
     this.queue = new QueuePanel();
+    this.timeline = new OverlapTimeline();
+    this.goTo = () => {}; // the shell's go-to-clock (biuEuInstance)
     this.modeSel = el('select', { 'aria-label': D.mode, onchange: (e) => this.applyOptions({ mode: e.target.value }) },
       MODES.map((v) => el('option', { value: v, text: D.modes[v], selected: v === this.options.mode })));
     this.waitSel = el('select', { 'aria-label': D.waitStates, onchange: (e) => this.applyOptions({ wait: e.target.value }) },
@@ -189,7 +197,8 @@ export class BiuEuView {
     this.build();
   }
 
-  get clockMode() { return this.options.mode === 'clock'; }
+  get clockMode() { return this.options.mode !== 'step'; }
+  get calibrated() { return this.options.mode === 'calibrated'; }
 
   /** Take over settings (the menus, share links); the program restarts. */
   applyOptions(o) {
@@ -204,8 +213,10 @@ export class BiuEuView {
 
   load(program) {
     this.program = program ?? null;
-    this.waitSel.disabled = !this.clockMode;
-    this.cm = program && this.clockMode ? new ClockModel(program, { waitStates: Number(this.options.wait) }) : null;
+    this.waitSel.disabled = !this.clockMode || this.calibrated; // calibrated mode: no wait states (B7-Q7)
+    this.waitSel.value = this.calibrated ? '0' : this.options.wait; // shown as used; the setting is kept for clock mode
+    this.cm = !program || !this.clockMode ? null
+      : this.calibrated ? new CalibratedClockModel(program) : new ClockModel(program, { waitStates: Number(this.options.wait) });
     this.model = this.cm ? this.cm.mm : program ? new MicroModel(program) : null;
     this.render();
   }
@@ -369,7 +380,7 @@ export class BiuEuView {
 
     this.drawRegisters(regs);
     // the queue: this instruction's bytes not yet taken (B4: no prefetch, design §4)
-    const bytes = m && !m.cur.res.error ? m.cur.res.d.bytes : [];
+    const bytes = m && !m.cur.res.error ? m.cur.res.d?.bytes ?? [] : []; // an interrupt entry (B8) has no bytes
     const taken = m ? m.steps.slice(0, m.k).reduce((n, st) => n + (st.transfers ?? []).filter((t) => t.from === 'Q').length, 0) : 0;
     const left = m?.halted ? [] : bytes.slice(taken, taken + 6);
     this.drawCells(on.flush ? [] : left, on.cells, false);
@@ -380,9 +391,9 @@ export class BiuEuView {
     const r = next?.bus;
     const BL = P.units.BUSCTL.lines;
     if (r) {
-      const io = r.op === 'in' || r.op === 'out';
+      const io = r.op === 'in' || r.op === 'out' || r.op === 'inta';
       BL[0].textContent = D.busOps[r.op];
-      BL[1].textContent = io ? `port ${h4(r.port)}` : `${r.segment}:${r.offset}`;
+      BL[1].textContent = r.op === 'inta' ? '' : io ? `port ${h4(r.port)}` : `${r.segment}:${r.offset}`;
       BL[2].textContent = io ? '' : `${hexH(r.address, 5)}${r.size === 16 ? ` and ${hexH(r.address2, 5)}` : ''}`;
       BL[3].textContent = `${r.size} bits: ${r.size === 8 ? h2(r.value) : h4(r.value)}`;
       BL[4].textContent = '';
@@ -395,8 +406,9 @@ export class BiuEuView {
     // the control
     const C = P.units.CTRL;
     const d = m && !m.cur.res.error && !m.halted ? m.cur.res.d : null; // after HLT: nothing decoded (B4 item 7, author 2026-11-05)
-    C.ins.textContent = d ? format(d, m.cur.ip) : m?.error ? '?' : '';
-    C.bytes.textContent = d ? `${hexH(m.cur.cs, 4)}:${hexH(m.cur.ip, 4)}  ${d.bytes.map(xx).join(' ')}` : '';
+    const en = entryOf(m); // an interrupt entry (B8)
+    C.ins.textContent = d ? format(d, m.cur.ip) : en ? D.entry(entryLabel(en)) : m?.error ? '?' : '';
+    C.bytes.textContent = d ? `${hexH(m.cur.cs, 4)}:${hexH(m.cur.ip, 4)}  ${d.bytes.map(xx).join(' ')}` : en ? D.entryBefore(hexH(m.cur.cs, 4), hexH(m.cur.ip, 4)) : '';
     C.stepOf.textContent = m && next ? D.stepOf(m.k + 1, m.steps.length) : m?.halted ? D.halted : '';
     C.kind.textContent = next ? `${D.kinds[next.kind]}${next.iteration ? ` · ${D.iteration(next.iteration.n, next.iteration.of)}` : ''}` : '';
     const words = next ? describeStep(next) : [];
@@ -408,9 +420,10 @@ export class BiuEuView {
     this.highlight(on);
     this.caption.textContent = m ? '' : D.noProgram;
     this.svg.setAttribute('aria-label', D.figureLabel(next ? `${D.stepOf(m.k + 1, m.steps.length)}: ${describeStep(next).join('; ')}` : ''));
-    this.status.textContent = m?.halted && !m.error ? D.halted : m && d ? `${format(d, m.cur.ip)} · ${next ? D.stepOf(m.k + 1, m.steps.length) : D.halted}` : '';
+    this.status.textContent = m?.halted && !m.error ? D.halted : m && (d || en) ? `${d ? format(d, m.cur.ip) : D.entry(entryLabel(en))} · ${next ? D.stepOf(m.k + 1, m.steps.length) : D.halted}` : '';
     this.renderSteps();
     this.queue.render({ model: null, next: null, clockMode: false });
+    this.timeline.render({ model: null, clockMode: false, onClockMode: () => this.applyOptions({ mode: 'clock' }) });
   }
 
   /** The queue cells of the drawing: `left` the bytes from the head; the head sits in the right-hand cell. */
@@ -482,11 +495,11 @@ export class BiuEuView {
     const BL = P.units.BUSCTL.lines;
     const c = rec?.cycle;
     if (c) {
-      const io = c.kind === 'in' || c.kind === 'out';
+      const io = c.kind === 'in' || c.kind === 'out' || c.kind === 'inta';
       const cur = cm.core.s.cycle;
       const w = rec.t === 'Tw' ? (cur && cur.t === 'Tw' ? cur.w + 1 : 1) : 0;
       BL[0].textContent = `${D.tState(rec.t, w)} · ${D.cycleKinds[c.kind]}`;
-      BL[1].textContent = io ? `port ${h4(c.address)}` : hexH(c.address, 5);
+      BL[1].textContent = c.kind === 'inta' ? '' : io ? `port ${h4(c.address)}` : hexH(c.address, 5);
       BL[2].textContent = `${c.size} bits${c.discard ? `; ${D.discarded}` : ''}`;
       P.units.ADDER.addr.textContent = io ? '' : hexH(c.address, 5);
     } else {
@@ -499,26 +512,31 @@ export class BiuEuView {
 
     // the control
     const C = P.units.CTRL;
-    C.label.textContent = D.clockLabel;
+    // calibrated mode: an instruction without a calibrated row is marked (B7-Q4)
+    const uncal = this.calibrated && rec && !rec.calibrated;
+    C.label.textContent = uncal ? `${D.clockLabel} (${D.notCalibrated})` : D.clockLabel;
     const d = !m.cur.res.error && !m.halted ? m.cur.res.d : null; // after HLT: nothing decoded
-    C.ins.textContent = d ? format(d, m.cur.ip) : m.error ? '?' : '';
-    C.bytes.textContent = d ? `${hexH(m.cur.cs, 4)}:${hexH(m.cur.ip, 4)}  ${d.bytes.map(xx).join(' ')}` : '';
+    const en = entryOf(m); // an interrupt entry (B8): not calibrated (B8-Q8)
+    C.ins.textContent = d ? format(d, m.cur.ip) : en ? D.entry(entryLabel(en)) : m.error ? '?' : '';
+    C.bytes.textContent = d ? `${hexH(m.cur.cs, 4)}:${hexH(m.cur.ip, 4)}  ${d.bytes.map(xx).join(' ')}` : en ? D.entryBefore(hexH(m.cur.cs, 4), hexH(m.cur.ip, 4)) : '';
     C.stepOf.textContent = rec ? `${D.clockOf(cm.clocks)} · ${D.stepOf(m.k + 1, m.steps.length)}` : m.halted ? D.halted : '';
     C.kind.textContent = rec && next ? `${D.kinds[next.kind]}: EU ${D.eu[rec.eu]}` : '';
     const words = next ? describeStep(next) : [];
     C.lines.forEach((t, i) => { t.textContent = words[i] ?? ''; });
     const note = rec?.took?.stale ? wrap(D.staleShort, 36) : next?.note ? wrap(next.note, 36) : [];
     C.note.textContent = note[0] ?? ''; C.note2.textContent = note[1] ?? '';
-    C.count.textContent = D.clockCounts(cm.clocks, m.retired);
+    C.count.textContent = this.calibrated ? D.calibratedCounts(cm.clocks, m.retired) : D.clockCounts(cm.clocks, m.retired);
 
     this.highlight(on);
     this.caption.textContent = '';
     const what = rec ? `${D.clockOf(cm.clocks)}: ${D.tState(rec.t, 0)}${c ? `, ${cycleText(c)}` : ''}; EU ${D.eu[rec.eu]}${next ? `: ${describeStep(next).join('; ')}` : ''}` : '';
     this.svg.setAttribute('aria-label', D.figureLabel(what));
-    this.status.textContent = m.halted && !m.error ? D.halted : d ? `${format(d, m.cur.ip)} · ${rec ? D.clockOf(cm.clocks) : D.halted}` : '';
+    this.status.textContent = m.halted && !m.error ? D.halted
+      : d || en ? `${d ? format(d, m.cur.ip) : D.entry(entryLabel(en))} · ${rec ? D.clockOf(cm.clocks) : D.halted}${uncal ? ` · ${D.notCalibrated}` : ''}` : '';
     this.staleNow = Boolean(rec?.took?.stale || cm.last?.took?.stale);
     this.renderSteps();
     this.queue.render({ model: cm, next: rec, clockMode: true });
+    this.timeline.render({ model: cm, next: rec, clockMode: true, calibrated: this.calibrated, onGoTo: (n) => this.goTo(n) });
   }
 
   /** The Steps tab: the instruction's steps, those performed dimmed, the next one marked. */
@@ -531,7 +549,7 @@ export class BiuEuView {
       el('p', {}, el('strong', { text: `${D.title}: ` }), el('span', { text: D.subtitle })),
       el('table.listing', {}, el('tbody', {}, rows)),
       el('p.i8-src', { text: D.notice }),
-      this.cm ? el('p.i8-src', { text: D.clockNotice }) : null,
+      this.cm ? el('p.i8-src', { text: this.calibrated ? D.calibratedNotice : D.clockNotice }) : null,
       this.cm && this.staleNow ? el('p.note', { text: D.stale }) : null].filter(Boolean));
   }
 }
@@ -545,6 +563,7 @@ const CPU = ['AX', 'BX', 'CX', 'DX', 'SP', 'BP', 'SI', 'DI', 'CS', 'DS', 'ES', '
  */
 export function biuEuInstance(v, ctx) {
   v.onChange = () => ctx.refresh?.();
+  v.goTo = (n) => ctx.goToCycle?.(n);
   const headerTools = el('span.sb-tools', {},
     el('label.toggle', { title: D.modeTitle }, `${D.mode} `, v.modeSel),
     el('label.toggle', { title: D.waitTitle }, `${D.waitStates} `, v.waitSel),
@@ -564,11 +583,22 @@ export function biuEuInstance(v, ctx) {
   return {
     root: v.root, title: D.title, infoTitle: D.infoTitle, status: v.status, headerTools,
     diagrams: [v.svg],
-    tabs: [[D.tabSteps, v.stepsBox], [D.tabQueue, v.queue.root]],
+    tabs: [[D.tabSteps, v.stepsBox], [D.tabQueue, v.queue.root], [I8086_STRINGS.timeline.tab, v.timeline.root, () => v.timeline.show()]],
+    // the waveforms and the VCD export (B6): clocks in clock mode, teaching-model steps in step mode (B6-Q3); the
+    // defaults of both lists are offered, the panel keeps the names chosen
+    // frames numbered from 1, as the drawing's "clock n" and "step k" (author 2026-11-06, B6 open item)
+    waveform: { defaults: [...CLOCK_DEFAULTS, ...STEP_DEFAULTS.filter((n) => !CLOCK_DEFAULTS.includes(n))], format: formatValue, base: 1 },
+    exportModel: () => (v.options.mode === 'clock'
+      ? { model: v.program ? clockExportModel(v.program, { waitStates: Number(v.options.wait) }) : null, signals: CLOCK_SIGNALS, module: 'i8086', label: `${D.title} (${D.modes.clock})` }
+      : v.options.mode === 'calibrated'
+        ? { model: v.program ? clockExportModel(v.program, { calibrated: true }) : null, signals: CALIBRATED_SIGNALS, module: 'i8086', label: `${D.title} (${D.modes.calibrated})` }
+        : { model: v.program ? stepExportModel(v.program) : null, signals: STEP_SIGNALS, module: 'i8086', label: `${D.title} (${D.modes.step})` }),
     load: (p) => { line = ''; v.load(p); },
     reset: () => { line = ''; v.reset(); },
     step: () => forward(() => (v.cm ? v.cm.clock() : v.model.step())),
     back: () => (v.cm ? v.cm.back() : v.model?.back() ?? false),
+    // the Interrupts panel (8086-B8, B8-Q8): to the step model in every Mode
+    input: (x) => { v.model?.input(x); },
     render: () => v.render(),
     options: { get: () => ({ ...v.options }), apply: (o) => v.applyOptions(o) },
     revision: () => `${v.options.mode}|${v.options.wait}`,
@@ -590,6 +620,7 @@ export function biuEuInstance(v, ctx) {
       const m = v.model;
       if (r !== STOP.HALT || !m) return null;
       const at = `${hexH(m.cur.cs, 4)}:${hexH(m.cur.ip, 4)}`;
+      if (v.cm && v.calibrated) return D.haltedAtCalibrated(at, m.retired, v.cm.clocks);
       return v.cm ? D.haltedAtClock(at, m.retired, v.cm.clocks) : D.haltedAt(at, m.retired, m.count);
     },
     // a breakpoint is checked once per instruction: before its first step (clock mode: the clock after the previous
@@ -611,6 +642,9 @@ export function biuEuInstance(v, ctx) {
 }
 
 const place = (p) => (typeof p === 'number' ? hexH(p, 4) : p);
+/** The interrupt entry the model is in (8086-B8), or null; its label. */
+const entryOf = (m) => (m && !m.halted && m.cur.entry ? m.cur.entry : null);
+const entryLabel = (en) => I8086_STRINGS.interrupts.label[en.kind](en.type);
 /** A step in register-transfer notation, as a list of short lines. */
 export function describeStep(st) {
   const out = [];
@@ -627,8 +661,8 @@ export function describeStep(st) {
   if (st.count) out.push(`${st.count.place} ← ${st.count.value} (count)`);
   if (st.bus) {
     const r = st.bus;
-    out.push(r.op === 'in' || r.op === 'out' ? `${D.busOps[r.op]}: port ${place(r.offset)}` : `${D.busOps[r.op]}: ${r.segment}:${r.offset}`);
-    out.push(r.op === 'read' || r.op === 'in' ? `OPR ← ${r.size === 8 ? h2(r.value) : h4(r.value)}` : `← OPR (${r.size === 8 ? h2(r.value) : h4(r.value)})`);
+    out.push(r.op === 'inta' ? D.busOps.inta : r.op === 'in' || r.op === 'out' ? `${D.busOps[r.op]}: port ${place(r.offset)}` : `${D.busOps[r.op]}: ${r.segment}:${r.offset}`);
+    out.push(r.op === 'read' || r.op === 'in' || r.op === 'inta' ? `OPR ← ${r.size === 8 ? h2(r.value) : h4(r.value)}` : `← OPR (${r.size === 8 ? h2(r.value) : h4(r.value)})`);
   }
   if (st.flush) out.push('queue flushed');
   if (st.kind === 'hardwired' && st.FLAGS !== undefined) out.push(`FLAGS ← ${h4(st.FLAGS)}`);

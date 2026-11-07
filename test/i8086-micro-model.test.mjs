@@ -42,7 +42,7 @@ test('i8086 B4: the state rebuilt from the steps equals runMicro\'s after each i
       const r = m.stepInstruction();
       e.step();
       const ref = e.state().registers;
-      const mask = ~undefinedFlags(res.d) & 0xffff;
+      const mask = res.d ? ~undefinedFlags(res.d) & 0xffff : 0xffff; // an interrupt entry (B8) has no instruction
       for (const k of CPU_REGS) assert.equal((m.c[k] ^ ref[k]) & (k === 'FLAGS' ? mask : 0xffff), 0, `${name}: ${k} after ${n}`);
       if (r === 'halt') break;
     }

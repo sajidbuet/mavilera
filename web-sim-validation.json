@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-05T18:55:09.325Z",
- "version": "1.3.0",
+ "date": "2026-11-07T08:57:15.434Z",
+ "version": "1.4.0",
  "pass": true,
  "summary": {
-  "checks": 1354,
-  "passed": 1354,
+  "checks": 1541,
+  "passed": 1541,
   "failed": 0,
   "skipped": 0,
-  "seconds": 1215,
+  "seconds": 1734,
   "smoke": "pass"
  },
  "environment": {
@@ -22,10 +22,10 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "09c68c784ae849a9e8d8d728623970fd96046d2b",
-  "uncommitted": 13,
+  "commit": "141fcaae9a15944c50d1f736de5d9666d9769ae8",
+  "uncommitted": 0,
   "sources": {
-   "sha256": "0e9cfff916787255d73935898bd1cd778ea3b701401e46befe856193c0f62356",
+   "sha256": "77694ab4bc0648ba57779b0720ffd6dfaea3d4c984d808b29896521b608f86fc",
    "files": {
     "index.html": "176bb7d2d0c4bcf346961d11c20ad2ede932d6300473d525e18e187f3f52be8f",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
@@ -53,7 +53,7 @@
     "src/arch/armv7/ui/multi-view.js": "3247f24cb2d614a48be5662afb4f052773e04b92e6d35931c9dab9d19dfb0c24",
     "src/arch/armv7/ui/pipe-view.js": "0964e8175d3dc524c1f80c1bef713b1055ec9fa06901b8b2b36ae4103a3d9936",
     "src/arch/armv7/ui/single-view.js": "7ec7bcb88f4008b9969c9051b85f63174e198252ee7d1ed0300b613707838bef",
-    "src/arch/contract.js": "4690e6c395b1e8a19e09f9aeb2d3957efc98f245923ffea7ea0eab2916e54386",
+    "src/arch/contract.js": "55af509ec9e0519a7765966111df1cb6c6a93d9a14d86c84efa5ba9aac84d2d8",
     "src/arch/gpu/engine.js": "9651b980853dfec368b49eea21843893442fccd47ac6632234b45fde4eb5e829",
     "src/arch/gpu/exports.js": "a63519ccc0f40aa87664fde8c4797893a078161e4d158ae4106bee0b4aac8208",
     "src/arch/gpu/index.js": "3faefa35c31933bda97af2fd5ea7d287940502433a6f7e86f77979623d3f811f",
@@ -75,20 +75,58 @@
     "src/arch/gpu/ui/mask-grid.js": "5860f4836b9e007a108f293b7b2ef4d67f7a2d55321ad14dd771ecda3c9a1ad5",
     "src/arch/gpu/ui/mask-view.js": "85bc2ca77acb2e50206e457ca6a2336f4060fcc7298a1bab8d7bcd32230b20e9",
     "src/arch/gpu/ui/models-view.js": "e3ece60f6bf7b0f7aa1c1e467b4263c4cfff7a8d11c6e3b266e4faf39c1eae03",
-    "src/arch/i8086/biu-model.js": "b7a8b720a0d34b5b2df4cc976f39316912e5d3bd4e691d13f0346bbc173bed52",
-    "src/arch/i8086/cpu.js": "de4a8a57abbec13f7d457268bf52a724caa2709af32aa118ef830c3638acf099",
-    "src/arch/i8086/engine.js": "bde9f9ca4706535e9311aa437e8d1b22ea101d8b4873ecb1cf31bef25f16b353",
-    "src/arch/i8086/exports.js": "f19d0db3b8296f2a799444e1f142b1a9da6ee762b0cd6ba7a32d37685c11495f",
-    "src/arch/i8086/index.js": "9c73cf6b32216ac19c585218b449044ba49da7fe9cfbe09fc8375a6bd8cbc547",
+    "src/arch/i8086/biu-model.js": "6baef987b007b744f16184317adf3f5e75b8cfd3c4484a64dcc2ca22f36a052e",
+    "src/arch/i8086/cpu.js": "2ec2d1935baf582786b8cf98f03d13840a9f9c28e8f585b84f357ff7d864ee7f",
+    "src/arch/i8086/engine.js": "3c62882f668b347df77478f5c2b76966ffb738131d9607658f5f116710dc158e",
+    "src/arch/i8086/exercise.js": "2acc4362edc3f9819b58d517bebe434eae6f1c6529d6ad6f7708ccd6d50cda54",
+    "src/arch/i8086/exports.js": "5195600abff75c04d882d70c83e1aa64cd138dd9464afb816b0f8a8993d4446a",
+    "src/arch/i8086/index.js": "a2fc23234fd0796881e9fa31351813e6ff25b42f944cc12976b784e81ebed89b",
+    "src/arch/i8086/interrupts.js": "f4ec6504f85a16543b62a6f066ae757d7e61f54963f69a1c5b38ff54720be800",
     "src/arch/i8086/isa.js": "6d9f5159be23f369e291917b37303083c58c578af892acbb5ce484c52942d2b2",
     "src/arch/i8086/language.js": "e558053b60e301de94a6dc5f6c4d7bdc5354b2cc28f03d0186b5fec985f7e0dd",
-    "src/arch/i8086/micro-model.js": "9a5cadb4b8d9a03fe8c1ccc671ef02581b81085f19682d4a6a066a873020ad49",
-    "src/arch/i8086/microops.js": "1a055c45af94f2538cd7abf5d97078a1cccb902abb61bbf61c085e64ce3555fd",
-    "src/arch/i8086/strings.js": "e45fa5ae7ed1a8c808565004b4e923a220778b3faccf76ed11971061062889b8",
-    "src/arch/i8086/ui/biu-eu-view.js": "97dfed26dacf925c4837dcf22e81a06f27d1f0fe7c97bf110cba49abe1f13a22",
+    "src/arch/i8086/micro-model.js": "f27adfa5096fb3a26a42c600672fe054cc6ab72ca7e61950d8ca1c3ffd3dcae2",
+    "src/arch/i8086/microops.js": "9288c1ad374d6cd7342e5a6759964d3733684df3b15d91021c84fb334937ed01",
+    "src/arch/i8086/strings.js": "188d81067b4a2354c4b25804701934899bfaba6377e99c46e1b924f41d91d1ee",
+    "src/arch/i8086/timing.js": "6d00704ef54b2c65f8cfe64a46265141a23c07c8fa2ac0edbc223f24cd604287",
+    "src/arch/i8086/ui/biu-eu-view.js": "0c648ef1b67573bdc275b2349a1d0164726e8bdf5f04d468803890214878b268",
+    "src/arch/i8086/ui/interrupt-panel.js": "d1bb5f093696e0004dde32fa7502d6a1d710921ac0fe02e57001c49fb1ffb0e2",
     "src/arch/i8086/ui/layout.js": "bafcaad98dc1d04640e354f798a19a0e89784bf66f7aa1d217dc98c7bf0c2d50",
-    "src/arch/i8086/ui/queue-panel.js": "ade8a9f9f5df08671d5f234e27ecbd98b40a94af6b94a11db4de1440d6291b1e",
-    "src/arch/registry.js": "91e2fe63a86051d6bcd06f6c060c19e1ae16567875a819b8f253558956862aa0",
+    "src/arch/i8086/ui/overlap-timeline.js": "40fe38f82c4be4a0eb04b30ef3bd3883540a9919ee8c33c093dc2838cab9fba3",
+    "src/arch/i8086/ui/queue-panel.js": "9b7bf71e6fe3fba788696ba836a7f93836e628c01b1ad988f998a1233456263c",
+    "src/arch/i8086/waveform.js": "feea764cb5f5e90b998d0eb5e0cefe321ab8d8438b4c57589a1f2380a2f54dac",
+    "src/arch/pico2/boot/image.js": "15c646f78281e3888f5e389741ac19772449432dd19c32785add99029e018e06",
+    "src/arch/pico2/boot/rom.js": "185fc9d7eb86af0bca8ae9b9d7ac38459fc0a8ec28efc9d6441260db9c4adb66",
+    "src/arch/pico2/core/decode.js": "47b2f49cbe446e7e42f32cca9b326575b813afa141587b7aaf62c3bc88eb0007",
+    "src/arch/pico2/core/disasm.js": "38b9298f2a1a749dc545648b08a5522c32ff100860d5ce6902b032ce500ddae4",
+    "src/arch/pico2/core/elf.js": "aa951c65bc58b3cc041359de2220db8af5a09ad015a785a64fb58c5f836260b0",
+    "src/arch/pico2/core/hart.js": "43e11ca31182069609aa3d188eaab5ec6ba7995bc3fd08f77232fb94864ebd4b",
+    "src/arch/pico2/core/history.js": "763b87d3bcc0f1db85e848ae0a93943ab6763e63ba150dfb54f00edf1a0d02ec",
+    "src/arch/pico2/core/irqctrl.js": "c52451ca7b9c4d72a404a140db066b08b3ded37fef0856ad541b9acb8320088e",
+    "src/arch/pico2/core/pmp.js": "fc15ab10850f47c3c42efada452e1bcb6d23cebb1bc44e8cf4d930dae166710f",
+    "src/arch/pico2/core/timing.js": "daa2f9463fe9bb727c2f63dff50445672941c25877d5dc4aa68322c62af30646",
+    "src/arch/pico2/core/triggers.js": "3b3f6e2c30e744ad7568601bfd571448a53e81595671ba82df288fc2f7716018",
+    "src/arch/pico2/engine.js": "40241c4cc4aec2578a1b0699134277a0b955a7a704eefca151890138ba67841a",
+    "src/arch/pico2/exports.js": "68f1bf73ab2412e42bbc4fd819d2b3eed0d2da3d9d6230c2443515e3a56f3623",
+    "src/arch/pico2/index.js": "da0e363d5f92527bea38ab94efcf8453b9697e7e14fd8ad0f41b47119ff2de34",
+    "src/arch/pico2/language.js": "eb40ae334e0120bc4599ff4ac67fc170d2ceb725c544f4da2788d72cae7a1ddd",
+    "src/arch/pico2/soc/bus.js": "ebb5fb2937de5ad3a8c130573fb90cc7161a9b0c3eaf70b93ffa73b9f6760388",
+    "src/arch/pico2/soc/clocks.js": "2d8a39ed7ffd8e2bea2486a43a0e0e1ec5e0517b831e0ea9ad6e6a0bf39655be",
+    "src/arch/pico2/soc/counter.js": "60d53603131404a26874d7670f4f9e44d65ff263bf9ed374699401ae74c771fb",
+    "src/arch/pico2/soc/device.js": "6a869c420cb2abafd8a28f9149a6b9c7a00d337d6ba970446c0b8c018edd2194",
+    "src/arch/pico2/soc/gpio.js": "d1407939c7fb723d13da308c14930d8ee00e5f14a18eb6f816cadcca8c1ae7ba",
+    "src/arch/pico2/soc/machine.js": "d41e748d3e5bebc229e967e038a4cd3ddcc81ea77198ebc68bd6cb86bc807e04",
+    "src/arch/pico2/soc/regfile.js": "54e19dfca7044dc5407c45f21390bff3968751d317897bed48464ce94dbad980",
+    "src/arch/pico2/soc/regs.generated.js": "de6a563e787069c398ce093316895b127bd106a53d373aec5aa1f1c2bac03cc6",
+    "src/arch/pico2/soc/sio.js": "6fd1fb0a31763e5854fc8ee90990d86fab1dabb3975b7993900e04eba296b918",
+    "src/arch/pico2/soc/timer.js": "8b10226c4308fc8ed7721f9430df0778f43f821e4b2c393af031df53660bbd8f",
+    "src/arch/pico2/soc/uart.js": "ccd835ea680bce1648bd8cdeb596838395b9cfdc93b05bb251063089c2bc7d92",
+    "src/arch/pico2/strings.js": "dcb56a2cfd7a099dd0d42cbc0a01cd98c42e660d0dd710c4c96ae316e99defea",
+    "src/arch/pico2/uarch/session.js": "cfa2f726597b2b11d1bafb7de01e3621c0b8e60afa92c4962ab2c0d1f99ba584",
+    "src/arch/pico2/uarch/stages.js": "6d8d8c0b8dfd24cc6933b3b5d187bf1f4f1ecd511fe0a772c4c9b608d397e91d",
+    "src/arch/pico2/uarch/summary.js": "3000c45c170fda17d09aceb7abec86972cf0f29e70a00732487cdf393e66dd49",
+    "src/arch/pico2/ui/geometry.js": "b93d1d4621b0296aaed6affd2ef70481c46b6bebcc4c03e5266d159a4a092844",
+    "src/arch/pico2/ui/pipeline-view.js": "4f676e47925af76deba31fddd9e15f033c2ac1b4d809292285c2b9bcf9552a4b",
+    "src/arch/registry.js": "1371aa21090f7ed368c9653c5bbbf43ec97016875057cb8af9b95f35e3be0c1f",
     "src/arch/riscv/default-source.js": "8ecff07b0098dd95613081fca760b4cefa3d15f193994391682b75957ff52a4f",
     "src/arch/riscv/editor.js": "488b716a271edc5fd850a1aecfe6ae7e28415a7da337176495eba9b1805a7b8d",
     "src/arch/riscv/gpu-datapath.js": "b56759c76403d01a2736b55598d10a5d5e524a26ff7c69a6a55913f28d1c56e0",
@@ -149,7 +187,7 @@
     "src/core/profiles.js": "6b9efa63c8e8f66ca741af04b68f7fea0c7ecf06b7ea757f0c3530fc82cc145d",
     "src/core/session.js": "4bf27eff7ec112bb7e6d936e19ed983e33827095c076b277d29db02b4d507e20",
     "src/isa/encoding.js": "4cabfb9181bfa1898eb7097fd6dd1c7b63ff89d68b1e794c6a4da8e5d2d7dc06",
-    "src/main.js": "4e68950e125198e1ecb49fd844d9097b8504f15fbd62a4581e0a6a16a8444e79",
+    "src/main.js": "56ebf3f2f982b3775636e9c8780a61245e4fc40e9cc31e97433622d24a88dd23",
     "src/mem/bus.js": "fd0d6af266303d5b5bc043fac4f117571f663b021b51a15f982dae1d3e3d4edb",
     "src/mem/cache.js": "a4b8e994fc7ee9a415005b761d0401369c01a076890af3241dfcd649a793aedc",
     "src/mem/config.js": "4f58325d2625ca445c4c6b5b516b0c26aea920360d3a5b083cbdae69a2448db2",
@@ -166,7 +204,7 @@
     "src/shell/arch-id.js": "9e8b4c7457323f3b81850f98165bb0fde456df0d9f958c493a0ede055f6d6669",
     "src/shell/capabilities.js": "eb50d55c4e5230acd406832d07a7b9a632062161d0d750d65881f2536dddb047",
     "src/shell/data-io.js": "385d6c613b270b944992ee605c0c0ab283ece5711e41dbc69576f50de50fc1bd",
-    "src/shell/platform-archs.js": "e29f62e6b801c4dc59fa4f8a5de7c680180b60eeda5f244563403927e862f9c3",
+    "src/shell/platform-archs.js": "cadc2e0b0f114f06a3470643261c1507dafbaad2cdaaa74f022ec4cadd6bb1bc",
     "src/shell/share-schema.js": "be240e09be29114aa7d9d48d2a16af748a0915e7c03f772cc97048f853dbaac4",
     "src/shell/share.js": "7f1ca6479ff836502d1b4d56487cbadea1b97cdeb4836bb868db5d486b944778",
     "src/shell/vcd.js": "f4d018c7e87f564da50ea8bece641b08abbdbbb7b74eb4d124d30e075aaef18f",
@@ -215,7 +253,7 @@
     "src/ui/theme.css": "6356c38f28b5f04dcb67d8e138a8301f4986812c7467d75bdc2600195cb63d03",
     "src/ui/variant-dialog.js": "3783f1340cc369afdded3037d428c923426b624517f4093804ca1c9bec2b3758",
     "src/ui/view-mode.js": "f4f703b6888cc419a12303595941decd730fad34332b8bc0898a050a58a07b1a",
-    "src/ui/waveform.js": "4a00cd693624f7bffa7f7ae77dc49fccaebbdb6b1238e5c82bda476953d85345",
+    "src/ui/waveform.js": "7fdb0ebc4f6216ba3b4e4c59655258e1e6f82bbc096a3b887c511651766673b0",
     "src/ui/wire-colours.js": "8b9e402a48835295370b5c888b2da6135bd6122c19452dfbea55122ddf05bac4",
     "src/ui/workspaces.js": "a9320a9dd53338e9692133897cb37a045b9de9e5a79aa39b87adbe1b2a3f2ace",
     "src/worker/run.js": "47c4e5624010c71bb1fcb44bc408bed3b5649f8b0f3d5089b51bc287b41c965d",
@@ -366,11 +404,21 @@
     "content/help/help.json": "e380d375a28a87ee6ecc18cc026462d4c81250dbb4f1c1b2597785785882bc70",
     "content/help/narrative-ch06.json": "612026b34976e25ec309b125a1a2de5d116598fa77cceaa5dcd86805733bad6a",
     "content/help/narrative-ch07.json": "9006e11087d7edae8e4c4714a373b7e52d6da745e8f00bc82d537fb77491a933",
+    "content/i8086/exercises/count-char.json": "86ac634031f7d7537ed51329e08441645a8b8e6742d55a05996e14804aee9702",
+    "content/i8086/exercises/index.json": "579da2fb3806137e0208f19306dd97d6171d267e9d777393f826589f0f36a65e",
+    "content/i8086/exercises/keep-registers.json": "058fe27d078146737c4c116e20d4d49a3bd4b0d0073bd5ca856633522289ca86",
+    "content/i8086/exercises/largest.json": "7b6f7336ee4e72ae1fed487d60044a661e5b6ab333e8369ee163a017f2d22eec",
+    "content/i8086/exercises/print-bcd.json": "d5de288d91bbd3cb654f0609098e08a89a4eae892ab10a93d2351f65bd42f6db",
+    "content/i8086/help/docs/index.html": "b5377347cecf9f314af7ea410348b68878c93c159e63f46c523ee9248d12d34d",
+    "content/i8086/help/help.json": "c372f05d5df41d5577eb2d00f8ef27aa7d73df8a42495f30ecf492ee06ff467a",
     "content/i8086/templates/decimal.asm": "f370d4ebbc8d4c7cf5ec4508d6ef494c1ae5c99b9ad06e34b6587adbe8c4c4f3",
     "content/i8086/templates/flags.asm": "c41c252df7850cbb0a5e9fa6729231de9fbf2090453d3d3c9193a791984d54bb",
-    "content/i8086/templates/index.json": "7a336614dc95736e766dc35cf5f4c2ef90b4ce0120550f227914d566fba1829e",
-    "content/i8086/templates/interrupts.asm": "c4772d3135a60c4c9dfa7019fb11631486e21987394c92d06b08c10ebd35699d",
+    "content/i8086/templates/index.json": "4b9a9fd99af9a02844c2ed6f369b7f8643666e1122d8733a54a6ecd4ecf46386",
+    "content/i8086/templates/interrupt-inputs.asm": "c4a75aad490a4bc0ecda2c22157a78fc0d0be4c50293abb321f847fcd37a5792",
+    "content/i8086/templates/interrupts.asm": "c448fcc67447ae99b01cdde7effd118cc1fcde9c160bd4a52b4e9ed363780527",
+    "content/i8086/templates/overlap.asm": "f7e058e75cd2f0d7f8865f80de85348671416860814aed72e9a3024fa5f6e718",
     "content/i8086/templates/segments.asm": "9f664058e2e796a4fc33b1d95eb203d85c08312a4cdb08e132ffed7a36c0bd05",
+    "content/i8086/templates/single-step.asm": "a4243ed4a2cffe31fd6562eb54e6deaf47982eb032fda04abc2722f31fdd0222",
     "content/i8086/templates/strings.asm": "fa131b43a5c0b5ae73c2c8234d8d390ed7b45fc58be98df2ed28b584fd75cd3c",
     "content/i8086/templates/sum-table.asm": "25a52161a9eedc05478b905494222db73f4c3e709a2cd7363a8e39f6cf0be7e6",
     "content/sap-1/exercises/both-differences.json": "9e3f5095dcabd9caf4c76ccfea51f1b00f3d54a656a61b75ce1fa70a9bda5664",
@@ -449,12 +497,12 @@
    }
   },
   "corpus": {
-   "sha256": "faeb9d1df1c1803770187b93c5b65ff934fb459176836cc33b630734688cae89",
+   "sha256": "f987372cd708bd8102e1023a0e2e7c16bb2b8e20b59b4cbade9b1a99ab198ebf",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
-    "test/arch-contract.test.mjs": "28c511e32151a97d6e099e28e57bbf5e4f2d9e57501b198ee1b9679ce26fb1d8",
+    "test/arch-contract.test.mjs": "eede5e6cb2b7354d629e9fec7da43b96b3d9f3b5176ce58925754dea2ed2be8d",
     "test/arch-riscv.test.mjs": "e5d2c2e2ee4652fe9fde85cb0362ca22af2c283e194c5bb050db48d7c7957369",
-    "test/arch-switcher.test.mjs": "4946db61b396c85b03722a62455d9402fdc08928b51c2e5ca3a73f02380f5439",
+    "test/arch-switcher.test.mjs": "8b6cdb1fb49175dc72bdb6b1045cb34f735e74417ac5909ade4a580caa4808ca",
     "test/armv7-engine.test.mjs": "1b39155e1328969cca9a0643235c0706a8a17933e15dd7d0cb265be4ecf0cd76",
     "test/armv7-equivalence.test.mjs": "aa4880cc750ec6580a90b3461083f1322fd5ecb91b39f01d225ef8afb4bb372b",
     "test/armv7-gnu-oracle.test.mjs": "a3c1006add7d634db8ab34d22b7b5e69b31bc1e63af4753355021ab9e24d9f87",
@@ -478,11 +526,12 @@
     "test/branding.test.mjs": "c1776e86d1911ef529d11bebfaafb815896304bfedd2565b2f1635d8ef19bd90",
     "test/cache-anim.test.mjs": "9ac0709b15e3ba44a79c013eee240af131d7142f66cd705927a84b49ece21cd3",
     "test/callstack.test.mjs": "01c15bbc006ca53f10430a9976d7ba39eb44e4be1564e7dc5078bd5a8c335500",
-    "test/capabilities.test.mjs": "207f382fb049057e509ff5255d06004a3785a42669ef777f8f6dfa7f9266e211",
+    "test/capabilities.test.mjs": "20699c73c91881ec2060f93863488c1916a6c379fae033d6a35c51a50ee6abb0",
     "test/cc.test.mjs": "de3777dd752660b4faf4688c903f86b2f191fd1fb92c011db59c7c30f66acf73",
     "test/ch07-content.mjs": "17bd83ee475efd32d55748506eb848b28ea85727c51aaa6f83e517dcfaa29487",
     "test/compare-memory.test.mjs": "6b46bd74b52f98c2290ed39138ab5a7e28191d13cf11bc112a217b37a68e1e72",
-    "test/contract-v9.test.mjs": "87632fef9b1415e5758673647b34f992b12d7457b8d822f116af3a0efbd69fb3",
+    "test/contract-v10.test.mjs": "0c9e06410da5daa89cf10de210c1761d569af67e6de66dff615582c8af8fa6c3",
+    "test/contract-v9.test.mjs": "4c165eea1ba96ec3a972e21556673fdf135a3d6cf621c7f5710ff83bd989ac32",
     "test/cpu-gpu.test.mjs": "bb8c40a7a6452e78a421d107762111e3ab25d978039b7d3a2247e77cfacf5d4d",
     "test/data-io.test.mjs": "b92820292d425cc50b2a0859433d7283427e346d796870c849ff575bf8094268",
     "test/devices.test.mjs": "85f711a8810aba9c1cee0acab0ec7c38d2453746ac396f395f4f478b3200e057",
@@ -557,6 +606,9 @@
     "test/fixtures/npu/ch11/programs/sw_mv/v4/golden.hex": "36252bd3dc94697809bb21d9a949872ddb6475a80d76d4e1327b12f2bebcd3b8",
     "test/fixtures/npu/ch11/programs/sw_mv_m/prog.s": "34b8f7b137d611805e6302e60757582adcb7bff9e85f27c6855b02b7bf10a8bc",
     "test/fixtures/npu/mac_vectors.hex": "86221ccaee9f11473754c5489c9f36d86de495834da2c792010281e653c4d3ed",
+    "test/fixtures/pico2-decode-golden.jsonl": "d3be0afcd549ed933fc9a1073d01fcadda1ce37d36cac5556860956908a6ad0d",
+    "test/fixtures/pico2-sum.elf": "aefce7c9182efd45395ca80a76156e959284f6d5b137a82c527d24b4299c21de",
+    "test/fixtures/pico2-timing.mjs": "b8c149ae6855292daae9b979575a6fba6ac6ce258cc57aa8607c8830b18bdf31",
     "test/fixtures/priv/bad-handler.s": "1cb8b9289a11cc3544728e6a5c6bbedf0e934d7b1040482c315afa3ba4c62e55",
     "test/fixtures/priv/button-irq.irq": "d24a808658e82c31fc6c15535fe7cf900d5102ff7d3b2e5ab2deb0b5db0563ed",
     "test/fixtures/priv/button-irq.s": "38aba483b935f9b1c247f39cba8b280358334befa917e3ce84afabdbc608d621",
@@ -573,16 +625,19 @@
     "test/gpu-models.test.mjs": "41282d0de312de18f27142de636d174f677ac6ca89113327965dfa2496372f5a",
     "test/gpu-rvsimt.test.mjs": "db412a649538d977cc4e1da7778ca2a2fadc1b88867122fc8f671a589b16f314",
     "test/gpu-templates.test.mjs": "52423b9520de5d0359cf14cf467a762a1b56642ba792ff458b26fed05ae3a2dd",
-    "test/gpu-views.test.mjs": "f0314f28715488152816db5b31279e58f1ae30e63bbf2cd0aec1b079e86b7add",
+    "test/gpu-views.test.mjs": "f892735d2616d4ade6d08d3699752645aa3df907ed93b7ea676c6d90090ca053",
     "test/history.test.mjs": "b0e55fa95c9e632b9003a00f89198e65bad5c6d3f8f3e0e0a9e28e483ae4e4be",
-    "test/i8086-biu.test.mjs": "17128549d04b3b904633136f72b5254fa2e4563e82ab61f3cb36e35ba8cee9df",
+    "test/i8086-biu.test.mjs": "01aa21c4c780b5a39b7aac3d5a01afc2a58189f661585ba316dd1560e761d252",
     "test/i8086-engine.test.mjs": "25137692793fe9d8859fbb7cbc2df96beb71b71c7964d1d349d6276134f10a9d",
+    "test/i8086-interrupts.test.mjs": "f7ca4ded3b8d2b0d5690ff78b2f5b4e207cf6d9ffc2a3515be0b4d11b8eece54",
     "test/i8086-language.test.mjs": "00d41065295fafa7a915871c4ed593d90932b1b285fab45b13ae4fe64f2a60fa",
     "test/i8086-layout.test.mjs": "16d5824b7fe36c1331722ce817529fe7f38961dcb837428c72986673b6e67bfa",
-    "test/i8086-micro-model.test.mjs": "bc83383d0abdb4136a7d9f8538c125ea8c8c17f67a8b7a5bfe77142d3b4cfa0d",
+    "test/i8086-micro-model.test.mjs": "4cb55fe82f4e4997212ac407fe416f8d14cf3795b4534d026d1210bade87f623",
     "test/i8086-microops.test.mjs": "4db95c8adf9d0bb8b30bef1802aa9e4190581afad3bb64a660917b2bae55cf5e",
     "test/i8086-sst.test.mjs": "8cb8e34b623b322af3fe420077906f3e58ae5c30b77250eed6290be98711ef5b",
-    "test/i8086-templates.test.mjs": "b63f20d6654faba9ad69854a6256eac2def88c68fb25d4b1ee57a91fb941a2ef",
+    "test/i8086-templates.test.mjs": "864d3ba3f73a45f7e5d51cca27913346873b41cb6546e3f9c93ddf58496226bc",
+    "test/i8086-timeline.test.mjs": "cd59e317b3e0a5de7012eb31fff9f5ff4027c5a7f2c3214d0520574bdf8bc26b",
+    "test/i8086-timing.test.mjs": "59366618fb5f3e34e455acff0de8e74dba1c078ddcb078c76174af6a13b1050c",
     "test/layout.test.mjs": "ed13e30a4af564e795047935bb1d3f4b57771bc760e1f48583c32e9ff7ca1740",
     "test/mavilera-brand.test.mjs": "a74a504072e55a37175a7a92f82ab57411afd371993f404c50209246f1976c4a",
     "test/mem-cache-models.test.mjs": "3efb168b22027827cb7f97cc3da847228d03e6b416e4db32a61ac2d1c60b57db",
@@ -604,15 +659,30 @@
     "test/npu-wave.test.mjs": "64a82ec3d0c22f759bb55243aded0cb3f0c960318aa804266140a3273d9f08e6",
     "test/output-cap.test.mjs": "d431af9e8b9a25aa297ca6e8f6b19f91748a79bc9929ed9e8346e778d7c0fa5f",
     "test/pan-zoom.test.mjs": "735ff1fa587f2dff99e6f69db7c913462da58f6090d3be12207cbfe67368bb4e",
+    "test/pico2-act-regressions.test.mjs": "062a614ee358ee11410ebe09f945bfe3b6fe685e27e985535cb8f98242d9956c",
+    "test/pico2-asm.test.mjs": "f2b99eb9f64ef19c19345054de9e77d7b4d8129ea0eccfb4c54c420051d385c6",
+    "test/pico2-decode.test.mjs": "c3cbdb8d7ef4bdd53399c1c06dbde560585ff96a1afd517a30afede692132255",
+    "test/pico2-elf.test.mjs": "61c6fb44d80ac3edf2e85b35ce951c5db43fa9721990addab86da1e8b671cfbf",
+    "test/pico2-engine.test.mjs": "401aaa7e1a1498016259b99af906b79f9b361181012bf6c9707afc08e71c34d4",
+    "test/pico2-hart.test.mjs": "ad7ccdf412bef0c3d66920e9ae3b730dc2fbe092aeede20b5284baa1fcad7b39",
+    "test/pico2-history.test.mjs": "3a31f0546300b91f649b5a37557952665bce4b5cbc5bc79ce7b15f47a1a129f4",
+    "test/pico2-irqctrl.test.mjs": "14d881a7bd1244fc7bcf0b73120a2a642b0d1dc23ec45e8c9fa452dbb69db9a0",
+    "test/pico2-pipeline-session.test.mjs": "50b896d93d619340de730e1cd478ad4b20d110785b46cb123043664feb6d28aa",
+    "test/pico2-platform.test.mjs": "e6cda882a2e10021fd75a87405cf2e0c7ffda8844db01846259a2410fea3e212",
+    "test/pico2-pmp.test.mjs": "1511cfbce5a77096a21182f839ed5a5f257db35b65cbb85825663b92d9d6b595",
+    "test/pico2-stages.test.mjs": "5489fcdfd24250dcd2a7a8858c1ce6bfcdcd2a1b1ca19cac3411c824899e4ae7",
+    "test/pico2-timing.test.mjs": "b3193ca60e731e7ac1513f21c92539e34610c43b4206002f7f576ed8b404677b",
+    "test/pico2-triggers.test.mjs": "efd1e75999978f8d2c30d7ecf0bd6b207fb43051de80c8a1fa988a947d8f1b90",
+    "test/pico2-zcmp.test.mjs": "44d3161001609272e0aa9f863c4a25178dcbab72df1cbaa3734e2aad73b2908e",
     "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
     "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
     "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
-    "test/platform.test.mjs": "d8de53331a2af2876ed20dceb9cd31855605c51382fc7af474e185564b751673",
+    "test/platform.test.mjs": "906b7e4509196a371acf7706e9b4fa25890bd61f521bc0b7ba46492218a4af45",
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
     "test/random.test.mjs": "f4c2506d4c73ec9b028993e06efeb9608b99e1dc8552021d111efdf8fe0bc59e",
-    "test/release.test.mjs": "77b4c4e01710c29cd9c16fa120375f59c7052cdd869c12adcf30a14786a66e0e",
+    "test/release.test.mjs": "64b257653588d5da9dd84c00cf13dd563609c95307f4d480119ed0f93992d6fd",
     "test/sap1-bus-model.test.mjs": "1913ce4c7182278de219f52d06c958f68eed155fe7f433de9fd849df8417b841",
     "test/sap1-engine.test.mjs": "11d8227fda92d105613f0a2c05679b14aa18a4b113b4709c92f1c31292f71eaa",
     "test/sap1-extras.test.mjs": "8b0e7cbdab16c97c8d073fb72cb0a398d00f961cebce4d5f8755014cd76c9a20",
@@ -642,11 +712,11 @@
     "test/wire-colours.test.mjs": "ab8c01ea4d3a9bb40e8c800203ba4b19b80354411b0bc6bfabbf1251d959e673",
     "test/workspaces.test.mjs": "59903c7db8c97d4c83e9d4963a8d4750e2165e73467a6f559690d56c8d8baa40",
     "test/zip.test.mjs": "0a6206256fdb0685cd376c12e48f07c15f65695c7920a0a2521a289f776ff2f5",
-    "(not published: tests that need the private book repository or hold exercise solutions)": "49 files, sha256 7952e078044a206fd331f1df1200bee84433654d00e90ccfe3e2a2ddf2605052"
+    "(not published: tests that need the private book repository or hold exercise solutions)": "54 files, sha256 ea94beeb7bda5aae0af117e5c2763e74011fd6dc64a24360e252081fd393e2c2"
    }
   },
   "tools": {
-   "sha256": "a1c6444642b551fc9a7218ba4ba044315c24c3ae0f4e9f9fef03f8f5e574c1af",
+   "sha256": "cb5824981c4beca294a51ea76559f17456796ac8812d03a4d8a76b16bea745e1",
    "files": {
     "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
     "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
@@ -671,15 +741,19 @@
     "tools/browser.mjs": "bdfb9016c4e657546371a233980d41ba41264f99b1f3add9bdfcbc664175018d",
     "tools/cpu-gpu-smoke.mjs": "f98c49bebee35acf459506dff73b783ac948bf789290e7755fb13e4a6cc270a2",
     "tools/dock-smoke.mjs": "284e1d6da94633addcb394f5c46dae2420f8a861887b675ef96a7b537c914bb7",
+    "tools/gen-pico2-regs.mjs": "e514e205de189b6945e9b165753782da609d814270b5d08b7518561d9846dd0c",
     "tools/gpu/host-templates.mjs": "b289b183fab05e761b6f24b968ef9b40d9a54398ee30e0bb09e05ab0b49fbb35",
     "tools/gpu/lab-templates.mjs": "f266a9ef4bd02489e0730f16531ad5e211ac0f2aed5a68ec4b91c4ef67b8f98e",
     "tools/gpu/make-exercises.mjs": "06a178e652771ddfd7b280600070d984bdf18602f426336528e2edcbbd9f3a8f",
     "tools/header-smoke.mjs": "edd8f6d526fb18a78accd98589c041175fa3b17753c09e61a59304648ba6d6cd",
     "tools/i8086/biu-check.mjs": "92a17e962aa62184b72b8faf9b1a70baf121387e296fa538355e6131bac4731a",
+    "tools/i8086/irq-smoke.mjs": "e2521252c77cf63d0e6a2561ed18024a1c4b1c31cdaa486f5388534b185c0d03",
     "tools/i8086/lockstep.mjs": "24ef1ae139fcdc0d27a45e05e43fa378883a8274e083911aab7a054b77980642",
+    "tools/i8086/make-exercises.mjs": "8aa89a35d81b614d0d1c7e402f165dbc4d21112f36c5d3e572677c12ace31c7c",
     "tools/i8086/preview-datapath.html": "0da59ccfbe6e74b7046612d5883cdea12cddb80662141af9520167aa70ad411c",
     "tools/i8086/preview-datapath.mjs": "b0f9b07131f37371e05250c18bf73ea5fac4f4677e92957381d9ffa40da42cf5",
     "tools/i8086/sst.mjs": "2cb6dda2e0de8711de83638eec6baea1c3a209cba150029f89243808b5f5bbab",
+    "tools/i8086/timing-check.mjs": "a3a7bcd9de827767bd90f3f5d2b04940679f5a3b9c9b49e07109ef0beed94cbc",
     "tools/logo/README.md": "67ccec66ea403acafbecdde7b5e97c16092adeebb6d92000db7fc363536289a9",
     "tools/logo/compare-parts.mjs": "081c5ed9b574f2fbf2eecf13d39496f64984dfa1b1ad2abd158589ecb190970b",
     "tools/logo/finish.py": "30d3d97a717dc07acd3be71d7ea86630b3797213c53b37a69ac6385c757f7e05",
@@ -707,15 +781,18 @@
     "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
     "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
+    "tools/pico2-act-run.mjs": "b564ebf04ecb82b3b41ce0e448a8308f4a31bf8691e00fa5937a5171938209da",
+    "tools/pico2-act/make-config.py": "4b5575b7ff03879b240206474576a61aed9616f95e634169cc98540febb65ea9",
+    "tools/pico2-decode-oracle.mjs": "abaf6c244cef199a592be0ac730d0edabf369916c69c78e2ce412cd623e74d89",
     "tools/release-zips.mjs": "1561fe8cd612e9f505acdb881d0fc3046a3b6c229e4be328e08357b3a576f78e",
     "tools/release.mjs": "c1073137739a635449f6da4a2fbeb9d5c9e6acde5b3f7ed30485209d318b5d1f",
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
     "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
-    "tools/site-files.mjs": "1a59c3ff8bbfad173b9c02366aacd25f30d39aab4ff238115f5f8d91cf395721",
+    "tools/site-files.mjs": "37120836f4fc601129f6474c866c275ccd7b064d159454e43be9074b6b4ae9bf",
     "tools/view-mode-smoke.mjs": "90f72bc0e92b337ea622d7f82a7f67f1a338892e228ed617571e84aac10377d3",
     "tools/zip.mjs": "ead8c71f183e52385ce4dd42a4b921731a435bcb19b6c6d84ce3e4fec4dc09d4",
-    "(not published: scripts that read the private book repository, and the publication scripts)": "18 files, sha256 373b588511acdb5c19aa32a932b30ba2f93b7f9e853f8728ac32e90d370bde16"
+    "(not published: scripts that read the private book repository, and the publication scripts)": "19 files, sha256 18d43e039a3f606dc829710fadef7c570341f1c3f0ca1f19c5962d06080de0fd"
    }
   }
  },
@@ -761,7 +838,7 @@
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1360,\"pass\":1360,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1264,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1548,\"pass\":1548,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1264,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -1047,6 +1124,61 @@
   {
    "file": "test/arch-contract.test.mjs",
    "name": "i8086: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: a source that does not assemble gives error diagnostics (v3: length and note optional)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: capabilities are known and every disabled one has a reason",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: engine state after a reset and each step agrees with the step record",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: run stops at a breakpoint, then runs to the halt",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: snapshot and restore; peek has no side effects",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: step back restores registers, memory and the PC (or backStep has a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: the default program assembles; the listing disassembles",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: the descriptor has the contract's shape",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: v2 engine hooks are functions; stepOver has its three; a watched register stops a run (or watchpoints have a reason)",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: v4: scratch, importers and exports are functions; an exported image loads back",
+   "ok": true
+  },
+  {
+   "file": "test/arch-contract.test.mjs",
+   "name": "pico2: v5: editor help for every mnemonic; reads, platform and assembled have their shape",
    "ok": true
   },
   {
@@ -2910,6 +3042,41 @@
    "ok": true
   },
   {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: a descriptor with realtime, audio and wasm assets is valid",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: a descriptor without the new fields is unchanged in meaning",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: assets.wasm takes relative .wasm paths only, once each",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: audio and its capability go together; its fields are checked",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: realtime and its capability go together",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: realtime.floorHz and transports are checked",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: the version is 10 and the new names are listed",
+   "ok": true
+  },
+  {
    "file": "test/contract-v9.test.mjs",
    "name": "v9: a descriptor with variants validates, in its own variant and in the other",
    "ok": true
@@ -2936,7 +3103,7 @@
   },
   {
    "file": "test/contract-v9.test.mjs",
-   "name": "v9: the version is 9",
+   "name": "v9: the version is at least 9 (v10 raised it, §27)",
    "ok": true
   },
   {
@@ -4211,6 +4378,11 @@
   },
   {
    "file": "test/i8086-biu.test.mjs",
+   "name": "i8086 B5: undefined FLAGS bits are carried until an instruction defines them (MUL, then POP, then ADD)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-biu.test.mjs",
    "name": "i8086 B5: wait states lengthen every bus cycle by Tw after T3",
    "ok": true
   },
@@ -4262,6 +4434,91 @@
   {
    "file": "test/i8086-engine.test.mjs",
    "name": "i8086: undocumented op codes stop the run (author's default: documented instructions only)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-exercises.test.mjs",
+   "name": "i8086 exercises: a register-keeping slip, a flag check, an unknown label and a missing HLT are reported",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-exercises.test.mjs",
+   "name": "i8086 exercises: each solution passes every test, each starter assembles and fails",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-exercises.test.mjs",
+   "name": "i8086 exercises: other architectures' files and RISC-V fields are refused with the reason",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-exercises.test.mjs",
+   "name": "i8086 exercises: the solutions and this test are private",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: a divide error and single-step: both entered, the single-step handler runs first (Fig 2-31)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: an input type without a handler stops with a message and changes nothing",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: create(program, {inputs}) replays a run with its inputs",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: HLT stops; NMI wakes the processor and the handler returns past the HLT",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: in clock mode an INTR entry runs two INTA bus cycles (status 000); calibrated mode marks it not calibrated",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: INTR waits while IF = 0 and is taken one instruction after STI; the switch stays on (level)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: NMI before INTR; the NMI handler runs with IF = 0, INTR after its IRET plus one instruction",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: NMI is taken at the next boundary even with IF = 0, entry pushes FLAGS, CS, IP and clears IF, TF",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: no interrupt after MOV SS until after the next instruction (p. 2-24)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: REP MOVSB stops between repetitions; REP ES: MOVSB resumes at ES: only (AP-67 p. A-27)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: single-step traps after each instruction that starts with TF = 1, not after the POPF that sets it",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: step back undoes an entry and withdraws later inputs; last() recomputes entries and cut REPs",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-interrupts.test.mjs",
+   "name": "i8086 interrupts: the view's step, clock and calibrated models reach the engine's state with the same inputs",
    "ok": true
   },
   {
@@ -4407,6 +4664,151 @@
   {
    "file": "test/i8086-templates.test.mjs",
    "name": "i8086: the default program is the first template",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-templates.test.mjs",
+   "name": "i8086: the interrupt-inputs template does what its comment says with the panel's inputs (8086-B8)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: clock frames reproduce the clock records (0 wait states)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: clock frames reproduce the clock records (2 wait states)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: signal lists, defaults and the format",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: step frames follow the teaching model",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: the IFUM Fig 4-21 loop shows flushes, stalls and refills (qualitative, 0 wait states)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: the IFUM Fig 4-21 loop shows flushes, stalls and refills (qualitative, 1 wait states)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: the overlap template shows a stall, bus contention, a full queue with an idle bus and a flush",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: the pins of read, write and I/O cycles (Figs 4-7, 4-8; Tables 4-2, 4-4)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timeline.test.mjs",
+   "name": "i8086 B6: the timeline rows and spans reproduce the journal",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] 03, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] 05, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] 50, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] 74, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] 81.0, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] 8B, register and memory forms, first 600 cases exact clock by clock",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] 90, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] B8, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] D3.4, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] E8, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: [TEST] EB, first 300 cases exact clock by clock (bus, queue status, length); L2 not",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: calibrated program model, step back restores every clock (several steps in one clock)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: calibrated rows only for the forms fitted so far; wait states refused",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: every template runs to its end in calibrated mode; uncalibrated instructions marked; the waveform track",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: IFUM Fig 4-22 (NMOS 8086) clock by clock: bus and queue-status lanes, 55-clock loop (clocks 27-29 inferred, not compared)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: IFUM Fig 4-22 total with one wait state, 64 clocks (PDF 277, a total only; Tw not calibrated)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: planted faults in the transfer rows (the IP correction one clock early or late, the flush, the push request)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: planted faults, R3 (hold) and R4 (pre-emption at T0) each needed for 8B (design §6 item 4)",
+   "ok": true
+  },
+  {
+   "file": "test/i8086-timing.test.mjs",
+   "name": "i8086 B7: Table 2-20 effective-address clocks as entered (IFUM p. 2-51, PDF 74)",
    "ok": true
   },
   {
@@ -5727,6 +6129,616 @@
   {
    "file": "test/pan-zoom.test.mjs",
    "name": "zoom to 100 %: one pixel per drawing unit, around the centre of the pane",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-act-regressions.test.mjs",
+   "name": "a trap after a meinext access works (the interrupt controller kept its snapshot in a field that shadowed a method)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-act-regressions.test.mjs",
+   "name": "Hazard3 without Xh3irq: no controller CSRs, and mip.MEIP is the OR of the lines",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-act-regressions.test.mjs",
+   "name": "LR/SC reservation granule: exact word by default; reservationShift 6 covers a 64-byte block",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-act-regressions.test.mjs",
+   "name": "mret keeps MPRV when it returns to M mode and clears it only when it returns to U mode (hazard3_csr.v; ACT Sm_xret)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-act-regressions.test.mjs",
+   "name": "mstatus.MPP stores only bit 12 of the written value (hazard3_csr.v)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-act-regressions.test.mjs",
+   "name": "Pmp options: the standard pmpcfg layout, write-only clearing and the specification's pmpaddr read-back",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-act-regressions.test.mjs",
+   "name": "sc.w with no reservation still takes the PMP store fault, and leaves rd alone (ACT PMP_Zalrsc_cfg_wr)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "AMO ordering suffixes and lr/sc",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "branches, jumps, la and call reach their labels; li of a large constant runs to the right value",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "compressed and Zcmp instructions are written explicitly; their operand limits are reported",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "directives: words, halves, bytes, strings, alignment, space, .equ, sections; %hi and %lo",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "error messages: unknown mnemonic, register, range, undefined and duplicate labels, operand count; with line numbers",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "pseudo-instructions expand as the RISC-V assembly manual gives them",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "round trip: every legal encoding of the golden sample assembles from its disassembly to the same instruction",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-asm.test.mjs",
+   "name": "the default program: the sum is 150, the square 22500, and the stack is back where it started",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "a compressed instruction decodes to its 32-bit operation and keeps its mnemonic and length",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "CSR instructions (not in the golden sample: objdump names the CSRs): all six forms",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "every operation id has a name and decodes from one encoding",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "fields: a few records checked by hand",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "Hazard3-specific legality (checked against the RP2350 revision's RTL patterns)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "the disassembler: branch targets use the address, shifts print in hexadecimal, CSRs by name",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "the golden sample covers every extension of the RP2350 configuration",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "the golden sample: the disassembly equals objdump's for every word",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "Xh3bextm: h3.bextm and h3.bextmi fields, text and the reserved bits (the oracle checks the RTL patterns)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-decode.test.mjs",
+   "name": "Zcmp: register lists, stack adjustment and the s-register moves",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-elf.test.mjs",
+   "name": "load and run: the program leaves 55 in `result` and stops at ebreak",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-elf.test.mjs",
+   "name": "load: a segment whose p_memsz exceeds the limit is refused before anything is allocated or written",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-elf.test.mjs",
+   "name": "parse: entry, loadable segments and symbols",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-elf.test.mjs",
+   "name": "rejections: magic, class, byte order, machine, type, truncation, offsets outside the file",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-engine.test.mjs",
+   "name": "a step that traps carries the trap in its record, and its CSR writes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-engine.test.mjs",
+   "name": "a trap with no handler stops with an error naming the cause; with a handler it is taken as on the chip",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-engine.test.mjs",
+   "name": "a watched memory word stops the run after the store; breakpoints and run to a target",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-engine.test.mjs",
+   "name": "ebreak with no handler halts without executing; step back resumes from before it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-engine.test.mjs",
+   "name": "the stack pointer starts at the top of the SRAM; counters count instructions and steps",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-engine.test.mjs",
+   "name": "wfi with no interrupt enabled stops with an error",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "a loop: the sum of 1 to 10, with a backward branch",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "compressed instructions execute with a 2-byte step; link addresses use the length",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "CSR semantics: csrrs with x0 does not write, mie mask, mtvec WARL, mcause mask, counters and mcountinhibit",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "ecall traps to mtvec with mepc, mcause and the mstatus stack; mret returns",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "illegal instruction: mcause 2, mtval 0 (hardwired in Hazard3)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "interrupts: enabled and pending, taken only with MIE, vectored mtvec, wfi sleeps and wakes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "lr.w / sc.w and the amo operations",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "M extension: division by zero and mulh, mulhsu, mulhu",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "M extension: the corner cases of division and the high products",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "mcountinhibit.CY stops mcycle for every kind of step (sleep, interrupt entry, fetch fault); ticks always advance",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "misaligned and faulting accesses trap with the right causes and mepc",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "PMP in the hart: U mode is denied outside the hardwired regions (fetch, load, AMO as a store fault); MPRV applies MPP to data accesses",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "the decode cache: hits on a loop, and a changed instruction is decoded again",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "U mode: CSR and mret are illegal, ecall is cause 8, mret to U via MPP",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "x0 stays zero, loads and stores of every width, sign and zero extension",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "Xh3bextm: extract 1 to 8 bits at a register or immediate position",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "Zb* and Zbkb operations",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hart.test.mjs",
+   "name": "Zcmp: cm.push stores in the specified order and cm.popret restores and returns",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "a device write (the bus has no peek) is recorded but not restored",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "an interrupt taken and undone, including the Xh3irq preemption state",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "cm.popretz writes a0, sp and the register list; cm.mva01s and cm.mvsa01",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "plain steps: ALU, loads and stores of every width, branches; each step undone in turn",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "records have variable length: a push is longer than an ALU step, and the ring drops the oldest whole records",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "sleeping steps are recorded: stepping back takes back their cycles and ticks",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "traps, mret, CSR writes, wfi and lr/sc: the system state comes back",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-history.test.mjs",
+   "name": "Zcmp: a push and a pop with a long register list are one step each, undone in one step",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "csrrs/csrrc forms of the window registers go through the instruction path",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "meicontext: save and restore the context, and clearts saves then clears mie.mtie and mie.msie",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "meiea and meifa windows: 16 lines per window, lines above 51 do not exist",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "meifa posts an interrupt once: reading meinext clears the force bit of the interrupt it returns",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "meinext with the update bit sets meicontext to the sampled interrupt",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "meipra: 4 bits per line, 4 lines per window",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "mip.meip and meinext: the highest priority wins, the lowest number wins a tie, noirq when nothing is pending",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-irqctrl.test.mjs",
+   "name": "taking the external interrupt pushes the preemption level; a lower priority no longer interrupts; mret pops it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pipeline-session.test.mjs",
+   "name": "descriptor: the pipeline view is registered and loads; waveform and exportTrace are on",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pipeline-session.test.mjs",
+   "name": "export model: frames are the session's records; the VCD has the RTL-named signals",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pipeline-session.test.mjs",
+   "name": "session: an instruction at a time; the engine stands at the end of the instruction shown",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pipeline-session.test.mjs",
+   "name": "session: one record per click to the end, every record once; back returns over the same records to cycle 0",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pipeline-session.test.mjs",
+   "name": "trace export: the cycles of the steps add up to the machine's; CSV and JSON lines",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "atomic aliases XOR/SET/CLR and narrow writes (replicated, or one lane at +0x4000) on a peripheral register",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "bus: the ROM fixed locations, ignored ROM writes, flash and its mirror, bus faults",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "clocks: XOSC stable, PLL lock, glitchless SELECTED; the frequencies follow the registers (150 MHz as the SDK sets up)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "GPIO 25 driven by SIO: pads isolated at reset, gpio_set_function, OE and OUT through the SET registers; the state log",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "GPIO edge interrupt: an external drive latches EDGE_HIGH, PROC0_INTS raises IRQ 21, a write of 1 to INTR clears it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "h3.block sleeps until the timer interrupt; the engine skips the sleeping cycles in one step",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "rate counter: exact counts at 1/150 per cycle, its inverse, and a re-based long run",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "RESETS: RESET_DONE is the inverse of RESET; a block held in reset ignores writes and is reported",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "ROM: rom_table_lookup_entry finds BOOTROM_STATE_RESET, which returns; an unmodelled ROM function stops with a message",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "SIO: CPUID 0, spinlocks claim on read and release on write, MTIMECMP drives mip.mtip and IRQ 29",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "step back over device accesses replays from a checkpoint: SIO, the pin log and the registers return exactly",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "TIMER0: a microsecond count from the ticks; an alarm fires at its time, raises IRQ 0, and the CLR alias acknowledges it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "UART0: bytes logged at the FIFO write; BUSY for one character time from the baud divisor",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
+   "name": "UF2 and IMAGE_DEF: the rp2350-riscv blocks are the image (the E10 absolute block is left out); ENTRY_POINT gives pc and sp",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "a 32-bit fetch straddling the end of a region fails; a compressed one at the last halfword passes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "a NAPOT region for U mode: read only, then write-protected store and AMO fault; lowest region wins",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "hardwired regions: ROM, peripherals and SIO are open to U mode; SRAM, XIP and everything else are not",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "hardwired registers ignore writes; pmpcfgm0 cannot select them",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "hart: a 32-bit instruction straddling a region boundary faults in M mode too (unlocked region, the fast path)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "hart: a 32-bit instruction whose second halfword lies beyond the memory faults; a compressed one at a word-aligned end does not",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "hart: the same straddle in U mode, and with a locked region (the full check)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "lock: applies to M mode and freezes the region",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "reset state: hardwired regions 8 to 10, others off with the granule bits of pmpaddr set",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pmp.test.mjs",
+   "name": "WARL: TOR and NA4 read back as OFF; a non-hardwired NAPOT pmpaddr reads without its granule bits (as hazard3_pmp.v does)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-stages.test.mjs",
+   "name": "a loop: the first taken branch sets the BTB, the next ones are predicted; the diagram shows F, X and M per step",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-stages.test.mjs",
+   "name": "load-use: X stalls with the load in M (x_stall_on_raw), then the consumer takes the value from mw_result",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-stages.test.mjs",
+   "name": "rewind after step back: the engine's stage model follows the hart back and forth",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-stages.test.mjs",
+   "name": "stage model cycles = the hart's time on every step of the E-TIMING-1 programs (ticks, and mcycle while it counts)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-stages.test.mjs",
+   "name": "stage model cycles = ticks on the five P1-M2 firmwares (500 000 steps each), and after stepping back",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-timing.test.mjs",
+   "name": "E-TIMING-1 programs: every region matches the datasheet, D15 or the RTL measurement exactly",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-timing.test.mjs",
+   "name": "rule E also after lr.w x0 and sc.w x0 (no rd): the next exclusive access waits one cycle, a later one does not",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-timing.test.mjs",
+   "name": "step back over the whole timing program restores registers, counters, BTB and the previous-load state exactly",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-timing.test.mjs",
+   "name": "steps report their cost and causes; the BTB is cleared by fence.i and by traps",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-timing.test.mjs",
+   "name": "the hart's fast path (no history) and its full step (history attached, and detail) give the same cycles, results and timing state",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-timing.test.mjs",
+   "name": "the machine: ticks and mcycle advance by the cost; an interrupt due during a div cancels it (mepc = the div)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-triggers.test.mjs",
+   "name": "a trigger does not fire with tcontrol.mte clear, with action = 1 (debug mode, not modelled), or in a mode it does not select",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-triggers.test.mjs",
+   "name": "a trigger trap steps back, tcontrol included",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-triggers.test.mjs",
+   "name": "a U-mode trigger fires in U mode, ahead of a fetch fault at the same address",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-triggers.test.mjs",
+   "name": "an armed M-mode execute trigger raises a breakpoint before the instruction executes; tcontrol.mte is saved and cleared, mret restores it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-triggers.test.mjs",
+   "name": "dcsr, dpc and dmdata0 (debug mode only), mcontext, mseccfg and mseccfgh (not decoded) are illegal in M mode",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-triggers.test.mjs",
+   "name": "trigger CSRs are M-mode only",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-triggers.test.mjs",
+   "name": "trigger CSRs: tselect is 2 bits, tinfo says type 2 and ignores writes, tdata1 reads as an exact-address mcontrol",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-zcmp.test.mjs",
+   "name": "a push that faults part-way: the stores before the fault stay, sp does not move, mepc is the push",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-zcmp.test.mjs",
+   "name": "cm.mva01s and cm.mvsa01: every pair of s registers (cm.mvsa01 with equal registers too, as the RTL decodes it)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-zcmp.test.mjs",
+   "name": "cm.pop, cm.popret, cm.popretz: every rlist and spimm loads from the RTL's slots; popretz zeroes a0; popret(z) return to ra",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-zcmp.test.mjs",
+   "name": "cm.push: every rlist and spimm stores the registers where the RTL does and moves sp",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-zcmp.test.mjs",
+   "name": "push and pop step back exactly (registers, memory, sp, pc)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-zcmp.test.mjs",
+   "name": "rlist 0 to 3 is reserved: illegal instruction",
    "ok": true
   },
   {
@@ -7536,7 +8548,7 @@
   "browsers": [
    {
     "name": "chrome",
-    "version": "Chrome/156.0.8078.80",
+    "version": "Chrome/157.0.8103.38",
     "installed": true,
     "results": [
      {
@@ -7748,7 +8760,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.80",
+      "version": "Chrome/157.0.8103.38",
       "installed": true,
       "results": [
        {
@@ -7824,7 +8836,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.80",
+      "version": "Chrome/157.0.8103.38",
       "installed": true,
       "results": [
        {
@@ -7900,7 +8912,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.80",
+      "version": "Chrome/157.0.8103.38",
       "installed": true,
       "results": [
        {
@@ -7976,7 +8988,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.80",
+      "version": "Chrome/157.0.8103.38",
       "installed": true,
       "results": [
        {
@@ -8046,13 +9058,89 @@
      }
     ]
    },
+   "i8086": {
+    "axeCore": "4.14.0",
+    "exitStatus": 0,
+    "browsers": [
+     {
+      "name": "chrome",
+      "version": "Chrome/157.0.8103.38",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: 8086 Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "practice exercises: the list opens, the first loads its starter, its tests run and fail on it; the dialog passes axe-core (WS-F-148)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 12 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     },
+     {
+      "name": "edge",
+      "version": "Edg/151.0.4129.78",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: 8086 Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "practice exercises: the list opens, the first loads its starter, its tests run and fail on it; the dialog passes axe-core (WS-F-148)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 12 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     }
+    ]
+   },
    "gpu": {
     "axeCore": "4.14.0",
     "exitStatus": 0,
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/156.0.8078.80",
+      "version": "Chrome/157.0.8103.38",
       "installed": true,
       "results": [
        {

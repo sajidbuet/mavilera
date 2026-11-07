@@ -1,0 +1,423 @@
+<!doctype html>
+<!--
+  content/i8086/help/docs/index.html -- the detailed documentation of the MAVILERA 8086 Laboratory, published at
+  /mavilera/i8086/docs/ beside the application (/mavilera/i8086/) by tools/release.mjs (roadmap 8086-B8, publication gate).
+  Every claim is traceable to docs/references/INTEL-8086-SOURCE-INDEX.md or to a verification record in docs/verification/.
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: content. Apache-2.0.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA 8086 Laboratory documentation</title>
+  <meta name="description" content="Documentation of the MAVILERA 8086 Laboratory: the workspace, 8086 assembly, segmented memory, the BIU and EU view with its teaching steps, clocks and calibrated clocks, the instruction queue, interrupt inputs, exercises, files, exports, how the models were checked and their limits.">
+  <meta name="theme-color" content="#0b2a55">
+  <!-- in a release, tools/release.mjs places the icons at the site root, two levels up -->
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../../icon.svg">
+  <style>
+    /* the MAVILERA palette (W-D30): the tokens of src/ui/theme.css */
+    :root {
+      --primary: #1a4f8b; --primary-soft: #e8f1fa; --navy: #0b2a55; --blue: #3a78b5; --amber: #a85a00;
+      --bg: #f4f7fb; --surface: #ffffff; --border: #d8e1ec; --text: #14243a; --text-2: #5a6b80; --code-bg: #f3f6fa;
+      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #5b9bd5; --primary-soft: #132a45; --navy: #f2f5fa; --blue: #5b9bd5; --amber: #e3a453;
+        --bg: #0d1420; --surface: #141d2b; --border: #2a3648; --text: #e3e9f2; --text-2: #9aa9bd; --code-bg: #182233;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--primary); text-underline-offset: 2px; }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
+    code, kbd, pre { font-family: var(--font-code); font-size: 0.9em; }
+    code { background: var(--code-bg); padding: 0 0.25em; border-radius: 3px; }
+    kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: var(--surface); white-space: nowrap; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.45; }
+    pre code { background: none; padding: 0; }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+    header.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+    header.top .in { max-width: 1180px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .word { font-weight: 800; font-size: 20px; letter-spacing: 0.01em; color: var(--navy); text-decoration: none; }
+    .word span { color: var(--blue); }
+    header.top nav { margin-left: auto; display: flex; gap: 16px; }
+    .layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 230px 1fr; gap: 36px; }
+    .toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 24px 0; font-size: 14px; }
+    .toc ol { list-style: none; margin: 0; padding: 0; }
+    .toc li { margin: 2px 0; }
+    .toc a { color: var(--text); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+    .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+    main { min-width: 0; padding: 24px 0 64px; }
+    h1 { font-size: 30px; margin: 8px 0 6px; line-height: 1.2; }
+    h2 { font-size: 24px; margin: 48px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.25; }
+    h3 { font-size: 18px; margin: 26px 0 6px; }
+    .lead { font-size: 18px; color: var(--text-2); margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 15px; background: var(--surface); }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); }
+    .wrap-table { overflow-x: auto; }
+    .note { border-left: 4px solid var(--primary); background: var(--surface); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+    .small { font-size: 14px; color: var(--text-2); }
+    footer { color: var(--text-2); font-size: 14px; border-top: 1px solid var(--border); margin-top: 48px; padding-top: 16px; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; gap: 0; }
+      .toc { position: static; max-height: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="in">
+      <a class="word" href="../../">MAVILERA<span> 8086 Laboratory</span></a>
+      <nav aria-label="Site">
+        <a href="../">Open the application</a>
+        <a href="../../">MAVILERA Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#about">About the laboratory</a></li>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#workspace">The workspace</a></li>
+        <li><a href="#memory">Segments and memory</a></li>
+        <li><a href="#assembly">Assembly language</a></li>
+        <li><a href="#debug">Running and debugging</a></li>
+        <li><a href="#biu-eu">The BIU and EU view</a></li>
+        <li><a href="#drawing">The drawing and its sources</a></li>
+        <li><a href="#clocks">Clocks, the queue and the timeline</a></li>
+        <li><a href="#calibrated">Calibrated clocks</a></li>
+        <li><a href="#interrupts">Interrupt inputs</a></li>
+        <li><a href="#templates">Templates and exercises</a></li>
+        <li><a href="#files">Files, sharing and exports</a></li>
+        <li><a href="#offline">Offline use and privacy</a></li>
+        <li><a href="#keys">Keyboard reference</a></li>
+        <li><a href="#checks">How the models were checked</a></li>
+        <li><a href="#limits">Limits of the model</a></li>
+        <li><a href="#rights">Licence and notices</a></li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <h1>The 8086 Laboratory</h1>
+      <p class="lead">Assemble and run programs for the Intel 8086 in the browser, and watch each instruction inside the
+        processor: as teaching steps, clock by clock with the instruction queue, or with clock counts calibrated to a real chip.</p>
+
+      <h2 id="about">About the laboratory</h2>
+      <p>The Intel 8086 is a 16-bit microprocessor. Its programs address 1 MiB of memory through four segment registers,
+        and its work is split between two units that run at the same time: the <strong>bus interface unit</strong> (BIU)
+        fetches instruction bytes ahead into a six-byte queue, and the <strong>execution unit</strong> (EU) takes them from
+        the queue and executes them. Intel describes the processor in <cite>The 8086 Family User's Manual</cite> (order
+        number 9800722-03, October 1979), chapters 2 and 4; this documentation cites it as "IFUM" with its page numbers.</p>
+      <p>The laboratory has two views. <strong>Instructions</strong> runs a program one instruction at a time and shows the
+        registers, the flags, memory and the console. <strong>BIU and EU</strong> draws the two units and shows the same
+        program inside them, in one of three Modes: the simulator's teaching steps, clocks of a teaching model of the bus
+        and the queue, or clocks calibrated to recorded traces of a real chip.</p>
+      <div class="note">Three kinds of statement appear in the laboratory and in this page, and are kept apart: what
+        Intel documents (<em>Intel</em>), what reverse engineering of the chip reports (<em>RE</em>, from Ken Shirriff's
+        articles), and what the simulator adds for teaching (<em>added by the simulator</em>). Timing is labelled with the
+        model it comes from.</div>
+
+      <h2 id="start">Getting started</h2>
+      <ol>
+        <li>Type a program in the editor, or open one from <strong>Templates</strong>: short programs that each show one
+          idea, with a note at the top on what to try.</li>
+        <li>Press <strong>Assemble</strong> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>). Errors are marked in the editor and explained in the console.</li>
+        <li>Step with <strong>Step</strong> (<kbd>F10</kbd>) and <strong>Step back</strong> (<kbd>Shift</kbd>+<kbd>F10</kbd>), or run with <strong>Run</strong> (<kbd>F5</kbd>). <code>HLT</code> stops the run.</li>
+        <li><code>OUT 0E9H, AL</code> writes the character in AL to the console. Port 0E9H is the simulator's console, not an 8086 feature; other ports read <code>0FFH</code> and ignore writes.</li>
+        <li>Open the <strong>BIU and EU</strong> view to see the same program inside the processor.</li>
+      </ol>
+      <pre><code>; add the words of a table
+        MOV  SI, OFFSET table   ; SI &lt;- the table's offset
+        MOV  CX, 5              ; five words
+        XOR  AX, AX
+next:   ADD  AX, [SI]           ; AX &lt;- AX + the word at DS:SI
+        ADD  SI, 2
+        LOOP next               ; CX &lt;- CX - 1; again while CX is not 0
+        HLT
+table   DW   10, 20, 30, 40, 50</code></pre>
+
+      <h2 id="workspace">The workspace</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Part</th><th>What it shows</th></tr></thead>
+        <tbody>
+          <tr><td>Editor and listing</td><td>The source, and each instruction's address (segment:offset), bytes and fields: prefixes, op code, ModR/M, displacement and data.</td></tr>
+          <tr><td>Registers and flags</td><td>AX, BX, CX, DX; SP, BP, SI, DI; CS, DS, ES, SS; IP and FLAGS with OF, DF, IF, TF, SF, ZF, AF, PF, CF.</td></tr>
+          <tr><td>Memory</td><td>The 1 MiB memory by physical address; the interrupt vector table at 00000H to 003FFH.</td></tr>
+          <tr><td>Interrupts (memory pane)</td><td>The NMI button and the INTR switch: see <a href="#interrupts">Interrupt inputs</a>.</td></tr>
+          <tr><td>Call stack and counters</td><td>Calls not yet returned from, and the instructions executed by mnemonic.</td></tr>
+          <tr><td>Console</td><td>Messages, and the characters written to port 0E9H.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="memory">Segments and memory</h2>
+      <p>An 8086 address is a segment and an offset; the BIU forms the 20-bit physical address as segment × 16 + offset
+        (IFUM Fig 2-18). Code is fetched from CS:IP, the stack is at SS:SP, data are in DS unless a prefix names another
+        segment, and the destination of a string instruction is always ES:DI (IFUM Table 2-2). An address with BP as its
+        base uses SS by default.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Profile</th><th>At the reset</th></tr></thead>
+        <tbody>
+          <tr><td>8086 · one segment (default)</td><td>CS = DS = ES = SS = 1000H, SP = 0FFFEH: the program, its data and its stack share one 64K segment.</td></tr>
+          <tr><td>8086 · segments set by the program</td><td>CS = 1000H; DS, ES, SS and SP are 0, and the program loads them itself.</td></tr>
+        </tbody>
+      </table></div>
+      <p>In both, the program is placed at offset 0000H of segment 1000H, IP starts at its entry, FLAGS at F002H (interrupts
+        disabled), and the interrupt vector table starts at zero. An offset wraps within its segment (a word at offset
+        0FFFFH takes its second byte from offset 0000H), and physical addresses wrap at 1 MiB; both as observed in the test
+        suite (see <a href="#checks">checks</a>).</p>
+
+      <h2 id="assembly">Assembly language</h2>
+      <p>The assembler takes Intel's mnemonics in the style of Intel's ASM-86.</p>
+      <ul>
+        <li><strong>Instructions:</strong> the documented 8086 instructions, with <code>BYTE PTR</code> or <code>WORD PTR</code>
+          where the size of a memory operand is not clear, <code>SHORT</code>, <code>NEAR</code> and <code>FAR</code>, segment
+          prefixes written as <code>ES:[DI]</code>, and <code>REP</code>, <code>REPE</code>, <code>REPNE</code> and <code>LOCK</code>.
+          Point at a mnemonic in the editor for its operands and operation.</li>
+        <li><strong>Directives:</strong> <code>DB</code> (bytes and strings), <code>DW</code> (words), <code>DUP</code>,
+          <code>EQU</code>, <code>ORG</code>, <code>END</code>, <code>OFFSET</code>. <code>ASSUME</code> is accepted and ignored;
+          <code>SEGMENT</code> and <code>ENDS</code> are not supported: use the second profile and load the segment registers with <code>MOV</code>.</li>
+        <li><strong>Labels and comments:</strong> a label may end with a colon; a comment starts with a semicolon. A label
+          cannot be a register, mnemonic or directive name (<code>wait</code> and <code>ptr</code>, for example).</li>
+        <li><strong>Numbers:</strong> decimal (<code>12</code>), hexadecimal with H (<code>0CH</code>; a leading digit is needed),
+          binary with B (<code>1100B</code>), or a character (<code>'A'</code>).</li>
+        <li><strong>Instructions that do not run:</strong> op codes Intel does not document (aliases, undocumented and
+          undefined forms) stop the run with a message. <code>ESC</code> does nothing (there is no coprocessor);
+          <code>WAIT</code> and <code>LOCK</code> have no effect.</li>
+      </ul>
+      <p>The scratch line above the instruction fields turns one instruction into its bytes, or bytes into their
+        instruction, without changing the program.</p>
+
+      <h2 id="debug">Running and debugging</h2>
+      <ul>
+        <li><strong>Breakpoints:</strong> click a line number in the editor or an address in the listing.</li>
+        <li><strong>Watchpoints:</strong> tick a register's eye to stop when it is written; double-click a memory byte to stop when it is written.</li>
+        <li><strong>Step back</strong> undoes one step at a time, to the start of the run.</li>
+        <li><strong>Step over</strong> runs a <code>CALL</code>, <code>INT</code> or <code>INTO</code> to its return;
+          <strong>Step out</strong> runs to the return of the present call; <strong>Run to cursor</strong> stops at the editor's line.</li>
+        <li>The <strong>call stack</strong> follows <code>CALL</code>, <code>INT</code>, divide errors and interrupt entries and their
+          returns. It follows the instructions, not the stack's contents: a program that changes SP itself can make it differ.</li>
+        <li>An interrupt through a vector that is still 0000:0000 stops the run with a message, instead of jumping to
+          address 0: store the handler's offset and segment at 4 × type first.</li>
+        <li>A run that does not halt stops after a large number of steps and says so.</li>
+      </ul>
+
+      <h2 id="biu-eu">The BIU and EU view</h2>
+      <p>The view draws the two units and steps the program through them. The <strong>Mode</strong> menu chooses what one click does:</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Mode</th><th>One click</th><th>What its counts mean</th></tr></thead>
+        <tbody>
+          <tr><td>Steps</td><td>One step of the simulator's teaching model: a queue byte, a transfer, an ALU operation, a bus request, a jump.</td>
+            <td>The simulator's description of what happens inside; not Intel's microcode, and the number of steps is not the number of clocks.</td></tr>
+          <tr><td>Clocks</td><td>One clock of a teaching model of the BIU, the queue and the EU (optionally with 1 to 3 wait states).</td>
+            <td>Intel's documented queue and bus rules; the clock counts are the model's, not the 8086's.</td></tr>
+          <tr><td>Calibrated clocks (P80C86A-2)</td><td>One clock, timed as recorded on a P80C86A-2 for the instructions <a href="#calibrated">listed below</a>.</td>
+            <td>Exact clock by clock for those instructions; any other instruction keeps the teaching model's timing and is marked "not calibrated".</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Instruction ▶</strong> and <strong>◀ Instruction</strong> run to the end of the present instruction, or back to its start.
+        The tabs below the drawing are <strong>Steps</strong> (the present instruction's steps and what each moves),
+        <strong>Queue</strong>, <strong>Timeline</strong> and <strong>Waveforms</strong>.</p>
+      <p>Not every 8086 instruction is microcoded: Ken Shirriff's analysis reports that a few, such as <code>CLC</code>,
+        <code>STI</code> and <code>HLT</code>, and the prefixes, are handled by logic outside the microcode. The view marks their
+        steps "without microcode" [RE].</p>
+
+      <h2 id="drawing">The drawing and its sources</h2>
+      <p>The drawing follows the partition of the 8086 into a BIU and an EU in IFUM Fig 4-3 (p. 4-4), in the simulator's own
+        layout. Each element's tooltip names its source.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Element</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>BIU and EU frames; general registers; segment registers and IP; ALU; flags; EU control; ALU data bus (16 bits); Q bus (8 bits); six-byte instruction queue; bus control logic; the 8086 bus (20-bit address, 16-bit data)</td><td>Intel: IFUM Fig 4-3, Fig 2-6 and its text</td></tr>
+          <tr><td>Address adder (segment × 16 + offset)</td><td>Intel: Fig 4-3 draws it as a block; the arithmetic, Fig 2-18</td></tr>
+          <tr><td>Temporary registers and internal communications registers (as groups)</td><td>Intel: Fig 4-3</td></tr>
+          <tr><td>The names IND, OPR, tmpA, tmpB, tmpC, and the ALU result Σ</td><td>RE: reverse engineering, marked "RE" in the drawing</td></tr>
+          <tr><td>The instruction decoder place (op-code, ModR/M and prefix bytes go there; constants come from it)</td><td>Added by the simulator (dashed)</td></tr>
+          <tr><td>The links "an offset from another register to the adder" and "a constant from the decoder onto the bus"</td><td>Added by the simulator (dashed)</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="clocks">Clocks, the queue and the timeline</h2>
+      <p>In clock mode the BIU works by Intel's documented rules (IFUM p. 2-6, p. 2-50, Figs 4-5 and 4-6, Table 4-4): the queue holds six bytes;
+        the BIU starts a code fetch when at least two bytes are free and the EU has no request; it fetches words, and one byte
+        first after a transfer to an odd address; a fetch already on the bus finishes before the EU's request; a bus cycle is
+        T1 to T4, with wait states (Tw) after T3; a word at an odd address takes two bus cycles; and a transfer of control
+        empties the queue. The queue status shows F (first byte of an instruction), S (subsequent byte) and E (queue emptied)
+        as in IFUM Table 4-4. The EU performs one teaching step per clock and waits when the queue is empty or the bus is busy.</p>
+      <ul>
+        <li><strong>Queue</strong> tab: the six cells with the next byte at the head, the cycle in progress, and the last clocks.</li>
+        <li><strong>Timeline</strong> tab: the bus and the EU clock by clock, to see fetching overlap execution, the queue fill
+          during a long instruction such as <code>MUL</code>, and empty on a jump (the template "Fetch while executing").</li>
+        <li><strong>Waveforms</strong> tab: chosen signals, among them the T state, ALE, M/IO, RD, WR, the bus status S2–S0 and
+          the queue status QS1–QS0, as a timing diagram, which can be exported as a VCD file.</li>
+      </ul>
+      <p>If a program writes over code already in the queue, the 8086 would execute the old byte; the simulator decodes from
+        memory, as the Instructions view does, and marks the byte "stale".</p>
+
+      <h2 id="calibrated">Calibrated clocks</h2>
+      <p>Calibrated mode times instructions by single-instruction traces recorded on an Intel P80C86A-2, a CMOS 80C86, in the
+        SingleStepTests/8086 suite, not on an original NMOS 8086. These instructions match the recorded traces clock by clock in
+        all 2,000 tests of each (36,000 tests):</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Instruction</th><th>Forms</th></tr></thead>
+        <tbody>
+          <tr><td><code>NOP</code></td><td>all</td></tr>
+          <tr><td><code>ADD AX,imm16</code>; <code>MOV AX,imm16</code></td><td>all</td></tr>
+          <tr><td><code>PUSH r16</code></td><td>all eight registers</td></tr>
+          <tr><td><code>MOV r16,r/m16</code>; <code>ADD r16,r/m16</code>; <code>ADD r/m16,imm16</code></td><td>register and every memory form</td></tr>
+          <tr><td><code>SHL r/m16,CL</code></td><td>register and every memory form</td></tr>
+          <tr><td><code>JMP short</code>; <code>JZ</code> (taken and not taken); <code>CALL near</code></td><td>all</td></tr>
+        </tbody>
+      </table></div>
+      <p>As a second check, the loop of IFUM Fig 4-21 runs as its timing diagram, Fig 4-22 (an NMOS 8086), shows: the same at
+        every compared clock, 55 clocks a pass, and 64 with one wait state, as the manual states. Interrupt entries and every
+        other instruction keep the teaching model's timing and are marked "not calibrated". Calibrated mode runs without wait states.</p>
+
+      <h2 id="interrupts">Interrupt inputs</h2>
+      <p>The <strong>Interrupts</strong> tab of the memory pane drives the 8086's two interrupt inputs (IFUM pp. 2-22 to 2-27).</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Control</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>NMI</td><td>A rising edge: latched, and taken at the next instruction boundary even when IF = 0. Type 2; no INTA cycles.</td></tr>
+          <tr><td>INTR, Type</td><td>A level, not latched: while the switch is on and IF = 1, the processor acknowledges with two INTA bus cycles, reads the type and takes the interrupt. The switch stays on until you turn it off, so a handler runs again after its <code>IRET</code> if INTR is still on.</td></tr>
+          <tr><td>Delay</td><td>The input arrives after this many instructions; each repetition of a REP string instruction counts as one. A choice of the simulator, to place an interrupt inside a string instruction.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>The rules</h3>
+      <ul>
+        <li>Priority (IFUM Table 2-3): the instruction's own interrupt (<code>INT n</code>, <code>INTO</code>, a divide error), then NMI, INTR and single-step.
+          Each one recognised is entered in turn, so the last entered runs first (IFUM Fig 2-31).</li>
+        <li>An entry pushes FLAGS, CS and IP, clears IF and TF, and loads CS:IP from the vector at 4 × type (IFUM p. 2-26).
+          In the BIU and EU view it is a step list of its own: INTA for INTR, the vector reads, the three pushes and the jump.</li>
+        <li>No interrupt is recognised between a prefix and its instruction, nor after <code>MOV</code> or <code>POP</code> to a
+          segment register until after the next instruction (IFUM p. 2-24). After <code>STI</code> and after <code>IRET</code>,
+          INTR waits for one more instruction: this follows the manual's text and has not been checked against hardware.</li>
+        <li>A repeated string instruction accepts NMI and INTR between two repetitions. On return it resumes at the prefix just
+          before the string op code, the only prefix restored (Intel application note AP-67, p. A-27): <code>REP ES: MOVSB</code>
+          resumes as <code>ES: MOVSB</code>, one more transfer.</li>
+        <li>Single-step: with TF = 1, a type 1 interrupt follows every instruction that started with TF = 1 (IFUM p. 2-25), so
+          not the <code>POPF</code> that sets it. In this simulator the trap is taken at the end of a whole instruction.</li>
+        <li><code>HLT</code> stops the run. An NMI, or INTR with IF = 1, wakes the processor; the handler returns past the <code>HLT</code>.</li>
+      </ul>
+      <p>The panel shows whether NMI is latched, whether INTR is on, what is due next and why an interrupt waits. Each input is
+        kept with the step at which it was given: stepping back past it withdraws it, and a reload, a long run or a trace export
+        replays it there. In the BIU and EU view an input given inside an instruction arrives at its end. The templates
+        "NMI and INTR from the Interrupts panel" and "The trap flag: single-step" show the inputs and the trap.</p>
+
+      <h2 id="templates">Templates and exercises</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Template</th><th>What it shows</th></tr></thead>
+        <tbody>
+          <tr><td>Add the words of a table</td><td>A loop over a table with <code>ADD</code>, <code>LOOP</code> and the console.</td></tr>
+          <tr><td>Carry, overflow, sign and zero</td><td>How additions set the flags.</td></tr>
+          <tr><td>Copy and compare strings with REP</td><td><code>MOVSB</code>, <code>CMPSB</code> and the repeat prefixes.</td></tr>
+          <tr><td>Segments and physical addresses</td><td>Loading segment registers and the addresses they make (also in the second profile).</td></tr>
+          <tr><td>Print a number in decimal</td><td><code>DIV</code> and the stack.</td></tr>
+          <tr><td>Install interrupt handlers</td><td><code>INT</code> and a divide error, through the vector table.</td></tr>
+          <tr><td>NMI and INTR from the Interrupts panel</td><td>Handlers for NMI and INTR, <code>HLT</code> waiting, an interrupt inside <code>REP MOVSB</code>.</td></tr>
+          <tr><td>The trap flag: single-step</td><td>A type 1 handler counting the instructions run with TF = 1.</td></tr>
+          <tr><td>Fetch while executing: the queue at work</td><td>In the BIU and EU view in clock mode: the queue filling and emptying.</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Exercises</strong> (File ▸ Exercise…) give a task and a starter program, and check your program against
+        tests: the largest signed word of a table, counting a character with <code>REPNE SCASB</code>, printing a packed BCD
+        byte, and a subroutine that keeps the registers. The tests set memory, then check registers, flags, memory and the
+        console. They were written for MAVILERA; no solutions are included.</p>
+
+      <h2 id="files">Files, sharing and exports</h2>
+      <ul>
+        <li>Your work is kept in this browser: after a refresh or a closed tab, the program, its file name, the cursor,
+          breakpoints, watchpoints and the step you had reached come back.</li>
+        <li><strong>File ▸ Copy share link</strong> puts the program, the view and its settings into a link. They travel in
+          the part after #, which the browser never sends to a server.</li>
+        <li><strong>File ▸ Save program and settings…</strong> writes a .json file; <strong>File ▸ Open</strong> reads it back, and .asm files.</li>
+        <li><strong>Exports:</strong> the code segment as a memory image (.hex, one byte per line, and .bin), the listing,
+          traces (JSON lines and CSV, with the interrupt inputs replayed and each entry marked), and from the BIU and EU view a
+          VCD waveform. <strong>File ▸ Import .hex/.bin…</strong> loads an image at offset 0000H of the code segment.</li>
+      </ul>
+
+      <h2 id="offline">Offline use and privacy</h2>
+      <p>Every computation runs in your browser. MAVILERA has no account, sends no telemetry and uploads nothing. After a
+        first visit the hosted version also opens without a network connection, and a single-file version can be downloaded
+        for computers that have none.</p>
+
+      <h2 id="keys">Keyboard reference</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Keys</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Assemble</td></tr>
+          <tr><td><kbd>F5</kbd></td><td>Run or pause</td></tr>
+          <tr><td><kbd>F10</kbd> / <kbd>Shift</kbd>+<kbd>F10</kbd></td><td>Step / step back (in the BIU and EU view, one step or one clock)</td></tr>
+          <tr><td><kbd>F11</kbd> / <kbd>Shift</kbd>+<kbd>F11</kbd></td><td>Step over / step out</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F10</kbd></td><td>Run to the editor's line</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find in the editor</td></tr>
+          <tr><td><kbd>Esc</kbd>, then <kbd>Tab</kbd></td><td>Leave the editor (<kbd>Tab</kbd> inside it indents)</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>Enter</kbd>, <kbd>B</kbd></td><td>In the listing: move, show the fields, set a breakpoint</td></tr>
+          <tr><td><kbd>↑</kbd> <kbd>↓</kbd>, <kbd>W</kbd></td><td>In the registers: move, watch</td></tr>
+          <tr><td>Arrow keys on a divider</td><td>Resize panes (<kbd>Shift</kbd> for larger steps; <kbd>Enter</kbd> restores)</td></tr>
+          <tr><td><kbd>Enter</kbd> on a drawn element</td><td>Open its details</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="checks">How the models were checked</h2>
+      <ul>
+        <li><strong>Instructions.</strong> Every test of the SingleStepTests/8086 suite (version 1, commit e71c68d) for the
+          documented op codes was replayed: 552,483 single-instruction tests passed and none failed; 5,517 were left out by the
+          suite's own metadata or a documented quirk. Registers, memory and the flags are compared, except flags the suite
+          calls undefined. The tests were recorded on a P80C86A-2, a CMOS 80C86.</li>
+        <li><strong>Teaching steps.</strong> For the same tests, the step lists give the same results as the instruction model,
+          and their memory and I/O requests come in the order of the recorded bus cycles: 552,483 passed, none failed.</li>
+        <li><strong>Clock mode.</strong> The BIU and queue model runs the same tests to the same results, with 0 and 1 wait states.</li>
+        <li><strong>Calibrated clocks.</strong> 36,000 tests of the instructions listed above match the recorded traces clock by
+          clock; the loop of IFUM Fig 4-22 matches at every compared clock (55 clocks, 64 with one wait state).</li>
+        <li><strong>Whole programs.</strong> 4,000 generated programs of 50 instructions and the templates were run on z8086,
+          an independent hardware description of the 8086 (nand2mario, simulated with Verilator). Where the two differ, each
+          difference traces to z8086, as the recorded traces or Intel's manual show: a segment prefix that z8086 carries into a
+          later instruction, <code>NEG</code> of a zero byte in memory, and <code>CMC</code>. z8086 has no single-step trap.</li>
+        <li><strong>Interrupt inputs.</strong> NMI, INTR and single-step are not in the test suite; they are checked by hand cases
+          written from Intel's text, in every Mode of the BIU and EU view.</li>
+      </ul>
+      <p class="small">Agreement between models and tests is evidence about the models. It is not evidence of how any
+        particular chip, or a hardware build, behaves where it was not measured.</p>
+
+      <h2 id="limits">Limits of the model</h2>
+      <ul>
+        <li>The steps are the simulator's teaching model, not Intel's microcode; clock mode's counts are not the 8086's;
+          calibrated counts hold for the instructions listed, as recorded on a CMOS 80C86.</li>
+        <li>Not modelled: the 8087 coprocessor (<code>ESC</code> does nothing), <code>WAIT</code> and <code>LOCK</code>, bus hold
+          and request/grant, the minimum- and maximum-mode pins, and the halt bus cycle. Interrupt-entry timing is the teaching model's.</li>
+        <li>The STI and IRET interrupt delays follow Intel's text and have not been checked against hardware. The single-step
+          trap is taken after a whole REP instruction, not between repetitions.</li>
+        <li>Self-modifying code is decoded from memory, not from the queue (marked "stale" in clock mode).</li>
+        <li>A simulation shows what the model does; it is not evidence of how a hardware build behaves.</li>
+      </ul>
+
+      <h2 id="rights">Licence and notices</h2>
+      <p>© 2026 Sajid Muhaimin Choudhury. MAVILERA and its content (drawings, help texts, this documentation, example
+        programs and exercises) are licensed under the Apache License, Version 2.0. The names and the logo are not licensed as trademarks.</p>
+      <p class="small"><cite>The 8086 Family User's Manual</cite> is © Intel Corporation. MAVILERA reproduces no text or figure
+        of it or of the cited reverse-engineering articles: its simulator, teaching steps, drawing, help and programs are its
+        own, and its drawing follows the partition of Intel's Fig 4-3 in its own layout. The SingleStepTests/8086 suite (MIT
+        licence) and z8086 were used for checking only; nothing of them is included. MAVILERA is not affiliated with or
+        endorsed by Intel or the authors cited. Intel and 8086 are trademarks of Intel Corporation or its subsidiaries; the
+        instruction mnemonics are Intel's.</p>
+
+      <footer>
+        <p>MAVILERA 8086 Laboratory documentation · <a href="../../">MAVILERA Home</a> · <a href="../">Open the application</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

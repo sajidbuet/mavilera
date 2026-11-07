@@ -1,0 +1,222 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap 8086-B8), not taken from a textbook; produced by tools/i8086/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "i8086",
+ "title": "A subroutine that keeps the registers",
+ "task": "Write sum3: AX <- a + b + c, the words at a, b and c (the sum modulo 10000H). It needs a pointer and a scratch register: use SI and DI, but leave every register except AX as the caller had it (save with PUSH, restore with POP in the reverse order), and return with RET. The main program is given; keep it and the DW lines.",
+ "lang": "asm",
+ "starter": "; keep-registers -- practice exercise (MAVILERA, 8086)\n; Write sum3: AX <- a + b + c; every other register as it was.\n; Hint: PUSH SI and PUSH DI first, POP DI and POP SI before RET.\n        MOV  BX, 1111H          ; values the subroutine must keep\n        MOV  CX, 2222H\n        MOV  DX, 3333H\n        MOV  SI, 4444H\n        MOV  DI, 5555H\n        MOV  BP, 6666H\n        CALL sum3\n        MOV  total, AX\n        HLT\n\nsum3:   RET                     ; replace with your code\n\na       DW   0                  ; the tests write a, b and c\nb       DW   0\nc       DW   0\ntotal   DW   0\n",
+ "tests": [
+  {
+   "name": "1 + 2 + 3",
+   "memory": [
+    {
+     "at": "a",
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": "b",
+     "words": [
+      2
+     ]
+    },
+    {
+     "at": "c",
+     "words": [
+      3
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       6
+      ]
+     }
+    ],
+    "registers": {
+     "BX": 4369,
+     "CX": 8738,
+     "DX": 13107,
+     "SI": 17476,
+     "DI": 21845,
+     "BP": 26214,
+     "SP": 65534
+    }
+   }
+  },
+  {
+   "name": "4096 + 8192 + 12288",
+   "memory": [
+    {
+     "at": "a",
+     "words": [
+      4096
+     ]
+    },
+    {
+     "at": "b",
+     "words": [
+      8192
+     ]
+    },
+    {
+     "at": "c",
+     "words": [
+      12288
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       24576
+      ]
+     }
+    ],
+    "registers": {
+     "BX": 4369,
+     "CX": 8738,
+     "DX": 13107,
+     "SI": 17476,
+     "DI": 21845,
+     "BP": 26214,
+     "SP": 65534
+    }
+   }
+  },
+  {
+   "name": "65535 + 1 + 5",
+   "memory": [
+    {
+     "at": "a",
+     "words": [
+      65535
+     ]
+    },
+    {
+     "at": "b",
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": "c",
+     "words": [
+      5
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       5
+      ]
+     }
+    ],
+    "registers": {
+     "BX": 4369,
+     "CX": 8738,
+     "DX": 13107,
+     "SI": 17476,
+     "DI": 21845,
+     "BP": 26214,
+     "SP": 65534
+    }
+   }
+  },
+  {
+   "name": "32767 + 1 + 0",
+   "memory": [
+    {
+     "at": "a",
+     "words": [
+      32767
+     ]
+    },
+    {
+     "at": "b",
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": "c",
+     "words": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       32768
+      ]
+     }
+    ],
+    "registers": {
+     "BX": 4369,
+     "CX": 8738,
+     "DX": 13107,
+     "SI": 17476,
+     "DI": 21845,
+     "BP": 26214,
+     "SP": 65534
+    }
+   }
+  },
+  {
+   "name": "12345 + 23456 + 34567",
+   "memory": [
+    {
+     "at": "a",
+     "words": [
+      12345
+     ]
+    },
+    {
+     "at": "b",
+     "words": [
+      23456
+     ]
+    },
+    {
+     "at": "c",
+     "words": [
+      34567
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       4832
+      ]
+     }
+    ],
+    "registers": {
+     "BX": 4369,
+     "CX": 8738,
+     "DX": 13107,
+     "SI": 17476,
+     "DI": 21845,
+     "BP": 26214,
+     "SP": 65534
+    }
+   }
+  }
+ ]
+}

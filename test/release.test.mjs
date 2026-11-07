@@ -41,7 +41,9 @@ test('WS-N-002: every module of the offline build exports what Node.js reads fro
   // hierarchy of M7) is not wired into the interface yet and is exempt, as is the viewer's model
   // (phase 5) until the viewer panel that uses it is wired into a view
   const pending = new Set(['src/ui/mem-viewmodel.js']);
-  assert.deepEqual(js.filter((p) => !mods.has(p) && !p.startsWith('src/mem/') && !pending.has(p)), []);
+  // src/arch/pico2/ is registered for the development page only (P1-M1) and left out of every release (tools/site-files.mjs
+  // RELEASE_EXCLUDE) until it is released; exempt until then
+  assert.deepEqual(js.filter((p) => !mods.has(p) && !p.startsWith('src/mem/') && !p.startsWith('src/arch/pico2/') && !pending.has(p)), []);
   for (const [p, m] of mods) {
     if (p === 'src/main.js' || p === 'src/worker/run.js') continue; // entries: they run on import
     const real = Object.keys(await import(pathToFileURL(join(ROOT, p)))).sort();

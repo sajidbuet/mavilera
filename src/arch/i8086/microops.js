@@ -151,20 +151,24 @@ const hex = (v, n) => `${v.toString(16).toUpperCase().padStart(n, '0')}H`;
 /**
  * Run the instruction at CS:IP as steps. `cpu` (registers of cpu.js's CPU_REGS) is changed in place; `bus` as for
  * cpu.js execute(). Options: `emptyVector` (as cpu.js), `temps` (an object holding IND, OPR, tmpA, tmpB, tmpC and Σ
- * across instructions; a fresh one by default). Returns cpu.js's result record (d, length, reads, writes, call, halt?,
- * interrupt?, trap?, port?, out?) plus `steps` and `requests` (the bus requests in order), or {error, d, steps}.
+ * across instructions; a fresh one by default); `repStop` as cpu.js (8086-B8: a REP string instruction stopped between
+ * repetitions for an interrupt; IP then points at the prefix before the op code); `entry` {kind: 'nmi'|'intr'|'trap',
+ * type} (8086-B8): an interrupt entry instead of an instruction, with an INTA bus request ([EDU]: one request, the two
+ * INTA cycles of IFUM p. 2-24) that returns the type for INTR. Returns cpu.js's result record (d, length, reads,
+ * writes, call, halt?, interrupt?, trap?, port?, out?, repInterrupted?) plus `steps` and `requests` (the bus requests
+ * in order), or {error, d, steps}. An entry's record has d = null and `entry`.
  */
-export function runMicro(c, bus, { emptyVector = false, temps = null } = {}) {
+export function runMicro(c, bus, { emptyVector = false, temps = null, repStop = null, entry = null } = {}) {
   const startIP = c.IP; const csBase = c.CS << 4;
-  const d = decode((k) => bus.read((csBase + ((startIP + k) & 0xffff)) & 0xfffff));
-  if (d.error) return { error: 'prefixes', d, steps: [] };
-  if (d.status !== 'normal' && d.status !== 'fpu') return { error: d.status, d, steps: [] };
+  const d = entry ? null : decode((k) => bus.read((csBase + ((startIP + k) & 0xffff)) & 0xfffff));
+  if (d?.error) return { error: 'prefixes', d, steps: [] };
+  if (d && d.status !== 'normal' && d.status !== 'fpu') return { error: d.status, d, steps: [] };
   const t = temps ?? { IND: 0, OPR: 0, tmpA: 0, tmpB: 0, tmpC: 0, 'Σ': 0 };
   const snapshot = { ...c }; const tempsBefore = { ...t };
-  const m = d.entry.mnem;
-  const ops = d.operands; const [o0, o1] = ops;
+  const m = d?.entry.mnem ?? null;
+  const ops = d?.operands ?? []; const [o0, o1] = ops;
   const steps = []; const reads = []; const writes = []; const requests = []; const out = [];
-  const res = { d, length: d.length, steps, requests, reads, writes, call: 0 };
+  const res = { d, length: d?.length ?? 0, steps, requests, reads, writes, call: 0, ...(entry ? { entry: { ...entry } } : {}) };
   let qi = 0;
   let iteration = null;
 
@@ -217,9 +221,14 @@ export function runMicro(c, bus, { emptyVector = false, temps = null } = {}) {
   };
   /** bus: a request to the BIU; the offset from a place, the segment a register name or an absolute value. */
   const request = (op, segment, offset, size) => {
+    const r = { op, segment, offset, size };
+    if (op === 'inta') { // the interrupt controller puts the type on the bus in the second INTA cycle (IFUM p. 2-24)
+      t.OPR = entry.type & 0xff; r.value = t.OPR;
+      requests.push(r);
+      return step('bus', { bus: { ...r } });
+    }
     const off = get(offset) & 0xffff;
     const mask = size === 8 ? 0xff : 0xffff;
-    const r = { op, segment, offset, size };
     if (op === 'in' || op === 'out') {
       r.port = off;
       if (op === 'in') {
@@ -316,9 +325,9 @@ export function runMicro(c, bus, { emptyVector = false, temps = null } = {}) {
     return { error: kind, vector, d, steps };
   };
   /** Interrupt entry (design §5): the vector is read before the three pushes ([TEST] order of the bus cycles). */
-  const interrupt = (n, vectorFrom) => {
+  const interrupt = (n, vectorFrom, note = 'the vector number from the decoder') => {
     if (emptyVector && [0, 1, 2, 3].every((k) => bus.read(4 * n + k) === 0)) return false;
-    if (vectorFrom !== 'tmpC') move([[n, 'tmpC']], 'the vector number from the decoder');
+    if (vectorFrom !== 'tmpC') move([[n, 'tmpC']], note);
     aluStep('times 4', 'tmpC', null, 16, { to: 'IND' });
     request('read', 0, 'IND', 16);
     move([['OPR', 'tmpB']]);
@@ -340,6 +349,20 @@ export function runMicro(c, bus, { emptyVector = false, temps = null } = {}) {
     step('end');
     return res;
   };
+
+  // --- an interrupt entry (8086-B8): INTR fetches its type with the INTA request; NMI and single-step have theirs fixed
+  if (entry) {
+    if (entry.kind === 'intr') {
+      request('inta', null, null, 8);
+      move([['OPR', 'tmpC']], 'the type byte from the second INTA cycle');
+    }
+    const ok = interrupt(entry.type, entry.kind === 'intr' ? 'tmpC' : null,
+      entry.kind === 'nmi' ? 'type 2: NMI (fixed)' : 'type 1: single-step (fixed)');
+    if (!ok) return { ...fail('noHandler', entry.type), entry: { ...entry } };
+    res.trap = { cause: entry.type, label: entry.kind };
+    step('end');
+    return res;
+  }
 
   // --- prefixes, op code, ModR/M
   for (const p of d.prefixes) {
@@ -651,6 +674,13 @@ export function runMicro(c, bus, { emptyVector = false, temps = null } = {}) {
         const stop = d.rep === 'REP' ? !(c.FLAGS & ZF) : (c.FLAGS & ZF) !== 0;
         condition(!stop, d.rep === 'REP' ? 'REPE: ZF set?' : 'REPNE: ZF clear?');
         if (stop) break;
+      }
+      // 8086-B8: an interrupt accepted between repetitions; IP back to the prefix before the op code (AP-67 p. A-27)
+      if (c.CX !== 0 && repStop && repStop()) {
+        iteration = null;
+        jump([[(startIP + d.prefixes.length - 1) & 0xffff, 'IP']], 'an interrupt between repetitions: IP back to the prefix before the string op code');
+        res.repInterrupted = i;
+        break;
       }
     }
     iteration = null;

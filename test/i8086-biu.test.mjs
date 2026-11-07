@@ -12,7 +12,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { CPU_REGS, phys } from '../src/arch/i8086/cpu.js';
+import { CPU_REGS, phys, execute } from '../src/arch/i8086/cpu.js';
 import { undefinedFlags } from '../src/arch/i8086/microops.js';
 import { create } from '../src/arch/i8086/engine.js';
 import { descriptor } from '../src/arch/i8086/index.js';
@@ -33,6 +33,23 @@ const programs = index.templates.flatMap((t) => (t.id === 'segments' ? ['flat', 
 programs.push(['default', asm(descriptor.language.defaultSource)]);
 const recsOf = (m) => m.journal.map((j) => j.rec);
 
+/**
+ * The FLAGS bits left undefined after an instruction, carried forward (author 2026-11-06, B6 open item): `carried` (the
+ * undefined bits before it) stays masked until an instruction defines a bit, and its own undefined bits are added. A bit
+ * is defined by the instruction when the L1 instruction, run twice from `regs` with the carried bits of FLAGS flipped,
+ * gives the same value both times (written whatever it was before). `peek(a)` reads a byte of memory before it.
+ */
+function carryUndefined(regs, carried, peek, d) {
+  const run = (flip) => {
+    const c = { ...regs, FLAGS: regs.FLAGS ^ flip };
+    const w = new Map();
+    execute(c, { read: (a) => (w.has(a) ? w.get(a) : peek(a)), write: (a, v) => w.set(a, v & 0xff), peek: (a) => (w.has(a) ? w.get(a) : peek(a)), input: () => 0, output: () => {} }, { emptyVector: true });
+    return c.FLAGS;
+  };
+  const defined = carried ? ~(run(0) ^ run(carried)) & carried : 0;
+  return ((carried & ~defined) | undefinedFlags(d)) & 0xffff;
+}
+
 /** One instruction from a small state: code bytes at CS:IP = 1000:0100, the queue empty. */
 function one(code, { regs = {}, queue = 0, waitStates = 0, tail = 12, mem: extra = [] } = {}) {
   const r = { AX: 0, BX: 0, CX: 0, DX: 0, SP: 0x100, BP: 0, SI: 0, DI: 0, CS: 0x1000, DS: 0x2000, ES: 0x3000, SS: 0x4000, IP: 0x100, FLAGS: 0xf002, ...regs };
@@ -45,18 +62,37 @@ function one(code, { regs = {}, queue = 0, waitStates = 0, tail = 12, mem: extra
   return { recs, drv, r };
 }
 
+test('i8086 B5: undefined FLAGS bits are carried until an instruction defines them (MUL, then POP, then ADD)', () => {
+  const p = asm('MOV AX, 3\nMOV BX, 5\nMUL BX\nPUSH AX\nPOP CX\nADD AX, 1\nHLT\n');
+  const m = new ClockModel(p);
+  const e = create(p);
+  const seen = [];
+  let undef = 0;
+  for (let i = 0; i < 6; i++) {
+    const d = m.mm.cur.res.d;
+    undef = carryUndefined(e.state().registers, undef, (a) => e.peek(a, 1)[0], d);
+    seen.push([d.entry.mnem, undef]);
+    m.stepInstruction(); e.step();
+    assert.equal((m.mm.c.FLAGS ^ e.state().registers.FLAGS) & ~undef & 0xffff, 0, `FLAGS after ${d.entry.mnem}`);
+  }
+  const SZAP = 0x80 | 0x40 | 0x10 | 0x04; // SF ZF AF PF: undefined after MUL ([TEST] metadata mask)
+  assert.deepEqual(seen.map(([n, u]) => [n, u]), [['MOV', 0], ['MOV', 0], ['MUL', SZAP], ['PUSH', SZAP], ['POP', SZAP], ['ADD', 0]]);
+});
+
 for (const waitStates of [0, 1]) {
   test(`i8086 B5: the templates clock by clock (${waitStates} wait states): invariants hold, no stale byte, commits follow the L1 engine`, () => {
     for (const [name, p] of programs) {
       const m = new ClockModel(p, { waitStates });
       const e = create(p);
       let n = 0;
+      let undef = 0; // the FLAGS bits undefined so far, carried until an instruction defines them
       while (!m.halted && m.clocks < 2_000_000) {
         const res = m.mm.cur.res;
+        if (res.d) undef = carryUndefined(e.state().registers, undef, (a) => e.peek(a, 1)[0], res.d);
         const r = m.stepInstruction();
         e.step();
         const ref = e.state().registers;
-        const mask = ~undefinedFlags(res.d) & 0xffff;
+        const mask = ~undef & 0xffff;
         for (const k of CPU_REGS) assert.equal((m.mm.c[k] ^ ref[k]) & (k === 'FLAGS' ? mask : 0xffff), 0, `${name}: ${k} after ${n}`);
         n += 1;
         if (r !== 'step') break;
@@ -106,7 +142,7 @@ test('i8086 B5 view: peek gives the next clock\'s record and changes nothing; in
     }
     assert.equal(m.peek(), null, `${name}: no clock after the end`);
     // atStart holds on exactly one clock per instruction started
-    if (m.halted) assert.equal(peeks, m.mm.retired, `${name}: instruction starts`);
+    if (m.halted) assert.equal(peeks, m.mm.items, `${name}: instruction starts`); // an interrupt entry (B8) starts an item too
     // back by instructions lands on each start in turn, then at clock 0, then refuses
     if (!m.halted) continue;
     m.back(); // into the last instruction

@@ -14,6 +14,7 @@ Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, 
 | `https://sajidlab.org/mavilera/armv7/` | Armv7 Laboratory (from 1.1.0; documentation at `armv7/docs/`) |
 | `https://sajidlab.org/mavilera/riscv/?tool=npu` | the NPU, a tool of the RISC-V Laboratory (from 1.2.0) |
 | `https://sajidlab.org/mavilera/gpu/` | GPU Laboratory (from 1.3.0, a preview in 1.2.0; documentation at `gpu/docs/`) |
+| `https://sajidlab.org/mavilera/i8086/` | 8086 Laboratory (from 1.4.0; documentation at `i8086/docs/`) |
 
 Every module whose status is `available` in `site/architectures.json` is built by `tools/release.mjs` into its
 registry path, from `src/arch/<id>` and its content folders (W-D29; `docs/ADDING-SIMULATORS.md`).

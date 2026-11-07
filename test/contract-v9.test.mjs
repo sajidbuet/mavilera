@@ -38,7 +38,7 @@ function twoVariants() {
   };
 }
 
-test('v9: the version is 9', () => assert.equal(CONTRACT_VERSION, 9));
+test('v9: the version is at least 9 (v10 raised it, §27)', () => assert.ok(CONTRACT_VERSION >= 9));
 
 test('v9: a descriptor with variants validates, in its own variant and in the other', async () => {
   const d = twoVariants();
