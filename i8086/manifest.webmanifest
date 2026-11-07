@@ -1,0 +1,41 @@
+{
+  "name": "MAVILERA: 8086 Laboratory",
+  "short_name": "MAVILERA",
+  "description": "The Intel 8086: an assembler in the style of Intel's ASM-86 and an instruction-level simulator with segmented memory, the flags, the I/O ports and NMI and INTR inputs, checked against the SingleStepTests 8086 suite. The BIU and EU view steps each instruction through a teaching model, clock by clock with the bus interface unit filling the instruction queue, or with clock counts calibrated to recorded P80C86A-2 traces.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f7",
+  "theme_color": "#145e56",
+  "categories": [
+    "education",
+    "developer"
+  ],
+  "icons": [
+    {
+      "src": "assets/33076d7a4c9f/content/branding/mavilera/mavilera-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/33076d7a4c9f/content/branding/mavilera/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/33076d7a4c9f/content/branding/mavilera/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/33076d7a4c9f/content/branding/mavilera/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
