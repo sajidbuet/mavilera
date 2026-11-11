@@ -1,0 +1,29 @@
+{
+  "_comment": "Pinned inputs of the Pico Full toolchain and SDK pack (pico2 P1-F2, research D27/D28/D33; pins as experiment E-CC-WASM-1, research manifests/dependencies.yaml e_cc_wasm_1).",
+  "llvmProject": {
+    "url": "https://github.com/llvm/llvm-project.git",
+    "tag": "llvmorg-23.1.5",
+    "commit": "392dfff97d29b59d77e5cac6d4b6ef2585fe7117",
+    "sparse": ["llvm", "clang", "lld", "cmake", "third-party", "compiler-rt", "libc", "libunwind"],
+    "patch": { "file": "llvm-23.1.5-wasi.patch", "sha256": "c2d5fdf88a2dbe9aa3054a56afe2d172f6035b782664f5038365b59099e0c08a" }
+  },
+  "wasiSdk": {
+    "version": "34",
+    "url": "https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-34/wasi-sdk-34.0-x86_64-windows.tar.gz",
+    "bytes": 619003408,
+    "sha256": "cccb5c323a9b34f0349a9b09e8804a0a7632c68c3310f4b5f437ed57d7e71d8f",
+    "folder": "wasi-sdk-34.0-x86_64-windows"
+  },
+  "picolibc": {
+    "url": "https://github.com/picolibc/picolibc.git",
+    "tag": "1.8.12",
+    "commit": "2ae376c6cdf4fef90ca2388ecf7a07457fa63cff"
+  },
+  "picoSdk": {
+    "url": "https://github.com/raspberrypi/pico-sdk.git",
+    "commit": "079c6f39023649b154152db30f1d781e884879bc"
+  },
+  "outputs": {
+    "llvmWasm": { "bytes": 77046446, "sha256": "61747c6c05e8e208ea028e82967d5b67482cab11e07c5e96d91629bf10d634c3", "note": "E-CC-WASM-1 build, 2026-11-08" }
+  }
+}

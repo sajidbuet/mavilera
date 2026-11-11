@@ -1,0 +1,469 @@
+<!doctype html>
+<!--
+  content/pico2/help/docs/index.html -- the detailed documentation of the MAVILERA Pico 2 Laboratory, published at
+  /mavilera/pico2/docs/ beside the application (/mavilera/pico2/) by tools/release.mjs (roadmap P1-M9, documentation gate;
+  research decision D45). Facts about the chip cite the RP2350 Datasheet, Release 8 (2026-10-01), by section; the research
+  repository's reference IDs are in comments (RP-001 = that datasheet). Statements about checks cite the research records
+  named in comments (experiments/…, R-…). No text, figure or table of the datasheet is reproduced (CC BY-ND; C4).
+  Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+  Rights class: content. Apache-2.0.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAVILERA Pico 2 Laboratory documentation</title>
+  <meta name="description" content="Documentation of the MAVILERA Pico 2 Laboratory: the workspace, Hazard3 assembly and MAVILERA C, the RP2350's devices, the lab kit, the pipeline view, PIO, sound, two cores, real time, templates and exercises, files, how the models were checked and their limits.">
+  <meta name="theme-color" content="#0b2a55">
+  <!-- in a release, tools/release.mjs places the icons at the site root, two levels up -->
+  <link rel="icon" sizes="16x16 32x32 48x48" href="../../favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="../../icon.svg">
+  <style>
+    /* the MAVILERA palette (W-D30): the tokens of src/ui/theme.css */
+    :root {
+      --primary: #1a4f8b; --primary-soft: #e8f1fa; --navy: #0b2a55; --blue: #3a78b5; --amber: #a85a00;
+      --bg: #f4f7fb; --surface: #ffffff; --border: #d8e1ec; --text: #14243a; --text-2: #5a6b80; --code-bg: #f3f6fa;
+      --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #5b9bd5; --primary-soft: #132a45; --navy: #f2f5fa; --blue: #5b9bd5; --amber: #e3a453;
+        --bg: #0d1420; --surface: #141d2b; --border: #2a3648; --text: #e3e9f2; --text-2: #9aa9bd; --code-bg: #182233;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--primary); text-underline-offset: 2px; }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
+    code, kbd, pre { font-family: var(--font-code); font-size: 0.9em; }
+    code { background: var(--code-bg); padding: 0 0.25em; border-radius: 3px; }
+    kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: var(--surface); white-space: nowrap; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.45; }
+    pre code { background: none; padding: 0; }
+    .skip { position: absolute; left: -9999px; }
+    .skip:focus { left: 16px; top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
+    header.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+    header.top .in { max-width: 1180px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .word { font-weight: 800; font-size: 20px; letter-spacing: 0.01em; color: var(--navy); text-decoration: none; }
+    .word span { color: var(--blue); }
+    header.top nav { margin-left: auto; display: flex; gap: 16px; }
+    .layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 230px 1fr; gap: 36px; }
+    .toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 24px 0; font-size: 14px; }
+    .toc ol { list-style: none; margin: 0; padding: 0; }
+    .toc li { margin: 2px 0; }
+    .toc a { color: var(--text); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+    .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+    main { min-width: 0; padding: 24px 0 64px; }
+    h1 { font-size: 30px; margin: 8px 0 6px; line-height: 1.2; }
+    h2 { font-size: 24px; margin: 48px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.25; }
+    h3 { font-size: 18px; margin: 26px 0 6px; }
+    .lead { font-size: 18px; color: var(--text-2); margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 15px; background: var(--surface); }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); }
+    .wrap-table { overflow-x: auto; }
+    .note { border-left: 4px solid var(--primary); background: var(--surface); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+    .small { font-size: 14px; color: var(--text-2); }
+    footer { color: var(--text-2); font-size: 14px; border-top: 1px solid var(--border); margin-top: 48px; padding-top: 16px; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; gap: 0; }
+      .toc { position: static; max-height: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="in">
+      <a class="word" href="../../">MAVILERA<span> Pico 2 Laboratory</span></a>
+      <nav aria-label="Site">
+        <a href="../">Open the application</a>
+        <a href="../../">MAVILERA Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#about">About the laboratory</a></li>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#workspace">The workspace</a></li>
+        <li><a href="#assembly">Assembly language</a></li>
+        <li><a href="#c">MAVILERA C</a></li>
+        <li><a href="#devices">The chip's devices</a></li>
+        <li><a href="#lab-kit">The lab kit and analogue inputs</a></li>
+        <li><a href="#pipeline">The Pipeline view</a></li>
+        <li><a href="#pio">PIO</a></li>
+        <li><a href="#sound">Sound</a></li>
+        <li><a href="#cores">Two cores</a></li>
+        <li><a href="#speed">Real time, speed and replay</a></li>
+        <li><a href="#templates">Templates</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#files">Files and sharing</a></li>
+        <li><a href="#editions">Lite and Full</a></li>
+        <li><a href="#offline">Offline use and privacy</a></li>
+        <li><a href="#checks">How the models were checked</a></li>
+        <li><a href="#limits">Limits of the model</a></li>
+        <li><a href="#sources">Sources</a></li>
+        <li><a href="#rights">Licence and notices</a></li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <h1>The Pico 2 Laboratory</h1>
+      <p class="lead">A Raspberry Pi Pico 2 in the browser: write a program in RISC-V assembly or in a subset of C, run it on a
+        simulated RP2350 with its Hazard3 cores, and watch the instructions, the clock cycles and the pins.</p>
+
+      <h2 id="about">About the laboratory</h2>
+      <!-- RP-001 §3.8, §3.9, §2.2 -->
+      <p>The Raspberry Pi Pico 2 is a small board built around the RP2350, a microcontroller from Raspberry Pi Ltd. The
+        RP2350 has two processor cores, and each can run either as an Arm Cortex-M33 or as a Hazard3, an open-source RISC-V
+        core; the choice is made at boot (RP2350 Datasheet §3.8, §3.9). The laboratory simulates the RISC-V side: two
+        Hazard3 cores, the RP2350's address map (§2.2) and the devices listed under <a href="#devices">The chip's
+        devices</a>.</p>
+      <p>It is a teaching tool. A program runs one instruction at a time or at the speed of the real chip; every instruction
+        takes the clock cycles the datasheet gives for Hazard3, and the Pipeline view shows why. Programs are written in
+        Hazard3 assembly language or in MAVILERA C, a teaching subset of C compiled in the page. What the model leaves out is
+        listed under <a href="#limits">Limits of the model</a>, and how it was checked under
+        <a href="#checks">How the models were checked</a>.</p>
+
+      <h2 id="start">Getting started</h2>
+      <ol>
+        <li>Open a template from <strong>Templates</strong> in the toolbar, for example <em>Hello over UART</em>. Its first
+          lines say what it shows and what to try.</li>
+        <li>Choose <strong>Assemble</strong> (<strong>Compile</strong> for C), or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.
+          Errors are underlined in the editor and listed in the console.</li>
+        <li><strong>Step</strong> (<kbd>F10</kbd>) runs one instruction; <strong>Step back</strong>
+          (<kbd>Shift</kbd>+<kbd>F10</kbd>) undoes it. <strong>Run</strong> (<kbd>F5</kbd>) runs on and pauses.</li>
+        <li>Open the <strong>Pins</strong> tab of the bottom pane to see GP25, the board's LED, and the other 29 GPIOs.</li>
+      </ol>
+      <p>A path through the templates: <em>A tour of Hazard3's extensions</em>; <em>Hello over UART</em> and <em>Blink GP25
+        with the SIO and TIMER0</em>; <em>Blink in C</em> and <em>Hello in C</em>; <em>A button on GP15 counts presses</em>
+        and <em>Echo over UART in capitals</em>; then the pipeline, sound, two cores, the buses and PIO. The
+        <a href="#exercises">practice exercises</a> follow the same order.</p>
+
+      <h2 id="workspace">The workspace</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Part</th><th>What it shows</th></tr></thead>
+        <tbody>
+          <tr><td>Editor</td><td>The program, with a second tab for its .pio file when it has one.</td></tr>
+          <tr><td>Listing</td><td>Each instruction with its address and encoding; the marked row runs next. Click the circle before an address to set a breakpoint.</td></tr>
+          <tr><td>Registers</td><td>x0 to x31 and the machine CSRs; a register the last step changed is marked. Tick a register to stop when it is written. With two cores running, the Core 1 registers too.</td></tr>
+          <tr><td>Bottom pane</td><td>Tabs: Memory, Pins, and one per device (PWM, DMA, ADC, SPI, I2C, PIO).</td></tr>
+          <tr><td>Console</td><td>What the program sends on UART0, messages of the laboratory, and Send to UART0.</td></tr>
+          <tr><td>Toolbar</td><td>Templates, Assemble or Compile, Run, Step, Step back, Reset, the Speed menu, the Sound button and clk_sys.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Panes can be resized, folded and opened from their dividers; <strong>View</strong> in the header has Focus, Full
+        screen, Zoom, Projector mode and the theme. <strong>Keys</strong> in the header lists the keyboard shortcuts.</p>
+
+      <h2 id="assembly">Assembly language</h2>
+      <!-- RP-001 §3.8, §3.8.6, §8.1, §8.5, §12.8 -->
+      <p>The assembler takes Hazard3's instruction set: RV32IMAC with the bit-manipulation and code-size extensions, and
+        Hazard3's own extensions, among them its interrupt controller (RP2350 Datasheet §3.8, §3.8.6). A program begins at its
+        first instruction in <code>.text</code>; its data go in <code>.data</code>; it ends at <code>ebreak</code> when no
+        trap handler is set. Without a bootrom (see <a href="#limits">Limits</a>) the program itself starts the chip: it
+        starts the 12&nbsp;MHz crystal, chooses the clocks and takes the devices it uses out of reset, as the device
+        templates do.</p>
+      <p><strong>clk_sys</strong> in the toolbar chooses 1, 4 or 12&nbsp;MHz. The assembler defines symbols for that choice,
+        so that a program works at every clock:</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>CLK_SYS_DIV</code></td><td>The value for <code>CLK_SYS_DIV</code> that divides the 12&nbsp;MHz reference to clk_sys (§8.1).</td></tr>
+          <tr><td><code>CLK_SYS_HZ</code></td><td>clk_sys in hertz.</td></tr>
+          <tr><td><code>UART_IBRD</code>, <code>UART_FBRD</code></td><td>The UART's baud-rate divisors for this clock (§12.1).</td></tr>
+          <tr><td><code>TICK_CYCLES</code></td><td>The tick generator's count for a 1&nbsp;µs timer tick (§8.5).</td></tr>
+        </tbody>
+      </table></div>
+      <p>A <code>.pio</code> file in the second tab (File, then Add PIO file) is assembled with the program; a PIO program
+        named <code>blink</code> gives the symbols <code>blink_program</code> (its words), <code>blink_length</code>,
+        <code>blink_wrap</code> and <code>blink_wrap_target</code>.</p>
+
+      <h2 id="c">MAVILERA C</h2>
+      <p>MAVILERA C is the teaching subset of C of the MAVILERA laboratories, compiled in the page into Hazard3 assembly that
+        you can read and step through. Its start-up starts the crystal, sets clk_sys to the chosen clock, starts UART0 for
+        <code>putchar</code> and the timer, then calls <code>main</code>; main's return value is the program's exit code
+        (in <code>a0</code> at the end). <strong>Step line</strong> and <strong>Back line</strong> run one C line.</p>
+      <p><code>#include &lt;rp2350.h&gt;</code> gives the registers by name and these helpers:</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Helpers</th><th>What they do</th></tr></thead>
+        <tbody>
+          <tr><td><code>pin_output</code>, <code>pin_input</code>, <code>pin_write</code>, <code>pin_read</code></td><td>A GPIO as a single-cycle IO output or input.</td></tr>
+          <tr><td><code>delay_us</code>, <code>delay_ms</code>, <code>sleep_ms</code>, <code>time_us</code></td><td>Waiting and time from TIMER0 (<code>sleep_ms</code> waits asleep, for programs without interrupt handlers).</td></tr>
+          <tr><td><code>pwm_start(pin, top, div)</code>, <code>pwm_level(pin, level)</code></td><td>A pin's PWM slice: a period of top + 1 counts of clk_sys / div, high for level counts.</td></tr>
+          <tr><td><code>dma_copy(dst, src, words)</code></td><td>A copy by DMA channel 0, waiting until it is done.</td></tr>
+          <tr><td><code>adc_read(input)</code></td><td>A conversion of input 0 to 3 (GP26 to GP29) or 4 (the temperature sensor): 0 to 4095.</td></tr>
+          <tr><td><code>i2c_setup</code>, <code>i2c_write</code>, <code>i2c_read</code></td><td>I2C0 on GP4 (SDA) and GP5 (SCL), the lab kit's bus.</td></tr>
+          <tr><td><code>spi_setup</code>, <code>spi_select</code>, <code>spi_transfer</code></td><td>SPI0 on GP16 to GP19, chip select on GP17.</td></tr>
+          <tr><td><code>core1_start</code>, <code>fifo_push</code>, <code>fifo_pop</code>, <code>core_id</code></td><td>Core 1 runs the program's <code>core1_main</code>; words pass through the inter-core FIFOs.</td></tr>
+          <tr><td><code>pio_load(words, n)</code></td><td>PIO0's instruction memory filled from address 0.</td></tr>
+          <tr><td><code>CLK_SYS_HZ</code>, <code>UART_BAUD</code></td><td>The chosen clock and UART0's baud rate.</td></tr>
+        </tbody>
+      </table></div>
+      <p>MAVILERA C has no interrupt handlers; the interrupt templates are in assembly.</p>
+
+      <h2 id="devices">The chip's devices</h2>
+      <p>Each device is modelled at the level of its registers, at the RP2350's addresses, and takes its time in clock
+        cycles of its own clock. The tabs of the bottom pane show each one's state in words.</p>
+      <!-- RP-001 ch. 8, ch. 9, §3.1, §3.8.6, §12.1-§12.8; models: src/arch/pico2/soc/*.js -->
+      <div class="wrap-table"><table>
+        <thead><tr><th>Device</th><th>Datasheet</th><th>In the laboratory</th></tr></thead>
+        <tbody>
+          <tr><td>Clocks, crystal, PLLs, resets</td><td>chapter 8, §7.4</td><td>The 12&nbsp;MHz crystal, the clock generators and their dividers, the resets of each block; clk_sys from 1 to 150&nbsp;MHz.</td></tr>
+          <tr><td>GPIO and pads</td><td>chapter 9</td><td>30 pins, each with its function, pad settings and level; the Pins panel drives a pin from outside.</td></tr>
+          <tr><td>Single-cycle IO (SIO)</td><td>§3.1</td><td>GPIO registers, the inter-core FIFOs, doorbells, each core's identity and timer compare.</td></tr>
+          <tr><td>Interrupts</td><td>§3.8.6</td><td>Hazard3's external interrupt controller (Xh3irq) and the devices' interrupt lines.</td></tr>
+          <tr><td>Timers</td><td>§12.8, §8.5</td><td>TIMER0 and TIMER1 with a 1&nbsp;µs tick, their alarms and interrupts.</td></tr>
+          <tr><td>UART</td><td>§12.1</td><td>UART0 and UART1: FIFOs, baud rate, interrupts; UART0 is the console.</td></tr>
+          <tr><td>PWM</td><td>§12.5</td><td>12 slices: divider, wrap, phase-correct mode, input modes, interrupts and DMA requests.</td></tr>
+          <tr><td>DMA</td><td>§12.6</td><td>16 channels: chaining, address rings, pacing timers, the sniffer.</td></tr>
+          <tr><td>ADC</td><td>§12.4</td><td>One-shot and free-running conversion, round robin, the FIFO, the temperature sensor; ideal converter.</td></tr>
+          <tr><td>SPI</td><td>§12.3</td><td>SPI0 and SPI1 as masters, with loopback.</td></tr>
+          <tr><td>I2C</td><td>§12.2</td><td>I2C0 and I2C1 as masters: start, repeated start, aborts.</td></tr>
+          <tr><td>PIO</td><td>chapter 11</td><td>See <a href="#pio">PIO</a>.</td></tr>
+        </tbody>
+      </table></div>
+      <p>A program that uses a block or a feature that is not modelled gets a message in the console; the list is under
+        <a href="#limits">Limits of the model</a>.</p>
+
+      <h2 id="lab-kit">The lab kit and analogue inputs</h2>
+      <p><strong>Parts</strong>, in the Pins panel, connects a kit of simulated parts to the Pico 2's default buses, as on a
+        breadboard:</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Part</th><th>Bus and address</th><th>Gives</th></tr></thead>
+        <tbody>
+          <tr><td>BMP280</td><td>I2C0, 0x76</td><td>temperature and pressure</td></tr>
+          <tr><td>MPU-6050</td><td>I2C0, 0x68</td><td>acceleration, rotation, temperature</td></tr>
+          <tr><td>MCP9808</td><td>I2C0, 0x18</td><td>temperature</td></tr>
+          <tr><td>16 x 2 character display</td><td>I2C0, 0x27</td><td>two lines of text</td></tr>
+          <tr><td>24C02 EEPROM</td><td>I2C0, 0x50</td><td>256 bytes</td></tr>
+          <tr><td>BME280</td><td>SPI0, chip select GP17</td><td>temperature, pressure, humidity</td></tr>
+        </tbody>
+      </table></div>
+      <p>The panel sets the environment the sensors read and the voltages on GP26 to GP29, the ADC's inputs (§12.4); the
+        temperature is also the chip's own, read by its temperature sensor. Every change is an input of the run, given at the
+        clock cycle you make it. The parts answer their buses byte by byte; their measuring times, filters, interrupt pins and
+        the EEPROM's write time are not modelled.</p>
+
+      <h2 id="pipeline">The Pipeline view</h2>
+      <!-- RP-001 §3.8.7; research: E-TIMING-1, D15 -->
+      <p>Hazard3 has three pipeline stages: F (fetch), X (execute) and M (memory). The view shows them cycle by cycle: which
+        instruction is in each stage, the drawing of the stages, the cycles each instruction cost and the cause of every extra
+        cycle (a load whose result is used at once, a taken branch, a divide, a multi-cycle push or pop), and the branch
+        predictor's single entry. The counts are the datasheet's (RP2350 Datasheet §3.8.7). Where Hazard3's hardware design
+        files take a different count (divide and remainder, <code>mret</code>, <code>cm.popretz</code> with one register),
+        the laboratory keeps the datasheet's and says so in the view's help. The bus is perfect: every access completes
+        without wait states.</p>
+
+      <h2 id="pio">PIO</h2>
+      <!-- RP-001 ch. 11 -->
+      <p>The RP2350 has three PIO blocks of four state machines each (RP2350 Datasheet chapter 11). A state machine runs a
+        program of up to 32 instructions that drives and reads pins with exact timing, with its own clock divider, FIFOs to
+        and from the cores, and side-set. In the laboratory a PIO program is written in a <code>.pio</code> file in the Pico
+        SDK's notation; programs that use the RP2350's additions start with <code>.pio_version 1</code>. The PIO tab shows
+        each state machine's program counter, scratch registers, shift registers, FIFOs and divider.</p>
+      <p>All three blocks run exact to the clock cycle, with the RP2350's additions. Simulating a state machine that executes an
+        instruction on every cycle of a fast clock is slow (at 150&nbsp;MHz about 1 to 2&nbsp;% of real time); one that waits
+        on its divider, a FIFO or a pin runs close to real time.</p>
+
+      <h2 id="sound">Sound</h2>
+      <p>Choose a pin as the <strong>Speaker</strong> in the Pins panel and turn <strong>Sound</strong> on (the speaker
+        button in the toolbar): you hear that pin's level as a small loudspeaker on it would play it. The
+        <strong>Converter</strong> is Pin-accurate by default (the pin's exact high and low times, filtered to 20&nbsp;kHz);
+        Ideal DAC plays a PWM output's duty cycle at each period, without its carrier. Sound plays in Real time; Render and
+        play, in the Speed menu, runs up to 60 seconds of the chip's time as fast as it can and then plays them, for programs
+        too fast for real time.</p>
+
+      <h2 id="cores">Two cores</h2>
+      <!-- RP-001 §3.1, §5.3 -->
+      <p>After reset core 1 waits in the bootrom for core 0 to send it a short sequence of words through the inter-core FIFO
+        (RP2350 Datasheet §5.3, §3.1). The laboratory models that wait without running the bootrom. In C,
+        <code>core1_start()</code> sends the sequence and core 1 runs <code>core1_main</code> on a stack of its own. Both
+        cores then run at once, interleaved by their clock cycles; Step steps core 0 while core 1 runs alongside, and the
+        Core 1 registers show the other core.</p>
+
+      <h2 id="speed">Real time, speed and replay</h2>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Speed</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Real time (the default)</td><td>One second of the chip's time per second, so that blinks, tones and UART lines come as on the board. If this computer cannot keep up, the status says how much of real time it reaches.</td></tr>
+          <tr><td>Full speed</td><td>As fast as this computer can.</td></tr>
+          <tr><td>Animated</td><td>One step after another, slowly enough to follow.</td></tr>
+        </tbody>
+      </table></div>
+      <p>A pin you drive, a line you send to UART0 and a change of the lab kit are the run's inputs, each given at a clock
+        cycle. <strong>Replay</strong> in the Pins panel starts the program again and gives the same inputs at the same
+        cycles: the run repeats exactly. A share link and a settings file carry the inputs with the program.</p>
+
+      <h2 id="templates">Templates</h2>
+      <p>Each template begins with what it shows and what to try. The laboratory's tests run every one of them and check
+        what its comment says.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Group</th><th>Template</th><th>Language</th></tr></thead>
+        <tbody>
+          <tr><td>Assembly language</td><td>A tour of Hazard3's extensions</td><td>Assembly</td></tr>
+          <tr><td>Assembly: the chip's devices</td><td>Hello over UART</td><td>Assembly</td></tr>
+          <tr><td>Assembly: the chip's devices</td><td>Echo over UART in capitals</td><td>Assembly</td></tr>
+          <tr><td>Assembly: the chip's devices</td><td>Blink GP25 with the SIO and TIMER0</td><td>Assembly</td></tr>
+          <tr><td>Assembly: the chip's devices</td><td>A timer alarm interrupt (Xh3irq)</td><td>Assembly</td></tr>
+          <tr><td>Hazard3's pipeline</td><td>Load-use stalls and branch costs</td><td>Assembly</td></tr>
+          <tr><td>Hazard3's pipeline</td><td>A function with cm.push and cm.popret</td><td>Assembly</td></tr>
+          <tr><td>MAVILERA C</td><td>Blink in C</td><td>MAVILERA C</td></tr>
+          <tr><td>MAVILERA C</td><td>Hello in C</td><td>MAVILERA C</td></tr>
+          <tr><td>MAVILERA C</td><td>Sum of an array</td><td>MAVILERA C</td></tr>
+          <tr><td>MAVILERA C</td><td>Measuring time with time_us</td><td>MAVILERA C</td></tr>
+          <tr><td>MAVILERA C</td><td>A button on GP15 counts presses</td><td>MAVILERA C</td></tr>
+          <tr><td>PWM, DMA and sound</td><td>Fade the LED with PWM</td><td>Assembly</td></tr>
+          <tr><td>PWM, DMA and sound</td><td>A tone from PWM</td><td>MAVILERA C</td></tr>
+          <tr><td>PWM, DMA and sound</td><td>A sine from DMA and PWM</td><td>MAVILERA C</td></tr>
+          <tr><td>PWM, DMA and sound</td><td>Twinkle, Twinkle, Little Star (in a loop)</td><td>MAVILERA C</td></tr>
+          <tr><td>PWM, DMA and sound</td><td>Copy memory with DMA</td><td>Assembly</td></tr>
+          <tr><td>Two cores</td><td>Two cores, two LEDs</td><td>MAVILERA C</td></tr>
+          <tr><td>Two cores</td><td>A message through the FIFO</td><td>Assembly</td></tr>
+          <tr><td>ADC, I2C and SPI</td><td>Read a knob with the ADC</td><td>MAVILERA C</td></tr>
+          <tr><td>ADC, I2C and SPI</td><td>The chip's temperature sensor</td><td>MAVILERA C</td></tr>
+          <tr><td>ADC, I2C and SPI</td><td>An I2C temperature sensor (MCP9808)</td><td>MAVILERA C</td></tr>
+          <tr><td>ADC, I2C and SPI</td><td>Text on an I2C LCD</td><td>MAVILERA C</td></tr>
+          <tr><td>ADC, I2C and SPI</td><td>SPI in loopback</td><td>Assembly</td></tr>
+          <tr><td>PIO</td><td>PIO blinks the LED</td><td>Assembly + .pio</td></tr>
+          <tr><td>PIO</td><td>A square wave from PIO with side-set</td><td>Assembly + .pio</td></tr>
+          <tr><td>PIO</td><td>PIO counts the 1 bits of a word</td><td>MAVILERA C + .pio</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="exercises">Exercises</h2>
+      <p>File, then <strong>Exercise…</strong>, lists the practice exercises. Each gives a task and a starter program;
+        <strong>Run the tests</strong> runs your program once per test, from reset at full speed, with the test's inputs (a
+        pin driven at a given time, text sent to UART0) given when the chip's clock reaches them, and shows expected against
+        actual: memory, registers, the exit code, the console, pin levels, and the number, period and high time of a pin's
+        changes within a stated tolerance. No solutions are included. An exercise file from a teacher (format
+        <code>risc-vista-exercise</code>, with <code>"arch": "pico2"</code>) opens the same way.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Exercise</th><th>Language</th><th>Tests</th></tr></thead>
+        <tbody>
+          <tr><td>The sum of a table of words</td><td>Assembly</td><td>6</td></tr>
+          <tr><td>Count the 1 bits of a word, fast</td><td>Assembly</td><td>7</td></tr>
+          <tr><td>Print a number over UART</td><td>MAVILERA C</td><td>7</td></tr>
+          <tr><td>Blink with a given rhythm</td><td>MAVILERA C</td><td>1</td></tr>
+          <tr><td>Count the presses of a button</td><td>MAVILERA C</td><td>5</td></tr>
+          <tr><td>A PWM wave with a given duty</td><td>MAVILERA C</td><td>1</td></tr>
+          <tr><td>A sum on core 1</td><td>MAVILERA C</td><td>4</td></tr>
+          <tr><td>Pulses from PIO</td><td>Assembly + .pio</td><td>1</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="files">Files and sharing</h2>
+      <ul>
+        <li>Your work is kept in this browser: after a refresh or a closed tab the program, its .pio file and the settings
+          come back.</li>
+        <li>File, then Copy share link, puts the program, the view, the settings and the run's inputs into a link. They travel
+          in the part after #, which the browser never sends to a server.</li>
+        <li>File, then Save program and settings…, writes a .json file; File, then Open, reads it back, and also program
+          files.</li>
+        <li>Exports: traces of a run (JSON lines, CSV) with each instruction's clock cycles.</li>
+      </ul>
+
+      <h2 id="editions">Lite and Full</h2>
+      <p>The published laboratory holds one program in assembly language or in MAVILERA C (Pico Lite). A second edition, Pico
+        Full, with projects of several files, C built with the Pico SDK in the browser and the import of SDK-built UF2 and ELF
+        files, is still in development and is not part of the published laboratory.</p>
+
+      <h2 id="offline">Offline use and privacy</h2>
+      <p>Every computation runs in your browser. MAVILERA has no account, sends no telemetry and uploads nothing. After a
+        first visit the hosted version also opens without a network connection, and a single-file version can be downloaded
+        for computers that have none.</p>
+
+      <h2 id="checks">How the models were checked</h2>
+      <!-- research repository: E-CORE-1 (research log 2026-11-06), E-TIMING-1 (experiments/e-timing-1), E-ORACLE-1 and the
+           P1-M2..P1-M8 gates (experiments/p1m2-oracle), E-PIO-SIM013 (experiments/e-pio-sim013), the PIO assembler check
+           (tools/pico2-pioasm-check.mjs), P1-M4 (R-PERF-01, experiments/realtime-1mhz) -->
+      <p>Against other simulators, test suites and Hazard3's hardware design files, not against a Pico 2 board:</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>What</th><th>Checked against</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>The core's instructions</td><td>riscv-arch-test, the RISC-V architecture tests, with the Sail reference model</td><td>245 of 255 tests pass; the failures were examined: each is a point where Hazard3's own design differs from the reference model, except one that is not yet explained.</td></tr>
+          <tr><td>Instruction timing</td><td>135 timing cases measured on Hazard3's hardware design (the RP2350 version), simulated with Verilator and with Icarus Verilog</td><td>The laboratory gives the hardware design's count in every case, except 18 where the design and the datasheet differ: there it gives the datasheet's (see <a href="#pipeline">The Pipeline view</a>).</td></tr>
+          <tr><td>The machine and its devices</td><td>The Pico SDK's example programs built for RISC-V and run on rp2350js (an open-source RP2350 emulator, patched where it lacked features)</td><td>Identical UART text and pin sequences, and pin timing within 1&nbsp;% or 2&nbsp;µs: 4 of 4 programs on the timers, UART and GPIO; 4 of 6 on PWM and DMA, 3 of 4 on two cores and 9 of 10 on ADC, SPI and I2C, each difference traced to a feature the emulator lacks; 13 of 13 PIO programs.</td></tr>
+          <tr><td>PIO, a second time</td><td>rp2040-pio-emulator, an independent PIO emulator, on PIO-only tests</td><td>21 of 22 tests identical cycle by cycle; the one difference is a feature that emulator lacks (refilling the output register between OUT instructions, RP2350 Datasheet §11.5.4.2).</td></tr>
+          <tr><td>The PIO assembler</td><td>pioasm, the Pico SDK's assembler, on 38 programs</td><td>The same words for every program.</td></tr>
+          <tr><td>Real time</td><td>A program at 1&nbsp;MHz for 30 seconds in Chrome, Edge and Firefox on a 2021 laptop processor (AMD Ryzen 9 5900HS)</td><td>Within 0.1&nbsp;% of real time. At 12&nbsp;MHz the same laptop reached 55 to 78&nbsp;%. Slower computers were not measured.</td></tr>
+        </tbody>
+      </table></div>
+      <p>The laboratory's own tests run every template and every exercise, and its browser tests run in Chrome, Edge and
+        Firefox. Safari was not tested.</p>
+
+      <h2 id="limits">Limits of the model</h2>
+      <!-- research: P1-M9 design §1.5; the blocks below are the machine's own (test/pico2-docs.test.mjs keeps this list in
+           step with src/arch/pico2/soc/machine.js and the diagnostics of src/arch/pico2/strings.js) -->
+      <h3>Not modelled</h3>
+      <ul>
+        <li>The Arm Cortex-M33 cores: only the RISC-V cores run.</li>
+        <li>The bootrom: a program starts directly at its first instruction. Of the bootrom's functions only the lookup that the
+          Pico SDK's start-up uses is answered; a call of another one, or a jump into the bootrom, ends the run with a message.
+          Core 1's wait for its launch is modelled without it.</li>
+        <li>Blocks whose registers read as zero or as last written, with a message: <span data-blocks="unmodelled">HSTX_CTRL,
+          HSTX_FIFO, TRNG, SHA256, OTP, OTP_DATA, OTP_DATA_RAW, GLITCH_DETECTOR, TBMAN, USB_DEVICE_DPRAM, XIP_AUX,
+          CORESIGHT_TRACE</span>: HSTX, the random number generator, SHA-256, the one-time-programmable memory, the glitch
+          detector, the testbench manager, USB's buffer memory, the flash cache's auxiliary port and trace.</li>
+        <li>Blocks whose registers only hold what was written: <span data-blocks="storage">SYSCFG, IO_QSPI, PADS_QSPI, ACCESSCTRL,
+          BUSCTRL, XIP_CTRL, QMI, ROSC, POWMAN, USB</span>: the flash interface, the ring oscillator, power management,
+          bus priority, access control and the USB controller.</li>
+        <li>The SIO interpolators and the TMDS encoder; the watchdog's countdown.</li>
+        <li>The security features (secure and non-secure states, the access controls' checks).</li>
+        <li>SPI and I2C as slaves; I2C 10-bit addresses, general calls and START bytes (the low 7 bits of the address are
+          sent).</li>
+        <li>PIO's INLINE_OUT_EN, OUT_STICKY and GPIOBASE (the registers keep what was written).</li>
+        <li>A GPIO function without a model (for example HSTX or USB): the pin is not driven. DMA requests from blocks
+          without a model never come.</li>
+      </ul>
+      <h3>Modelled with simplifications</h3>
+      <ul>
+        <li>A perfect bus: every fetch, load and store takes no wait states, so code in flash, the APB peripherals and bus
+          conflicts cost less than on the chip.</li>
+        <li>Instruction timing from the datasheet where Hazard3's hardware design differs (18 cases; see
+          <a href="#pipeline">The Pipeline view</a>).</li>
+        <li>DMA's security and memory-protection settings are stored, not enforced.</li>
+        <li>The ADC is an ideal converter; the lab kit's parts are ideal and answer at once.</li>
+        <li>Sound: the converters are models of a loudspeaker's hearing of the pin, not of an audio circuit.</li>
+      </ul>
+      <h3>Speed and browsers</h3>
+      <ul>
+        <li>A PIO state machine that executes on every cycle of a fast clock runs far slower than real time.</li>
+        <li>Real time at 12&nbsp;MHz may not be reached; the status says how much is.</li>
+        <li>Measured on one laptop only (see <a href="#checks">How the models were checked</a>); Safari was not tested.</li>
+      </ul>
+      <h3>What a simulation shows</h3>
+      <p>The models were checked against emulators, test suites and the core's hardware design, not against a Pico 2 board.
+        A simulation shows what the model does; it is not evidence of how a hardware build behaves.</p>
+
+      <h2 id="sources">Sources</h2>
+      <!-- RP-001 -->
+      <p>Section numbers in this documentation and in the help are those of <cite>RP2350 Datasheet</cite>, Raspberry Pi
+        Ltd, Release 8 (build 80d627281ed5), 1 October 2026,
+        <a href="https://pip.raspberrypi.com/documents/RP-008373-DS">pip.raspberrypi.com/documents/RP-008373-DS</a>,
+        licensed CC BY-ND 4.0.</p>
+
+      <h2 id="rights">Licence and notices</h2>
+      <p>© 2026 Sajid Muhaimin Choudhury. MAVILERA and its content (drawings, help texts, this documentation, templates and
+        exercises) are licensed under the Apache License, Version 2.0. The names and the logo are not licensed as
+        trademarks.</p>
+      <p class="small">The table of the RP2350's register names, addresses and reset values is generated from the RP2350
+        description file of the Raspberry Pi Pico SDK (BSD-3-Clause licence; see THIRD_PARTY.md in the source repository).
+        MAVILERA reproduces no text, figure or table of the RP2350 Datasheet; its simulator, drawings, help and programs are
+        its own. rp2350js, rp2040-pio-emulator, riscv-arch-test, Verilator and Icarus Verilog were used for checking only;
+        nothing of them is included. MAVILERA is not affiliated with or endorsed by Raspberry Pi Ltd. Raspberry Pi is a trademark of Raspberry Pi Ltd; Pico and RP2350 are names of its products.</p>
+
+      <footer>
+        <p>MAVILERA Pico 2 Laboratory documentation · <a href="../../">MAVILERA Home</a> · <a href="../">Open the application</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

@@ -43,12 +43,28 @@ const ICONS = {
   chevronDown: [['M6.5 9.5 12 15l5.5-5.5']],
   chevronLeft: [['M14.5 6.5 9 12l5.5 5.5']],
   chevronRight: [['M9.5 6.5 15 12l-5.5 5.5']],
+  // a pane's own fold button (author, 2026-11-10): a minus folds it to its heading, a plus opens it; no direction, so
+  // that the arrows stay with the dividers (where they show the way the divider moves)
+  fold: [['M6 12h12']],
+  unfold: [['M6 12h12M12 6v12']],
+  // the lower pane's heading grows up over the pane above (an arrow to the top edge), and gives the room back
+  growUp: [['M5 4.5h14', 'M12 20V8.5', 'M7.5 13 12 8.5l4.5 4.5']],
+  growBack: [['M5 4.5h14', 'M12 8v11.5', 'M7.5 15 12 19.5l4.5-4.5']],
   file: [['M6 3h8l5 5v13H6z', 'M14 3v5h5']],
+  // projects (pico2 P1-F1): a new file, rename, duplicate, the entry file, saved
+  fileNew: [['M6 3h8l5 5v13H6z', 'M14 3v5h5', 'M12.5 11v7M9 14.5h7']],
+  rename: [['M4.5 19.5 5.5 15 15.5 5l3.5 3.5-10 10z', 'M13.5 7l3.5 3.5', 'M12.5 19.5h7']],
+  duplicate: [['M9 9h10.5v11.5H9z', 'M5.5 15.5V4h10.5']],
+  flag: [['M6.5 21V4'], ['M6.5 4.5h11l-2.6 4 2.6 4h-11z']],
+  check: [['M5 12.5 9.5 17 19 7.5']],
   code: [['M8.5 7 3.5 12l5 5', 'M15.5 7l5 5-5 5']],
   list: [['M8.5 6.5h12M8.5 12h12M8.5 17.5h12'], ['M4 5.2h2.4v2.4H4zM4 10.8h2.4v2.4H4zM4 16.3h2.4v2.4H4z']],
   inspect: [['M10.5 4.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12z', 'M15 15l5 5']],
   registers: [['M4 5h16v14H4z', 'M4 9.7h16M4 14.3h16M10 5v14']],
   gauge: [['M3.5 12.5H7l2.5-6.5 4.5 12 2.5-5.5h4']],
+  // the Sound button (pico2 P1-M5): a loudspeaker with waves, and with a cross when off
+  sound: [['M15.5 9a4 4 0 0 1 0 6', 'M18 6.5a7.5 7.5 0 0 1 0 11'], ['M3.5 9.5h3.8l5.2-4.3v13.6l-5.2-4.3H3.5z']],
+  soundOff: [['M15.5 9.5l5 5M20.5 9.5l-5 5'], ['M3.5 9.5h3.8l5.2-4.3v13.6l-5.2-4.3H3.5z']],
   memory: [['M4.5 6.5h15v11h-15z', 'M8 6.5V4M12 6.5V4M16 6.5V4M8 20v-2.5M12 20v-2.5M16 20v-2.5', 'M8 10h8v4H8z']],
   terminal: [['M3.5 5h17v14h-17z', 'M7 9.5l3 2.5-3 2.5', 'M12.5 15H17']],
   help: [['M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z', 'M9.6 9.5a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9v.5'], ['M12 16.2a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2z']],

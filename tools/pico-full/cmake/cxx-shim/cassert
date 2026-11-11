@@ -1,0 +1,2 @@
+// E-CC-WASM-1 stand-in: no C++ standard library is built for RV32; the SDK's C++ files only need assert().
+#include <assert.h>

@@ -1,0 +1,8 @@
+[
+  { "libraries": ["pico_multicore", "pico_low_power"], "reason": "their LIB_* defines change shared SDK code (malloc mutex, runtime init, thread-local reinitialisation, sections), so the pack's objects could not serve programs with and without them; core 1 is not simulated before P1-M6" },
+  { "libraries": ["pico_stdio_usb", "tinyusb", "pico_usb_reset", "pico_stdio_rtt", "pico_stdio_semihosting"], "reason": "stdio is UART only in P1-F2 (research D33 Q4); the other stdio drivers change pico_stdio" },
+  { "libraries": ["pico_bootsel_via_double_reset"], "reason": "it works from a constructor that nothing references, so it would never be taken from an archive" },
+  { "libraries": ["pico_status_led"], "reason": "its LED driver needs pioasm (PIO is out of P1-F2, research D33 Q6)" },
+  { "libraries": ["pico_cyw43_arch", "pico_cyw43_driver", "pico_btstack", "pico_lwip", "pico_mbedtls"], "reason": "radio and network (the pico2 board has no radio)" },
+  { "libraries": ["hardware_dcp", "hardware_rcp", "cmsis"], "reason": "Arm cores only" }
+]

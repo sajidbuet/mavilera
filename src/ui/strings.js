@@ -5,6 +5,9 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
+/** A clock frequency as the real-time status shows it: '4 MHz', '150 MHz', '32.8 kHz'. */
+const STRINGS_RT_HZ = (hz) => (hz >= 1e6 ? `${+(hz / 1e6).toPrecision(3)} MHz` : `${+(hz / 1e3).toPrecision(3)} kHz`);
+
 // Frozen by mergeStrings, once the architecture's strings are in.
 export const STRINGS = {
   appName: 'MAVILERA',
@@ -47,6 +50,120 @@ export const STRINGS = {
     tooLong: (n) => `The run was ${n.toLocaleString('en-GB')} steps long, too long to replay when the page opens; it starts again from reset.`,
     loadsDropped: (n) => `${n} data file(s) loaded before were too large for the browser's storage and were not kept; load them again.`,
   }),
+  // projects: several files per program (contract v10 draft capability `projects`; pico2 P1-F1, research D31)
+  projects: Object.freeze({
+    files: 'Files',
+    filesLabel: (project) => `Files of the project ${project}`,
+    tabs: 'Open files',
+    closeTab: (name) => `Close ${name}`,
+    entry: 'entry',
+    entryTitle: 'The entry file: Build starts here (assembly files are assembled together, the entry first; a C entry is compiled)',
+    newFile: 'New file',
+    rename: 'Rename',
+    duplicate: 'Duplicate',
+    delete: 'Delete',
+    setEntry: 'Make entry',
+    fileActions: (name) => `Actions for ${name}`,
+    renameThis: (name) => `Rename ${name} (F2)`,
+    duplicateThis: (name) => `Duplicate ${name}`,
+    entryThis: (name) => `Make ${name} the entry file`,
+    isEntry: (name) => `${name} is the entry file`,
+    deleteFile: (name) => `Delete ${name} (Delete)`,
+    entryMark: '(entry)',
+    listHint: 'Up and Down move, Enter opens, F2 renames, Delete deletes, a double click renames',
+    projectMenu: 'Project menu',
+    kinds: Object.freeze({ s: 'assembly', c: 'C', h: 'header' }),
+    namePrompt: 'File name',
+    nameHint: (exts) => `Letters, digits, _ . - only; ${exts}`,
+    ok: 'OK',
+    cancel: 'Cancel',
+    confirmDelete: (name) => `Delete ${name}? You can undo this once.`,
+    deleted: (name) => `Deleted ${name}.`,
+    undo: 'Undo',
+    undone: (name) => `${name} is back.`,
+    menu: 'Project',
+    menuTitle: 'Projects: new, open, rename, delete, import or export as .zip',
+    newProject: 'New project',
+    open: 'Open project…',
+    renameProject: 'Rename project',
+    deleteProject: 'Delete project…',
+    importZip: 'Import .zip…',
+    exportZip: 'Export .zip',
+    dialogTitle: 'Projects',
+    dialogNote: 'Projects are kept in this browser only (IndexedDB); export a .zip to keep a copy or move it to another computer.',
+    none: 'No projects yet.',
+    filesCount: (n) => `${n} file${n === 1 ? '' : 's'}`,
+    modifiedAt: (when) => `changed ${when}`,
+    openThis: (name) => `Open ${name}`,
+    deleteThis: (name) => `Delete ${name}`,
+    confirmDeleteProject: (name) => `Delete the project ${name} with all its files? This cannot be undone; export a .zip first to keep a copy.`,
+    deletedProject: (name) => `Deleted the project ${name}.`,
+    projectName: 'Project name',
+    created: (name) => `New project ${name}.`,
+    opened: (name, n) => `Opened the project ${name} (${n} file${n === 1 ? '' : 's'}).`,
+    imported: (name, n) => `Imported ${name} as a project of ${n} file${n === 1 ? '' : 's'}.`,
+    exported: (name) => `Exported ${name}.`,
+    importRefused: (why) => `The .zip was not imported: ${why}`,
+    refused: (why) => `Not done: ${why}`,
+    migrated: 'Your program is now the project "My program"; Project ▸ New project starts another.',
+    saved: 'Saved',
+    saving: 'Saving…',
+    notKept: 'Not kept: this browser refuses storage here (private window?). Export a .zip to keep your work.',
+    savedTitle: 'Projects are saved in this browser as you type',
+    addedFile: (name) => `Added ${name} to the project.`,
+    sharedProject: 'Shared project',
+    fromLink: (name) => `The link opened as the new project ${name}; your other projects are unchanged (Project ▸ Open project…).`,
+    restoreProject: (name) => `Back to the project ${name}.`,
+    tooLong: (n, max) => `The project is too long for a link (${n.toLocaleString('en-GB')} of ${max.toLocaleString('en-GB')} characters): use Project ▸ Export .zip.`,
+    myProgram: 'My program',
+    untitled: 'Untitled',
+    // contract v10 draft: a module with several C compilers (pico2 P1-F2: MAVILERA C and Pico SDK C, research D33 Q5)
+    compiler: 'C compiler',
+    compilerTitle: 'Which compiler builds this project\'s C files',
+    compilerSet: (label) => `This project's C is now built with ${label}.`,
+  }),
+  // a module's editions (contract v10 draft; pico2 P1-L1, research D34: Lite and Full): the switch in the header
+  edition: Object.freeze({
+    group: 'Edition',
+    current: (title) => `${title} (open now)`,
+    // (GUI walkthrough, 2026-11-11: "your program is kept" read as if it came along; each edition keeps its own)
+    switchTo: (title) => `${title} Switch to it: the page reloads. Each edition keeps its own program; this one stays here for when you come back.`,
+    openIn: (label) => `Open in ${label}`,
+    openInTitle: (label) => `Copy this program into a new project of ${label} and open it there`,
+    copied: (name, label, from) => `Your program is now the project ${name} in ${label}; in ${from} it is unchanged.`,
+    linkIn: (label) => `The link opened in ${label}, the edition for it.`,
+    cStays: (c, here, there, thereC) => `${c} programs stay in ${here}: ${there} builds C with ${thereC}. Programs in assembly language open in ${there}.`,
+    compilerFixed: (label, other, home) => `This project chose ${other}; here its C is built with ${label}.${home ? ` ${other} programs run in ${home}.` : ''}`,
+  }),
+  // an image language's optional download (contract v10 draft; pico2 P1-F2: the Pico SDK compiler, ADR-0012)
+  download: Object.freeze({
+    title: (label) => `Download ${label}?`,
+    notice: (label, mb) => `Building with ${label} needs its compiler and files: a ${mb} download. They are kept in this browser, so later builds start at once and work offline.`,
+    noCache: 'This browser will not keep them here (private window?): they download again next time.',
+    licencesBefore: 'They contain third-party software; read its ',
+    licences: 'licences',
+    licencesAfter: ' (opens in a new tab).',
+    start: 'Download',
+    cancel: 'Not now',
+    retry: 'Try again',
+    close: 'Close',
+    progressTitle: (label) => `Downloading ${label}`,
+    fileProgress: (done, total, pct, rate) => `${done} of ${total} · ${pct} %${rate ? ` · ${rate}/s` : ''}`,
+    fromCache: 'from this browser',
+    preparing: 'Preparing the compiler…',
+    ready: (label, s) => `${label} is ready (${s} s).`,
+    failed: (why) => `The download stopped: ${why}`,
+    // the compiler's files are not on this site (a development server without the pack, a partial copy): say so in plain words
+    missing: (label) => `${label} is not available on this site: its compiler files are missing here, so this project cannot be built. Programs in assembly language still assemble and run.`,
+    declined: (label) => `Build needs ${label}; choose Download when you are ready.`,
+    building: (label) => `Building with ${label}…`,
+    built: (label, kb, ms) => `Built with ${label} in ${ms} ms: ${kb} KB of program for the chip.`,
+    buildFailed: (n) => `The build stopped with ${n} error${n === 1 ? '' : 's'}.`,
+    linkFailed: 'The program did not link: a function or variable is used but not defined anywhere.',
+    saveBuilt: (ext) => `Download the built program (${ext})`,
+    savedBuilt: (name, n) => `Saved ${name} (${n.toLocaleString('en-GB')} bytes).`,
+    buildFirst: (label) => `Build the project with ${label} first.`,
+  }),
   // in-app help (W-D20)
   help: Object.freeze({
     button: 'Help',
@@ -70,10 +187,47 @@ export const STRINGS = {
   stepOut: 'Step out',
   run: 'Run',
   pause: 'Pause',
+  runAgain: 'Run again', // the primary button of an edition with `primary`, after the program ended (pico2 Lite, P1-L1)
   runToCursor: 'Run to cursor',
   speed: 'Speed',
   speedMax: 'Full speed',
   speedSlow: 'Animated',
+  speedRealtime: 'Real time', // v10 capability realtime (pico2 P1-M4)
+  // v10 capability audio (pico2 P1-M5, research D39 Q6-Q7): the Sound button and Render and play
+  audio: Object.freeze({
+    on: 'Sound on', off: 'Sound off',
+    render: 'Render and play',
+    renderTitle: 'Run the chosen seconds of simulated time as fast as the computer can, then play the speaker\'s sound: for programs too fast for real time.',
+    seconds: 'Seconds to render',
+    secondsTitle: 'How many seconds of simulated time Render and play runs (1 to 60).',
+    unavailable: 'This browser cannot play the simulator\'s sound (no Web Audio).',
+    nextRun: 'The change of Sound applies from the next run.',
+    noSpeaker: 'No speaker pin is chosen: choose one in the Pins panel to hear a pin.',
+    soundOff: 'Sound is off: turn Sound on (the speaker button) to hear the rendered sound.',
+    rendering: (fraction, seconds) => `Rendering ${Math.round(Math.min(1, Math.max(0, fraction)) * 100)} % of ${seconds} s…`,
+    playing: (secs, seconds) => `Playing ${secs.toFixed(1)} s of rendered sound${secs + 0.05 < seconds ? ' (the run stopped early)' : ''}.`,
+  }),
+  // Step line and Back line on the editor (v10 draft Language.lineStep; research D38)
+  lineStep: Object.freeze({
+    step: 'Step line', back: 'Back line',
+    limit: (n) => `No C line was reached within ${Number(n).toLocaleString('en-GB')} instructions; the program is in code without C lines. Step or Run goes on.`,
+  }),
+  // View ▸ Zoom: the whole page (author, 2026-11-10)
+  pageZoom: Object.freeze({ group: 'Zoom', out: 'Zoom out', in: 'Zoom in', reset: 'Original size' }),
+  // the real-time run (v10 capability realtime; pico2 P1-M4, research D36 Q1): the status during the run
+  realtime: Object.freeze({
+    title: 'The program runs at the speed of the real chip: one second of machine time per second. If this computer cannot keep up, the status says how much of real time it reaches.',
+    starting: 'Real time: starting…',
+    hz: STRINGS_RT_HZ,
+    status: (ns, hz, fraction, ips) => `Real time · ${(ns / 1e9).toFixed(3)} s · clk_sys ${STRINGS_RT_HZ(hz)}`
+      + (fraction !== null && fraction < 0.95 ? ` · ${Math.round(fraction * 100)} % of real time` : '')
+      + (ips ? ` · ${(ips / 1e6).toFixed(1)} M instructions/s` : ''),
+    notInView: 'Real time runs in the views that show the whole machine; this view runs at full speed.',
+    replaying: (n) => `Replay: the program starts again and the ${n} input${n === 1 ? '' : 's'} given come again at the same clock cycles.`,
+    forgot: 'The inputs are forgotten: the program starts again without them.',
+    inputsKept: (n) => `${n} input${n === 1 ? '' : 's'} of the run kept: they come again at their clock cycles (Replay in the Pins panel).`,
+    badInputs: (m) => `The inputs could not be used: ${m}`,
+  }),
   profile: 'Architecture', // the profile selector (author, 2026-10-30)
   // contract v9 (arch-contract.md §26): a profile of another instruction set reloads the page in it, after asking
   variant: Object.freeze({
@@ -88,6 +242,14 @@ export const STRINGS = {
   file: 'File',
   open: 'Open…',
   save: (ext) => `Save ${ext}`, // the language's extension
+  // v10 draft (Language.companion; pico2 Lite, research D43): the companion file beside a one-file program (pico2: a .pio file)
+  companion: Object.freeze({
+    tabs: 'The program and its companion file',
+    save: (ext, ext2) => `Save ${ext} and ${ext2}`,
+    added: (name) => `Added ${name} in a second tab. Build builds it with the program.`,
+    opened: (name) => `Opened ${name} beside the program, in its second tab. Build builds it with the program.`,
+    removed: (name, add) => `Removed ${name}; the program builds without it. ${add} brings it back.`,
+  }),
   exportHex: 'Export .hex',
   exportBin: 'Export .bin',
   exportListing: 'Export listing',
@@ -107,9 +269,25 @@ export const STRINGS = {
   importImage: 'Import .hex/.bin…',
   theme: 'Theme',
   keys: 'Keys',
-  shortcuts: 'Keys: F5 run/pause · F10 step · Shift+F10 step back · F11 step over · Shift+F11 step out · Ctrl+F10 run to cursor · '
-    + 'Ctrl+Enter assemble · Ctrl+F find · F datapath focus (Esc leaves it) · in the editor, Esc then Tab leaves it · in the listing, ↑/↓ move, Enter shows the fields, B sets a breakpoint · in the registers, ↑/↓ move, W watches · '
-    + 'in a datapath view, F10 is one clock cycle (F11 one instruction in the multicycle view), Enter on an element of the drawing opens its details, ↑/↓ on the divider share the height, Esc leaves the enlarged drawing.',
+  // the Keys list (GUI walkthrough, 2026-11-11: one line per key in place of a paragraph): [keys, what they do, needs];
+  // `needs` leaves a line out where the laboratory has no such command ('stepOver': the capability; 'datapath': a datapath view)
+  shortcutList: Object.freeze([
+    ['F5', 'run or pause'],
+    ['F10', 'step'],
+    ['Shift+F10', 'step back'],
+    ['F11', 'step over', 'stepOver'],
+    ['Shift+F11', 'step out', 'stepOver'],
+    ['Ctrl+F10', 'run to the cursor'],
+    ['Ctrl+Enter', 'assemble or compile'],
+    ['Ctrl+F', 'find in the editor'],
+    ['F', 'focus on the main view (Esc leaves it)'],
+    ['Esc, then Tab', 'leave the editor with the keyboard'],
+    ['↑ ↓, Enter, B', 'in the listing: move, show the fields, set a breakpoint'],
+    ['↑ ↓, W', 'in the registers: move, watch'],
+    ['F10, F11', 'in a datapath view: one clock cycle (F11: one instruction in the multicycle view)', 'datapath'],
+    ['Enter', 'on an element of the drawing: its details', 'datapath'],
+    ['↑ ↓', 'on a divider: share the room; Esc leaves the enlarged drawing'],
+  ]),
 
   // panels
   editor: 'Editor',
@@ -208,6 +386,10 @@ export const STRINGS = {
   runningStatus: (n) => `Running… ${n.toLocaleString('en-GB')} instructions`,
   paused: (pc) => `Paused at pc = ${pc}.`,
   resetDone: 'Reset: registers, memory and counters are back at their initial values.',
+  // another program was opened (a template, an example, a link, a file): the breakpoints were addresses of the one before
+  breakpointsCleared: (n) => `${n} breakpoint${n === 1 ? '' : 's'} of the previous program ${n === 1 ? 'was' : 'were'} cleared.`,
+  // the editor's Language menu: each language keeps its own text (said, because the text in the editor changes)
+  langKept: (from, to, first) => `Your ${from} program is kept, and comes back when you choose ${from} again. ${first ? `This is a ${to} example to start from.` : `This is your ${to} program.`}`,
   watchWord: (a, on) => (on ? `Watching the word at ${a}: a run stops when it is written.` : `No longer watching the word at ${a}.`),
   halted: (pc, code) => `Halted at pc = ${pc}${code === null || code === undefined ? '' : `; exit code ${code}`}.`, // EngineState.exitCode is optional
   simError: (msg) => `SIM ERROR: ${msg}`,
@@ -443,7 +625,7 @@ export const STRINGS = {
       + `${entry ? `; each calls your procedure ${entry} with the test's registers` : '; each runs it from the start'}.`,
     run: 'Run the tests',
     starter: 'Load the starter program',
-    starterTitle: 'Put the exercise\'s starting program in the editor; your text is kept (File ▸ Restore text before the link)',
+    starterTitle: 'Put the exercise\'s starting program in the editor; your text is kept (File ▸ Restore previous text)',
     starterLoaded: 'Loaded the starter program of the exercise.',
     unload: 'Close the exercise',
     running: 'Running…',
@@ -462,6 +644,7 @@ export const STRINGS = {
   }),
   importedImage: (n) => `Imported ${n} word(s) as a program without source.`,
   importedNote: 'The listing is now the program; the editor keeps your source, which runs again when you assemble it.',
+  imageKindRefused: (name, kinds) => `${name}: this processor does not open this kind of image (it opens ${kinds}).`,
   noLine: 'No instruction on that line.',
 
   // views (WS-U-010)
@@ -503,6 +686,7 @@ export const STRINGS = {
     group: 'Workspace',
     normal: 'Normal view',
     focus: 'Datapath focus',
+    focusPlain: 'Focus', // in a view whose main pane is not a drawing (the listing, the comparison)
     fullscreen: 'Full screen',
     focusKey: 'F',
     badge: { focus: 'Focus', fullscreen: 'Full screen' },
@@ -706,6 +890,9 @@ export const STRINGS = {
     expand: (p) => `Open ${p}`,
     enlargeUp: (p) => `Fold the pane above and enlarge ${p} upward`, openAbove: 'Open the pane above again',
     maximisePane: (p) => `Maximise ${p}`, restorePane: (p) => `Restore ${p}`, maximiseShort: 'Maximise', restoreShort: 'Restore',
+    // the folded dock's bar names the memory panel's tab shown (author, 2026-11-10)
+    dockBarOne: (tab) => `${tab} (folded): open`, dockBarWith: (tab) => `${tab} · Console (folded): open`,
+    editorWide: 'Widen the editor: the listing and the registers step aside', editorNarrow: 'Bring back the listing and the registers',
     view: 'View',
     reset: 'Reset layout',
     resetDone: 'The layout is back at its defaults.',
@@ -734,6 +921,7 @@ export const STRINGS = {
   tools: Object.freeze({
     build: 'Assemble',
     buildC: 'Compile',
+    buildProject: 'Compile: compile every .c and .S file of the project and link them into one program',
     group: 'Execution controls',
     modes: 'Processor views',
     // the More menus of the header and the toolbar (overflow.js): what does not fit on one line
@@ -759,7 +947,13 @@ export const STRINGS = {
     colReg: 'Reg',
     colAlias: 'Alias', // the register's other name (RISC-V: ABI)
     regPick: 'Select a register to see its value in every format.',
-    themes: { '': 'Theme: as the system (click for dark)', dark: 'Theme: dark (click for light)', light: 'Theme: light (click to follow the system)' },
+    // View ▸ Theme (author, 2026-11-10)
+    themes: {
+      group: 'Theme',
+      title: 'The colours of the whole interface, the drawings included; kept in this browser for every module',
+      names: { '': 'As the system', light: 'Light', dark: 'Dark', dim: 'Dim', black: 'Black', sepia: 'Sepia',
+        'hc-light': 'High contrast light', 'hc-dark': 'High contrast dark' },
+    },
     noBreakLine: 'No instruction on that line to stop at.',
   }),
   // share link and settings file (WS-F-122, WS-F-144, WS-N-013)
@@ -768,26 +962,26 @@ export const STRINGS = {
     copyLinkTitle: 'A link that carries the program, the view and its settings in the part after #, which the browser never sends to the server',
     saveSettings: 'Save program and settings…',
     saveSettingsTitle: 'A .json file with the program, the view and its settings; open it with File ▸ Open',
-    restore: 'Restore text before the link',
-    restoreTitle: 'Put back the editor text that the last opened link or settings file replaced',
+    restore: 'Restore previous text',
+    restoreTitle: 'Put back the editor text that the last opened template, example, link or settings file replaced',
     copied: (n) => `Share link copied (${n.toLocaleString('en-GB')} characters). It holds the program, the view and its settings; nothing is stored on a server.`,
     copyFailed: 'The browser did not allow copying. Select the link below and copy it yourself:',
     tooLong: (n, limit) => `The program is too long for a link (${n.toLocaleString('en-GB')} characters; the limit is ${limit.toLocaleString('en-GB')}). Share it as a file with File ▸ ${'Save program and settings…'}.`,
     opened: (view) => `Opened a shared program in the ${view} view, with its settings.`,
     openedFile: (name, view) => `Opened ${name}: the program in the ${view} view, with its settings.`,
-    keptNote: 'The text that was in the editor is kept: File ▸ Restore text before the link.',
+    keptNote: 'The text that was in the editor is kept: File ▸ Restore previous text.',
     refused: (why) => `This link or file was not opened: ${why}.`,
     refusedVersion: 'It was made by another version of MAVILERA. Ask for a new link, or open the program as a plain .s or .c file.',
     refusedArch: (id) => `It belongs to another MAVILERA simulator (architecture ${id}). Open it there.`,
     refusedVariant: (profile) => `It was made for the profile ${profile}, which uses another instruction set. Choose that profile in the Architecture menu, then open the file again.`,
-    restored: 'The text from before the link is back in the editor.',
+    restored: 'The previous text is back in the editor.',
     nothingToRestore: 'There is no earlier text to restore.',
   }),
   // example library (WS-F-123)
   examples: Object.freeze({
     menu: 'Examples…',
     title: 'Examples',
-    note: 'Each example opens in the view of its processor. The text in the editor is kept: File ▸ Restore text before the link brings it back.',
+    note: 'Each example opens in the view of its processor. The text in the editor is kept: File ▸ Restore previous text brings it back.',
     loading: 'Loading the list…',
     failed: (why) => `The examples could not be loaded: ${why}`,
     none: 'This laboratory has no examples yet.',

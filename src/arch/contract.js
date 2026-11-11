@@ -14,8 +14,8 @@
 // 2026-10-30; version 9 (profile variants with their own language, registers and address space, for the GPU's two
 // instruction sets, §26) approved on 2026-11-04; version 10 (a paced real-time Worker, an audio sink, an optional
 // SharedArrayBuffer transport and `.wasm` assets, for the `pico2` module, §27) DRAFTED 2026-11-06, the four extensions
-// approved in principle by the author on 2026-11-05 (ADR-0008 in the research repository), the field shapes awaiting
-// approval. A change raises CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
+// approved in principle by the author on 2026-11-05 (ADR-0008 in the research repository), the field shapes approved on
+// 2026-11-09 (research D35; advance counts clock cycles). A change raises CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
 //
 // Decisions of 2026-10-28 that the shell implements on this contract:
 // - the fields inspector uses Language.fields(); without it the inspector is disabled with a reason;
@@ -58,7 +58,7 @@ export const STOP = Object.freeze({
  */
 export const CAPABILITIES = Object.freeze([
   'assembler', // the editor assembles source (otherwise the architecture only loads images)
-  'cLanguage', // the C subset compiler (W-D29: RISC-V only)
+  'cLanguage', // the C subset compiler (W-D29: RISC-V; also pico2 from P1-C2, research decision D18)
   'backStep', // step back (WS-F-090)
   'breakpoints', // breakpoints on listing lines
   'watchpoints', // watched registers and memory words
@@ -66,7 +66,7 @@ export const CAPABILITIES = Object.freeze([
   'callStack', // the call-stack panel (WS-F-143)
   'runToCursor',
   'scratch', // the one-line scratch assembler
-  'imageImport', // opening .hex and .bin images
+  'imageImport', // opening .hex and .bin images (v10 draft: the kinds of Language.imageKinds)
   'gccImport', // importing GCC output
   'dataIO', // loading files into data arrays and saving memory ranges (WS-F-145)
   'uninitCheck', // the uninitialised-value check (WS-F-147)
@@ -84,7 +84,11 @@ export const CAPABILITIES = Object.freeze([
   'worker', // long runs in a Worker (the engine's snapshot is structured-clonable)
   'realtime', // v10: a paced real-time run in a Worker with devices present (needs Descriptor.realtime, Engine.advance)
   'audio', // v10: audio output through an AudioWorklet (needs Descriptor.audio, Engine.drainAudio)
+  'projects', // v10 (draft, added 2026-11-08, pico2 P1-F1, research D31): several files per program, file explorer, tabs, IndexedDB store, zip, share links v2
 ]);
+
+/** v10 (draft). The image files the shell can pass to Language.loadImage, by extension; the default of Language.imageKinds is the first two. */
+export const IMAGE_KINDS = Object.freeze(['hex', 'bin', 'uf2', 'elf']);
 
 /** v10. The transports a real-time run may use between the Worker and the page; the shell picks 'sab' only when the page is crossOriginIsolated. */
 export const REALTIME_TRANSPORTS = Object.freeze(['postMessage', 'sab']);
@@ -126,9 +130,52 @@ export const VIEW_KINDS = Object.freeze(['isa', 'datapath', 'bus', 'compare']);
  * @property {{sampleRate: number, channels?: number, processor: string}} [audio]  v10 (capability audio): the audio sink.
  *           `sampleRate` in Hz of the frames Engine.drainAudio returns; `channels` (default 1); `processor`: the
  *           AudioWorklet module, a path relative to the application, loaded by the shell on the first run
- * @property {{wasm?: string[]}} [assets]  v10: files other than JavaScript, CSS and JSON that the module loads; `wasm`:
+ * @property {{wasm?: string[], optional?: {id: string, label: string, base: string}[]}} [assets]  `optional` (v10 draft,
+ *           pico2 P1-F2, ADR-0012): downloads fetched only when the student asks and cached (the Pico SDK compiler), served
+ *           from `base` (relative, ending '/'), outside the 2 MB budget, listed with their size in the release record.
+ *           v10: files other than JavaScript, CSS and JSON that the module loads; `wasm`:
  *           WebAssembly modules, relative paths ending '.wasm'. They count in the module's 2 MB budget (WS-N-004)
+ * @property {Edition[]} [editions]       v10 draft (pico2 P1-L1, research D34): the module's editions (pico2: Lite and
+ *           Full), the first the default; resolved when the page starts (withEdition), changed by reloading the page
+ * @property {string | null} [activeEdition]  v10 draft: set by withEdition on the merged descriptor (null: no editions)
  */
+
+/**
+ * v10 draft (pico2 P1-L1, research D34, design docs/architecture/pico2-p1l1-lite.md). An edition of a module: what the
+ * module offers in it. The shell shows a switch of the editions in the header, keeps the choice per module and reloads
+ * the page to change it (as for a variant, §26). `capabilities` are merged over the descriptor's; `languages`: the ids of
+ * Language.extraLanguages offered (absent: all); `compiler`: the extra language that builds a project's files of its
+ * extension (absent: the first, and a project may choose among several; present: no choice); `primary`: one
+ * state-aware button (Build, Run, Pause, Run again) takes the place of Build and Run; development (pico2 P1-M9, research D45 Q1):
+ * offered on the development page only, left out of a release page and the offline file (at least one edition must remain).
+ *
+ * @typedef {{id: string, label: string, title?: string, capabilities?: Record<string, any>, languages?: string[],
+ *   compiler?: string, primary?: boolean, development?: boolean}} Edition
+ */
+
+/** v10 draft: the edition a page opens in: `wanted` if the module has it, else its first; null without editions. */
+export function editionOf(d, wanted) {
+  const e = d.editions ?? [];
+  if (!e.length) return null;
+  return e.some((x) => x.id === wanted) ? wanted : e[0].id;
+}
+
+/**
+ * v10 draft: the descriptor as the shell sees it in an edition (editionOf picks it): its capabilities merged over the
+ * descriptor's, the extra languages it offers, and `activeEdition`. A module without editions is returned with
+ * activeEdition null.
+ */
+export function withEdition(d, wanted) {
+  const id = editionOf(d, wanted);
+  if (id === null) return { ...d, activeEdition: null };
+  const e = d.editions.find((x) => x.id === id);
+  const out = { ...d, activeEdition: id, capabilities: { ...d.capabilities, ...e.capabilities } };
+  if (e.languages && d.language) out.language = { ...d.language, extraLanguages: (d.language.extraLanguages ?? []).filter((x) => e.languages.includes(x.id)) };
+  return out;
+}
+
+/** v10 draft: the active edition's record of a descriptor merged by withEdition, or null. */
+export const activeEdition = (d) => d.editions?.find((x) => x.id === d.activeEdition) ?? null;
 
 /**
  * v9. What a variant replaces: each key present replaces the descriptor's; `capabilities` and `strings` are merged over
@@ -197,6 +244,8 @@ export async function withVariant(d, variant) {
  * @property {(input: object) => void} input  an input between steps (Engine.input): the shell gives it to the engine,
  *           to the Worker during a long run, or to the view in use (ViewInstance.input), then redraws
  * @property {(text: string, kind?: string) => void} message   to the console
+ * @property {(id: string) => string} [option]  v10 draft (pico2 P1-M5): the value of a Language option whose `panel` is this one
+ * @property {(id: string, value: string) => void} [setOption]  v10 draft (P1-M5): set it (kept, shared, applied as the option says)
  *
  * @typedef {object} PanelInstance
  * @property {Element} root
@@ -244,9 +293,21 @@ export async function withVariant(d, variant) {
  *           v2: the format name and immediate of a word, for the listing's word tooltip
  * @property {() => Promise<{create: (ctx: {strings: Record<string, any>}) => {root: Element, show: (row: object | null) => void}}>} [inspector]
  *           v2: an inspector owned by the architecture, loaded on first use; without it the shell builds one from `fields`
+ * @property {{id: string, label: string, title?: string, values: {id: string, label: string}[], default: string}[]} [options]
+ *           v10 (draft, added 2026-11-09 for pico2's P1-M4, research D36 Q2): the module's build options (pico2: the clk_sys of
+ *           the program), shown in the editor's toolbar for every language the editor builds, kept as pips.<module>.opt.<id>,
+ *           in share links and settings files (`opts`); passed to `assemble` as `options` and to an extra language's `compile`
+ *           merged under its own options. An image language (Pico SDK C) does not get them
+ *           P1-M5 (pico2, research D39 Q4-Q5): `apply: 'engine'` makes an option an engine setting instead (pico2: the speaker pin
+ *           and the audio converter): not passed to assemble or compile and no rebuild on a change; the shell gives the values to
+ *           Engine.configure after every create and at each change (the Worker too). `panel`: the id of the panel that shows the
+ *           option (PanelContext.option / setOption) instead of the editor's heading. Both kept and shared as the other options
  * @property {ExtraLanguage[]} [extraLanguages]  other source languages (RISC-V: C, with capability cLanguage)
- * @property {(content: string | Uint8Array, kind: 'hex'|'bin', name: string, options?: {profile?: string}) => Program} [loadImage]
- *           v4: a program from a .hex or .bin image (capability imageImport)
+ * @property {(content: string | Uint8Array, kind: 'hex'|'bin'|'uf2'|'elf', name: string, options?: {profile?: string}) => Program} [loadImage]
+ *           v4: a program from a .hex or .bin image (capability imageImport); v10: also 'uf2' and 'elf', when listed in imageKinds.
+ *           `content` is text for 'hex' and bytes otherwise; it throws an Error whose message names why a file is refused
+ * @property {string[]} [imageKinds]      v10 (draft, added 2026-11-07 for pico2's P1-C1): the image kinds, from IMAGE_KINDS, the
+ *           shell opens with loadImage (the file input accepts their extensions); default ['hex', 'bin']
  * @property {() => Promise<{id: string, test: (text: string) => boolean, convert: (text: string, name: string) => {text: string, report: {message: string, kind?: string, line?: number, note?: string}[]}}[]>} [importers]
  *           v4: other assemblers' output turned into this language (RISC-V: GCC; capability gccImport), loaded on first use
  * @property {(text: string) => {kind: 'empty'|'decode'|'encode', ok: boolean, text?: string, rows?: object[], error?: object}} [scratch]
@@ -281,6 +342,16 @@ export async function withVariant(d, variant) {
  *           assembly line (0: library code)
  * @property {(d: Program['diagnostics'][number]) => string | null} [asmNote]  v5: a note for a diagnostic of the generated
  *           assembly (RISC-V: the processor views' small memories)
+ * @property {true} [image]  v10 draft (pico2 P1-F2, ADR-0012): an image language. Its `load()` resolves to
+ *           {build(files: {name, text}[]) => Promise<{ok, image?: {kind, bytes}, diagnostics: {severity, message, file?,
+ *           line?, column?}[], times?, log?}>, download?: {probe() => Promise<{bytes, transfer, toDownload, cacheAvailable,
+ *           files: {id, label, bytes}[]}>, fetch(onProgress) => Promise, ready() => boolean, forget?(), persist?()}}.
+ *           The shell builds the whole project (asynchronously; the language may use a Worker), loads the image with
+ *           Language.loadImage, and asks before `download.fetch`, only for a build the student started. Needs the
+ *           capabilities projects and imageImport. Several extra languages with one extension are the project's choice
+ * @property {{extension: string, convert: (image: Uint8Array) => Uint8Array | Promise<Uint8Array>}[]} [saveAs]  v10 draft,
+ *           image languages: formats the built image can be saved in besides itself (pico2: '.uf2'); the shell's File menu
+ *           offers them
  */
 
 /**
@@ -367,9 +438,20 @@ export async function withVariant(d, variant) {
  *           about `budget.cycles` of the architecture's clock without recording step-back history, and return the cycles
  *           actually run and a STOP value (CHUNK: the budget is used up). Device events due within the slice happen
  *           in order. Inputs given with Engine.input between slices carry the cycle they arrive at (deterministic replay)
+ * @property {() => {cycle: number, timeNs: number, clkSys: number}} [clock]  v10 draft (pico2 P1-M4; capability realtime):
+ *           the machine's clock, cheap enough to read between pieces of a real-time slice
+ * @property {(options: {uartFrom?: number}) => object} [live]  v10 draft (pico2 P1-M4): the live view's state during a
+ *           real-time run: pc, registers, cycle, timeNs, clkSys, retired, steps, sleeping, halted, pins {level, oe, ext, fn},
+ *           uart {from, bytes, total} (the console's bytes from the count `uartFrom` on)
+ * @property {() => string} [stateHash]  v10 draft (pico2 P1-M4, D36 Q5): a hash of the whole machine state, for the
+ *           bit-exact check of a replay
+ * @property {(inputs: object[]) => void} [restart]  v10 draft (pico2 P1-M4, D36 Q5): back to the start with `inputs` (an
+ *           Engine.inputs log) as the inputs it replays at their cycles, also after later resets (the shell's Replay)
  * @property {(maxFrames: number) => {frames: Float32Array[], atCycle: number} | null} [drainAudio]  v10 (capability audio):
  *           the audio frames produced since the last call, one array per channel, at Descriptor.audio.sampleRate (at
  *           most `maxFrames`), with the cycle of the first frame; null if none
+ * @property {(values: Record<string, string>) => void} [configure]  v10 draft (pico2 P1-M5): the values of the Language options
+ *           with `apply: 'engine'` (not machine state; the snapshot carries them)
  * @property {() => number} [callDepth]      v2 (capability stepOver needs the three call hooks)
  * @property {() => number | null} [stepOverTarget]  v2: the address after a call at the PC, or null
  * @property {() => number | null} [stepOutTarget]   v2: the return address of the innermost call, or null
@@ -438,6 +520,9 @@ export async function withVariant(d, variant) {
  * @property {{key: string, defaults: Record<string, string>, values: Record<string, string[]>}} [settings]  v5: the view's
  *           settings as links, settings files and storage carry them without loading the view (`key`: their name in a link)
  * @property {(entry: object) => Promise<string | null>} [openNote]  v5: a warning when an example or template opens in the view
+ * @property {{drawing?: number, editor?: number}} [layout]  v10 (draft, added 2026-11-07 for pico2): a datapath view's default
+ *           pane sizes, as fractions: `drawing` of the middle column's height for the drawing (shell default 0.64), `editor`
+ *           of the width for the editor (default 0.22); the user's own resizing, which the shell keeps, still wins
  *
  * @typedef {object} ViewContext
  * @property {Record<string, any>} strings
@@ -509,7 +594,7 @@ const EXPORT_HOOKS = ['trace', 'traceJsonLines', 'traceCsv', 'golden', 'image'];
 /** The ViewInstance fields every view gives (v4). */
 export const VIEW_REQUIRED = Object.freeze(['root', 'title', 'infoTitle', 'tabs', 'load', 'step', 'back', 'state', 'render']);
 export const ENGINE_HOOKS = Object.freeze(['callDepth', 'stepOverTarget', 'stepOutTarget', 'loopRange', 'diagnostics', 'counters',
-  'callStack', 'dataAccess', 'platform', 'input', 'inputs', 'advance', 'drainAudio']);
+  'callStack', 'dataAccess', 'platform', 'input', 'inputs', 'advance', 'drainAudio', 'clock', 'live', 'stateHash', 'restart', 'configure']);
 /** The engine hooks capability stepOver needs. */
 export const STEP_OVER_HOOKS = Object.freeze(['callDepth', 'stepOverTarget', 'stepOutTarget']);
 
@@ -542,14 +627,33 @@ export function validateDescriptor(d) {
   need(typeof L.defaultSource === 'string', 'language.defaultSource');
   need(Array.isArray(L.editor?.mnemonics) && Array.isArray(L.editor?.registers) && Array.isArray(L.editor?.directives), 'language.editor lists');
   for (const k of LANGUAGE_HOOKS) if (L[k] !== undefined) need(isFn(L[k]), `language.${k} is a function`);
+  if (L.imageKinds !== undefined) { // v10 (draft)
+    const k = L.imageKinds;
+    need(Array.isArray(k) && k.length > 0 && k.every((x) => IMAGE_KINDS.includes(x)) && new Set(k).size === k.length,
+      `language.imageKinds: a non-empty list without repeats from ${IMAGE_KINDS.join(', ')}`);
+    need(isFn(L.loadImage), 'language.imageKinds needs language.loadImage');
+  }
+  if (d.capabilities?.imageImport === true) need(isFn(L.loadImage), 'capability imageImport needs language.loadImage');
   if (L.disassembly) {
     need(L.disassembly.names === undefined || (Array.isArray(L.disassembly.names) && L.disassembly.names.length > 0),
       'language.disassembly.names: a non-empty list');
+  }
+  for (const o of L.options ?? []) { // v10 draft
+    need(ID.test(o.id ?? '') && typeof o.label === 'string' && Array.isArray(o.values) && o.values.some((v) => v.id === o.default),
+      `language option ${o.id}: id, label, default among values`);
+    need(o.apply === undefined || o.apply === 'build' || o.apply === 'engine', `language option ${o.id}: apply is 'build' or 'engine'`);
+    need(o.panel === undefined || (d.panels ?? []).some((p) => p.id === o.panel), `language option ${o.id}: panel names one of the descriptor's panels`);
   }
   if (L.extraLanguages) need(d.capabilities?.cLanguage === true || L.extraLanguages.every((x) => x.id !== 'c'), 'C without capability cLanguage');
   for (const k of ['help', 'detail']) if (L.editor?.[k] !== undefined) need(isFn(L.editor[k]), `language.editor.${k} is a function`); // v5
   for (const x of L.extraLanguages ?? []) {
     need(ID.test(x.id ?? '') && typeof x.label === 'string' && isFn(x.load), `extra language ${x.id}: id, label, load`);
+    // v10 draft (pico2 P1-F2): an image language builds a project into an image that goes through loadImage
+    if (x.image !== undefined) {
+      need(x.image === true, `extra language ${x.id}: image is true or absent`);
+      need(d.capabilities?.projects === true && d.capabilities?.imageImport === true && isFn(L.loadImage),
+        `extra language ${x.id}: an image language needs capabilities projects and imageImport and language.loadImage`);
+    }
     for (const o of x.options ?? []) {
       need(Array.isArray(o.values) && o.values.some((v) => v.id === o.default), `extra language ${x.id}: option ${o.id}: default among values`);
     }
@@ -625,8 +729,37 @@ export function validateDescriptor(d) {
       const w = d.assets?.wasm;
       if (w !== undefined) need(Array.isArray(w) && w.every((p) => relative(p) && p.endsWith('.wasm')) && new Set(w).size === w.length,
         'assets.wasm: relative paths ending .wasm, without repeats');
-      const extra = Object.keys(d.assets ?? {}).filter((k) => k !== 'wasm');
+      // v10 draft (pico2 P1-F2, ADR-0012): optional downloads, fetched on demand and cached, outside the 2 MB budget
+      const o = d.assets?.optional;
+      if (o !== undefined) need(Array.isArray(o) && o.every((a) => ID.test(a?.id ?? '') && typeof a.label === 'string' && relative(a.base) && a.base.endsWith('/'))
+        && new Set(o.map((a) => a.id)).size === o.length, 'assets.optional: [{id, label, base}] with a relative base ending /, ids without repeats');
+      const extra = Object.keys(d.assets ?? {}).filter((k) => k !== 'wasm' && k !== 'optional');
       need(!extra.length, `assets.${extra.join(', assets.')} is not in the contract`);
+    }
+  }
+  if (d.editions !== undefined) { // v10 draft (pico2 P1-L1, research D34)
+    const E = d.editions;
+    need(Array.isArray(E) && E.length >= 2, 'editions: a list of at least two');
+    need(!Array.isArray(E) || E.some((e) => !e?.development), 'editions: at least one not marked development');
+    const eids = new Set();
+    const xids = (d.language?.extraLanguages ?? []).map((x) => x.id);
+    for (const e of Array.isArray(E) ? E : []) {
+      need(ID.test(e?.id ?? '') && !eids.has(e.id) && typeof e.label === 'string' && e.label, `edition ${e?.id}: id (no repeats), label`);
+      eids.add(e?.id);
+      if (e?.title !== undefined) need(typeof e.title === 'string', `edition ${e.id}: title is text`);
+      for (const [k, v] of Object.entries(e?.capabilities ?? {})) {
+        need(CAPABILITIES.includes(k), `edition ${e.id}: capability ${k} is not in CAPABILITIES`);
+        need(v === true || (v && v.enabled === false && typeof v.reason === 'string' && v.reason), `edition ${e.id}: capability ${k}: true or {enabled: false, reason}`);
+      }
+      if (e?.languages !== undefined) need(Array.isArray(e.languages) && e.languages.every((x) => xids.includes(x)), `edition ${e.id}: languages are ids of language.extraLanguages`);
+      if (e?.compiler !== undefined) need((e.languages ?? xids).includes(e.compiler), `edition ${e.id}: compiler is one of its languages`);
+      if (e?.primary !== undefined) need(typeof e.primary === 'boolean', `edition ${e.id}: primary is a boolean`);
+      if (e?.development !== undefined) need(typeof e.development === 'boolean', `edition ${e.id}: development is a boolean`);
+      // the descriptor as the edition shows it must itself be valid (an image language needs projects and imageImport)
+      if (d.activeEdition === undefined && e && ID.test(e.id ?? '')) {
+        const { editions: _e, ...rest } = withEdition(d, e.id);
+        for (const m of validateDescriptor({ ...rest, activeEdition: undefined })) bad.push(`edition ${e.id}: ${m}`);
+      }
     }
   }
   const active = d.activeVariant ?? null;
@@ -651,6 +784,13 @@ export function validateDescriptor(d) {
     if (v.profile !== undefined) need(profiles.has(v.profile), `view ${v.id}: profile ${v.profile} is not in engine.profiles`);
     if (v.profile !== undefined && profiles.has(v.profile)) need(variantOf(d, v.profile) === active, `view ${v.id}: profile ${v.profile} is of another variant`); // v9
     if (v.names !== undefined) need(L.disassembly?.names?.includes(v.names), `view ${v.id}: names ${v.names} not in language.disassembly.names`);
+    if (v.layout !== undefined) { // v10 (draft)
+      const { drawing, editor, ...rest } = v.layout ?? {};
+      need(v.kind === 'datapath', `view ${v.id}: layout is for datapath views`);
+      need(drawing === undefined || (Number.isFinite(drawing) && drawing >= 0.4 && drawing <= 0.9), `view ${v.id}: layout.drawing from 0.4 to 0.9`);
+      need(editor === undefined || (Number.isFinite(editor) && editor >= 0.1 && editor <= 0.4), `view ${v.id}: layout.editor from 0.1 to 0.4`);
+      need(!Object.keys(rest).length, `view ${v.id}: layout.${Object.keys(rest).join(', layout.')} is not in the contract`);
+    }
     if (v.settings) { // v5
       const s = v.settings;
       need(ID.test(s.key ?? '') && s.defaults && s.values, `view ${v.id}: settings key, defaults, values`);

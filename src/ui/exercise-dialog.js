@@ -10,7 +10,7 @@ import { STRINGS } from './strings.js';
 
 export class ExerciseDialog {
   /**
-   * @param {{onRun: () => Promise<object[]|null>, onStarter: (source: string, lang: string) => void,
+   * @param {{onRun: () => Promise<object[]|null>, onStarter: (source: string, lang: string, companion: {name: string, text: string} | null) => void,
    *   onClose: () => void, onOpenFile: () => void, list: () => Promise<object>, onPick: (entry) => void}} hooks
    */
   constructor({ onRun, onStarter, onClose, onOpenFile, list, onPick }) {
@@ -45,7 +45,7 @@ export class ExerciseDialog {
       el('p.note', { text: X.about(ex.tests.length, ex.lang, ex.entry) }),
       el('div.exd-actions', {},
         el('button.primary', { type: 'button', text: X.run, onclick: () => this.run() }),
-        ex.starter ? el('button', { type: 'button', text: X.starter, title: X.starterTitle, onclick: () => this.onStarter(ex.starter, ex.lang) }) : null,
+        ex.starter ? el('button', { type: 'button', text: X.starter, title: X.starterTitle, onclick: () => this.onStarter(ex.starter, ex.lang, ex.companion ?? null) }) : null,
         el('button', { type: 'button', text: X.unload, title: X.unloadTitle, onclick: () => { this.onClose(); this.set(null); } })),
       el('p.note', { text: X.privacy }));
   }

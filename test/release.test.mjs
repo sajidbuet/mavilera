@@ -35,7 +35,9 @@ test('W-D20: the multicycle files, the JALR file included, are what tools/export
 });
 
 test('WS-N-002: every module of the offline build exports what Node.js reads from it', async () => {
-  const mods = new Map([...collect(ROOT, 'src/main.js'), ...collect(ROOT, 'src/worker/run.js')]);
+  // three entries: the page, its Worker and (contract v10 capability audio, pico2 P1-M5) the AudioWorklet module
+  const ENTRIES = ['src/main.js', 'src/worker/run.js', 'src/worker/audio-processor.js'];
+  const mods = new Map(ENTRIES.flatMap((e) => [...collect(ROOT, e)]));
   const js = shippedFiles().filter((p) => p.endsWith('.js'));
   // every module of the application is reached from the two entries; src/mem/ (the memory
   // hierarchy of M7) is not wired into the interface yet and is exempt, as is the viewer's model
@@ -45,7 +47,7 @@ test('WS-N-002: every module of the offline build exports what Node.js reads fro
   // RELEASE_EXCLUDE) until it is released; exempt until then
   assert.deepEqual(js.filter((p) => !mods.has(p) && !p.startsWith('src/mem/') && !p.startsWith('src/arch/pico2/') && !pending.has(p)), []);
   for (const [p, m] of mods) {
-    if (p === 'src/main.js' || p === 'src/worker/run.js') continue; // entries: they run on import
+    if (ENTRIES.includes(p)) continue; // entries: they run on import
     const real = Object.keys(await import(pathToFileURL(join(ROOT, p)))).sort();
     assert.deepEqual([...m.exports].sort(), real, p);
   }
@@ -54,12 +56,12 @@ test('WS-N-002: every module of the offline build exports what Node.js reads fro
 test('W-D29 phase 6: each architecture builds from its own modules and content folders', () => {
   const all = releaseFiles();
   const own = { riscv: ['src/arch/riscv/', 'src/isa/', 'src/asm/', 'src/core/', 'src/uarch/', 'src/cc/'], 'sap-1': ['src/arch/sap-1/'], 'sap-2': ['src/arch/sap-2/'],
-    armv7: ['src/arch/armv7/'], i8086: ['src/arch/i8086/'], gpu: ['src/arch/gpu/'] };
+    armv7: ['src/arch/armv7/'], i8086: ['src/arch/i8086/'], pico2: ['src/arch/pico2/'], gpu: ['src/arch/gpu/'] };
   // the declared sharing (G18, GPU-4, G30): tools/site-files.mjs SHARED
   const shared = SHARED;
   const GPU_IN_RISCV = SHARED.riscv;
   const built = registry().filter((a) => a.content);
-  assert.deepEqual(built.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu']);
+  assert.deepEqual(built.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'pico2', 'gpu']); // pico2 from 1.5.0 (P1-M9, research D45)
   for (const a of built) {
     for (const c of a.content) assert.ok(existsSync(join(ROOT, c)), `${a.id}: ${c}`);
     const { files, overrides } = archFiles(a.id);
@@ -83,13 +85,16 @@ test('W-D29 phase 6: each architecture builds from its own modules and content f
   const brand = 'content/branding/mavilera/';
   const unused = ['social-preview.png', 'mavilera-dark.svg', 'mavilera-light.svg', 'mavilera-mono.svg', 'mavilera-lockup.svg'];
   assert.deepEqual(all.filter((p) => !rv.has(p) && !p.startsWith(brand)),
-    all.filter((p) => /^(src\/arch|content)\/(sap-[12]|armv7|i8086|gpu)\//.test(p) && !GPU_IN_RISCV.includes(p)));
+    all.filter((p) => (/^(src\/arch|content)\/(sap-[12]|armv7|i8086|pico2|gpu)\//.test(p) || p === 'src/worker/audio-processor.js') && !GPU_IN_RISCV.includes(p)));
+  // (from 1.5.0 the Pico 2's files too, and the AudioWorklet that only its build loads: P1-M9, research D45)
   for (const f of unused) assert.ok(!rv.has(brand + f), f);
   for (const f of ['favicon.ico', 'mavilera-icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'mavilera-logo.svg', 'mavilera-full.svg']) assert.ok(rv.has(brand + f), f);
   assert.ok(archFiles('sap-1').files.includes(`${brand}mavilera-logo-sap-1.svg`), 'SAP-1: its header lockup');
   assert.ok(archFiles('sap-2').files.includes(`${brand}mavilera-logo-sap-2.svg`), 'SAP-2: its header lockup');
   // the GPU's core view draws from RISC-V's geometry file, shared by decision (SHARED): its build carries it
   assert.ok(archFiles('gpu').files.includes('content/geometry/ch11a-gpu.json'), 'GPU: the core view\'s geometry');
+  // the Pico 2's AudioWorklet is loaded by address (Descriptor.audio.processor), not imported: its build carries it
+  assert.ok(archFiles('pico2').files.includes('src/worker/audio-processor.js'), 'Pico 2: the AudioWorklet');
   assert.throws(() => archOverrides('mips'), /no architecture mips/);
 });
 

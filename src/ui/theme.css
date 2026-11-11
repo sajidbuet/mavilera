@@ -58,9 +58,9 @@
   color-scheme: light;
 }
 
-/* dark: the same rules with other tokens (followed from the system unless the user chose) */
+/* dark: the same rules with other tokens (followed from the system unless the user chose a theme: View ▸ Theme) */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme]) {
     --accent: #5fb3a8; --accent-tint: #1b2b29; --insight: #8fb4dc; --warning: #e08a8a; --muted: #a6a6a6; --rule: #6b6b6b;
     --fig-fill: #262626; --fig-fill-alt: #3a3a3a; --code-back: #1e1e1e; --text: #e8e8e8; --bg: #141414;
     --primary: #5b9bd5; --primary-hover: #74acdf; --primary-soft: #132a45; --primary-on: #071a33;
@@ -73,7 +73,10 @@
     color-scheme: dark;
   }
 }
-:root[data-theme="dark"] {
+/* View ▸ Theme (author, 2026-11-10): as the system (no data-theme), Light (the tokens of :root), Dark, and five more.
+   The dark family (dark, dim, black, hc-dark) starts from the dark tokens and changes some; sepia and hc-light start
+   from the light ones. Every theme sets every token the rules read, so a rule never needs to know the theme. */
+:root[data-theme="dark"], :root[data-theme="dim"], :root[data-theme="black"], :root[data-theme="hc-dark"] {
   --accent: #5fb3a8; --accent-tint: #1b2b29; --insight: #8fb4dc; --warning: #e08a8a; --muted: #a6a6a6; --rule: #6b6b6b;
   --fig-fill: #262626; --fig-fill-alt: #3a3a3a; --code-back: #1e1e1e; --text: #e8e8e8; --bg: #141414;
   --primary: #5b9bd5; --primary-hover: #74acdf; --primary-soft: #132a45; --primary-on: #071a33;
@@ -85,13 +88,60 @@
   --tok-mnemonic: #6cc4b8; --tok-register: #8fb4dc; --tok-immediate: #e0b46a; --tok-label: #d7a6e6; --tok-comment: #7f9097; --tok-string: #e0b46a;
   color-scheme: dark;
 }
+/* Dim: a soft grey dark with less contrast between the surfaces, for long sessions in a lit room */
+:root[data-theme="dim"] {
+  --app-bg: #1d232b; --surface: #262d37; --surface-2: #2b333e; --surface-3: #333c48; --border: #3e4855; --border-strong: #525e6d;
+  --bg: #1f252d; --code-back: #232a33; --code-bg: #212831; --fig-fill: #2c333c; --fig-fill-alt: #3c444f; --text: #d6dce3;
+  --ui-text: #d3dae3; --ui-text-2: #a1adbb; --ui-error: #f29898; --primary: #7aafe3; --primary-hover: #8bb9e7; --primary-soft: #2a3b50; --primary-on: #0f2034;
+  --muted: #a7afb9; --rule: #707a86; --tok-comment: #93a0ad;
+}
+/* Black: pure black behind everything (OLED screens, a dark room); lines and text keep the dark theme's colours */
+:root[data-theme="black"] {
+  --app-bg: #000000; --surface: #000000; --surface-2: #0b0b0b; --surface-3: #171717; --border: #2c2c2c; --border-strong: #444444;
+  --bg: #000000; --code-back: #0a0a0a; --code-bg: #000000; --fig-fill: #141414; --fig-fill-alt: #272727; --text: #e8e8e8;
+  --ui-text: #e8e8e8; --ui-text-2: #a8a8a8; --primary: #6aa8e8; --primary-hover: #88bbef; --primary-soft: #0f2339; --primary-on: #000000;
+  --accent-tint: #0d1f1d; --changed-bg: #3d3410; --changed-flash: #5e5014;
+}
+/* High contrast, dark: white text and lines on black, strong borders, brighter syntax colours */
+:root[data-theme="hc-dark"] {
+  --app-bg: #000000; --surface: #000000; --surface-2: #000000; --surface-3: #1a1a1a; --border: #9a9a9a; --border-strong: #ffffff;
+  --bg: #000000; --code-back: #000000; --code-bg: #000000; --fig-fill: #1a1a1a; --fig-fill-alt: #333333; --text: #ffffff;
+  --ui-text: #ffffff; --ui-text-2: #e2e2e2; --primary: #80c8ff; --primary-hover: #acdcff; --primary-soft: #00294a; --primary-on: #000000;
+  --accent: #5fe3d2; --accent-tint: #003a34; --insight: #a2ccff; --warning: #ff9090; --muted: #d4d4d4; --rule: #b4b4b4;
+  --ui-warning: #ffc56b; --ui-error: #ff8c8c; --ui-success: #70f0c8; --changed-bg: #5c4b00; --changed-flash: #6a5700;
+  --f-opcode: rgba(239, 106, 90, 0.34); --f-rd: rgba(231, 180, 60, 0.34); --f-rs1: rgba(90, 190, 120, 0.34); --f-rs2: rgba(90, 150, 230, 0.34);
+  --f-funct3: rgba(170, 120, 230, 0.34); --f-funct7: rgba(140, 125, 220, 0.34); --f-imm: rgba(80, 180, 210, 0.34);
+  --tok-mnemonic: #5fe3d2; --tok-register: #a2ccff; --tok-immediate: #ffd37d; --tok-label: #f2b8ff; --tok-comment: #cfcfcf; --tok-string: #ffd37d;
+}
+/* Sepia: warm paper, low glare, brown ink */
+:root[data-theme="sepia"] {
+  --accent: #1d5f56; --accent-tint: #e7eee3; --insight: #29496b; --warning: #962a2a; --muted: #625747; --rule: #a39580;
+  --fig-fill: #f0e8d8; --fig-fill-alt: #dfd2ba; --code-back: #f4ecde; --text: #2a2016; --bg: #fbf6ec;
+  --primary: #8a4a13; --primary-hover: #a0581b; --primary-soft: #f0e0c6; --primary-on: #ffffff;
+  --app-bg: #ece2cf; --surface: #faf4e8; --surface-2: #f4ecdc; --surface-3: #ebe0ca; --border: #dbcdb1; --border-strong: #c2b08d;
+  --ui-text: #3a2d1c; --ui-text-2: #66553c; --ui-warning: #8f4c00; --ui-error: #ac3636; --ui-success: #176951;
+  --code-bg: #fbf6ec; --changed-bg: #f8e3a0; --changed-flash: #f2cf68; --shadow-pop: 0 8px 24px rgba(58, 45, 28, 0.16);
+  --f-opcode: #f6dfd6; --f-rd: #f5e9c8; --f-rs1: #dfecd9; --f-rs2: #dfe6ec; --f-funct3: #ebe0ef; --f-funct7: #e4dfec; --f-imm: #dceae8;
+  --tok-mnemonic: #1d5f56; --tok-register: #29496b; --tok-immediate: #8a4500; --tok-label: #6a2f72; --tok-comment: #6e6150; --tok-string: #8a4500;
+}
+/* High contrast, light: black text and lines on white, strong borders, darker syntax colours */
+:root[data-theme="hc-light"] {
+  --accent: #00544a; --accent-tint: #e0f2ef; --insight: #00376f; --warning: #a00000; --muted: #333333; --rule: #555555;
+  --fig-fill: #f2f2f2; --fig-fill-alt: #cfcfcf; --code-back: #ffffff; --text: #000000; --bg: #ffffff;
+  --primary: #0034a0; --primary-hover: #00287d; --primary-soft: #dce6ff; --primary-on: #ffffff;
+  --app-bg: #ffffff; --surface: #ffffff; --surface-2: #ffffff; --surface-3: #ededed; --border: #3c3c3c; --border-strong: #000000;
+  --ui-text: #000000; --ui-text-2: #222222; --ui-warning: #763b00; --ui-error: #9c0000; --ui-success: #00593d;
+  --code-bg: #ffffff; --changed-bg: #ffe24d; --changed-flash: #ffd000; --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --tok-mnemonic: #00544a; --tok-register: #0034a0; --tok-immediate: #763b00; --tok-label: #66007a; --tok-comment: #3b3b3b; --tok-string: #763b00;
+}
 
 /* the MAVILERA logo (content/branding/mavilera/*.svg, from logo/ by tools/make-mavilera-brand.mjs) takes its
    colours from these tokens, so it follows the theme when inlined; the files carry the same values as fallbacks.
-   Only the navy changes in the dark theme. */
+   Only the navy changes: light in the dark themes, black in high contrast light. */
 :root { --mv-navy: #0b2a55; --mv-blue: #5b9bd5; --mv-pale: #c8e1f4; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --mv-navy: #f2f5fa; } }
-:root[data-theme="dark"] { --mv-navy: #f2f5fa; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --mv-navy: #f2f5fa; } }
+:root[data-theme="dark"], :root[data-theme="dim"], :root[data-theme="black"], :root[data-theme="hc-dark"] { --mv-navy: #f2f5fa; }
+:root[data-theme="hc-light"] { --mv-navy: #000000; }
 
 /* --- base -------------------------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -469,6 +519,13 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
 .header-tools > .tool:hover, .header-tools > .menu > summary:hover, .header-tools > .keys > summary:hover, .app-header > .ovf > summary.ovf-btn:hover { background: var(--surface-2); border-color: var(--border); }
 .header-tools > .tool[aria-pressed="true"] { color: var(--primary); background: var(--primary-soft); }
 .header-tools > .menu[open] > summary, .header-tools > .keys[open] > summary, .app-header > .ovf[open] > summary.ovf-btn { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+/* a module's editions (contract v10 draft; pico2 P1-L1, research D34 Q1): two buttons joined beside the brand, the open one filled */
+.edition-switch { display: inline-flex; flex: none; align-items: stretch; margin-left: 0.6rem; border: 1px solid var(--primary); border-radius: 7px; overflow: hidden; }
+.edition-switch > button { min-height: 28px; padding: 0 0.75rem; border: 0; border-radius: 0; background: var(--surface); color: var(--primary); font-weight: 600; }
+.edition-switch > button + button { border-left: 1px solid var(--primary); }
+.edition-switch > button:hover { background: var(--primary-soft); }
+.edition-switch > button[aria-pressed="true"] { background: var(--primary); color: var(--primary-on); }
+.menu-list .edition-switch { margin: 0.25rem 0.5rem; }
 .hb-tight .header-tools .tool-label { display: none; }
 .hb-tight .header-tools > .menu > summary.tool { padding: 0 0.45rem; }
 
@@ -503,6 +560,8 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
 .tool-small { min-height: 26px; padding: 0 0.35rem; }
 .tool-field { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--ui-text-2); }
 .tool-field select { max-width: 14rem; }
+.render-secs { width: 3.6rem; min-height: 26px; } /* P1-M5: the seconds of Render and play, beside the Speed menu */
+.tool-sound[aria-pressed="true"] { color: var(--primary); border-color: var(--primary); }
 .run-status { font-size: 0.78rem; color: var(--ui-text-2); flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .run-status:empty { display: none; }
 /* touch screens have no hover, so no tooltips: show every label (the bars then move more into their More menus) */
@@ -632,7 +691,13 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
 .keys p {
   position: absolute; right: 0; top: calc(100% + 4px); z-index: 20; width: 26rem; margin: 0; padding: 0.6rem 0.75rem; font-size: 0.82rem;
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-pop);
+  max-height: calc(100vh - 5rem); overflow-y: auto;
 }
+/* one key per line: the keys, then what they do (GUI walkthrough, 2026-11-11) */
+.keys .key-line { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.6rem; padding: 0.14rem 0; align-items: baseline; }
+.keys .key-line kbd { font-size: 0.78rem; font-weight: 650; color: var(--ui-text); }
+/* a menu taller than the window scrolls (View at a low window: its last entries were out of reach) */
+.view-menu-top > .menu-list { max-height: calc(100vh - 4.5rem); overflow-y: auto; overscroll-behavior: contain; }
 
 /* --- the resizable workspace (split.js) ------------------------------------------------------------ */
 .workspace { flex: 1 1 auto; min-height: 0; display: flex; padding: 0.5rem; }
@@ -656,7 +721,10 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
 .split-divider:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; border-radius: 3px; }
 /* the fold button of a divider (D6): a zero-size box at the divider's end that carries it */
 .divider-fold-box { flex: none; position: relative; z-index: 4; width: 0; height: 0; }
-.divider-fold { position: absolute; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; min-height: 0;
+.divider-folds { position: absolute; display: flex; gap: 3px; }
+.fold-v > .divider-folds { flex-direction: column; }
+.divider-fold[hidden] { display: none !important; }
+.divider-fold { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; min-height: 0; /* 24 px: WCAG 2.2 target size */
   padding: 0; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--ui-text-2); opacity: 0.55; }
 .divider-fold .icon { width: 14px; height: 14px; }
 .divider-fold:hover, .divider-fold:focus-visible, .split:hover > .divider-fold-box > .divider-fold { opacity: 1; }
@@ -664,9 +732,18 @@ td.dirty { background: var(--changed-bg); font-style: italic; }
 /* centred along the divider, above its grip, clear of the panel headings */
 .split-row > .fold-v { align-self: center; }
 .split-column > .fold-h { align-self: center; }
-.split-row > .fold-v > .divider-fold { left: -15px; top: -52px; }
-.split-column > .fold-h > .divider-fold { top: -15px; left: -52px; }
+.split-row > .fold-v > .divider-folds { left: -16px; bottom: 29px; }
+.split-column > .fold-h > .divider-folds { top: -16px; right: 29px; }
 .pane.pane-away { display: none; }
+/* a folded pane without a heading (the registers column): a strip with its name that opens it (author, 2026-11-10) */
+.pane-strip { flex: none; display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0; min-height: 0; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--surface); color: var(--ui-text); font-size: 0.82rem; font-weight: 650; cursor: pointer; }
+.pane-strip:hover { background: var(--surface-2); border-color: var(--primary); }
+.pane-strip[hidden] { display: none !important; }
+.split-row > .pane-strip { width: 36px; writing-mode: vertical-rl; justify-content: flex-start; }
+.split-column > .pane-strip { min-height: 30px; padding: 0 0.6rem; }
+.pane-strip .icon { color: var(--ui-text-2); }
+.ws-mobile .split > .pane-strip, .workspace.ed-wide [data-split="work"] > .pane-strip, .workspace.mid-max [data-split="work"] > .pane-strip { display: none !important; }
 .split-divider.split-off { cursor: default; pointer-events: none; }
 .split-divider.split-off::after { display: none; }
 body.resizing-col, body.resizing-col * { cursor: col-resize !important; user-select: none; }
@@ -704,7 +781,7 @@ body.resizing-row, body.resizing-row * { cursor: row-resize !important; user-sel
 
 /* folded panes: the heading stays; in a row, it stands on end */
 .pane.collapsed:not(.ws-force) > :not(h2) { display: none !important; } /* .ws-force: a pane alone in its workspace on a narrow screen (workspaces.js) */
-.pane.collapsed:not(.ws-force) > h2 { border-bottom: 0; }
+.pane.collapsed:not(.ws-force) > h2 { border-bottom: 0; cursor: pointer; } /* a click on the folded heading opens the pane (split.js) */
 .split-row > .pane.collapsed:not(.ws-force) { width: 36px; }
 .split-row > .pane.collapsed:not(.ws-force) > h2 { writing-mode: vertical-rl; flex: 1 1 auto; padding: 0.55rem 0; justify-content: flex-start; min-height: 0; gap: 0.5rem; }
 .split-row > .pane.collapsed:not(.ws-force) > h2 > :not(.panel-title):not(.pane-toggle):not(.icon) { display: none; }
@@ -735,6 +812,100 @@ body.resizing-row, body.resizing-row * { cursor: row-resize !important; user-sel
 .ed-head .ed-tab .icon { color: var(--primary); width: 14px; height: 14px; }
 .ed-tab-name { overflow: hidden; text-overflow: ellipsis; }
 .ed-dirty { color: var(--ui-warning); font-size: 0.7rem; }
+/* projects (contract v10 draft capability `projects`, pico2 P1-F1): editor tabs, the file explorer, the Projects dialog */
+.ed-tabs { display: flex; gap: 0.15rem; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
+.ed-tab-item { display: inline-flex; align-items: center; flex: 0 0 auto; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); }
+.ed-tab-item:has([aria-selected="true"]) { background: var(--surface-2); border-color: var(--border-strong); }
+.ed-tabs .ed-tab { font: inherit; font-family: var(--font-code); font-size: 0.78rem; padding: 0.1rem 0.45rem; border: 0; background: none;
+  color: var(--ui-text-2); cursor: pointer; max-width: 11rem; }
+.ed-tabs .ed-tab[aria-selected="true"] { color: var(--primary); font-weight: 650; }
+.ed-tab-close { border: 0; background: none; color: var(--ui-text-2); cursor: pointer; padding: 0 0.3rem; font-size: 0.85rem; line-height: 1; min-width: 24px; min-height: 24px; }
+.ed-tab-close:hover, .ed-tab-close:focus-visible { color: var(--ui-error); }
+.editor-stack { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; min-width: 0; }
+.ed-panel { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.ed-panel[hidden] { display: none; }
+/* the Files pane (author, 2026-11-09): its own pane left of the editor, folding like the others */
+.p-explorer { container-type: inline-size; }
+.proj-explorer { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; min-height: 0; overflow-y: auto; font-size: 0.8rem; padding: 0.15rem 0.2rem; }
+/* the project: its name over the save status */
+.proj-head { display: flex; flex-direction: column; gap: 0.05rem; min-width: 0; padding: 0 0.15rem; }
+.proj-name { margin: 0; font-size: 0.82rem; font-weight: 650; color: var(--ui-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj-menu { position: relative; }
+.proj-menu-btn { list-style: none; cursor: pointer; display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: var(--radius-sm);
+  color: var(--ui-text-2); border: 1px solid transparent; }
+.proj-menu-btn:hover, .proj-menu[open] .proj-menu-btn, .proj-menu-btn:focus-visible { background: var(--surface-2); border-color: var(--border); color: var(--ui-text); }
+.proj-menu-btn::-webkit-details-marker { display: none; }
+.menu > summary.proj-menu-btn::after { content: none; } /* the … icon is the menu's sign; no ▾ after it */
+.proj-menu .menu-list { right: 0; left: auto; min-width: 11rem; }
+.proj-menu .menu-list.menu-from-left { left: 0; right: auto; }
+/* the C compiler choice in the Project menu (contract v10 draft; pico2 P1-F2): a labelled group of toggle buttons */
+.proj-menu-label { display: block; padding: 0.15rem 0.6rem; font-size: 0.7rem; color: var(--ui-text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.menu-list .proj-choice { display: flex; align-items: center; gap: 0.4rem; width: 100%; }
+.proj-check { display: inline-grid; place-items: center; width: 14px; visibility: hidden; color: var(--primary); }
+.proj-choice[aria-pressed="true"] .proj-check { visibility: visible; }
+.proj-choice[aria-pressed="true"] { font-weight: 600; }
+/* an image language's download (contract v10 draft; pico2 P1-F2, ADR-0012): notice, then a bar for each file */
+.dl-dialog { max-width: min(34rem, calc(100vw - 2rem)); border: 1px solid var(--border-strong); border-radius: var(--radius-md, 8px); background: var(--surface); color: var(--ui-text); padding: 1rem 1.2rem; }
+.dl-dialog::backdrop { background: rgb(0 0 0 / 0.35); }
+.dl-dialog h2 { font-size: 1.05rem; margin: 0 0 0.6rem; }
+.dl-dialog p { margin: 0.4rem 0; line-height: 1.45; }
+.dl-note { color: var(--ui-text-2); font-size: 0.85rem; }
+.dl-files { list-style: none; margin: 0.8rem 0; padding: 0; display: grid; gap: 0.7rem; }
+.dl-file-name { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem; }
+.dl-file progress { width: 100%; height: 0.6rem; margin-top: 0.25rem; accent-color: var(--primary); }
+.dl-file-stat { font-family: var(--font-code); font-size: 0.75rem; color: var(--ui-text-2); }
+.dl-status { min-height: 1.4em; }
+.dl-error { color: var(--danger, #c62828); }
+.dl-btns { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.8rem; }
+.proj-status { display: inline-flex; align-items: center; gap: 0.2rem; color: var(--ui-text-2); font-size: 0.7rem; }
+.proj-status .icon { color: var(--ui-success); stroke-width: 2.4; }
+.proj-status.proj-busy { font-style: italic; }
+.proj-status.proj-warn { color: var(--ui-warning); }
+/* the five file actions: one row of equal icon buttons, a toolbar over the list */
+.proj-acts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.15rem; padding: 0.15rem; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--surface-2); }
+.proj-ibtn { display: grid; place-items: center; height: 28px; min-width: 24px; padding: 0; border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: none; color: var(--ui-text); cursor: pointer; }
+.proj-ibtn:hover:not(:disabled), .proj-ibtn:focus-visible { background: var(--surface); border-color: var(--border-strong); color: var(--primary); }
+.proj-ibtn.proj-danger:hover:not(:disabled), .proj-ibtn.proj-danger:focus-visible { color: var(--ui-error); }
+.proj-ibtn[aria-pressed="true"] { color: var(--accent); }
+.proj-ibtn:disabled { opacity: 0.4; cursor: default; }
+/* the files: a type-coloured icon, the name, the entry's flag */
+.proj-files { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.proj-file { display: flex; align-items: center; gap: 0.35rem; width: 100%; text-align: left; font: inherit; padding: 0.2rem 0.35rem;
+  border: 1px solid transparent; border-radius: var(--radius-sm); background: none; color: var(--ui-text); cursor: pointer; min-height: 26px; }
+.proj-file:hover { background: var(--surface-2); }
+.proj-file:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.proj-file.proj-on { background: var(--primary-soft); border-color: var(--border-strong); color: var(--primary); font-weight: 650; }
+.proj-ficon { display: inline-grid; flex: 0 0 auto; }
+.proj-k-s { color: var(--tok-mnemonic); }
+.proj-k-c { color: var(--tok-register); }
+.proj-k-h, .proj-k-x { color: var(--ui-text-2); }
+.proj-file-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.78rem; }
+.proj-entry { display: inline-grid; flex: 0 0 auto; color: var(--accent); }
+.proj-act { font: inherit; font-size: 0.72rem; padding: 0.1rem 0.35rem; min-height: 24px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--ui-text); cursor: pointer; }
+.proj-act:hover, .proj-act:focus-visible { background: var(--surface-2); }
+.proj-danger { color: var(--ui-error); }
+.proj-form label { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.74rem; }
+.proj-input { font-size: 0.78rem; padding: 0.15rem 0.3rem; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); width: 100%; box-sizing: border-box; }
+.proj-form .note, .proj-msg { font-size: 0.72rem; margin: 0.15rem 0; }
+.proj-form-btns { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.25rem; align-items: center; }
+.proj-error { color: var(--ui-error); font-size: 0.72rem; margin: 0.15rem 0; }
+.projects-dialog { width: min(36rem, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); padding: 1rem 1.3rem;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--ui-text); box-shadow: var(--shadow-pop); }
+.projects-dialog::backdrop { background: rgba(10, 20, 24, 0.45); }
+.projects-dialog h2 { margin: 0 0 0.4rem; font-size: 1.05rem; }
+.projects-dialog p { font-size: 0.82rem; margin: 0.3rem 0; }
+.projects-dialog ul { list-style: none; margin: 0; padding: 0; }
+.proj-dlg-list { overflow-y: auto; max-height: calc(100vh - 12rem); }
+.proj-dlg-item { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; padding: 0.15rem 0; border-bottom: 1px solid var(--border); }
+.proj-dlg-open { flex: 1 1 auto; display: flex; justify-content: space-between; gap: 1rem; text-align: left; font: inherit; font-size: 0.84rem;
+  border: 1px solid transparent; border-radius: var(--radius-sm); background: none; color: var(--ui-text); padding: 0.2rem 0.4rem; cursor: pointer; }
+.proj-dlg-open:hover, .proj-dlg-open:focus-visible { background: var(--surface-2); border-color: var(--border); }
+.proj-dlg-open[aria-current="true"] .proj-dlg-name { font-weight: 650; color: var(--primary); }
+.projects-dialog form { display: flex; justify-content: flex-end; margin-top: 0.6rem; }
 .p-editor .panel-head-tools select { max-width: 7.5rem; }
 .cc-opts { display: inline-flex; gap: 0.35rem; }
 .cc-opts select { max-width: 7rem; }
@@ -779,7 +950,20 @@ body.resizing-row, body.resizing-row * { cursor: row-resize !important; user-sel
 .ed-state { margin-left: auto; }
 /* a narrow editor (the processor views) drops the profile from its status line: the view names it */
 .p-editor { container-type: inline-size; }
-@container (max-width: 380px) { .ed-prof, .ed-lang-label { display: none; } }
+/* the option labels drop first (their selects keep their names), so that the file's name stays readable (GUI pass, 2026-11-10) */
+@container (max-width: 520px) {
+  .ed-prof, .ed-lang-label, .ed-opt-label { display: none; }
+  /* the options shrink to fit before anything overlaps the fold button */
+  .p-editor > .ed-head > .panel-head-tools, .p-editor .panel-head-tools > span, .p-editor .panel-head-tools label { flex: 0 1 auto; min-width: 0; }
+  .p-editor .panel-head-tools > span { display: flex; gap: 0.35rem; }
+  .p-editor .panel-head-tools select { min-width: 3.2rem; max-width: 5.2rem; width: 100%; }
+  .p-editor > .ed-head > .ed-tab { flex: 0 1 auto; min-width: 2.6rem; overflow: hidden; }
+}
+/* research D43 (v10 draft Language.companion): a Lite program with its companion file has two tabs; the heading then takes two
+   lines (the tabs, then the options) rather than cover the options */
+.p-editor > .ed-head:has(> .ed-comp:not([hidden])) { flex-wrap: wrap; row-gap: 0.2rem; }
+.p-editor > .ed-head:has(> .ed-comp:not([hidden])) > .panel-head-tools { order: 3; flex: 1 0 100%; justify-content: flex-end; margin-left: 0; }
+.p-editor > .ed-head > .ed-comp { flex: 0 1 auto; min-width: 0; }
 /* the hint under the registers stays one line (its full text is its title) */
 .reg-detail.reg-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fields-follow { margin: 0 0 0.35rem; font-size: 0.74rem; color: var(--ui-text-2); }
@@ -951,9 +1135,10 @@ svg.dp { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 /* highlighted connections that run close together (pipelined view, wire-colours.js): colour 0 is the
    book's highlight colour; the others are told apart by hue and lightness, in both themes */
 :root { --wc-0: var(--accent); --wc-1: #1f6fb8; --wc-2: #c45a00; --wc-3: #8a3fb0; --wc-4: #b8325e; --wc-5: #5f7a00; }
-:root[data-theme="dark"] { --wc-1: #6eaef0; --wc-2: #f0a050; --wc-3: #c896ea; --wc-4: #f07fa6; --wc-5: #b7cc55; }
+:root[data-theme="dark"], :root[data-theme="dim"], :root[data-theme="black"], :root[data-theme="hc-dark"] { --wc-1: #6eaef0; --wc-2: #f0a050; --wc-3: #c896ea; --wc-4: #f07fa6; --wc-5: #b7cc55; }
+:root[data-theme="hc-light"] { --wc-1: #0050a0; --wc-2: #9a4400; --wc-3: #6c1f96; --wc-4: #9a1c48; --wc-5: #3f5400; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --wc-1: #6eaef0; --wc-2: #f0a050; --wc-3: #c896ea; --wc-4: #f07fa6; --wc-5: #b7cc55; }
+  :root:not([data-theme]) { --wc-1: #6eaef0; --wc-2: #f0a050; --wc-3: #c896ea; --wc-4: #f07fa6; --wc-5: #b7cc55; }
 }
 .dp-wc.dp-active .dp-line { stroke: var(--wc); }
 .dp-dirarrow.dp-wcol { fill: var(--wc); }
@@ -1690,3 +1875,89 @@ table.listing.an-table td, table.listing.an-table th { padding-right: 1.2rem; }
 .gm-timeline tr.gm-issue th, .gm-timeline tr.gm-issue td { border-top: 2px solid var(--text); }
 @media (forced-colors: active) { .gm-cell.gm-idle { background: Canvas; color: GrayText; } .gm-frame { border-color: CanvasText; } }
 @media (max-width: 40rem) { .gm-rowlabel { width: 5.5rem; } }
+
+/* the Pins panel of pico2 (contract v8 panels; P1-M4): 30 GPIOs, each a lamp, its level and driver as text, its function and an
+   outside drive; the help behind its ? button, the pin list scrolls in the room left (author, 2026-11-10) */
+.pico2-pins { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; padding: 0.3rem 0.6rem 0.4rem; }
+.pp-inputs { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin: 0 0 0.35rem; font-size: 0.8rem; flex: none; }
+.pp-count { margin-right: auto; color: var(--ui-text-2); }
+.pp-help-btn { min-width: 26px; min-height: 26px; padding: 0 0.45rem; border-radius: 50%; font-weight: 700; }
+.pp-help-btn[aria-expanded="true"] { background: var(--primary); color: var(--surface); border-color: var(--primary); }
+.pp-help { flex: none; margin: 0 0 0.4rem; padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2); }
+.pp-help > p { margin: 0.15rem 0; }
+.pp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr)); gap: 0.3rem; flex: 1 1 auto; min-height: 0; overflow: hidden auto;
+  align-content: start; padding-right: 0.2rem; }
+.pp-pin { display: flex; align-items: center; gap: 0.4rem; min-width: 0; padding: 0.2rem 0.4rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2); font-size: 0.8rem; }
+/* the LED's pin: first, on a row of its own (its tag made the cell too narrow for the drive menu, which was cut off) */
+.pp-pin.pp-led { border-color: var(--ui-success); grid-column: 1 / -1; }
+.pp-name { min-width: 2.6rem; font-weight: 700; }
+.pp-tag { font-size: 0.7rem; padding: 0 0.3rem; border-radius: var(--radius-sm); border: 1px solid var(--ui-success); }
+.pp-value { min-width: 4.6rem; white-space: nowrap; }
+.pp-fn { min-width: 2.4rem; color: var(--ui-text-2); }
+.pp-drive { margin-left: auto; min-height: 24px; width: 6.4rem; flex: none; }
+/* P1-M5: the speaker pin and its converter above the pins; the speaker's tag (an outline, with its word: never colour alone) */
+.pp-audio { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; flex: none; margin: 0 0 0.35rem; font-size: 0.8rem; }
+.pp-audio-field { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--ui-text-2); }
+.pp-audio-sel { min-height: 24px; }
+.pp-fallback { flex: none; margin: 0 0 0.35rem; font-size: 0.78rem; }
+.pp-tag.pp-speaker { border-color: var(--primary); }
+/* P1-M5: the PWM and DMA tabs: one row per slice or channel in use, scrolling both ways in the room left */
+.pico2-devices { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: auto; padding: 0.3rem 0.6rem 0.4rem; font-size: 0.8rem; }
+.dv-note { margin: 0 0 0.35rem; }
+.dv-table { border-collapse: collapse; margin: 0 0 0.4rem; }
+.dv-table caption { text-align: left; font-weight: 700; padding: 0 0 0.2rem; }
+.dv-table th, .dv-table td { border: 1px solid var(--border); padding: 0.1rem 0.4rem; text-align: left; white-space: nowrap; }
+.dv-table thead th { background: var(--surface-2); font-weight: 600; }
+/* P1-M7: the lab kit in the Pins panel (its LCD as text, the analogue inputs, the environment) and the ADC, SPI and I2C tabs */
+.pp-parts { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; flex: none; margin: 0 0 0.35rem; font-size: 0.8rem; }
+.pp-lcd { align-self: flex-start; flex: none; margin: 0 0 0.35rem; }
+.pp-lcd, .dv-lcd { padding: 0.2rem 0.5rem; border: 2px solid var(--text); border-radius: var(--radius-sm); background: var(--surface-2);
+  line-height: 1.25; white-space: pre; font-size: 0.85rem; }
+.pp-analog { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; padding: 0.2rem 0 0; }
+.pp-field { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--ui-text-2); }
+.pp-num { width: 4.6rem; min-height: 24px; }
+.pp-slider { width: 6rem; min-height: 24px; }
+.pp-env { flex: none; margin: 0 0 0.35rem; font-size: 0.78rem; }
+.pp-env[open] { flex: 0 1 auto; max-height: 45%; min-height: 3.5rem; overflow: auto; } /* the pins keep at least half the room */
+.pp-env > summary { cursor: pointer; min-height: 24px; }
+.pp-env-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 0.25rem 0.8rem; padding: 0.2rem 0 0; }
+.pp-kit { margin: 0.15rem 0; padding-left: 1.2rem; }
+.dv-log { margin: 0.1rem 0 0.4rem; padding-left: 2rem; }
+.pico2-devices h4 { margin: 0.4rem 0 0.1rem; font-size: 0.8rem; }
+/* typing to the module's input under the console (pico2: UART0 RX) */
+.console-in { padding: 0.2rem 0.4rem; border-top: 1px solid var(--border); flex: none; }
+.console-in-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; }
+.console-in-field { flex: 1; min-width: 0; min-height: 24px; }
+
+/* the memory panel's tabs in its heading, in place of its name (author, 2026-11-10); folded, the name of the tab shown */
+.p-memory > h2 > .tabs { margin: 0 0 0 0.2rem; padding: 0; border-bottom: 0; flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto;
+  align-self: stretch; align-items: stretch; scrollbar-width: none; }
+.p-memory > h2 > .tabs [role="tab"] { font-size: 0.82rem; }
+.p-memory:not(.collapsed) > h2 > .panel-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.p-memory.collapsed > h2 > .tabs { display: none; }
+
+/* the editor across the workspace (author, 2026-11-10): the middle and right columns step aside, their sizes kept */
+.workspace.ed-wide [data-split="work"] > [data-pane="mid"], .workspace.ed-wide [data-split="work"] > [data-pane="right"],
+.workspace.ed-wide [data-split="work"] > .split-divider[data-b="mid"], .workspace.ed-wide [data-split="work"] > .split-divider[data-b="right"],
+.workspace.ed-wide [data-split="work"] > .divider-fold-box[data-fold="editor"], .workspace.ed-wide [data-split="work"] > .divider-fold-box[data-fold="mid"] { display: none !important; }
+.workspace.ed-wide [data-split="work"] > [data-pane="editor"] { flex: 1 1 0 !important; }
+.ed-wide-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; min-height: 26px; padding: 0 0.3rem; flex: none; }
+.ed-wide-btn[aria-pressed="true"] { color: var(--primary); border-color: var(--primary); }
+
+/* View ▸ Theme: a list on one line */
+.menu-list .theme-row { justify-content: space-between; gap: 0.6rem; padding: 0.15rem 0.6rem 0.3rem; }
+.theme-sel { min-height: 26px; font-size: 0.82rem; }
+
+/* View ▸ Zoom: out, the size (back to 100 %), in */
+.pz-row { display: flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.6rem 0.3rem; }
+.menu-list .pz-row > button { display: inline-flex; align-items: center; justify-content: center; min-height: 28px; min-width: 32px; width: auto; text-align: center; border-color: var(--border); }
+.pz-now { min-width: 4.2rem !important; font-variant-numeric: tabular-nums; }
+
+/* a narrow editor (the C source view's layout): its heading takes two lines rather than clip the options and the Widen
+   button; the file's tab keeps at least its icon and a few letters (GUI pass, 2026-11-10) */
+@container (max-width: 360px) {
+  .p-editor > .ed-head { flex-wrap: wrap; row-gap: 0.2rem; }
+  .p-editor > .ed-head > .panel-head-tools { order: 3; flex: 1 0 100%; flex-wrap: nowrap; justify-content: flex-end; gap: 0.2rem; margin-left: 0; }
+  .p-editor .panel-head-tools label { min-width: 0; flex: 0 1 auto; }
+  .p-editor .panel-head-tools select { max-width: 4.6rem; min-width: 3.2rem; }
+}

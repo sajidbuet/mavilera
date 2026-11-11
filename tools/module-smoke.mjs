@@ -75,6 +75,7 @@ async function checks(b, base) {
   const visitViews = async (p) => {
     const n = await p.eval(views);
     for (let i = 0; i < n; i++) {
+      if (await p.eval(`document.querySelectorAll('.mode-btn')[${i}].hidden`)) continue; // not offered now (research D38)
       await p.eval(view(i));
       await p.waitFor(loaded(i));
     }
@@ -110,6 +111,8 @@ async function checks(b, base) {
     if (n !== PAGE_VIEWS.length) throw new Error(`${n} view tabs, ${PAGE_VIEWS.length} views`);
     const seen = [];
     for (let i = 0; i < n; i++) {
+      // a view not offered now (pico2's C source view: opened images only, research D38) is listed, not opened
+      if (await p.eval(`document.querySelectorAll('.mode-btn')[${i}].hidden`)) { seen.push(`${PAGE_VIEWS[i].id} not offered`); continue; }
       await p.eval(view(i));
       await p.waitFor(loaded(i));
       // the drawings the shell attached pan and zoom to (ViewInstance.diagrams), as shown
@@ -205,6 +208,8 @@ async function checks(b, base) {
       await s.eval(axe);
       const n = await s.eval(views);
       for (let i = 0; i < n; i++) {
+        // a view not offered now (pico2's C source view, for opened images only: research D38) is not scanned here
+        if (await s.eval(`document.querySelectorAll('.mode-btn')[${i}].hidden`)) continue;
         await s.eval(view(i));
         await s.waitFor(loaded(i));
         await new Promise((r) => setTimeout(r, 300));

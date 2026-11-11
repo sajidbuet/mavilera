@@ -41,7 +41,8 @@ test('WS-F-144: the settings file carries format and version, and reads back', (
 });
 
 test('WS-F-144: another version or format is refused with a message', async () => {
-  await assert.rejects(decodeFragment('#rv2z.AAAA'), (e) => e instanceof ShareError && e.code === 'version' && e.data.version === 2);
+  // version 2 exists since pico2 P1-F1 (project links, research D31; test/share-v2.test.mjs), so the unknown version is 3
+  await assert.rejects(decodeFragment('#rv3z.AAAA'), (e) => e instanceof ShareError && e.code === 'version' && e.data.version === 3);
   await assert.rejects(decodeFragment('#rv0.AAAA'), (e) => e.code === 'version');
   await assert.rejects(decodeFragment('#rv1z.@@@'), (e) => e.code === 'corrupt');
   await assert.rejects(decodeFragment('#rv1z.AAAA'), (e) => e.code === 'corrupt');

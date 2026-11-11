@@ -431,6 +431,23 @@ async function checks(b, base) {
     if (q.errors.length) throw new Error(q.errors.join('; '));
     await q.close();
   });
+  // author, 2026-11-10: folding the widened editor left an empty workspace (only the editor's strip)
+  await check('Widen the editor, then fold it: Widen ends and the listing and the registers come back; the pane\'s fold button is a minus, a plus when folded', async () => {
+    const q = await fresh();
+    const vis = (sel) => `(() => { const n = document.querySelector('${sel}'); return Boolean(n) && n.offsetParent !== null && n.getBoundingClientRect().width > 100; })()`;
+    await q.eval(view(0));
+    await q.waitFor(`document.querySelector('.ed-wide-btn') && ${vis('.p-listing')}`);
+    await q.eval(`document.querySelector('.ed-wide-btn').click(); true`);
+    await q.waitFor(`document.querySelector('.workspace.ed-wide') && !${vis('.p-listing')}`);
+    await q.eval(`document.querySelector('.p-editor .pane-toggle').click(); true`);
+    await q.waitFor(`!document.querySelector('.workspace.ed-wide') && document.querySelector('.p-editor.collapsed') && ${vis('.p-listing')} && ${vis('.p-regs')}`);
+    const d = await q.eval(`document.querySelector('.p-editor .pane-toggle path').getAttribute('d')`);
+    if (d !== 'M6 12h12M12 6v12') throw new Error(`folded editor: not a plus (${d})`);
+    await q.eval(`document.querySelector('.p-editor .pane-toggle').click(); true`);
+    await q.waitFor(`!document.querySelector('.p-editor.collapsed') && document.querySelector('.p-editor .pane-toggle path').getAttribute('d') === 'M6 12h12'`);
+    if (q.errors.length) throw new Error(q.errors.join('; '));
+    await q.close();
+  });
   await check('a reload keeps the program, the step reached, breakpoints and watchpoints', async () => {
     const k = await fresh();
     await k.eval(setSource(readFileSync(join(ROOT, TRACE_PROGRAM), 'utf8')));
@@ -498,10 +515,13 @@ async function checks(b, base) {
     await u.close();
   });
 
-  if (release) await check('release site: the landing page and the documentation load and pass the axe-core scan in both themes (WS-U-034)', async () => {
+  if (release) await check('release site: the landing page, the documentation and the guide of every laboratory load and pass the axe-core scan in both themes (WS-U-034)', async () => {
     const out = [];
     for (const colorScheme of ['light', 'dark']) {
-      for (const page of ['../', '../docs/', '../download/', 'docs/']) { // the landing, documentation and download pages, RISC-V's guide
+      // the landing, documentation and download pages, RISC-V's guide, and every other available module's guide (P1-M9, research D45 Q9)
+      const guides = JSON.parse(readFileSync(new URL('../site/architectures.json', import.meta.url), 'utf8')).architectures
+        .filter((a) => a.status === 'available' && a.docs && a.id !== 'riscv').map((a) => `../${a.docs}`);
+      for (const page of ['../', '../docs/', '../download/', 'docs/', ...guides]) {
         const s = await b.newPage({ colorScheme });
         await s.goto(new URL(page, base).href);
         await s.eval(axe);

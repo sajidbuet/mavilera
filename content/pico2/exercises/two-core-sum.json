@@ -1,0 +1,76 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap P1-M9), not taken from a textbook; produced by tools/pico2/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "pico2",
+ "title": "A sum on core 1",
+ "task": "n is a number from 1 to 1000. Core 0 starts core 1 and sends it n through the FIFO; core 1 computes 1 + 2 + … + n and sends the sum back; core 0 prints \"sum = \" and the sum and a newline on UART0, then returns 0. Keep the line that defines n: the tests write it.",
+ "lang": "c",
+ "starter": "/* two-core-sum -- practice exercise (MAVILERA, Pico 2)\n * Core 1 adds 1..n (n from core 0 through the FIFO) and sends the sum back; core 0 prints\n * \"sum = <sum>\\n\" and returns 0.\n * Hint: core1_start, fifo_push, fifo_pop (the two-cores template shows them).\n */\n#include <rp2350.h>\n\nint n = 1;      /* the tests write this number (1 to 1000) */\n\nvoid print_num(uint32_t v)\n{\n    if (v >= 10)\n        print_num(v / 10);\n    putchar('0' + v % 10);\n}\n\nvoid core1_main(void)\n{\n    /* your code for core 1 */\n}\n\nint main(void)\n{\n    /* replace with your code */\n    return 0;\n}\n",
+ "tests": [
+  {
+   "name": "n = 1",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      1
+     ]
+    }
+   ],
+   "limitMs": 1000,
+   "expect": {
+    "output": "sum = 1\n",
+    "exit": 0
+   }
+  },
+  {
+   "name": "n = 10",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      10
+     ]
+    }
+   ],
+   "limitMs": 1000,
+   "expect": {
+    "output": "sum = 55\n",
+    "exit": 0
+   }
+  },
+  {
+   "name": "n = 100",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      100
+     ]
+    }
+   ],
+   "limitMs": 1000,
+   "expect": {
+    "output": "sum = 5050\n",
+    "exit": 0
+   }
+  },
+  {
+   "name": "n = 1000",
+   "memory": [
+    {
+     "at": "n",
+     "words": [
+      1000
+     ]
+    }
+   ],
+   "limitMs": 1000,
+   "expect": {
+    "output": "sum = 500500\n",
+    "exit": 0
+   }
+  }
+ ]
+}

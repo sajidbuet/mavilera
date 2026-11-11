@@ -26,11 +26,14 @@ function binaryGroups(fields) {
   }));
 }
 
+/** A listing word in hex, unsigned: a word with bit 31 set is a negative number in JavaScript (it read "-1fae31d"). */
+export const hexWord = (l) => (l.word >>> 0).toString(16).padStart(2 * l.size, '0');
+
 /** Contents of the word tooltip: the bits grouped by field, and each field's value. */
 function wordTip(language, l) {
   const fields = language.fields?.(l.word, l.address) ?? [];
   const info = language.describe?.(l.word, l.address) ?? null;
-  const head = el('div.tip-head.mono', {}, `0x${l.word.toString(16).padStart(2 * l.size, '0')}`,
+  const head = el('div.tip-head.mono', {}, `0x${hexWord(l)}`,
     fields.length && info?.kind ? ` · ${info.kind}` : '');
   if (!fields.length) return [head, el('div.mono', { text: binOf(l.word, 8 * l.size) })];
   const rows = fields.map((f) => {
@@ -134,7 +137,7 @@ export class ListingPanel {
       const text = L.disassemble(l.word, l.address, { aliases: this.aliases, names: this.names });
       const bp = this.breakpoints?.has(l.address);
       const tip = () => wordTip(L, l);
-      const hexCell = el('td.col-hex.mono', { text: l.word.toString(16).padStart(2 * l.size, '0'),
+      const hexCell = el('td.col-hex.mono', { text: hexWord(l),
         onmouseenter: (e) => this.tip.show(e.currentTarget, tip()), onmouseleave: () => this.tip.hide() });
       const tr = el(`tr${bp ? '.bp' : ''}`, { tabindex: -1, onclick: () => this.select(l.address),
         onfocus: () => { this.setFocusRow(l.address); if (this.showHex) this.tip.show(hexCell, tip()); },
@@ -218,7 +221,7 @@ export class FieldsTable {
     if (!fields.length) { this.root.replaceChildren(el('p.note', { text: STRINGS.fieldsNone })); return; }
     this.root.replaceChildren(
       el('div.insp-head', {}, el('span.insp-asm.mono', { text: this.language.disassemble(l.word, l.address) }),
-        el('span.insp-addr.mono', { text: `${hexAddr(l.address, this.addressBits)} ·${l.word.toString(16).padStart(2 * l.size, '0')}` })),
+        el('span.insp-addr.mono', { text: `${hexAddr(l.address, this.addressBits)} ·${hexWord(l)}` })),
       el('table.tip-fields', { 'aria-label': STRINGS.inspector.fieldsCaption }, el('tbody', {}, fields.map((f) => {
         const [hi, lo] = span(f);
         return el('tr', {}, el('td', { text: f.name }), el('td.mono', { text: f.bits }),

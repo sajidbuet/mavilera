@@ -5,7 +5,7 @@
 
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { join, posix, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collect } from './offline.mjs';
 
@@ -36,8 +36,8 @@ export function shippedFiles(root = ROOT) {
 
 /** Shipped files that a release leaves out: the optional JALR state, which is the answer of an
  *  exercise (spec W-D20), and the site documentation, published beside the application. */
-export const RELEASE_EXCLUDE = (p) => p === 'content/data/ch07-jalr.json' || /^content\/(?:[\w-]+\/)?help\/docs\//.test(p)
-  || p.startsWith('src/arch/pico2/'); // the pico2 module: registered for the development page only (?arch=pico2, P1-M1); no release carries it until it is released and given its site/architectures.json entry (research ADR-0008); remove this line then
+export const RELEASE_EXCLUDE = (p) => p === 'content/data/ch07-jalr.json' || /^content\/(?:[\w-]+\/)?help\/docs\//.test(p);
+// (the pico2 module and the AudioWorklet of capability audio were left out until pico2 was released in 1.5.0: P1-M9, research D45)
 
 /**
  * Modules one architecture's build takes from another's folder, by decision (W-D29 allows no other sharing):
@@ -49,6 +49,9 @@ export const RELEASE_EXCLUDE = (p) => p === 'content/data/ch07-jalr.json' || /^c
 export const SHARED = Object.freeze({
   gpu: Object.freeze(['src/asm/assembler.js', 'src/asm/disassembler.js', 'src/isa/encoding.js', 'src/core/profiles.js', 'src/core/analytic.js',
     'content/geometry/ch11a-gpu.json']),
+  // the Pico 2 Laboratory compiles MAVILERA C with the app's C compiler and its pico2 target (P1-C2, research D18)
+  pico2: Object.freeze(['src/cc/check.js', 'src/cc/codegen.js', 'src/cc/compiler.js', 'src/cc/lexer.js', 'src/cc/parser.js', 'src/cc/preprocess.js',
+    'src/cc/runtime.js', 'src/cc/types.js', 'src/core/profiles.js', 'src/isa/encoding.js']),
   riscv: Object.freeze(['src/arch/gpu/rvsimt/core-model.js', 'src/arch/gpu/rvsimt/engine.js', 'src/arch/gpu/rvsimt/isa.js', 'src/arch/gpu/rvsimt/language.js',
     'src/arch/gpu/rvsimt/strings.js', 'src/arch/gpu/rvsimt/ui/core-view.js', 'src/arch/gpu/ui/mask-grid.js']),
 });
@@ -58,7 +61,7 @@ export const SHARED = Object.freeze({
  *  the verification script and the publication scripts. The validation record lists them as one group. */
 export const PRIVATE_ONLY = (p) => /^tools\/[\w.-]+\.py$/.test(p) || p === 'tools/gpu/model_batch.py' || /^tools\/(verify|export-public|make-brand-proposals)\.mjs$/.test(p)
   || p === 'tools/i8086/crosscheck.mjs' // runs z8086 outside the repository (8086-B8 review §3)
-  || p.startsWith('test/fixtures/exercise-solutions/') || /^test\/(rtl|rtl-multi|rtl-pipe|rtl-npu|conformance|priv-conformance|practice-exercises|sap[12]-exercises|armv7-exercises|gpu-exercises|i8086-exercises)\.test\.mjs$/.test(p);
+  || p.startsWith('test/fixtures/exercise-solutions/') || /^test\/(rtl|rtl-multi|rtl-pipe|rtl-npu|conformance|priv-conformance|practice-exercises|sap[12]-exercises|armv7-exercises|gpu-exercises|i8086-exercises|pico2-exercises)\.test\.mjs$/.test(p);
 
 /** The application files of a release. */
 export const releaseFiles = (root = ROOT) => shippedFiles(root).filter((p) => !RELEASE_EXCLUDE(p));
@@ -90,6 +93,17 @@ export function archFiles(id, root = ROOT) {
   if (!entry?.content?.length) throw new Error(`site/architectures.json: ${id} names no content folders`);
   const overrides = archOverrides(id, root);
   const mods = new Set([...collect(root, 'src/main.js', overrides).keys(), ...collect(root, 'src/worker/run.js', overrides).keys()]);
+  // scripts a module loads by address rather than by import: a Worker's new URL('./x.js', import.meta.url) and a descriptor's
+  // AudioWorklet processor (relative to src/; pico2, contract v10 capability audio); their modules belong to the build too
+  for (let grew = true; grew;) {
+    grew = false;
+    for (const p of [...mods]) {
+      const src = readFileSync(join(root, p), 'utf8');
+      const urls = [...src.matchAll(/new URL\('(\.{1,2}\/[\w./-]+\.js)', import\.meta\.url\)/g)].map((m) => posix.join(posix.dirname(p), m[1]))
+        .concat([...src.matchAll(/\bprocessor: '([\w./-]+\.js)'/g)].map((m) => `src/${m[1]}`));
+      for (const u of urls) if (!mods.has(u)) { for (const k of collect(root, u, overrides).keys()) mods.add(k); grew = true; }
+    }
+  }
   const page = new Set(['index.html', 'manifest.webmanifest', 'src/ui/theme.css']);
   // of the logo files, those the page, the manifest or a module names (icons, header lockup, about box; WS-N-004:
   // the others, the social preview and the variants for print, are the landing page's and the repository's)

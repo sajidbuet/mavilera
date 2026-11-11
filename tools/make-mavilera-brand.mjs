@@ -84,6 +84,7 @@ const SVGS = {
   'mavilera-logo-npu.svg': svg('mavilera-npu-header.svg', 'MAVILERA NPU'), // the RISC-V module opened as the NPU tool
   'mavilera-logo-gpu.svg': svg('mavilera-gpu-header.svg', 'MAVILERA GPU'), // the GPU module
   'mavilera-logo-8086.svg': svg('mavilera-8086-header.svg', 'MAVILERA 8086'), // the 8086 module (approved by the author, 2026-11-05)
+  'mavilera-logo-pico2.svg': svg('mavilera-pico2-header.svg', 'MAVILERA Pico 2'), // the Pico 2 module (development page; proposal, 2026-11-06)
   // the architecture switcher's entries: the chip and the tool's name, without MAVILERA (src/shell/platform-archs.js)
   'mavilera-name-riscv.svg': svg('mavilera-riscv-name.svg', 'RISC-V'),
   'mavilera-name-sap-1.svg': svg('mavilera-sap1-name.svg', 'SAP-1'),
@@ -92,6 +93,7 @@ const SVGS = {
   'mavilera-name-npu.svg': svg('mavilera-npu-name.svg', 'NPU'),
   'mavilera-name-gpu.svg': svg('mavilera-gpu-name.svg', 'GPU'),
   'mavilera-name-8086.svg': svg('mavilera-8086-name.svg', '8086'),
+  'mavilera-name-pico2.svg': svg('mavilera-pico2-name.svg', 'Pico 2'),
   'mavilera-full.svg': svg('mavilera-full.svg', 'MAVILERA'), // the landing page
   'mavilera-lockup.svg': svg('mavilera-lockup.svg', 'MAVILERA'), // the landing page on narrow screens: no subtitle
   'mavilera-wordmark.svg': svg('mavilera-wordmark.svg', 'MAVILERA'),

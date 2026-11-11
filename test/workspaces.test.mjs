@@ -13,6 +13,7 @@ const ids = (ctx, panes) => availableWorkspaces(ctx, (p) => panes.includes(p)).m
 const ISA = ['work', 'editor', 'mid', 'listing', 'inspector', 'right', 'registers', 'calls', 'counters', 'dock', 'memory'];
 const DP = ['work', 'editor', 'mid', 'datapath', 'info', 'right', 'registers', 'counters', 'dock', 'memory'];
 const CMP = ['work', 'editor', 'mid', 'compare', 'right', 'registers', 'calls', 'counters', 'dock', 'memory'];
+const PROJECTS = ['explorer']; // a module with projects (pico2 P1-F1) adds the Files pane before the editor
 
 test('the instruction view offers Code, Listing, CPU and Memory; no Datapath without a datapath pane', () => {
   assert.deepEqual(ids({ dp: false }, ISA), ['code', 'listing', 'cpu', 'memory']);
@@ -60,7 +61,7 @@ test('every workspace has a name, an icon and a layout; the ids are unique', () 
 });
 
 test('every pane a workspace names is a pane main.js lays out', () => {
-  const known = new Set([...ISA, ...DP, ...CMP]);
+  const known = new Set([...ISA, ...DP, ...CMP, ...PROJECTS]);
   for (const w of WORKSPACES) for (const dp of [false, true]) for (const p of w.panes({ dp })) assert.ok(known.has(p), `${w.id}: unknown pane ${p}`);
 });
 

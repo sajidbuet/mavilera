@@ -85,7 +85,8 @@ export function highlightC(line, inComment) {
 }
 
 export class Editor {
-  constructor({ language, onChange, onCursorLine, onHoverLine = null, onGutterClick = null }) {
+  // listId: the completion list's element id (several editors on one page, pico2 P1-F1 projects, need their own)
+  constructor({ language, onChange, onCursorLine, onHoverLine = null, onGutterClick = null, listId = 'ed-complete' }) {
     this.words = language.editor; // contract: mnemonics, registers, help, detail
     this.comment = language.comment;
     this.syn = { mnemonics: new Set(language.editor.mnemonics), registers: new Set(language.editor.registers), comment: language.comment };
@@ -105,8 +106,10 @@ export class Editor {
     this.code = el('pre.ed-code', { 'aria-hidden': 'true' });
     this.marks = el('pre.ed-marks', { 'aria-hidden': 'true' });
     this.area = el('textarea.ed-input', {
-      spellcheck: false, autocapitalize: 'off', autocomplete: 'off', wrap: 'off',
-      'aria-label': STRINGS.editor, 'aria-autocomplete': 'list', 'aria-controls': 'ed-complete',
+      // the string: el() leaves out an attribute whose value is false, and a text area without it is spell-checked
+      // (red underlines under mnemonics; GUI walkthrough, 2026-11-11)
+      spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', wrap: 'off',
+      'aria-label': STRINGS.editor, 'aria-autocomplete': 'list', 'aria-controls': listId,
       oninput: (e) => { this.showTip(null); this.render(); this.onChange?.(this.area.value); if (e.isTrusted) this.complete(); else this.closeList(); },
       onscroll: () => { this.syncScroll(); this.closeList(); this.showTip(null); },
       onkeydown: (e) => this.key(e),
@@ -117,7 +120,7 @@ export class Editor {
       onblur: () => setTimeout(() => this.closeList(), 150),
     });
     // completion list and help tooltip (WS-U-021)
-    this.list = el('ul.ed-complete', { id: 'ed-complete', role: 'listbox', 'aria-label': STRINGS.assist.listLabel, hidden: true });
+    this.list = el('ul.ed-complete', { id: listId, role: 'listbox', 'aria-label': STRINGS.assist.listLabel, hidden: true });
     this.tip = el('div.ed-tip', { role: 'tooltip', hidden: true });
     this.items = [];
     this.pick = 0;

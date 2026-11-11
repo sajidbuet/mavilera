@@ -14,6 +14,7 @@ const I = (mn, ops = '', comment = '') => `        ${ops ? mn.padEnd(8) : mn}${o
 
 /** Start-up code: set sp, call main, then end the program (WS-F-083). */
 export function startup(target) {
+  if (target.def) return target.def.startup(); // a target supplied by another architecture (pico2, P1-C2)
   if (target.profile === 'iss') {
     return ['# start-up: stack at the top of the simulator\'s stack area, then exit(main())',
       '_start:', I('li', 'sp, 0x00100000', 'top of the stack'), I('call', 'main'), I('li', 'a7, 93', 'exit with the code in a0'), I('ecall')];
@@ -62,10 +63,16 @@ const NEEDS = { __udivsi3: ['__udivmodsi4'], __umodsi3: ['__udivmodsi4'], __divs
 
 /** Assembly of the routines `names` and of those they call, each once, in a fixed order. */
 export function routines(names, target) {
+  // a supplied target's routines replace those of the same name (pico2: putchar on UART0, exit by ebreak, the helpers)
+  const table = target.def ? { ...ROUTINES, ...target.def.routines } : ROUTINES;
+  const needs = target.def ? { ...NEEDS, ...(target.def.needs ?? {}) } : NEEDS;
   const all = new Set();
-  const add = (n) => { if (all.has(n)) return; all.add(n); (NEEDS[n] ?? []).forEach(add); };
+  const add = (n) => { if (all.has(n)) return; all.add(n); (needs[n] ?? []).forEach(add); };
   names.forEach(add);
   const lines = [];
-  for (const n of Object.keys(ROUTINES)) if (all.has(n)) lines.push('', ...ROUTINES[n](target));
+  for (const n of Object.keys(table)) if (all.has(n)) lines.push('', ...table[n](target));
   return lines;
 }
+
+/** The instruction-line formatter of the runtime, for targets that write their own routines. */
+export const asmLine = I;

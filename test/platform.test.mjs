@@ -28,11 +28,11 @@ test('registry: unique ids and paths, a known status, the RISC-V, SAP-1 and SAP-
     }
   }
   // updated deliberately (docs/ADDING-SIMULATORS.md): SAP-1 since phase 6 of the architecture contract (W-D29), SAP-2 since step 6 of its plan
-  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu']);
+  assert.deepEqual(registry.filter((a) => a.status === 'available').map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'pico2', 'gpu']); // pico2 from 1.5.0 (P1-M9, research D45)
   // `gpu` reserved as planned at GPU-0 (DECISIONS.md G9), published as a preview from 1.2.0 (author, 2026-11-04), complete
   // from 1.3.0 (author, 2026-11-05); the planned `8086` became `i8086` (the beta of 8086-B0 to B2; author, 2026-11-05: id
   // i8086, no contract change), planned again for the site until its documentation is approved (publication gate)
-  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'gpu', '6502', 'mips']);
+  assert.deepEqual(registry.map((a) => a.id), ['riscv', 'sap-1', 'sap-2', 'armv7', 'i8086', 'pico2', 'gpu', '6502', 'mips']);
   assert.deepEqual(registry.filter((a) => a.preview).map((a) => a.id), []);
   // a tool inside a module: its card links into the module (the NPU in RISC-V, decision G2)
   const tools = JSON.parse(read('site/architectures.json')).tools;
@@ -48,7 +48,7 @@ test('landing page: the required wording, the card slot, no claims for planned m
   // minimal layout (author, 2026-11-05): the tiles in the author's order, every module and tool once; no screenshot,
   // no row of launch buttons, no tabs; learning paths by topic; one documentation page for every laboratory
   const reg = JSON.parse(read('site/architectures.json'));
-  assert.deepEqual(reg.landing, ['riscv', 'gpu', 'npu', 'sap-1', 'sap-2', 'armv7', 'i8086', 'mips', '6502']);
+  assert.deepEqual(reg.landing, ['riscv', 'gpu', 'npu', 'sap-1', 'sap-2', 'armv7', 'i8086', 'pico2', 'mips', '6502']);
   assert.deepEqual([...reg.landing].sort(), [...registry.map((a) => a.id), ...reg.tools.map((t) => t.id)].sort());
   for (const s of ['{{LABS}}', '{{COMING}}', '{{LEARN}}', '{{SITE_CSS}}', '{{HERO_LOGO}}', '{{HERO_CSS}}', 'mvh-play',
     'href="#laboratories"', 'href="#learn"', 'href="docs/"']) assert.ok(html.includes(s), s);

@@ -14,13 +14,16 @@ export class Device {
     this.m = m; this.name = name; this.resetBit = resetBit;
     this.r = regs ? new RegFile(regs) : null;
     this.next = Infinity;
+    this.heldFlag = false; // P1-M5: RESETS keeps it (Resets.onWrite, Machine.powerOn), so that a read does not look it up
   }
-  get now() { return this.m.hart.ticks; }
-  held() { return this.resetBit >= 0 && this.m.resets !== undefined && this.m.resets.isHeld(this.resetBit); }
+  /** The present cycle: the hart's, or the cycle of the event being run (machine.js `cur`; P1-M5). */
+  get now() { const m = this.m; return m.cur >= 0 ? m.cur : m.hart.ticks; }
+  held() { return this.heldFlag; }
 
   read(off) {
-    if (!this.r.has(off)) { this.m.diag('noRegister', this.name, off); return 0; }
-    if (this.held()) { this.m.diag('heldInReset', this.name); return this.r.resetV[this.r.index.get(off)]; }
+    const i = this.r.at(off);
+    if (i < 0) { this.m.diag('noRegister', this.name, off); return 0; }
+    if (this.heldFlag) { this.m.diag('heldInReset', this.name); return this.r.resetV[i]; }
     return this.readReg(off);
   }
   write(off, value, alias, addr, size, raw) {
@@ -67,9 +70,14 @@ export class Resets extends Device {
   onWrite(off, now, old) {
     if (off !== this.oReset) return;
     const asserted = now & ~old;
+    this.updateHeld();
     if (asserted) for (const d of this.m.resettable) if (d.resetBit >= 0 && ((asserted >>> d.resetBit) & 1)) d.reset();
     if (now !== old) this.m.resetsChanged(old, now);
   }
+  /** Each block's held-in-reset flag from RESET (after a write, a reset or a restored checkpoint). */
+  updateHeld() { const v = this.r.get(this.oReset); for (const d of this.m.resettable ?? []) d.heldFlag = ((v >>> d.resetBit) & 1) === 1; }
+  reset() { super.reset(); this.updateHeld(); }
+  load(s) { super.load(s); this.updateHeld(); }
 }
 
 /** SYSINFO: CHIP_ID of an RP2350A stepping A4 (decision D13, Q6; REVISION field per RP-001 App. C), PLATFORM = ASIC. */

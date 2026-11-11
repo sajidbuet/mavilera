@@ -31,13 +31,14 @@ export function findBrowser(name) {
 }
 
 /** Start a headless browser; null if it is not installed. */
-export async function launch(name, { headless = true } = {}) {
+export async function launch(name, { headless = true, extraArgs = [] } = {}) {
   const exe = findBrowser(name);
   if (!exe) return null;
   const profile = mkdtempSync(join(tmpdir(), `risc-vista-${name}-`));
+  // extraArgs (pico2 P1-M5): e.g. --autoplay-policy=no-user-gesture-required for the audio smoke
   const args = [`--user-data-dir=${profile}`, '--remote-debugging-port=0', '--no-first-run', '--no-default-browser-check',
     '--disable-extensions', '--disable-sync', '--disable-background-networking', '--disable-component-update', '--metrics-recording-only',
-    ...(headless ? ['--headless=new'] : []), 'about:blank'];
+    ...(headless ? ['--headless=new'] : []), ...extraArgs, 'about:blank'];
   const proc = spawn(exe, args, { stdio: 'ignore' });
   const portFile = join(profile, 'DevToolsActivePort');
   for (let i = 0; i < 200 && !existsSync(portFile); i++) await sleep(50);

@@ -57,6 +57,7 @@ export class Split {
       if (p.collapsible) this.toggleButton(p);
       else p.node._toggle?.remove();
       children.push(p.node);
+      if (p.foldable && !p.collapsible) children.push(this.strip(p));
     });
     this.root.replaceChildren(...children);
     this.apply();
@@ -82,16 +83,48 @@ export class Split {
   }
 
   /**
-   * The fold button of divider i (D6): it folds the pane after the divider, or else the one before it, whichever
-   * can fold (`collapsible`, or `foldable` for a pane without a heading, which then folds out of sight and
-   * returns from this button). It is a sibling of the divider, a zero-size box at its end, because a separator
-   * may not contain a control.
+   * The arrows of divider i (D6; author, 2026-11-10: "they should expand in the direction of the arrow"): up to two,
+   * back (left or up) and forward (right or down). A click moves the divider the way its arrow points as far as it
+   * goes: the pane the arrow points at folds, or, if the pane behind the arrow is folded, that pane opens toward
+   * the arrow. An arrow that could do neither is hidden (apply). A pane folds when it is `collapsible` (to its
+   * heading) or `foldable` (no heading: to a strip with its name, see strip). The arrows sit in a sibling of the
+   * divider, a zero-size box at its middle, because a separator may not contain a control.
    */
   foldButton(i) {
-    const at = [i + 1, i].find((j) => this.panes[j].collapsible || this.panes[j].foldable);
-    const b = at === undefined ? null : el('button.divider-fold', { type: 'button', onclick: () => this.toggle(at) });
-    this.folds.push(b && { at, b });
-    return el(`div.divider-fold-box.${this.dir === 'row' ? 'fold-v' : 'fold-h'}`, { 'data-fold': this.panes[i].id }, b ?? []);
+    const mk = (dir) => el(`button.divider-fold.fold-${dir}`, { type: 'button', 'data-dir': dir, onclick: (e) => { e.stopPropagation(); this.foldAction(i, dir)?.(); } });
+    const f = { back: mk('back'), fwd: mk('fwd') };
+    this.folds.push(f);
+    return el(`div.divider-fold-box.${this.dir === 'row' ? 'fold-v' : 'fold-h'}`, { 'data-fold': this.panes[i].id },
+      el('div.divider-folds', {}, f.back, f.fwd));
+  }
+
+  /** What the arrow `dir` of divider i does now: {act, label} or null (nothing it can do). */
+  foldPlan(i, dir) {
+    const [a, b] = [i, i + 1];
+    const can = (j) => (this.panes[j].collapsible || this.panes[j].foldable) && !this.collapsed[j] && this.collapsed.filter((c) => !c).length > 1;
+    const name = (j) => this.panes[j].title ?? this.panes[j].id;
+    // back: the pane after opens backward, or the pane before folds; forward: the pane before opens forward, or the pane after folds
+    const [behind, ahead] = dir === 'back' ? [b, a] : [a, b];
+    if (this.collapsed[behind]) return { pane: behind, label: STRINGS.layout.expand(name(behind)) };
+    if (can(ahead)) return { pane: ahead, label: STRINGS.layout.collapse(name(ahead)) };
+    return null;
+  }
+
+  foldAction(i, dir) {
+    const p = this.foldPlan(i, dir);
+    return p && (() => this.toggle(p.pane));
+  }
+
+  /** The strip of a `foldable` pane: while it is folded, a narrow bar with its name that opens it (author, 2026-11-10). */
+  strip(p) {
+    if (!p.node._strip) {
+      p.node._strip = el('button.pane-strip', { type: 'button', onclick: () => p.node._split?.toggle(p.node._index) },
+        icon('unfold', { size: 16 }), el('span.pane-strip-title'));
+    }
+    p.node._strip.dataset.strip = p.id;
+    p.node._strip.querySelector('.pane-strip-title').textContent = p.title ?? p.id;
+    p.node._strip.hidden = true;
+    return p.node._strip;
   }
 
   toggleButton(p) {
@@ -103,6 +136,16 @@ export class Split {
     }
     const head = p.header ?? p.node.querySelector(':scope > h2');
     head?.append(p.node._toggle);
+    // a folded pane opens from a click anywhere on its heading, as the named strip of a pane without one does (GUI
+    // walkthrough, 2026-11-11: only the small plus opened Files); the heading's own controls keep their clicks
+    if (head && !head._foldClick) {
+      head._foldClick = true;
+      head.addEventListener('click', (e) => {
+        const n = p.node;
+        if (!n.classList.contains('collapsed') || n.classList.contains('ws-force') || e.target.closest('button, a, input, select, summary, [role="tab"]')) return;
+        n._split?.toggle(n._index);
+      });
+    }
   }
 
   /** Sizes and states onto the panes and dividers. */
@@ -120,29 +163,27 @@ export class Split {
       n.style[vertical ? 'minHeight' : 'minWidth'] = '';
       if (n._toggle && n._split === this) {
         const label = c ? STRINGS.layout.expand(p.title ?? p.id) : STRINGS.layout.collapse(p.title ?? p.id);
-        // the arrow points the way the pane goes when it folds (a pane after another folds down or right), and back when it opens
-        const after = i > 0;
-        const toward = vertical ? (after ? 'chevronRight' : 'chevronLeft') : (after ? 'chevronDown' : 'chevronUp');
-        const back = vertical ? (after ? 'chevronLeft' : 'chevronRight') : (after ? 'chevronUp' : 'chevronDown');
-        n._toggle.replaceChildren(icon(c ? back : toward));
+        // the heading's button (author, 2026-11-10): minus folds the pane, plus opens it, wherever the pane stands; only the
+        // dividers' buttons carry arrows (below), so that an arrow always means the same thing
+        n._toggle.replaceChildren(icon(c ? 'unfold' : 'fold'));
         n._toggle.setAttribute('aria-expanded', String(!c));
         n._toggle.setAttribute('aria-label', label);
         n._toggle.title = label;
       }
     });
+    this.panes.forEach((p, i) => { if (p.node._strip && p.node._split === this) p.node._strip.hidden = !this.collapsed[i]; });
+    // the arrows point the way the divider moves on a click, and so the way the pane behind them grows
+    const ICON = { back: vertical ? 'chevronLeft' : 'chevronUp', fwd: vertical ? 'chevronRight' : 'chevronDown' };
     this.folds.forEach((f, i) => {
-      if (!f) return;
-      const c = this.collapsed[f.at];
-      const p = this.panes[f.at];
-      const after = f.at === i + 1;
-      const label = (c ? STRINGS.layout.expand : STRINGS.layout.collapse)(p.title ?? p.id);
-      // the arrow points the way the pane goes when it folds, and back when it opens
-      const toward = vertical ? (after ? 'chevronRight' : 'chevronLeft') : (after ? 'chevronDown' : 'chevronUp');
-      const back = vertical ? (after ? 'chevronLeft' : 'chevronRight') : (after ? 'chevronUp' : 'chevronDown');
-      f.b.replaceChildren(icon(c ? back : toward));
-      f.b.setAttribute('aria-expanded', String(!c));
-      f.b.setAttribute('aria-label', label);
-      f.b.title = label;
+      for (const dir of ['back', 'fwd']) {
+        const b = f[dir];
+        const plan = this.foldPlan(i, dir);
+        b.hidden = !plan;
+        if (!plan) continue;
+        if (!b.firstChild) b.append(icon(ICON[dir]));
+        b.setAttribute('aria-label', plan.label);
+        b.title = plan.label;
+      }
     });
     this.dividers.forEach((d, i) => {
       const off = this.collapsed[i] || this.collapsed[i + 1];

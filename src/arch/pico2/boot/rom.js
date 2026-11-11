@@ -28,6 +28,7 @@ const FUNCTIONS = [
 const IMPLEMENTED = new Set(['SR']);
 
 const SLOT_BASE = 0x100;
+export const CORE1_RETURN = 0x7e00; // P1-M6: a slot of the module's own (not a bootrom address)
 export const SLOT = Object.freeze({ LOOKUP_ENTRY: 0, LOOKUP_VAL: 1, ENTRY: 2 });
 
 /** Build the ROM: {bytes, slots: Map(address -> {kind, code?, name?, implemented?})}. */
@@ -51,6 +52,8 @@ export function buildRom() {
   put16(0x7df6, table); put16(0x7df8, slotAt(SLOT.LOOKUP_VAL)); put16(0x7dfa, slotAt(SLOT.LOOKUP_ENTRY));
   // 0x7dfc: the RISC-V entry point; here a slot of its own (re-entering the bootrom is not modelled)
   slots.set(0x7dfc, { kind: 'entry' });
+  // P1-M6: where core 1 returns when its entry returns (ra at its launch, soc/core1.js): it waits to be launched again
+  slots.set(CORE1_RETURN, { kind: 'core1Return' });
   return { bytes, slots, byCode };
 }
 

@@ -1,0 +1,202 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap P1-M9), not taken from a textbook; produced by tools/pico2/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "pico2",
+ "title": "Count the presses of a button",
+ "task": "A button on GP15 connects the pin to ground while it is pressed; pin_input turns on the pin's pull-up, so it reads 1 when released. Count the presses (high to low changes) during the first 100 ms after main starts, then return the count. A press can be as short as 1 ms.",
+ "lang": "c",
+ "starter": "/* count-presses -- practice exercise (MAVILERA, Pico 2)\n * Count the high-to-low changes of GP15 during the first 100 ms, then return the count.\n * Hint: pin_input, pin_read, and time_us to know when 100 ms have passed. Count a change, not a\n * low level: remember the level you read last.\n */\n#include <rp2350.h>\n\nint main(void)\n{\n    pin_input(15);\n    return 0;                           /* replace with your code */\n}\n",
+ "tests": [
+  {
+   "name": "no press",
+   "limitMs": 500,
+   "inputs": [
+    {
+     "us": 0,
+     "pin": 15,
+     "level": 1
+    }
+   ],
+   "expect": {
+    "exit": 0
+   }
+  },
+  {
+   "name": "1 press (20-25 ms)",
+   "limitMs": 500,
+   "inputs": [
+    {
+     "us": 0,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 20000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 25000,
+     "pin": 15,
+     "level": 1
+    }
+   ],
+   "expect": {
+    "exit": 1
+   }
+  },
+  {
+   "name": "3 presses (10-11 ms, 30-40 ms, 60-61 ms)",
+   "limitMs": 500,
+   "inputs": [
+    {
+     "us": 0,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 10000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 11000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 30000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 40000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 60000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 61000,
+     "pin": 15,
+     "level": 1
+    }
+   ],
+   "expect": {
+    "exit": 3
+   }
+  },
+  {
+   "name": "7 presses (5-6 ms, 15-16 ms, 25-26 ms, 35-36 ms, 45-46 ms, 55-56 ms, 65-66 ms)",
+   "limitMs": 500,
+   "inputs": [
+    {
+     "us": 0,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 5000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 6000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 15000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 16000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 25000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 26000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 35000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 36000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 45000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 46000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 55000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 56000,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 65000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 66000,
+     "pin": 15,
+     "level": 1
+    }
+   ],
+   "expect": {
+    "exit": 7
+   }
+  },
+  {
+   "name": "1 press (40-90 ms)",
+   "limitMs": 500,
+   "inputs": [
+    {
+     "us": 0,
+     "pin": 15,
+     "level": 1
+    },
+    {
+     "us": 40000,
+     "pin": 15,
+     "level": 0
+    },
+    {
+     "us": 90000,
+     "pin": 15,
+     "level": 1
+    }
+   ],
+   "expect": {
+    "exit": 1
+   }
+  }
+ ]
+}

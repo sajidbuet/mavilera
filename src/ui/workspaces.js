@@ -24,7 +24,8 @@ const KEY = 'pips.workspace.tab';
  * To give a future pane a place: add its id to the `panes` of the workspace it belongs to.
  */
 export const WORKSPACES = Object.freeze([
-  { id: 'code', icon: 'code', layout: 'fill', panes: () => ['editor'], needs: () => 'editor' },
+  // the Files pane of a module with projects (pico2 P1-F1) shows with the editor; elsewhere it does not exist
+  { id: 'code', icon: 'code', layout: 'fill', panes: () => ['explorer', 'editor'], needs: () => 'editor' },
   // in a datapath view the listing is a tab of the Details pane (the pane the shell gives it there)
   { id: 'listing', icon: 'list', layout: 'fill', panes: (c) => (c.dp ? ['info'] : ['listing', 'inspector']), needs: (c) => (c.dp ? 'info' : 'listing') },
   { id: 'compare', icon: 'compare', layout: 'fill', panes: () => ['compare'], needs: () => 'compare' },

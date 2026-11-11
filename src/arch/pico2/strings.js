@@ -1,6 +1,6 @@
 // pico2/strings.js -- the pico2 module's interface strings, in British English (WS-N-007), merged over the shell's when the
 // descriptor is loaded. Working name "Pico 2 Laboratory" (research repository ADR-0008; the final name and logo follow the
-// branding process). The module is registered for the development page only (P1-M1): no release, no landing tile.
+// branding process; kept for the teaching release, research D45 Q12). Released from P1-M9 (research D45), Pico Lite only.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -9,18 +9,25 @@ const hex = (v) => `0x${(v >>> 0).toString(16).padStart(8, '0')}`;
 export const PICO2_STRINGS = Object.freeze({
   appFull: 'Pico 2 Laboratory',
   aboutText: 'MAVILERA is an educational platform for exploring microprocessor architecture. This module, the Pico 2 Laboratory, '
-    + 'simulates one Hazard3 RISC-V core of the Raspberry Pi RP2350 at the instruction level: RV32IMAC with the bit-manipulation '
-    + 'and code-size extensions, machine and user modes, traps, physical memory protection and the external interrupt controller. '
-    + 'This development stage adds the Pico 2 machine: the RP2350 address map, the clocks, resets, timers, UARTs, GPIO and the '
-    + 'single-cycle IO block, and programs built with the Pico SDK start directly, without the bootrom. Each instruction takes the '
+    + 'simulates a Raspberry Pi Pico 2 with the RP2350\'s two Hazard3 RISC-V cores at the instruction level: RV32IMAC with the '
+    + 'bit-manipulation and code-size extensions, machine and user modes, traps, physical memory protection and the external '
+    + 'interrupt controller. Around them it models the RP2350 address map, the clocks, resets, timers, UARTs, GPIO, the '
+    + 'single-cycle IO block, PWM, DMA, the ADC, SPI, I2C and PIO, with a lab kit of simulated sensors and a display; '
+    + 'programs start directly, without the bootrom. Each instruction takes the '
     + 'clock cycles of Hazard3\'s documented timing (with a perfect bus), and the Pipeline view shows its three stages cycle by '
-    + 'cycle. The second core, PIO, PWM, DMA and the other peripherals are not modelled yet.',
+    + 'cycle. Programs are written in assembly or in MAVILERA\'s teaching subset of C (with <rp2350.h> for the registers). PIO runs '
+    + 'exact to the clock cycle; a '
+    + 'state machine that executes an instruction on every cycle is slow to simulate (at 150 MHz about 1-2 % of real time), while '
+    + 'state machines that wait on a clock divider, a FIFO or a pin run close to real time. The interpolators, USB, the watchdog\'s '
+    + 'countdown and the security features are not modelled; Help lists every limit.',
   viewIsa: 'Instructions',
   viewPipeline: 'Pipeline',
+  viewSource: 'C source',
   profileNames: Object.freeze({ hazard3: 'Hazard3 (RP2350)' }),
   registerGroup: 'Registers',
   csrGroup: 'Machine CSRs',
-  counterNames: Object.freeze({ instructions: 'Instructions', steps: 'Steps', cycles: 'clk_sys cycles', traps: 'Traps', cacheHits: 'Decode cache hits' }),
+  // short enough for the counter tiles (12 characters at most)
+  counterNames: Object.freeze({ instructions: 'Instructions', steps: 'Steps', cycles: 'Clock cycles', traps: 'Traps', cacheHits: 'Decode hits' }),
   trapLabels: Object.freeze({
     0: 'instruction address misaligned', 1: 'instruction access fault', 2: 'illegal instruction', 3: 'breakpoint',
     4: 'load address misaligned', 5: 'load access fault', 6: 'store/AMO address misaligned', 7: 'store/AMO access fault',
@@ -33,7 +40,7 @@ export const PICO2_STRINGS = Object.freeze({
     unknownNote: 'Compressed instructions are written with their own mnemonic (c.addi, cm.push); the assembler does not compress.',
     badRegister: (t) => `'${t}' is not a register (x0 to x31, or an ABI name such as a0, sp, s1).`,
     needsValue: 'A value is missing.',
-    badExpression: (t) => `'${t}' is not an expression (numbers, labels, + and -, %hi() and %lo()).`,
+    badExpression: (t) => `'${t}' is not an expression (numbers, labels, ( ), the operators + - * / % << >> | & ^ ~, %hi() and %lo()).`,
     badNumber: (t) => `'${t}' is not a number.`,
     undefinedSymbol: (n) => `The symbol '${n}' is not defined.`,
     badSymbol: (n) => `'${n}' cannot be a symbol name.`,
@@ -68,25 +75,329 @@ export const PICO2_STRINGS = Object.freeze({
     romEntry: (pc) => `The program jumped into the bootrom (${hex(pc)}), for example to reboot. The bootrom is not modelled: the Pico 2 Laboratory boots images directly.`,
     imageOutside: (a) => `The image has data at ${hex(a)}, outside the flash and the SRAM.`,
   }),
+  // the import of SDK-built programs (firmware/import.js; P1-C1); the shell's importedImage and importedNote are replaced
+  importedImage: (n) => `Program imported: ${n} instructions listed. It starts as the RP2350 would start it, at the entry point of its IMAGE_DEF.`,
+  importedNote: 'Open the C source view to follow the program line by line (ELF files built with -g). The editor keeps your own program.',
+  importer: Object.freeze({
+    noSymbols: (kind) => `A ${kind === 'bin' ? '.bin' : 'UF2'} file has no symbols and no line table: the listing decodes the whole image, data included. Open the ELF file of the same build to see functions and C source lines.`,
+    noDebug: 'The ELF file has no line table (.debug_line): build with debugging information (compiler option -g) to see C source lines.',
+    noLines: (m) => `The line table could not be read (${m}); the program runs, but without C source lines.`,
+    listingCapped: (n) => `The listing shows the first ${n} instructions; the program itself runs in full.`,
+  }),
+  // the firmware validator's messages (firmware/validate.js; P1-C1, checks 1-9 of the research study rp2350-uf2-validation.md §6):
+  // an imported image must be one that could be written to a Pico 2 (author's decision Q4, 2026-11-07)
+  firmware: Object.freeze({
+    length: (n) => `Not a UF2 file: its length (${n} bytes) is not a multiple of 512.`,
+    magic: (b) => `Not a UF2 file: block ${b} lacks the UF2 magic numbers.`,
+    absoluteBlock: (b) => `Block ${b} has the family "absolute" but is not the RP2350-E10 workaround block; such files are not accepted.`,
+    noFamily: (b) => `Block ${b} names no family; a Pico 2 RISC-V file names the family rp2350-riscv in every block.`,
+    family: (b, name) => `This file is for ${name}, not for the RP2350's RISC-V cores (block ${b}). Build it with PICO_PLATFORM=rp2350-riscv.`,
+    payload: (b, n) => `Block ${b} carries ${n} bytes; the RP2350 takes 256 bytes per block.`,
+    align: (b, a) => `Block ${b} is for ${hex(a)}, which is not a multiple of 256.`,
+    container: (b) => `Block ${b} is part of a file container, not of a program.`,
+    md5: (b) => `Block ${b} carries an MD5 checksum, which the RP2350 does not take.`,
+    numBlocks: (b) => `Block ${b} gives a different number of blocks from the others: the file is damaged or joined from two files.`,
+    blockNo: (b) => `Block ${b} has a block number beyond the number of blocks.`,
+    missingBlock: (n) => `Block number ${n} is missing: the file is incomplete.`,
+    duplicateBlock: (n) => `Block number ${n} appears twice.`,
+    duplicateAddress: (a) => `Two blocks write ${hex(a)}.`,
+    mixed: 'The file mixes flash and RAM addresses; an image is either for the flash or for the SRAM.',
+    flashStart: (a) => `A flash image must start at 0x10000000; this one starts at ${hex(a)}.`,
+    flashSize: (end, size) => `The image ends at ${hex(end)}, beyond the Pico 2's ${size / 1048576} MiB of flash.`,
+    outside: (a) => `The image has data at ${hex(a)}, outside the flash and the SRAM a program can be loaded into.`,
+    noBlockLoop: 'No block loop with an IMAGE_DEF was found at the start of the image: the RP2350 would not boot it. Images built with the Pico SDK have one.',
+    openLoop: (a) => `The block at ${hex(a)} is damaged or its link leads nowhere: the block loop is not closed.`,
+    noImageDef: 'The image has no IMAGE_DEF for an executable program.',
+    notRiscv: 'The image is for the Arm cores (its IMAGE_DEF names Arm). Build it with PICO_PLATFORM=rp2350-riscv.',
+    notRp2350: 'The IMAGE_DEF is not for the RP2350.',
+    entryOutside: (a) => `The entry point ${hex(a)} is outside the image.`,
+    partitionTable: 'The image contains a partition table; writing partition tables is not offered.',
+    elf: (m) => `Not a RISC-V ELF executable: ${m}.`,
+    empty: 'The file holds no data to load.',
+    // notes: the image is accepted
+    e10Skipped: 'The RP2350-E10 workaround block (family "absolute" at 0x10ffff00) was skipped, as the bootrom of later chips does.',
+    notMainSkipped: (n) => `${n} block${n === 1 ? '' : 's'} not meant for the main flash ${n === 1 ? 'was' : 'were'} skipped.`,
+    filled: (n) => `${n} page${n === 1 ? '' : 's'} of the flash sectors the image touches ${n === 1 ? 'is' : 'are'} not in the file and would be written with zeros.`,
+    tbyb: 'The image asks for a "try before you buy" boot.',
+    vectorTable: 'The IMAGE_DEF has a VECTOR_TABLE item; the RP2350 ignores it on the RISC-V cores (the Pico SDK adds it to programs that run from the SRAM).',
+    loadMap: 'The image has a LOAD_MAP item (the bootrom copies parts of it into the SRAM before it starts).',
+    rollingWindow: 'The image has a ROLLING_WINDOW_DELTA item (it runs from another flash address than it was linked for).',
+  }),
   // what the program used that the machine does not model, or did in an unusual way (each reported once)
   diag: Object.freeze({
     noRegister: (block, off) => `${block}: no register at offset ${hex(off)}; reads give 0 and writes are ignored.`,
     heldInReset: (block) => `${block} was accessed while RESETS holds it in reset: writes are ignored and reads give reset values.`,
-    notModelled: (block) => `${block} is not modelled in this development stage: reads give 0 (or the value last written).`,
+    notModelled: (block) => `${block} is not modelled in the Pico 2 Laboratory: reads give 0 (or the value last written).`,
     watchdogEnabled: () => 'The watchdog was enabled; its countdown is not modelled.',
     xipWrite: (a) => `Write to the flash window at ${hex(a)} ignored (the flash is read-only here).`,
     uartOverflow: (u) => `${u}: a byte was written while the transmit FIFO was full and was lost.`,
     uartRxDisabled: (u) => `${u}: input arrived while the receiver was disabled and was lost.`,
     uartRxOverrun: (u) => `${u}: the receive FIFO overflowed.`,
     gpioFunction: (pin, f) => `GPIO ${pin} selects ${f}, which is not modelled: the pin is not driven.`,
-    sioFifo: () => 'The inter-core FIFO was written; core 1 is not modelled and never reads it.',
     sioInterp: () => 'The SIO interpolators are not modelled: their registers only hold what was written.',
-    sioDoorbell: () => 'The SIO doorbells are not modelled (core 1 is not modelled).',
     sioTmds: () => 'The SIO TMDS encoder is not modelled.',
     clkSysStopped: () => 'clk_sys would stop with this clock configuration; the simulator keeps the previous frequency.',
     romData: (code) => `The ROM data item '${code}' was looked up; the module's ROM holds no data items (the lookup returns 0).`,
+    // P1-M5 (DMA)
+    dmaDreq: (n) => `A DMA channel waits for DREQ ${n}, whose block is not modelled: it never transfers. (Modelled: SPI 24-27, UART 28-31, PWM wraps 32-43, I2C 44-47, ADC 48, the timers 59-62, unpaced 63.)`,
+    dmaBusError: (ch, kind, a) => `DMA channel ${ch}: ${kind} bus error at ${hex(a)}; the channel halted (READ_ERROR/WRITE_ERROR set).`,
+    dmaSniffCalc: (calc) => `The DMA sniffer's CALC ${calc} is reserved; the checksum is left unchanged.`,
+    // P1-M7 (ADC, SPI, I2C)
+    adcNoClock: () => 'The ADC was used while clk_adc is stopped (CLK_ADC_CTRL): READY stays 0 and no conversion runs.',
+    adcTempOff: () => 'The ADC converted the temperature sensor (input 4) while its bias is off (CS.TS_EN = 0): the result is 0.',
+    adcChannel: (ch) => `ADC input ${ch} does not exist on the RP2350A of the Pico 2 (inputs 0-3 are GPIO 26-29, 4 the temperature sensor): input 0 was converted.`,
+    spiSlave: (b) => `${b} is set up as a slave (SSPCR1.MS = 1): slave mode is not modelled, nothing is sent.`,
+    spiFormat: (b, f) => `${b} uses frame format ${['Motorola', 'TI synchronous serial', 'National Microwire'][f] ?? f}: only Motorola SPI frames reach the parts; the frame is sent as one.`,
+    spiNoClock: (b) => `${b} has no bit clock (clk_peri stopped or SSPCPSR = 0): nothing is sent.`,
+    spiOverflow: (b) => `${b}: a frame was written while the transmit FIFO was full and was lost.`,
+    i2cSlave: (b) => `${b} is not set up as a master (IC_CON MASTER_MODE and IC_SLAVE_DISABLE): slave mode is not modelled, nothing is sent.`,
+    i2c10bit: (b) => `${b} uses 10-bit addresses, which are not modelled: the low 7 bits of IC_TAR are sent.`,
+    i2cKitPins: (b, sda, scl) => `${b} sent an address, but the lab kit is wired to GP${sda} (SDA) and GP${scl} (SCL), which do not both select I2C: no part answers.`,
+    i2cDisabled: (b) => `${b}: IC_DATA_CMD was written while the block is disabled (IC_ENABLE = 0); the command was dropped.`,
+    i2cGeneralCall: (b) => `${b}: general calls and START bytes (IC_TAR bits 10-11) are not modelled.`,
+    // P1-M8 (PIO)
+    pioPutGet: (b, sm, kind) => `PIO${b} SM${sm}: mov ${kind === 'put' ? 'rxfifo[], isr' : 'osr, rxfifo[]'} without SHIFTCTRL.FJOIN_RX_${kind.toUpperCase()}: undefined on the chip; the simulator uses the RX FIFO's registers.`,
+    pioNotModelled: (what) => `PIO: ${what} is not modelled (the registers keep what was written).`,
+  }),
+  // the PIO tab (ui/pio-panel.js; P1-M8, design Q6)
+  pio: Object.freeze({
+    tab: 'PIO', caption: 'PIO blocks',
+    noProgram: 'No program is loaded.',
+    running: 'Running: the tables show the state when the run pauses or stops.',
+    unused: 'No PIO block is in use: no instruction written and no state machine started.',
+    intro: 'Each PIO block runs four state machines on its 32 shared instruction words, one instruction per enabled cycle of each state machine\'s divider.',
+    memory: (b) => `PIO${b} instruction memory`,
+    memHead: [['Addr'], ['Word'], ['Instruction', 'in the notation of pioasm; side-set as the state machine running it is set up'], ['PC', 'state machines whose program counter is here'], ['Wrap', 'EXECCTRL WRAP_BOTTOM (target) and WRAP_TOP']],
+    wrapTarget: (i) => `SM${i} wrap target`, wrap: (i) => `SM${i} wrap`,
+    smCaption: (b) => `PIO${b} state machines`,
+    smHead: [['SM'], ['State'], ['Divider', 'SMn_CLKDIV: system clock cycles per state machine cycle'], ['PC'], ['X'], ['Y'], ['ISR (bits in)', 'the input shift register and its shift count'],
+      ['OSR (bits left)', 'the output shift register and the bits not yet shifted out'], ['TX FIFO', 'oldest first'], ['RX FIFO', 'oldest first'],
+      ['Pins', 'OUT, SET, side-set and IN pin ranges (PINCTRL)'], ['Executed', 'instructions completed']],
+    sm: (i) => `SM${i}`,
+    runningSm: 'running', stopped: 'stopped', delay: (n) => `delay, ${n} left`,
+    stalls: ['running', 'waiting (wait)', 'waiting for its IRQ flag to clear', 'waiting for data (pull)', 'waiting for room (push)', 'waiting for data (out with autopull)', 'waiting for room (in with autopush)', 'stalled (exec)'],
+    pins: (ob, oc, sb, sc, sdb, sdc, ib) => [oc ? `out GP${ob}+${oc}` : '', sc ? `set GP${sb}+${sc}` : '', sdc ? `side GP${sdb}+${sdc}` : '', `in GP${ib}`].filter(Boolean).join(', '),
+    flags: (b, list) => (list.length ? `PIO${b} IRQ flags set: ${list.join(', ')}.` : `PIO${b} IRQ flags: none set.`),
+  }),
+  // the C subset on the Pico 2 (c/target.js; P1-C2), merged over the shell's cc strings
+  cc: Object.freeze({
+    languages: { c: 'C' },
+    sourceLine: (n) => `C line ${n}`,
+    mode: 'Translation',
+    modes: { plain: 'Plain', register: 'Register' },
+    modeTitle: 'Plain keeps every variable in the stack frame, as an unoptimised compiler does; '
+      + 'Register keeps scalar locals and parameters in s1–s11. Neither optimises further.',
+    note: 'A teaching translation, one statement at a time: a real compiler (GCC with the Pico SDK) produces different code.',
+    errors: 'The C program has an error; fix it and compile again.',
+    subsetHint: 'The Pico 2 Laboratory compiles a teaching subset of C: int, unsigned, char, short, _Bool and the <stdint.h> types up to '
+      + '32 bits, one-dimensional arrays, pointers, functions with up to eight arguments; putchar (to UART0) and exit built in; '
+      + '#include <rp2350.h> for the registers and the pin and delay functions. Structures, floating point, 64-bit types, goto '
+      + 'and the standard library (printf) are outside it. It is not the Pico SDK.',
+    example: `/* Hello and blink: the C subset of MAVILERA on the Pico 2.
+   Before main, the start-up code (see the generated assembly) runs the
+   chip from its 12 MHz crystal at the clk_sys chosen in the toolbar
+   and sets up UART0 and TIMER0. */
+#include <rp2350.h>
+
+#define LED 25              /* the Pico 2's LED (on a Pico 2 W the LED is on the wireless chip) */
+
+void print(const char *s)
+{
+    while (*s)
+        putchar(*s++);      /* UART0: the console */
+}
+
+int main(void)
+{
+    print("Hello from C on the Pico 2!\\n");
+    pin_output(LED);
+    for (int i = 0; i < 5; i++) {
+        pin_write(LED, 1);
+        delay_ms(100);
+        pin_write(LED, 0);
+        delay_ms(100);
+    }
+    return 0;               /* exit code, left in a0 */
+}
+`,
+  }),
+  // the Pins panel (ui/pins-panel.js; P1-M4, research D36 Q3, Q9) and UART typing in the console
+  pins: Object.freeze({
+    tab: 'Pins',
+    intro: 'The 30 GPIOs of the Pico 2. The lamp is the level on the pin. Drive a pin from outside with its menu: High, Low, '
+      + 'or Released (the pad\'s pull-up or pull-down decides). A pin the program drives as an output ignores the outside.',
+    noProgram: 'No program is loaded.',
+    running: 'Running: the pins change as the program runs; a drive takes effect at the cycle it is given.',
+    stopped: 'Stopped: a drive given now takes effect when the program goes on.',
+    driveLabel: (n) => `GP${n}: drive from outside`,
+    driveTitle: 'Drive this pin from outside the chip, as a switch or a wire would: High, Low, or Released (nothing connected: the pad\'s pull-up or pull-down decides).',
+    release: 'Released', high: 'High', low: 'Low',
+    highShort: '1', lowShort: '0',
+    byChip: 'output', byOutside: 'driven', byPull: 'input',
+    fnTitle: 'The function the pin\'s IO_BANK0 GPIO_CTRL register selects (SIO: the program\'s own GPIO registers).',
+    helpTitle: 'About the Pins panel',
+    inputs: (n) => (n ? `${n} input${n === 1 ? '' : 's'} given (pins and UART), each at its clock cycle.` : 'No inputs given yet.'),
+    replay: 'Replay', replayTitle: 'Start the program again and give the same inputs at the same clock cycles: the run repeats exactly.',
+    forget: 'Forget inputs', forgetTitle: 'Start the program again without the inputs given so far.',
+    led: 'LED', ledTitle: 'On the Pico 2, GP25 drives the green LED. (On a Pico 2 W the LED is on the wireless chip.)',
+    speakerTag: 'speaker', speakerTagTitle: 'This pin is the speaker: with Sound on, its level is what you hear.',
+  }),
+  // the lab kit and the analogue inputs in the Pins panel (parts/kit.js, soc/adc.js; P1-M7, design Q2)
+  parts: Object.freeze({
+    heading: 'Parts',
+    label: 'Parts', title: 'The lab kit: sensors and a display wired to the Pico 2\'s default I2C and SPI pins, as on a breadboard. None: a bare Pico 2.',
+    none: 'none', kit: 'lab kit',
+    list: [['BMP280', 'I2C0 0x76: temperature and pressure'], ['MPU-6050', 'I2C0 0x68: acceleration, rotation, temperature'],
+      ['MCP9808', 'I2C0 0x18: temperature'], ['LCD 16 × 2', 'I2C0 0x27: HD44780 behind a PCF8574'], ['24C02', 'I2C0 0x50: 256 bytes of EEPROM'],
+      ['BME280', 'SPI0, CS GP17: temperature, pressure, humidity']],
+    wiring: 'I2C0: SDA GP4, SCL GP5. SPI0: MISO GP16, CS GP17, SCK GP18, MOSI GP19.',
+    lcd: 'LCD', lcdOff: '(display off)',
+    analog: 'Analogue inputs',
+    section: 'Analogue inputs (GP26-GP29) and the parts\' environment',
+    volts: (n) => `GP${26 + n} (ADC ${n})`,
+    voltsTitle: (n) => (n === 3 ? 'The voltage on GP29, ADC input 3. On a Pico 2 it is VSYS / 3 through the board\'s divider: 1.667 V with 5 V from USB.'
+      : `The voltage on GP${26 + n}, ADC input ${n}, as a knob (potentiometer) between 0 V and 3.3 V would give it.`),
+    env: 'Environment',
+    envTitle: 'What the parts measure. Temperature is also the chip\'s own temperature (ADC input 4).',
+    keys: { temp: ['Temperature', '°C'], pressure: ['Pressure', 'hPa'], humidity: ['Humidity', '%'], ax: ['Acceleration x', 'g'], ay: ['Acceleration y', 'g'],
+      az: ['Acceleration z', 'g'], gx: ['Rotation x', '°/s'], gy: ['Rotation y', '°/s'], gz: ['Rotation z', '°/s'] },
+    help: 'Analogue inputs and the environment are inputs of the run, like a pin drive: each change takes effect at the clock cycle it is given, and Replay repeats it.',
+  }),
+  // core 1 (P1-M6, docs/architecture/pico2-p1m6-second-core.md)
+  core1: Object.freeze({
+    group: 'Core 1',
+    counter: 'Core 1', cycles: 'Core 1 cycles',
+    waiting: 'waiting to be launched', returned: 'returned, waiting again', off: 'held off (PSM)', running: 'running', asleep: 'asleep',
+    prefix: (core, text) => `Core ${core}: ${text}`,
+    bothAsleep: 'Both cores sleep (wfi or h3.block) with nothing that could wake them: they would sleep for ever.',
+  }),
+  // research D43 (P1-M8 Q3 B): the .pio file beside a Lite program (Language.companion)
+  pioFile: Object.freeze({
+    label: 'PIO file', add: 'Add PIO file', remove: 'Remove PIO file',
+    missing: (name) => `"${name}.h" is made from ${name} at each build: File ▸ Add PIO file (or Open ${name}) puts it beside this program.`,
+    addTitle: 'A .pio file beside this program, in a second tab: its PIO programs are built with it',
+    example: (name) => `; ${name} -- PIO programs for this program, in the Pico SDK's PIO assembly (pioasm).
+; Build assembles this file with the program. In assembly, a program's words are at <name>_program, with
+; <name>_length, <name>_wrap_target and <name>_wrap; in MAVILERA C, #include "${name}.h" gives the same names.
+; The RP2350's additions need .pio_version 1, as in the Pico SDK.
+
+.program toggle
+    set pins, 1 [31]        ; high for 32 cycles
+    set pins, 0 [31]        ; low for 32 cycles
+`,
+  }),
+  // the PWM and DMA tabs of the memory pane (ui/devices-panel.js; P1-M5, research D39 Q8)
+  devices: Object.freeze({
+    pwmTab: 'PWM', dmaTab: 'DMA', adcTab: 'ADC', spiTab: 'SPI', i2cTab: 'I2C',
+    // P1-M7: the ADC, SPI and I2C tabs (research D43: three tabs)
+    adcCaption: 'ADC', spiCaption: 'SPI blocks', i2cCaption: 'I2C blocks',
+    spiIntro: 'The two SPI blocks (PL022). With the lab kit on, the BME280 answers on SPI0 while GP17 (its chip select) is low.',
+    i2cIntro: 'The two I2C blocks (DW_apb_i2c, controller mode). With the lab kit on, its five parts answer on I2C0 (GP4 SDA, GP5 SCL).',
+    adcIntro: (on, hz) => (on ? `ADC on, clk_adc ${(hz / 1e6).toFixed(3)} MHz: one conversion takes 96 cycles of clk_adc.` : 'ADC off (CS.EN = 0).'),
+    adcRow: (v) => `Input ${v.ainsel}${v.rrobin ? ` (round robin ${v.rrobin.toString(2).padStart(5, '0')})` : ''}, ${v.many ? 'free-running' : 'one-shot'}${v.busy ? ', converting' : v.ready ? ', ready' : ''}; RESULT ${v.result} (0x${v.result.toString(16)}); ${v.conversions} conversions.`,
+    adcFifo: (v) => (v.fifoEn ? `FIFO ${v.fifo.length}/8: ${v.fifo.join(', ') || 'empty'}${v.shift ? ' (shifted to 8 bits)' : ''}${v.dreqEn ? `, DMA requests at ${v.thresh}` : ''}${v.over ? ', overflowed' : ''}${v.under ? ', underflowed' : ''}.` : 'FIFO off.'),
+    spiRow: (v) => (v.enabled ? `SPI${v.index}: ${v.bits}-bit frames, mode ${v.cpol * 2 + v.cpha}, ${(v.baud / 1e3).toFixed(1)} kbit/s${v.loopback ? ', loopback' : ''}${v.master ? '' : ', slave (not modelled)'}; TX FIFO ${v.tx.length}/8, RX FIFO ${v.rx.length}/8; ${v.frames} frames.` : `SPI${v.index}: off (SSE = 0).`),
+    i2cRow: (v) => (v.enabled ? `I2C${v.index}: ${v.speed} mode, ${(v.baud / 1e3).toFixed(1)} kHz, target 0x${v.tar.toString(16)}; TX FIFO ${v.tx.length}/16, RX FIFO ${v.rx.length}/16${v.abrt ? `, abort 0x${v.abrt.toString(16)}` : ''}; ${v.bytes} bytes.` : `I2C${v.index}: off (IC_ENABLE = 0).`),
+    logHead: 'Bus log (newest last)',
+    i2cLog: (b, e) => `I2C${b} 0x${e.addr.toString(16).padStart(2, '0')} ${e.read ? 'read' : 'write'} ${e.ack ? '' : '(no acknowledge) '}${e.bytes.map((x) => x.toString(16).padStart(2, '0')).join(' ')}`,
+    spiLog: (b, e) => `SPI${b} ${e.cs === null ? (e.tx === e.rx ? 'loopback' : 'no part') : `CS GP${e.cs}`} out ${e.tx.toString(16).padStart(2, '0')} in ${e.rx.toString(16).padStart(2, '0')}`,
+    noLog: 'No transfers yet.',
+    noProgram: 'No program is loaded.',
+    running: 'Running: the table shows the state when the run pauses or stops.',
+    pwmIntro: (hz) => `The PWM slices in use, at clk_sys ${(hz / 1e6).toFixed(3)} MHz. A slice counts 0 to TOP (and back down in phase-correct mode) at clk_sys / DIV; `
+      + 'an output is high while the count is below its compare value. Values in brackets are the latched ones, used until the next wrap.',
+    dmaIntro: (n) => `The DMA channels in use (${n.toLocaleString('en-GB')} transfers so far). A busy channel moves one item each clock cycle it is allowed to (by its pacing).`,
+    pwmCaption: 'PWM slices', dmaCaption: 'DMA channels',
+    pwmHead: [['Slice'], ['EN', 'CSR.EN: the slice counts'], ['Mode', 'DIVMODE: free-running, or the B input gates or counts'], ['DIV', 'the clock divider (counts per clk_sys cycle: 1/DIV)'],
+      ['TOP', 'the count wraps after TOP'], ['CC A', 'A is high while the count is below this'], ['CC B'], ['Count', 'CTR now'],
+      ['Frequency', 'of one period'], ['Duty A'], ['Duty B'], ['Pins', 'the GPIOs whose function is PWM on this slice']],
+    dmaHead: [['Channel'], ['State'], ['EN'], ['Read', 'READ_ADDR: the next address read'], ['Write', 'WRITE_ADDR: the next address written'],
+      ['Count / reload', 'transfers left / TRANS_COUNT as written'], ['Mode', 'TRANS_COUNT MODE'], ['Size', 'bytes per transfer'], ['Read / write step', 'INCR_READ, INCR_WRITE (and their REV bits)'],
+      ['Ring', 'RING_SIZE: an address wraps on 2^n bytes'], ['Chain to', 'CHAIN_TO'], ['Paced by', 'TREQ_SEL'], ['IRQ', 'INTR and IRQ_QUIET'], ['Error']],
+    slice: (i) => `${i}${i > 7 ? ' (no pin)' : ''}`, channel: (i) => String(i),
+    yes: 'yes', no: 'no', busy: 'busy', idle: 'idle', input: 'B input', inv: '(inverted)', phaseCorrect: 'phase-correct',
+    modes: ['free-running', 'gated by B', 'B rising edges', 'B falling edges'],
+    countModes: { 0: 'normal', 1: 'trigger self', 15: 'endless' },
+    incr: ['fixed', '+1', '+2', '−1'],
+    ring: (bytes, write) => `${bytes} B (${write ? 'write' : 'read'})`,
+    treq: (t) => (t === 63 ? 'unpaced' : t >= 59 ? `timer ${t - 59}` : t >= 32 && t <= 43 ? `PWM wrap ${t - 32}` : t >= 28 && t <= 31 ? `UART${(t - 28) >> 1} ${t & 1 ? 'RX' : 'TX'}`
+      : t >= 24 && t <= 27 ? `SPI${(t - 24) >> 1} ${t & 1 ? 'RX' : 'TX'}` : t >= 44 && t <= 47 ? `I2C${(t - 44) >> 1} ${t & 1 ? 'RX' : 'TX'}` : t === 48 ? 'ADC'
+      : t < 24 ? `PIO${t >> 3} ${t & 4 ? 'RX' : 'TX'}${t & 3}` : `DREQ ${t} (not modelled)`),
+    irqRaised: 'raised', quiet: 'quiet', error: (k) => `${k} bus error`,
+    atReset: (n, what) => `${n} ${what}${n === 1 ? '' : 's'} at ${n === 1 ? 'its' : 'their'} reset values (not listed).`,
+    sniffer: (ch, calc, v) => `Sniffer on channel ${ch}, ${['CRC-32', 'CRC-32 (reversed data)', 'CRC-16-CCITT', 'CRC-16-CCITT (reversed data)'][calc] ?? (calc === 14 ? 'even parity' : calc === 15 ? 'sum' : `CALC ${calc}`)}: SNIFF_DATA reads ${v}.`,
+  }),
+  // the speaker (audio/tap.js; P1-M5, research D39 Q4-Q6): options shown in the Pins panel
+  audio: Object.freeze({
+    speaker: 'Speaker',
+    speakerTitle: 'The pin you hear when Sound is on (the speaker button in the toolbar): as a small loudspeaker on that pin would play it.',
+    none: 'none',
+    converter: 'Converter',
+    converterTitle: 'Pin-accurate: the pin\'s exact high and low times, filtered to 20 kHz, as a speaker hears the pin. '
+      + 'Ideal DAC: the PWM duty cycle CC/(TOP+1) at each period, without the carrier: for a PWM output in free-running trailing-edge mode only.',
+    pin: 'Pin-accurate', ideal: 'Ideal DAC',
+    fallback: 'Ideal DAC needs the speaker pin to be a PWM output (function PWM) in free-running trailing-edge mode; the pin-accurate converter is used meanwhile.',
+    heading: 'Sound',
+    help: 'Choose a speaker pin to hear it with Sound on (the speaker button in the toolbar). Real time keeps the sound smooth while the '
+      + 'simulator keeps up; if it cannot (a fast clock, a slow computer), the sound fades and the toolbar shows the percentage of real time: '
+      + 'use Render and play (Speed menu) to run some seconds first and hear them afterwards.',
+  }),
+  uartType: Object.freeze({
+    label: 'Send to UART0',
+    placeholder: 'Type a line; Enter sends it to UART0 RX',
+    title: 'What you type goes to UART0\'s receiver when you press Enter, followed by a carriage return (\\r), as a serial terminal sends it. The program reads it from UARTDR.',
+    sent: (n) => `${n} byte${n === 1 ? '' : 's'} sent to UART0.`,
+    noProgram: 'Build a program first: the text goes to the program\'s UART0.',
+  }),
+  // the clk_sys option of the editor's programs (clock.js; P1-M4, research D36 Q2)
+  clock: Object.freeze({
+    label: 'clk_sys',
+    title: 'The clock the program runs the core at: 1, 4 or 12 MHz from the 12 MHz crystal. MAVILERA C\'s start-up sets it; '
+      + 'in assembly, use the symbols CLK_SYS_DIV, CLK_SYS_HZ, UART_IBRD, UART_FBRD and TICK_CYCLES (the device templates do). '
+      + 'A slower clock is easier to run in real time; TIMER0 still counts microseconds.',
+    value: (id) => `${id} MHz`,
   }),
   // the pipeline view (ui/pipeline-view.js, P1-M3)
+  // the C source view (ui/source-view.js; P1-C1, design §4): an imported ELF's C lines, stepped one line or one instruction at a time
+  source: Object.freeze({
+    title: 'C source',
+    infoTitle: 'Source details',
+    tabLines: 'This line', tabFiles: 'Files', tabHelp: 'Help',
+    openFolder: 'Open source folder…', openFolderTitle: 'Choose the folder of your project (and of the Pico SDK, if you want to follow its code). The files stay on this computer.',
+    openFiles: 'Open files…', openFilesTitle: 'Choose C and header files one by one. The files stay on this computer.',
+    stepLine: 'Step line', stepLineTitle: 'Run to the start of the next C line (into functions that have source lines)',
+    backLine: 'Back line', backLineTitle: 'Go back to the start of the previous C line',
+    noProgram: 'No program is loaded.',
+    notImported: 'This view follows the C lines of a program written in C: choose C as the language and build your program (MAVILERA C, Pico Lite), build a Pico SDK project in Pico Full, or open there an ELF file built with debugging information (-g). Programs in assembly language are shown in the Instructions view.',
+    noLineTable: 'The imported file has no line table, so no C lines can be shown. Open the ELF file of a build with debugging information (-g).',
+    noSourceHere: (fn) => `No C source line for this address${fn ? ` (in ${fn})` : ''}: start-up code, a helper routine, library code built without -g, the ROM, or data. Step line runs on to the next line that has source.`,
+    fileMissing: (path) => `The text of ${path} is not loaded. Use "Open source folder…" or "Open files…" to show it; the program runs either way.`,
+    loadedFiles: (n, m) => `${n} source file${n === 1 ? '' : 's'} loaded; ${m} of the program's files ${m === 1 ? 'is' : 'are'} matched.`,
+    at: (fn, file, line) => `${fn ? `${fn} — ` : ''}${file}:${line}`,
+    lineGutter: (n) => `Line ${n}`,
+    breakpointOn: (n) => `Breakpoint on line ${n}`,
+    codeLabel: (file) => `Source of ${file}. Up and Down move the line cursor; B toggles a breakpoint on it.`,
+    current: 'current line',
+    hasCode: 'has code',
+    lineBreak: (file, line) => `Breakpoint on ${file}:${line} reached.`,
+    noLineReached: (n) => `No C source line was reached within ${n.toLocaleString('en-GB')} instructions; the program is in code without source lines.`,
+    lineAddresses: 'Instructions of this line',
+    mapTitle: 'Program map: functions in address order, each as wide as its code',
+    mapLabel: (fn, n) => (n ? `Program map of ${n} functions${fn ? `; the processor is in ${fn}` : '; the processor is outside them'}` : 'Program map: no functions (build a C program to see them)'),
+    addrCol: 'Address', instrCol: 'Instruction', fileCol: 'File in the line table', loadedCol: 'Loaded as', linesCol: 'Lines where a statement starts',
+    notLoaded: 'not loaded',
+    counters: Object.freeze({ cycles: 'Clock cycles', line: 'C lines' }), // the shell's tiles give steps and instructions
+    haltedAt: (pc, n) => `The program ended at ${pc} after ${n} instructions.`,
+    help: Object.freeze([
+      ['What this view shows', 'The C line the processor is executing. The compiler records, for every instruction, the source file and line it came from (for a Pico SDK build, the DWARF line table in the ELF file); this view reads that record and marks the line of the next instruction to execute. The simulated machine is the same as in the Instructions view: each step is one instruction of one Hazard3 core.'],
+      ['Programs in MAVILERA C (Pico Lite)', 'MAVILERA C translates each C statement into a few assembly lines and remembers the C line of each; the generated assembly is in the Listing\'s Generated assembly tab. The view uses that record, so your program needs no folder or file to be opened. The start-up code before main and the helper routines (putchar, pin_write, delay_ms and the others) have no C lines: Step line runs through them.'],
+      ['Building a program to import', 'Build your program with the Pico SDK for the RP2350\'s RISC-V cores (board pico2, platform rp2350-riscv) and the Raspberry Pi RISC-V toolchain. The build writes a .uf2 file and an .elf file; open the .elf file here to see C lines (a .uf2 file holds the program but no line table). A Debug build (CMAKE_BUILD_TYPE=Debug) is optimised less, so stepping follows your source more closely; in a Release build stepping jumps between lines and some lines have no code of their own.'],
+      ['The source files', 'The ELF file names the source files but does not contain them. Use Open source folder… to choose your project\'s folder (and the Pico SDK\'s, to follow its functions too): the view matches the files to the names in the line table. Nothing is uploaded; the files are read in this browser tab only and are forgotten when the page closes.'],
+      ['Stepping', 'Step line runs to the start of the next C line. It enters a function that has source lines, and runs through functions without source lines (the C library, the ROM) as if they were one step. Step (the shell\'s button) executes one instruction; Back line and step back undo. With an optimised build the marked line can move backwards: the compiler has interleaved the code of several lines.'],
+      ['Breakpoints', 'Click the gutter beside a line number, or move the line cursor with Up and Down and press B, to stop a run at that line. The run stops before the first instruction of the line executes. Breakpoints in the listing stop at one address, as in the Instructions view.'],
+      ['Why some programs are refused', 'An imported file must be one that could be written to a Pico 2: a UF2 file for the rp2350-riscv family, or an RP2350 RISC-V ELF, with an IMAGE_DEF block at its start, no partition table, and data only in the flash or only in the SRAM. The message names the check that failed. Programs for the RP2040 or for the Arm cores are refused for that reason.'],
+    ]),
+  }),
   pipeline: Object.freeze({
     title: 'Hazard3 pipeline: F, X, M',
     infoTitle: 'Pipeline details',
@@ -168,7 +479,8 @@ export const PICO2_STRINGS = Object.freeze({
     backInstr: 'Back instruction', backInstrTitle: 'Go back to the first cycle of the instruction before',
     status: (cycle, clk, cpi) => `cycle ${cycle} · ${clk} clk_sys cycles · CPI ${cpi}`,
     haltedAt: (pc, retired, cycle) => `ebreak at ${pc}: ${retired} instructions in ${cycle} clk_sys cycles.`,
-    counters: Object.freeze({ cycles: 'clk_sys cycles', records: 'Cycles shown', instructions: 'Instructions', cpi: 'CPI', stalls: 'Stall cycles', bubbles: 'Bubble cycles' }),
+    // the shell's tiles give cycles, instructions and CPI; the view adds what they do not (labels fit the tiles)
+    counters: Object.freeze({ cycles: 'Clock cycles', stalls: 'Stall cycles', bubbles: 'Bubbles' }),
     // the help tab: original text (C4, C5); sources: RP2350 datasheet §3.8.7 (RP-001), research report R-HZ-01, E-TIMING-1
     help: Object.freeze([
       ['What this view shows', 'Hazard3, the RISC-V core of the RP2350, has three pipeline stages. F fetches the next instruction and reads its source registers. X decodes and executes it: the ALU, the branch decision, the address of a load or store, the CSRs, multiply and divide. M completes a load or store on the bus, takes exceptions and writes the result register at its end. Each column of the diagram is one clock cycle of clk_sys.'],
@@ -180,11 +492,47 @@ export const PICO2_STRINGS = Object.freeze({
     ]),
     wave: Object.freeze({ label: 'Hazard3 pipeline (stage model)' }),
   }),
+  // P1-F2 (research D33): Pico SDK C compiled in the browser; labels for the shell's compiler choice and download
+  full: Object.freeze({
+    label: 'Pico SDK C',
+    compilerFile: 'Compiler (clang and lld)',
+    packFile: 'Pico SDK files',
+    assetLabel: 'Pico SDK compiler and files',
+  }),
+  // P1-L1 (research D34): the two editions, shown as the switch in the header; original text (C4)
+  editions: Object.freeze({
+    lite: 'Lite',
+    liteTitle: 'Pico Lite: one file in assembly or MAVILERA C, simulated.',
+    full: 'Full',
+    fullTitle: 'Pico Full: projects of several files in Pico SDK C and assembly.',
+  }),
   // why an item of the shell is disabled for the pico2 module (contract capabilities)
   capability: Object.freeze({
+    fullEdition: 'Built programs (UF2, ELF, .bin) and projects of several files belong to Pico Full, an edition still in development (on the development page: choose Full in the header).',
     cRiscvOnly: 'The C compiler belongs to the RISC-V Laboratory; this module is programmed in Hazard3 assembly language.',
-    laterMilestone: 'Not built yet in this development stage of the Pico 2 Laboratory.',
-    noDevices: 'The peripheral views of the Pico 2 Laboratory are not built yet in this development stage.',
+    laterMilestone: 'The Pico 2 Laboratory does not have this tool.',
+    noDevices: 'This belongs to the RISC-V Laboratory\'s teaching system; the Pico 2\'s own devices are in the tabs of the bottom pane (Pins, PWM, DMA, ADC, SPI, I2C, PIO).',
     oneProcessor: 'One view only: there is nothing to compare.',
+  }),
+  // P1-M9 (research D45 Q4-Q5): exercise files (exercise.js)
+  exercise: Object.freeze({
+    about: (n, lang) => `${n} test(s), each run on your ${lang === 'c' ? 'C' : 'assembly'} program from reset at full speed, with its inputs at their times, until the program ends.`,
+    notPico2: 'This exercise is not for the Pico 2: its file has no "arch": "pico2".',
+    notHere: (where, k) => `${where}: "${k}" is a field of the RISC-V Laboratory's exercises, not of the Pico 2's.`,
+    noRegisterInputs: (where) => `${where}: a Pico 2 test cannot set a register before a run; set memory instead.`,
+    notRegister: (where, k) => `${where}: "${k}" is not a register (x0 to x31, or a name such as a0 or sp).`,
+    oneSize: (where) => `${where}: each memory block needs "at" and one of "words", "halves" or "bytes".`,
+    badInput: (where) => `${where}: an input needs "us" (its time in microseconds) and either "pin" (0 to 29) with "level" (1, 0 or -1 for released) or "uart" (text).`,
+    badPin: (where, k) => `${where}: "${k}" is not a GPIO of the Pico 2 (0 to 29), or its level is not 0 or 1.`,
+    badCompanion: 'The exercise\'s "companion" needs a "name" ending in .pio and a "text".',
+    badOption: (k) => `The exercise option "${k}" is not known (parts, speaker, dac).`,
+    noLabel: (t) => `the program has no label "${t}"`,
+    noHalt: (ms) => `the program did not stop within ${ms.toLocaleString('en-GB')} ms of machine time`,
+    output: 'UART0',
+    exit: 'exit code (a0)',
+    cycles: 'clock cycles',
+    pinWhat: (n) => `GP${n}`,
+    edgeWhat: (n, k) => (k === 'count' ? `GP${n} changes` : k === 'period' ? `GP${n} period` : `GP${n} high time`),
+    noPeriod: 'none',
   }),
 });

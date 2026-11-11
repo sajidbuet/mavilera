@@ -12,12 +12,15 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const MODELLED = ['SYSINFO', 'SYSCFG', 'CLOCKS', 'PSM', 'RESETS', 'IO_BANK0', 'IO_QSPI', 'PADS_BANK0', 'PADS_QSPI', 'XOSC', 'PLL_SYS',
-  'ACCESSCTRL', 'BUSCTRL', 'UART0', 'TIMER0', 'WATCHDOG', 'BOOTRAM', 'ROSC', 'POWMAN', 'TICKS', 'XIP_CTRL', 'QMI', 'SIO', 'USB'];
+  'ACCESSCTRL', 'BUSCTRL', 'UART0', 'TIMER0', 'WATCHDOG', 'BOOTRAM', 'ROSC', 'POWMAN', 'TICKS', 'XIP_CTRL', 'QMI', 'SIO', 'USB',
+  'PWM', 'DMA', // PWM and DMA: P1-M5 (research D39)
+  'ADC', 'SPI0', 'I2C0', // P1-M7 (SPI1 and I2C1 derive from them)
+  'PIO0']; // P1-M8 (PIO1 and PIO2 derive from it)
 const SKIP_BLOCKS = new Set(['VIRTUAL', 'PPB', 'PPB_NS', 'EPPB', 'SIO_NS']); // Arm-only blocks; the SIO mirror is decoded by the bus
 
 const svdPath = process.argv[2];
 if (!svdPath) { console.error('usage: node tools/gen-pico2-regs.mjs <RP2350.svd>'); process.exit(2); }
-const xml = fs.readFileSync(svdPath, 'utf8');
+const xml = fs.readFileSync(svdPath, 'utf8').replace(/\r\n/g, '\n'); // a CRLF checkout hashes and parses as the LF file
 const tag = (s, t) => { const m = s.match(new RegExp(`<${t}>([^<]*)</${t}>`)); return m ? m[1].trim() : undefined; };
 
 const blocks = [];

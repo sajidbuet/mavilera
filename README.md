@@ -22,6 +22,7 @@ registered trademark (see [`TRADEMARKS.md`](TRADEMARKS.md)).
 | **NPU** (a tool of the RISC-V Laboratory) | available (from 1.2.0) | `https://sajidlab.org/mavilera/riscv/?tool=npu` |
 | **GPU Laboratory** | available (from 1.3.0; a preview in 1.2.0) | `https://sajidlab.org/mavilera/gpu/` |
 | **8086 Laboratory** | available (from 1.4.0) | `https://sajidlab.org/mavilera/i8086/` |
+| **Pico 2 Laboratory** (Pico Lite; Pico Full in development) | available (from 1.5.0) | `https://sajidlab.org/mavilera/pico2/` |
 | MOS 6502, MIPS | planned, not built | — |
 
 The landing page is `https://sajidlab.org/mavilera/`. Each simulator is

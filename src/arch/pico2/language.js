@@ -14,9 +14,11 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
+import { assemblePio, disassemblePio } from './pio/asm.js';
 import { ABI, OP, decode, zcmpSReg } from './core/decode.js';
 import { disassemble as dis, CSR_NAMES } from './core/disasm.js';
 import { PICO2_STRINGS as S } from './strings.js';
+import { clockSymbols } from './clock.js';
 
 export const RAM_BASE = 0x20000000;
 export const RAM_SIZE = 0x82000; // 520 KiB (RP-001 §2.2)
@@ -155,42 +157,79 @@ function reg(tok) {
 }
 
 // ---- expressions: terms joined by + and -; a term is a number, a character, a symbol, %hi(e) or %lo(e) ----
+// P1-M8: expressions with GNU as's operators and precedence (binding tightest first: unary - ~ +; * / % << >>; | & ^; + -) and
+// parentheses, so that a program can build a register's fields (`(1 << 26) | (25 << 5)`, `CLK_SYS_HZ / 4 - 3`); before, + and -
+const OPS = { '*': 3, '/': 3, '%': 3, '<<': 3, '>>': 3, '|': 2, '&': 2, '^': 2, '+': 1, '-': 1 };
 function evaluate(text, ctx) {
   const s = text.replace(/\s+/g, '');
   if (s === '') fail(S.asm.needsValue);
-  let i = 0, total = 0, sign = 1, any = false;
-  while (i < s.length) {
-    if (s[i] === '+') { i++; continue; }
-    if (s[i] === '-') { sign = -sign; i++; continue; }
-    let v, m;
+  let i = 0;
+  const primary = () => {
     const rest = s.slice(i);
+    let m;
+    if (rest[0] === '-') { i++; return -primary(); }
+    if (rest[0] === '+') { i++; return primary(); }
+    if (rest[0] === '~') { i++; return ~primary(); }
+    if (rest[0] === '(') {
+      i++;
+      const v = binary(0);
+      if (s[i] !== ')') fail(S.asm.badExpression(text));
+      i++;
+      return v;
+    }
     if ((m = /^%(hi|lo)\(/.exec(rest))) {
       let depth = 1, j = m[0].length;
       while (j < rest.length && depth) { if (rest[j] === '(') depth++; if (rest[j] === ')') depth--; j++; }
       if (depth) fail(S.asm.badExpression(text));
       const inner = evaluate(rest.slice(m[0].length, j - 1), ctx);
-      v = m[1] === 'hi' ? ((inner + 0x800) >>> 12) & 0xfffff : sext(inner & 0xfff, 12);
       i += j;
-    } else if ((m = /^(0x[0-9a-f]+|0b[01]+|[0-9]+)/i.exec(rest))) {
+      return m[1] === 'hi' ? ((inner + 0x800) >>> 12) & 0xfffff : sext(inner & 0xfff, 12);
+    }
+    if ((m = /^(0x[0-9a-f]+|0b[01]+|[0-9]+)/i.exec(rest))) {
       const t = m[1].toLowerCase();
-      v = t.startsWith('0b') ? parseInt(t.slice(2), 2) : t.startsWith('0x') ? parseInt(t.slice(2), 16) : parseInt(t, 10);
       if (/^[0-9a-z_]/i.test(rest.slice(m[1].length))) fail(S.asm.badNumber(text));
       i += m[1].length;
-    } else if ((m = /^'(\\?.)'/.exec(rest))) {
-      v = m[1].length === 2 ? { n: 10, t: 9, r: 13, 0: 0, '\\': 92, "'": 39 }[m[1][1]] ?? m[1].charCodeAt(1) : m[1].charCodeAt(0);
+      return t.startsWith('0b') ? parseInt(t.slice(2), 2) : t.startsWith('0x') ? parseInt(t.slice(2), 16) : parseInt(t, 10);
+    }
+    if ((m = /^'(\\?.)'/.exec(rest))) {
       i += m[0].length;
-    } else if ((m = /^[A-Za-z_.$][A-Za-z0-9_.$]*/.exec(rest))) {
+      return m[1].length === 2 ? { n: 10, t: 9, r: 13, 0: 0, '\\': 92, "'": 39 }[m[1][1]] ?? m[1].charCodeAt(1) : m[1].charCodeAt(0);
+    }
+    if ((m = /^[A-Za-z_.$][A-Za-z0-9_.$]*/.exec(rest))) {
       const name = m[0];
-      if (name === '.') v = ctx.pc;
-      else if (Object.hasOwn(ctx.symbols, name)) v = ctx.symbols[name];
-      else if (ctx.final) fail(S.asm.undefinedSymbol(name));
-      else { ctx.unresolved = true; v = 0; }
       i += name.length;
-    } else fail(S.asm.badExpression(text));
-    total += sign * v; sign = 1; any = true;
-  }
-  if (!any) fail(S.asm.badExpression(text));
-  return total | 0;
+      if (name === '.') return ctx.pc;
+      if (Object.hasOwn(ctx.symbols, name)) return ctx.symbols[name];
+      if (ctx.predef && Object.hasOwn(ctx.predef, name)) return ctx.predef[name]; // P1-M4: the clock's symbols (clock.js)
+      if (ctx.final) fail(S.asm.undefinedSymbol(name));
+      ctx.unresolved = true; return 0;
+    }
+    return fail(S.asm.badExpression(text));
+  };
+  const binary = (min) => {
+    let left = primary();
+    for (;;) {
+      const op = s.startsWith('<<', i) ? '<<' : s.startsWith('>>', i) ? '>>' : s[i];
+      const p = OPS[op];
+      if (!p || p <= min) return left;
+      i += op.length;
+      const right = binary(p);
+      switch (op) {
+        case '*': left = Math.imul(left, right); break;
+        case '/': case '%': if (right === 0) { if (ctx.final) fail(S.asm.badExpression(text)); left = 0; } else left = op === '/' ? Math.trunc(left / right) : left % right; break;
+        case '<<': left <<= right; break;
+        case '>>': left >>= right; break;
+        case '|': left |= right; break;
+        case '&': left &= right; break;
+        case '^': left ^= right; break;
+        case '+': left += right; break;
+        default: left -= right;
+      }
+    }
+  };
+  const v = binary(0);
+  if (i !== s.length) fail(S.asm.badExpression(text));
+  return v | 0;
 }
 
 // ---- one operand of an instruction format, parsed into its key value ----
@@ -355,13 +394,19 @@ function stringBytes(tok) {
 
 /**
  * Assemble source files (the contract's Language.assemble). One program: the files in order, sharing their symbols.
+ * `options.clock` (P1-M4, research D36 Q2; contract v10 draft Language.options): the clk_sys choice whose symbols the program
+ * may use without defining them (CLK_SYS_HZ, CLK_SYS_DIV, UART_BAUD, UART_IBRD, UART_FBRD, TICK_CYCLES, XOSC_HZ; clock.js); a
+ * label or .equ of the same name in the program takes precedence. They are not in the program's symbol table.
  * @returns {import('../contract.js').Program}
  */
-export function assemble(files) {
+export function assemble(files, { options = {} } = {}) {
+  const predef = clockSymbols(options.clock);
   const diagnostics = [];
   const statements = [];
-  // parse once: labels, mnemonic or directive, operands
-  for (const f of files) {
+  // parse once: labels, mnemonic or directive, operands. Research D43 (P1-M8 Q3 B): a .pio file of the program (Lite's second
+  // tab, a Full project's .pio files) is assembled by pio/asm.js after the assembly files (pioFileStatements)
+  const isPio = (f) => /\.pio$/i.test(f.name);
+  for (const f of files.filter((x) => !isPio(x))) {
     f.text.split(/\r?\n/).forEach((raw, i) => {
       let text = stripComment(raw);
       const labels = [];
@@ -372,6 +417,7 @@ export function assemble(files) {
       statements.push({ file: f.name, line: i + 1, raw: raw.trim(), labels, op: sm ? sm[1] : null, args: sm ? sm[2] : '', column: raw.indexOf(sm ? sm[1] : '') + 1 });
     });
   }
+  for (const f of files.filter(isPio)) statements.push(...pioFileStatements(f, diagnostics));
   const run = (final, symbols, decisions) => {
     const pcs = { text: TEXT_BASE, data: DATA_BASE };
     let sec = 'text';
@@ -385,7 +431,7 @@ export function assemble(files) {
       try {
         if (!s.op) continue;
         const op = s.op.toLowerCase();
-        const ctx = { symbols, final, pc: pcs[sec], unresolved: false };
+        const ctx = { symbols, predef, final, pc: pcs[sec], unresolved: false };
         const ops = s.args === '' ? [] : splitOperands(s.args);
         if (op.startsWith('.')) { directive(op, ops, s, ctx); continue; }
         if (sec !== 'text') fail(S.asm.codeInData);
@@ -474,6 +520,32 @@ export function assemble(files) {
     symbols: { ...symbols }, data: out.dataRows,
     symbolTable: Object.entries(symbols).map(([name, address]) => ({ name, address: address >>> 0 })),
   };
+}
+
+/**
+ * Research D43 (P1-M8 Q3 B): a .pio file as the assembler's statements, after the program's own: in the data section, each program's
+ * words as halfwords at `<name>_program`, and as `.equ` `<name>_length`, `_wrap_target`, `_wrap`, `_sideset_bits` (the enable bit
+ * included), `_sideset_opt`, `_sideset_pindirs`, `<name>_offset_<label>` and `<name>_<define>` for its public labels and defines,
+ * and the file's public defines by their names (the names of the generated C header, pio/asm.js pioCHeader). The file is read as
+ * pioasm reads it (PIO version 0 unless `.pio_version 1`), so that it builds the same in Pico Full.
+ */
+function pioFileStatements(f, diagnostics) {
+  const r = assemblePio(f.text);
+  for (const d of r.diagnostics) diagnostics.push({ severity: d.severity, file: f.name, line: d.line ?? 1, column: d.column ?? 1, message: d.message });
+  if (!r.ok) return [];
+  const st = (line, op, args, raw = `${op} ${args}`, labels = []) => ({ file: f.name, line, raw, labels, op, args, column: 1 });
+  const equ = (line, sym, v) => st(line, '.equ', `${sym}, ${v}`);
+  const out = [st(1, '.data', ''), ...r.globals.map((g) => equ(1, g.name, g.value))];
+  for (const p of r.programs) {
+    const name = p.name, bits = p.sideset ? p.sideset.bits + (p.sideset.opt ? 1 : 0) : 0, at = p.line ?? 1;
+    out.push(st(at, '.balign', '2'));
+    p.words.forEach((w, k) => out.push(st(p.lines[k] ?? at, '.half', `0x${w.toString(16)}`,
+      `.half 0x${w.toString(16).padStart(4, '0')}  # PIO: ${disassemblePio(w, bits, p.sideset?.opt ?? false)}`, k === 0 ? [`${name}_program`] : [])));
+    out.push(equ(at, `${name}_length`, p.words.length), equ(at, `${name}_wrap_target`, p.wrapTarget), equ(at, `${name}_wrap`, p.wrap),
+      equ(at, `${name}_sideset_bits`, bits), equ(at, `${name}_sideset_opt`, p.sideset?.opt ? 1 : 0), equ(at, `${name}_sideset_pindirs`, p.sideset?.pindirs ? 1 : 0),
+      ...p.publics.map((x) => equ(at, x.label ? `${name}_offset_${x.name}` : `${name}_${x.name}`, x.value)));
+  }
+  return out;
 }
 
 /** Disassemble a fetch word at `address` (the contract's Language.disassemble). */

@@ -16,7 +16,7 @@ import { T, ptr, array, isInt, isPtr, isScalar, sizeOf, promote, common, same, t
 const REGISTER_NAMES = new Set(['zero', 'ra', 'sp', 'gp', 'tp', 'fp', 'pc', ...Array.from({ length: 32 }, (_, i) => `x${i}`),
   ...[0, 1, 2, 3, 4, 5, 6].map((i) => `t${i}`), ...Array.from({ length: 12 }, (_, i) => `s${i}`), ...Array.from({ length: 8 }, (_, i) => `a${i}`)]);
 
-const BUILTINS = {
+const BASE_BUILTINS = {
   putchar: { type: { kind: 'func', ret: T.int, params: [T.int] }, note: 'writes one character to the console (ecall 64)' },
   exit: { type: { kind: 'func', ret: T.void, params: [T.int] }, note: 'ends the program with an exit code (ecall 93)' },
 };
@@ -34,7 +34,13 @@ export function toType(v, t) {
 
 const signedOf = (v) => v | 0;
 
-export function check(ast) {
+/**
+ * @param {object} ast
+ * @param {{builtins?: Record<string, {type: object, note: string}>}} [options]  built-in functions a target adds (pico2: those
+ *   declared by <rp2350.h>, P1-C2); a target may also give putchar and exit its own notes
+ */
+export function check(ast, { builtins: extra = {} } = {}) {
+  const BUILTINS = { ...BASE_BUILTINS, ...extra };
   const globals = new Map(); // name -> symbol
   const funcs = [];
   const data = []; // global and static variables, in order

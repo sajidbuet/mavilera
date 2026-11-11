@@ -288,6 +288,27 @@ def i8086_header(x):
         parts.append(d(x)); x += 150 + 22
     return union(parts), x - 22
 
+def small(path, x0):
+    """A capital's or digit's outline, drawn from x 0, scaled to the x-height about the baseline (stroke widths
+    scaled with it, as the v of ARMv7) and set from x0."""
+    return path.transform(XH, 0, 0, XH, x0, B * (1 - XH))
+
+def letter_i_small(x0):
+    """i: the I's stem scaled to the x-height (36.4 wide), and a dot as wide, 0.9 as high, at the cap height."""
+    w, top = XH * 50.5, B - XH * (B - T)
+    return union([rect(x0, top, w, B - top), rect(x0, T, w, 0.9 * w)]), x0 + w
+
+def pico2_header(x):
+    """'Pico 2' in the wordmark's construction from x; returns (path, right edge). Written as Raspberry Pi writes the
+    name: the P and the 2 capitals, the i, c and o at the x-height (the C and the 0 scaled, as the v of ARMv7), letters
+    20 apart and a word space of 64 (proposal, 2026-11-06; awaits the author's approval)."""
+    P = letter_P(x); x += 174 + 20
+    i, x = letter_i_small(x); x += 20
+    c = small(letter_C(0), x); x += XH * 150 + 20
+    o = small(digit_0(0), x); x += XH * 150 + 64
+    two = digit_2(x); x += 150
+    return union([P, i, c, o, two]), x
+
 def wordmark():
     navy = union([letter_M(), letter_A1(), letter_V(), letter_I(), letter_L(), letter_E(), letter_R(), letter_A2()])
     light = union([tri_A1(), tri_A2()])
@@ -456,6 +477,7 @@ TOOL_NAMES = {  # key: (the name after the chip, as built from its left end x; i
     'sap2': (lambda x: sap_header(x, 2)[0], 'SAP-2'), 'armv7': (lambda x: armv7_header(x)[0], 'ARMv7'),
     'npu': (lambda x: accel_header(x, 'N')[0], 'NPU'), 'gpu': (lambda x: accel_header(x, 'G')[0], 'GPU'),
     '8086': (lambda x: i8086_header(x)[0], '8086'),  # 8086-B1 (proposal, 2026-11-05; awaits the author's approval)
+    'pico2': (lambda x: pico2_header(x)[0], 'Pico 2'),  # the Pico 2 module (proposal, 2026-11-06)
 }
 
 def module_headers(only):

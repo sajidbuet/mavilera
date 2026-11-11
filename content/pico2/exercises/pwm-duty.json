@@ -1,0 +1,27 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap P1-M9), not taken from a textbook; produced by tools/pico2/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "pico2",
+ "title": "A PWM wave with a given duty",
+ "task": "Make GP14 a PWM output of 1 kHz that is high for 25 % of each period (250 µs), keep it running for 20 ms, then set its level to 0 and return 0. Compute from CLK_SYS_HZ so that it works at every clk_sys. The tests measure the period and the high time on the pin, within 1 %.",
+ "lang": "c",
+ "starter": "/* pwm-duty -- practice exercise (MAVILERA, Pico 2)\n * GP14: 1 kHz, high 25 % of each period, for 20 ms; then level 0 and return 0.\n * Hint: pwm_start(pin, top, div) counts 0..top at clk_sys / div; pwm_level(pin, level) keeps the\n * pin high for level counts. The pwm-tone template shows both.\n */\n#include <rp2350.h>\n\nint main(void)\n{\n    pwm_start(14, 999, 1);              /* replace with your code */\n    delay_ms(20);\n    pwm_level(14, 0);\n    delay_ms(2);\n    return 0;\n}\n",
+ "tests": [
+  {
+   "name": "1 kHz, 25 %",
+   "limitMs": 1000,
+   "expect": {
+    "exit": 0,
+    "edges": [
+     {
+      "pin": 14,
+      "periodUs": 1000,
+      "highUs": 250,
+      "tolerance": 0.01
+     }
+    ]
+   }
+  }
+ ]
+}

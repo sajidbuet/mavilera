@@ -23,7 +23,29 @@ export function shareSchema(arch) {
     subsets: [...new Set(arch.engine.profiles.flatMap((p) => (p.subsets ?? []).map((s) => s.id)))],
     langs: ['asm', ...extra.map((x) => x.id)],
     options: (extra[0]?.options ?? []).map((o) => [o.id, o.values.map((v) => v.id)]),
+    // v10 draft (pico2 P1-M4, research D36 Q2): the module's build options (Language.options), the field `opts`
+    buildOptions: (arch.language.options ?? []).map((o) => [o.id, o.values.map((v) => v.id)]),
+    // v10 draft (pico2 P1-M4, D36 Q5): a module with real-time runs keeps the run's pin and UART inputs (the field `inputs`)
+    inputs: arch.capabilities?.realtime === true,
     settings: arch.views.filter((v) => v.settings).map((v) => [v.settings.key,
       Object.keys(v.settings.defaults).map((k) => [k, v.settings.values[k].map(settingValue)])]),
+    // v10 draft (pico2 P1-F1, research D31): a module with capability `projects` shares whole projects (links v2)
+    projects: arch.capabilities?.projects === true,
+    // v10 draft (Language.companion; pico2 Lite, research D43): a single program may carry its companion file (the field `companion`)
+    companion: arch.language.companion?.extension?.toLowerCase() ?? null,
+    extensions: projectExtensions(arch),
   };
+}
+
+/**
+ * The file extensions a project of this architecture may hold (lower case, with the dot): the assembly language's,
+ * each extra language's, and '.h' where one of them is C (headers; built by P1-F2's compiler, not by the C subset); v10 draft
+ * (pico2 P1-M8): and the language's `extraExtensions` (pico2: '.pio', assembled into headers before a Pico SDK build).
+ */
+export function projectExtensions(arch) {
+  const extra = arch.language.extraLanguages ?? [];
+  const list = [arch.language.extension, ...extra.map((x) => x.extension).filter(Boolean)];
+  if (extra.some((x) => x.id === 'c')) list.push('.h');
+  list.push(...(arch.language.extraExtensions ?? []));
+  return [...new Set(list.map((e) => e.toLowerCase()))];
 }

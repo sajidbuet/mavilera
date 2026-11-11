@@ -20,7 +20,7 @@ export class Uart extends Device {
     this.index = index; this.irqNum = 33 + index;
     const o = (n) => this.r.off(`UART${n}`);
     this.o = { dr: o('DR'), rsr: o('RSR'), fr: o('FR'), ibrd: o('IBRD'), fbrd: o('FBRD'), lcr: o('LCR_H'), cr: o('CR'), ifls: o('IFLS'),
-      imsc: o('IMSC'), ris: o('RIS'), mis: o('MIS'), icr: o('ICR') };
+      imsc: o('IMSC'), ris: o('RIS'), mis: o('MIS'), icr: o('ICR'), dmacr: o('DMACR') };
     this.out = { cycles: [], bytes: [], base: 0 }; // the output log keeps its newest 2^20 bytes (base counts the dropped ones)
     this.reset();
   }
@@ -29,6 +29,8 @@ export class Uart extends Device {
     super.reset();
     this.tx = []; this.shifting = -1; this.rx = []; this.line = 0;
   }
+  /** Empty the output log (at power-on: the log is stamped in cycles from time 0; a block reset through RESETS keeps it). */
+  clearLog() { this.out.cycles.length = 0; this.out.bytes.length = 0; this.out.base = 0; }
   get cap() { return (this.r.get(this.o.lcr) & 0x10) ? 32 : 1; }
   get enabledTx() { const cr = this.r.get(this.o.cr); return (cr & CR_UARTEN) && (cr & CR_TXE); }
 
@@ -106,6 +108,13 @@ export class Uart extends Device {
   updateIrq() {
     const v = (this.ris() & this.r.get(this.o.imsc)) ? 1 : 0;
     if (v !== this.line) { this.line = v; this.m.irq(this.irqNum, v); }
+    this.m.dma?.uartChanged(); // P1-M5: DMA channels paced by this UART's DREQ
+  }
+  /** DREQ (P1-M5): TX while DMACR.TXDMAE and the TX FIFO has room; RX while DMACR.RXDMAE and the RX FIFO holds data. */
+  dreq(rx) {
+    if (this.held()) return false;
+    const d = this.r.get(this.o.dmacr);
+    return rx ? (d & 1) !== 0 && this.rx.length > 0 : (d & 2) !== 0 && this.tx.length < this.cap;
   }
   /** The text sent so far (bytes as Latin-1 characters). */
   text(from = 0) { let s = ''; for (let i = from; i < this.out.bytes.length; i++) s += String.fromCharCode(this.out.bytes[i]); return s; }

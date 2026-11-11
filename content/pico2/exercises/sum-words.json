@@ -1,0 +1,195 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap P1-M9), not taken from a textbook; produced by tools/pico2/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "pico2",
+ "title": "The sum of a table of words",
+ "task": "count (a word, 1 to 16) words of table are numbers. Store their sum at total, then stop with ebreak. Keep the labels count, table and total and their lines in .data: the tests write count and table and read total.",
+ "lang": "asm",
+ "starter": "# sum-words -- practice exercise (MAVILERA, Pico 2)\n# Store at total the sum of the count words of table, then ebreak.\n# Hint: la, lw, add, addi, and a loop that counts down with bnez.\n        .text\n_start: ebreak                          # replace with your code\n\n        .data\ncount:  .word   0                       # the tests write the count here (1 to 16)\ntable:  .space  64                      # ... and the words here\ntotal:  .word   0                       # your result\n",
+ "tests": [
+  {
+   "name": "[1, 2, 3, 4]",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      4
+     ]
+    },
+    {
+     "at": "table",
+     "words": [
+      1,
+      2,
+      3,
+      4
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       10
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "[100]",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": "table",
+     "words": [
+      100
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       100
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "[-5, 5, -7]",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      3
+     ]
+    },
+    {
+     "at": "table",
+     "words": [
+      4294967291,
+      5,
+      4294967289
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       4294967289
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "[2147483647, 1]",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      2
+     ]
+    },
+    {
+     "at": "table",
+     "words": [
+      2147483647,
+      1
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       2147483648
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160]",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      16
+     ]
+    },
+    {
+     "at": "table",
+     "words": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100,
+      110,
+      120,
+      130,
+      140,
+      150,
+      160
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       1360
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "[0]",
+   "memory": [
+    {
+     "at": "count",
+     "words": [
+      1
+     ]
+    },
+    {
+     "at": "table",
+     "words": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "memory": [
+     {
+      "at": "total",
+      "words": [
+       0
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

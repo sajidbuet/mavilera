@@ -381,8 +381,10 @@ export const OUTPUT_LIMIT = 64 * 1024;
 export class ConsolePanel {
   constructor({ onGoTo }) {
     this.onGoTo = onGoTo;
-    this.out = el('pre.console-out', { 'aria-live': 'polite', 'aria-label': STRINGS.console });
-    this.msgs = el('ul.messages', { 'aria-live': 'polite', 'aria-label': STRINGS.messages });
+    // a tab stop each, so that a keyboard can scroll them once they overflow (WCAG 2.1.1; axe scrollable-region-focusable;
+    // author's decision 2026-11-09, research D35)
+    this.out = el('pre.console-out', { 'aria-live': 'polite', 'aria-label': STRINGS.console, tabindex: '0' });
+    this.msgs = el('ul.messages', { 'aria-live': 'polite', 'aria-label': STRINGS.messages, tabindex: '0' });
     this.onNote = null; // called with a message's kind, or null when the messages are cleared (the narrow screen's console badge)
     this.root = el('div.console', {}, this.out, this.msgs);
   }

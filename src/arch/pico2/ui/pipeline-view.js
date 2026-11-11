@@ -44,8 +44,8 @@ const STYLE = `
 .p2-unit.p2-on > .p2-box { stroke: var(--primary); stroke-width: 2.4; }
 .p2-name { font: 700 12.5px var(--font-ui); fill: var(--text); }
 .p2-line { font-size: 11px; fill: var(--text); }
-.p2-in { font-size: 9px; fill: var(--muted); }
-.p2-sel { font-size: 9.5px; fill: var(--primary); }
+.p2-in { font-size: 10px; fill: var(--muted); }
+.p2-sel { font-size: 10.5px; fill: var(--primary); }
 .p2-w { fill: none; stroke: var(--border-strong); stroke-width: 2; }
 .p2-w.p2-ctrl { stroke-width: 1.2; stroke-dasharray: 5 3; }
 .p2-w.p2-fwd { stroke: var(--accent); }
@@ -54,6 +54,7 @@ const STYLE = `
 .p2-wire.p2-on .p2-w.p2-ctrl { stroke-width: 2; }
 .p2-wl { font-size: 10.5px; fill: var(--muted); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
 .p2-wire.p2-fwdw .p2-wl { fill: var(--accent); }
+.p2-tab { font-size: 0.84rem; } /* the shell's panel text size; code in 0.8rem, as the editor and the listing */
 .p2-tab table { border-collapse: collapse; } .p2-tab td, .p2-tab th { padding: 2px 8px; text-align: left; vertical-align: top; }
 .p2-tab caption { text-align: left; font-weight: 600; padding: 0.4em 0 0.2em; }
 .p2-tab th[scope="row"] { font-weight: 600; white-space: nowrap; }
@@ -63,7 +64,7 @@ const STYLE = `
 .p2-dg .p2-now { background: var(--changed-bg); }
 .p2-dg button { font: inherit; padding: 0 2px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
 .p2-c1 { color: var(--muted); } .p2-c2 { font-weight: 700; color: var(--primary); } .p2-c3 { color: var(--text); } .p2-c4 { color: var(--warning); } .p2-c5 { color: var(--warning); text-decoration: line-through; }
-.p2-mono { font-family: var(--font-code); }
+.p2-mono { font-family: var(--font-code); font-size: 0.8rem; }
 `;
 
 /** The parts of the drawing a cycle uses: units and wires by id. */
@@ -386,8 +387,8 @@ export function pipelineInstance(v, ctx) {
       if (!x) return [];
       const c = cpiByCause(x.model, x.model.slo, x.cursor + 1);
       const stalls = c.byCause.loadUse + c.byCause.exclusive + c.byCause.multi;
-      return [[P.counters.cycles, x.hart.ticks], [P.counters.records, x.cycle], [P.counters.instructions, x.engine.state().retired],
-        [P.counters.cpi, c.cpi ? Number(c.cpi.toFixed(3)) : 0], [P.counters.stalls, stalls], [P.counters.bubbles, c.byCause.jump + c.byCause.mispredict + c.byCause.fetch]];
+      // the shell's own tiles show the cycles shown, the instructions and the CPI (from state()); not repeated here
+      return [[P.counters.cycles, x.hart.ticks], [P.counters.stalls, stalls], [P.counters.bubbles, c.byCause.jump + c.byCause.mispredict + c.byCause.fetch]];
     },
     // a breakpoint is checked before the next instruction enters X: at the newest instruction's last cycle
     breakAt: () => { const x = ss(); return x && !x.stop && x.cursor === x.model.n - 1 ? x.hart.pc >>> 0 : null; },

@@ -27,14 +27,20 @@ export const MARCHES = Object.freeze(['rv32im', 'rv32i']);
  * @returns {{ok: boolean, errors: Array<{line, column, message, subset}>, asm: string, map: number[], routines: string[]}}
  *   map[k]: the C line of assembly line k + 1 (0: start-up and library code)
  */
-export function compile(source, { name = 'main.c', profile = 'iss', march = 'rv32im', mode = 'plain', defines = {}, lbu = false } = {}) {
-  const target = { profile, m: profile === 'iss' && march === 'rv32im', lbu: profile === 'ch06' && lbu, mode };
+export function compile(source, { name = 'main.c', profile = 'iss', march = 'rv32im', mode = 'plain', defines = {}, lbu = false, target: def = null } = {}) {
+  // `def` (P1-C2): a target supplied by another architecture (pico2): {label, m, headers: {name: {text, stdint?, builtins?}},
+  // startup(), routines: {name: () => lines}, needs?: {name: [names]}}; its start-up, built-ins and headers replace the ISS's
+  const target = def ? { profile, m: def.m !== false, lbu: false, mode, def }
+    : { profile, m: profile === 'iss' && march === 'rv32im', lbu: profile === 'ch06' && lbu, mode };
   try {
-    const { tokens, includes } = preprocess(source, { defines });
-    const ast = new Parser(tokens, { stdint: includes.has('stdint.h') }).program();
-    const checked = check(ast);
+    const headers = def?.headers ?? {};
+    const { tokens, includes } = preprocess(source, { defines, headers });
+    const stdint = includes.has('stdint.h') || [...includes].some((h) => headers[h]?.stdint);
+    const ast = new Parser(tokens, { stdint }).program();
+    const builtins = Object.assign({}, def?.builtins ?? {}, ...[...includes].map((h) => headers[h]?.builtins ?? {}));
+    const checked = check(ast, { builtins });
     const { lines, routines } = generate(checked, target, source.split(/\r?\n/));
-    const isa = profile === 'iss' ? march.toUpperCase() : `the ${PROFILES[profile].processor}`;
+    const isa = def ? def.label : profile === 'iss' ? march.toUpperCase() : `the ${PROFILES[profile].processor}`;
     const head = [
       `# ${name}, compiled by MAVILERA (C subset, ${mode} mode, ${isa}).`,
       '# A teaching translation, one statement at a time: a real compiler (GCC) produces different code.',

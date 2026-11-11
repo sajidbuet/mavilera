@@ -17,6 +17,7 @@ export const PLATFORM_ARCHS = Object.freeze([
   Object.freeze({ id: 'sap-2', name: 'SAP-2', logo: 'mavilera-name-sap-2.svg' }),
   Object.freeze({ id: 'armv7', name: 'Armv7', logo: 'mavilera-name-armv7.svg' }), // available from 1.1.0 (ARM-A6)
   Object.freeze({ id: 'i8086', name: '8086', logo: 'mavilera-name-8086.svg' }), // available from 1.4.0 (8086-B8; publication gate met, author 2026-11-07)
+  Object.freeze({ id: 'pico2', name: 'Pico 2', logo: 'mavilera-name-pico2.svg' }), // available from 1.5.0 (P1-M9, research D45: Pico Lite; Pico Full on the development page only)
   Object.freeze({ id: 'npu', name: 'NPU', logo: 'mavilera-name-npu.svg', header: 'mavilera-logo-npu.svg', module: 'riscv',
     view: 'npu', views: Object.freeze(['isa', 'npu-single', 'npu', 'npu-analysis']) }), // NPU-3: no multicycle or pipelined host (the book times the NPU on the ISS and the single-cycle processor only); NPU-4: the Analysis view
   Object.freeze({ id: 'gpu', name: 'GPU', logo: 'mavilera-name-gpu.svg' }), // a preview from 1.2.0 (GPU-1), complete from 1.3.0 (author, 2026-11-05)

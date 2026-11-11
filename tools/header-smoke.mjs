@@ -229,13 +229,16 @@ try {
         await p.eval(`[...document.querySelectorAll('[data-cmd="layout"] button')].find((b) => b.textContent.trim() === __S.layout.reset).click(), true`);
         await p.waitFor(`${lastMsg} === __S.layout.resetDone`);
       });
-      await run('Theme', async () => {
-        where.theme = await expect(p, 'theme');
-        await p.eval(click('theme'));
-        if (await p.eval(`document.documentElement.dataset.theme`) !== 'dark') throw new Error('not dark');
-        await p.eval(reach('theme')); await p.eval(click('theme'));
-        await p.eval(reach('theme')); await p.eval(click('theme'));
-        if (await p.eval(`document.documentElement.dataset.theme ?? ''`) !== '') throw new Error('not back to the system');
+      // View ▸ Theme (author, 2026-11-10): a list in the View menu, applied when chosen
+      await run('View ▸ Theme', async () => {
+        where.theme = await expect(p, 'layout');
+        const pick = (t) => `(() => { const n = document.querySelector('[data-cmd="layout"]'); if (!n.open) n.querySelector('summary').click();
+          const s = n.querySelector('[data-cmd="theme"]'); s.value = ${JSON.stringify(t)}; s.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`;
+        for (const t of ['dark', 'hc-light', 'black', '']) {
+          await p.eval(reach('layout'));
+          await p.eval(pick(t));
+          if (await p.eval(`document.documentElement.dataset.theme ?? ''`) !== t) throw new Error(`not ${t || 'the system'}`);
+        }
       });
       await run('Projector mode', async () => {
         where.projector = await expect(p, 'projector');
@@ -249,17 +252,20 @@ try {
       await run('Full screen (offered; the browser may refuse it headless)', async () => {
         if (await p.eval(`document.querySelector('[data-cmd="fullScreen"]').hidden`)) return 'hidden: no Fullscreen API';
         where.fullScreen = await expect(p, 'fullScreen');
+        const msg0 = await p.eval(lastMsg);
         await p.eval(click('fullScreen'));
+        // the browser grants or refuses full screen asynchronously, sometimes after several hundred ms; full screen hides the
+        // header (compact view), so wait for the answer and for the exit, or Keys and Help after this are not visible (D43 Q13)
+        await p.waitFor(`Boolean(document.fullscreenElement) || (${lastMsg}) !== ${JSON.stringify(msg0)}`, 5000).catch(() => { throw new Error('no effect'); });
+        await p.eval('document.fullscreenElement ? document.exitFullscreen().then(() => true) : true');
+        await p.waitFor('!document.fullscreenElement', 5000);
         await sleep(300);
-        const r = await p.eval(`Boolean(document.fullscreenElement) || (${lastMsg}).length > 0`);
-        if (!r) throw new Error('no effect');
-        await p.eval('document.fullscreenElement && document.exitFullscreen(); true');
       });
       await run('Keys', async () => {
         where.keys = await expect(p, 'keys');
         await p.eval(`(() => { const n = document.querySelector('[data-cmd="keys"]'); n.querySelector('summary').click(); return true; })()`);
         const t = await p.eval(`(() => { const q = document.querySelector('[data-cmd="keys"] p'); return q.getClientRects().length ? q.textContent : ''; })()`);
-        if (!t.startsWith('Keys:')) throw new Error('the list did not show');
+        if (!t.startsWith('F5')) throw new Error('the list did not show'); // one key per line, F5 first (2026-11-11)
         await p.eval(`document.querySelector('[data-cmd="keys"]').open = false, true`);
       });
       await run('Help', async () => {
@@ -268,7 +274,8 @@ try {
         await p.waitFor(`document.querySelector('dialog[open]')`);
         await p.eval(`document.querySelector('dialog[open]').close(), true`);
       });
-      await run('Memory model (or disabled with its reason, by capability)', async () => {
+      await run('Memory model (or not shown, by capability)', async () => {
+        if (await p.eval(`document.querySelector('[data-cmd="memory"]').hidden`)) return 'hidden (capability off)';
         where.memory = await expect(p, 'memory');
         if (await p.eval(`document.querySelector('[data-cmd="memory"]').disabled`)) return 'disabled (capability off)';
         await p.eval(click('memory'));

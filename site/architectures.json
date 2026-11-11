@@ -52,6 +52,16 @@
       "content": ["content/i8086/"]
     },
     {
+      "id": "pico2",
+      "name": "Pico 2",
+      "description": "A Raspberry Pi Pico 2 with the RP2350's two Hazard3 RISC-V cores: an assembler and MAVILERA's C subset, every instruction timed by Hazard3's documented cycle counts with a view of its three-stage pipeline, and the chip's GPIO, UART, timers, PWM, DMA, ADC, SPI, I2C and PIO in real time, with a lab kit of sensors and a display, sound from a pin, templates and practice exercises. Checked against an RP2350 emulator, Hazard3's hardware design and the RISC-V architecture tests.",
+      "tagline": "A Raspberry Pi Pico 2 in the browser: Hazard3's RISC-V cores, their pipeline and the chip's devices, in real time.",
+      "path": "pico2/",
+      "status": "available",
+      "docs": "pico2/docs/",
+      "content": ["content/pico2/"]
+    },
+    {
       "id": "gpu",
       "name": "GPU",
       "description": "A SIMT core of RISC-V threads in warps (two warps of four lanes, or one of eight), with an active mask, a reconvergence stack, split and join, and barriers, drawn cycle by cycle; models of data-parallel machines; practice exercises; a CPU + GPU system with the core on the RISC-V Laboratory's bus. A seven-instruction micro-ISA is kept as an introduction.",
@@ -65,7 +75,7 @@
     { "id": "mips", "name": "MIPS", "path": "mips/", "status": "planned" }
   ],
   "_landing": "The order of the landing page's cards, three to a row (author, 2026-11-05): every module and tool once.",
-  "landing": ["riscv", "gpu", "npu", "sap-1", "sap-2", "armv7", "i8086", "mips", "6502"],
+  "landing": ["riscv", "gpu", "npu", "sap-1", "sap-2", "armv7", "i8086", "pico2", "mips", "6502"],
   "_tools": "Tools inside a module (src/shell/platform-archs.js): a card after their module's, linking into it; not built on their own.",
   "tools": [
     {

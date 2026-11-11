@@ -1,0 +1,131 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A practice exercise written for MAVILERA (spec WS-F-148, roadmap P1-M9), not taken from a textbook; produced by tools/pico2/make-exercises.mjs.",
+ "format": "risc-vista-exercise",
+ "version": 1,
+ "arch": "pico2",
+ "title": "Count the 1 bits of a word, fast",
+ "task": "Put in a0 the number of 1 bits of the word at value, then stop with ebreak, within 40 clock cycles from the start. A loop over 32 bits takes longer: Hazard3 has the bit-manipulation extensions. Keep the label value: the tests write it.",
+ "lang": "asm",
+ "starter": "# count-ones -- practice exercise (MAVILERA, Pico 2)\n# Put in a0 the number of 1 bits of the word at value, then ebreak, within 40 clock cycles.\n# Hint: look for an instruction of the Zbb extension that counts bits (the Instructions view's\n# tour template shows the extensions).\n        .text\n_start: li      a0, 0                   # replace with your code\n        ebreak\n\n        .data\nvalue:  .word   0                       # the tests write the word here\n",
+ "tests": [
+  {
+   "name": "0x00000000",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      0
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "a0": 0
+    },
+    "maxCycles": 40
+   }
+  },
+  {
+   "name": "0x00000001",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      1
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "a0": 1
+    },
+    "maxCycles": 40
+   }
+  },
+  {
+   "name": "0xffffffff",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      4294967295
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "a0": 32
+    },
+    "maxCycles": 40
+   }
+  },
+  {
+   "name": "0x80000000",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      2147483648
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "a0": 1
+    },
+    "maxCycles": 40
+   }
+  },
+  {
+   "name": "0x12345678",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      305419896
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "a0": 13
+    },
+    "maxCycles": 40
+   }
+  },
+  {
+   "name": "0xaaaaaaaa",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      2863311530
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "a0": 16
+    },
+    "maxCycles": 40
+   }
+  },
+  {
+   "name": "0x00f00f00",
+   "memory": [
+    {
+     "at": "value",
+     "words": [
+      15732480
+     ]
+    }
+   ],
+   "expect": {
+    "registers": {
+     "a0": 8
+    },
+    "maxCycles": 40
+   }
+  }
+ ]
+}

@@ -34,6 +34,23 @@ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR B
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+## Pico Full download (pico2 P1-F2)
+
+The Pico 2 module's Pico SDK C (research ADR-0012, decisions D28 and D33) uses a compiler and SDK files that are **not part of
+the site's files**: an optional download, fetched only when a student builds with Pico SDK C and agrees to the notice, and
+kept in that browser. They are made by `tools/pico-full/` from the pinned sources below and published, with these licence
+texts (`pico-full/<version>/licences/`), next to the site. Nothing of them is in this repository. The licence summary is in
+the research repository (`research/licensing/pico-full-compiler-licences.md`); **publishing them waits for the licence
+review recorded there** (picolibc's "Other-N" notices; D9).
+
+| Component | Version | Licence | In | How | Approved |
+|---|---|---|---|---|---|
+| [LLVM](https://github.com/llvm/llvm-project) clang and lld, with an own WASI patch (`tools/pico-full/llvm-23.1.5-wasi.patch`, ported from YoWASP's) | 23.1.5 (`392dfff`) | Apache-2.0 WITH LLVM-exception (with BSD-2/BSD-3/ISC/CC0 parts in LLVM Support) | the compiler (`llvm-*.wasm`) | built to WebAssembly (RISC-V target only), run in a Worker | Author, 2026-11-07/08 (D27, D28) |
+| [wasi-sdk](https://github.com/WebAssembly/wasi-sdk): wasi-libc, libc++, libc++abi, compiler-rt (wasm32) | 34 | Apache-2.0 WITH LLVM-exception / Apache-2.0 / MIT; musl MIT, cloudlibc BSD-2, musl-fts BSD-3, dlmalloc CC0 | the compiler | linked into it statically | Author, 2026-11-07 (D27) |
+| [picolibc](https://github.com/picolibc/picolibc) | 1.8.12 (`2ae376c`) | BSD-3-Clause and other permissive notices (`COPYING.picolibc`) | the SDK pack | the C library of built programs | Author, 2026-11-07 (D27) |
+| compiler-rt builtins (RV32) and clang's C headers | 23.1.5 | Apache-2.0 WITH LLVM-exception | the SDK pack | runtime and headers of built programs | Author, 2026-11-07 (D27) |
+| [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk), with pico_printf (Marco Paland, MIT) | 2.3.1 (`079c6f3`) | BSD-3-Clause; pico_printf MIT | the SDK pack | headers, prebuilt objects, linker scripts | Author, 2026-11-09 (D33) |
+
 ## Artwork
 
 | Component | Version | Licence | Used in | How | Approved |

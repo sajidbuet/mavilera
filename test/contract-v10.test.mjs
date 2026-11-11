@@ -5,7 +5,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateDescriptor, CONTRACT_VERSION, CAPABILITIES, ENGINE_HOOKS, REALTIME_TRANSPORTS } from '../src/arch/contract.js';
+import { validateDescriptor, CONTRACT_VERSION, CAPABILITIES, ENGINE_HOOKS, REALTIME_TRANSPORTS, IMAGE_KINDS } from '../src/arch/contract.js';
 
 const { descriptor: acc4 } = await import('./fixtures/arch/acc4/index.js');
 
@@ -63,4 +63,27 @@ test('v10: assets.wasm takes relative .wasm paths only, once each', () => {
   }
   assert.ok(has({ ...full(), assets: { png: ['x.png'] } }, 'assets.png'));
   assert.deepEqual(problems({ ...full(), assets: {} }), []);
+});
+
+// added 2026-11-07 to the v10 draft (author's decision Q3 of pico2 P1-C1): the image kinds the shell passes to loadImage
+test('v10: language.imageKinds lists kinds from IMAGE_KINDS once each and needs loadImage; imageImport needs loadImage', () => {
+  assert.deepEqual([...IMAGE_KINDS], ['hex', 'bin', 'uf2', 'elf']);
+  const withKinds = (k, extra = {}) => ({ ...acc4, language: { ...acc4.language, loadImage: () => ({}), imageKinds: k, ...extra } });
+  assert.deepEqual(problems(withKinds(['uf2', 'elf', 'bin'])), []);
+  assert.ok(has(withKinds([]), 'language.imageKinds'));
+  assert.ok(has(withKinds(['uf2', 'uf2']), 'language.imageKinds'));
+  assert.ok(has(withKinds(['zip']), 'language.imageKinds'));
+  assert.ok(has(withKinds(['uf2'], { loadImage: undefined }), 'needs language.loadImage'));
+  const noLoader = { ...acc4, capabilities: { ...acc4.capabilities, imageImport: true }, language: { ...acc4.language, loadImage: undefined } };
+  assert.ok(has(noLoader, 'capability imageImport needs language.loadImage'));
+});
+
+// added 2026-11-07 to the v10 draft (author's request: pico2's processor views draw larger): View.layout
+test('v10: View.layout gives a datapath view its default pane sizes, within limits', () => {
+  const withView = (layout, kind = 'datapath') => ({ ...acc4, views: [...acc4.views, { id: 'lay', label: 'L', icon: 'chip', kind, load: async () => ({}), layout }] });
+  assert.deepEqual(problems(withView({ drawing: 0.76, editor: 0.19 })), []);
+  assert.ok(has(withView({ drawing: 0.95 }), 'layout.drawing'));
+  assert.ok(has(withView({ editor: 0.05 }), 'layout.editor'));
+  assert.ok(has(withView({ drawing: 0.7, width: 3 }), 'layout.width is not in the contract'));
+  assert.ok(has(withView({ drawing: 0.7 }, 'bus'), 'layout is for datapath views'));
 });

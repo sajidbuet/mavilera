@@ -19,7 +19,7 @@ const S = { capability: { ...STRINGS.capability, ...RISCV_STRINGS.capability } }
 test('RISC-V: every capability on but traps, which its profile with traps turns on (and the Worker off)', () => {
   const st = capabilityStates(riscv, S);
   assert.deepEqual(Object.keys(st), [...CAPABILITIES]);
-  const off = new Set(['traps', 'realtime', 'audio']); // v10: the real-time run and audio belong to the pico2 module
+  const off = new Set(['traps', 'realtime', 'audio', 'projects']); // v10: the real-time run, audio and projects (P1-F1, D31 Q1) belong to the pico2 module
   for (const k of CAPABILITIES) assert.equal(st[k].enabled, !off.has(k), k);
   assert.equal(st.traps.text, RISCV_STRINGS.capability.trapsNeedPriv);
   const priv = riscv.engine.profiles.find((p) => p.id === 'iss-priv');

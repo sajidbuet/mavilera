@@ -1,6 +1,7 @@
 // preprocess.js -- the preprocessing of the simulator's C subset (spec §10.1,
 // with the extension of 2026-10-27): comments; `#include <stdint.h>`, which
-// makes the fixed-width typedef names known (no file is read);
+// makes the fixed-width typedef names known (no file is read), and the
+// built-in headers a target supplies (pico2: <rp2350.h>, P1-C2), from memory;
 // object-like `#define NAME value` and `#undef`; `#if`, `#ifdef`, `#ifndef`,
 // `#elif`, `#else`, `#endif` on integer constant expressions over defined
 // names and command-line `-D` names (`defined NAME` included); `#error`.
@@ -91,10 +92,12 @@ function evalIf(e) {
  * Returns {tokens, includes}: the token list (each with line and column of
  * its use) and the set of headers included.
  */
-export function preprocess(source, { defines = {} } = {}) {
-  const macros = new Map();
-  for (const [name, value] of Object.entries(defines)) macros.set(name, tokenize(String(value ?? '1'), 0));
-  const includes = new Set();
+export function preprocess(source, { defines = {}, headers = {}, macros: shared = null, includes: sharedIncludes = null } = {}) {
+  // `headers` (P1-C2): built-in headers of the target, {name: {text}}; their #define lines enter the same macro table.
+  // `macros` and `includes` are shared with an including file (internal).
+  const macros = shared ?? new Map();
+  if (!shared) for (const [name, value] of Object.entries(defines)) macros.set(name, tokenize(String(value ?? '1'), 0));
+  const includes = sharedIncludes ?? new Set();
   const tokens = [];
   const conds = []; // {active, taken, sawElse, loc}
   const active = () => conds.every((c) => c.active);
@@ -179,10 +182,16 @@ export function preprocess(source, { defines = {} } = {}) {
       default:
         if (!active()) break; // other directives in a skipped group are ignored
         if (name === 'include') {
-          const inc = /^<\s*([\w./]+)\s*>\s*$|^"([\w./]+)"\s*$/.exec(rest);
+          const inc = /^<\s*([\w./-]+)\s*>\s*$|^"([\w./-]+)"\s*$/.exec(rest); // '-': a generated "<file>.pio.h" of a file named with one (pico2, D43)
           const file = inc && (inc[1] ?? inc[2]);
-          if (file !== 'stdint.h') {
-            throw new CError(`#include ${rest.trim()}: the simulator's C subset has only #include <stdint.h>; putchar and exit are built in`, loc, { subset: true });
+          if (file !== 'stdint.h' && !Object.hasOwn(headers, file ?? '')) {
+            const known = ['stdint.h', ...Object.keys(headers)].map((h) => `<${h}>`).join(' and ');
+            throw new CError(`#include ${rest.trim()}: the simulator's C subset has only #include ${known}; putchar and exit are built in`, loc, { subset: true });
+          }
+          if (file !== 'stdint.h' && !includes.has(file)) { // a built-in header: its definitions, once
+            includes.add(file);
+            const inner = preprocess(headers[file].text, { headers, macros, includes });
+            tokens.push(...inner.tokens);
           }
           includes.add(file);
         } else if (name === 'define') {

@@ -1,0 +1,27 @@
+# Build RP2350 (Hazard3) runtimes (compiler-rt builtins, picolibc) with the clang/lld built to WebAssembly (llvm.wasm),
+# run through the compile daemon (ccd/: clang.exe -> ccd-client.mjs -> ccd-server.mjs, which must be running).
+# Archiver: wasi-sdk's llvm-ar (ELF symbol tables are target-independent). pico2 P1-F2, as experiment E-CC-WASM-1.
+# Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+file(TO_CMAKE_PATH "$ENV{PICO_FULL_WORK}" PF_WORK)
+file(READ "${CMAKE_CURRENT_LIST_DIR}/../pins.json" _pins)
+string(JSON _wasi GET "${_pins}" wasiSdk folder)
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR riscv32)
+set(CMAKE_C_COMPILER "${PF_WORK}/ccd/clang.exe")
+set(CMAKE_CXX_COMPILER "${PF_WORK}/ccd/clang++.exe")
+set(CMAKE_ASM_COMPILER "${PF_WORK}/ccd/clang.exe")
+set(CMAKE_C_COMPILER_TARGET riscv32-unknown-elf)
+set(CMAKE_CXX_COMPILER_TARGET riscv32-unknown-elf)
+set(CMAKE_ASM_COMPILER_TARGET riscv32-unknown-elf)
+set(_w "${PF_WORK}/tools/${_wasi}/bin")
+set(CMAKE_AR "${_w}/llvm-ar.exe" CACHE FILEPATH "")
+set(CMAKE_RANLIB "${_w}/llvm-ranlib.exe" CACHE FILEPATH "")
+set(CMAKE_NM "${_w}/llvm-nm.exe" CACHE FILEPATH "")
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(RV32_FLAGS "-mcpu=rp2350-hazard3 -mabi=ilp32 -resource-dir=${PF_WORK}/build/clang-wasm/lib/clang/23")
+set(CMAKE_C_FLAGS_INIT "${RV32_FLAGS}")
+set(CMAKE_CXX_FLAGS_INIT "${RV32_FLAGS}")
+set(CMAKE_ASM_FLAGS_INIT "${RV32_FLAGS}")
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
