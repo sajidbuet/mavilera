@@ -1,0 +1,13 @@
+; pio-square.pio -- the PIO program of "A square wave from PIO with side-set" (pio-square.s).
+; Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+; Rights class: content (a MAVILERA template, written for the application).
+;
+; Build assembles this file with pio-square.s: its two words are at square_program; square_wrap and
+; square_wrap_target are its wrap. Each nop does nothing; its side-set drives the pin.
+
+.program square
+.side_set 1
+.wrap_target
+    nop side 1 [15]         ; high: 16 cycles
+    nop side 0 [15]         ; low: 16 cycles
+.wrap

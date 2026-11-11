@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-07T08:57:15.434Z",
- "version": "1.4.0",
+ "date": "2026-11-11T09:51:11.999Z",
+ "version": "1.5.0",
  "pass": true,
  "summary": {
-  "checks": 1541,
-  "passed": 1541,
+  "checks": 1751,
+  "passed": 1751,
   "failed": 0,
   "skipped": 0,
-  "seconds": 1734,
+  "seconds": 2065,
   "smoke": "pass"
  },
  "environment": {
@@ -22,10 +22,10 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "141fcaae9a15944c50d1f736de5d9666d9769ae8",
+  "commit": "6f00d6c4e3b564676f1ae071199694aa0165ba5d",
   "uncommitted": 0,
   "sources": {
-   "sha256": "77694ab4bc0648ba57779b0720ffd6dfaea3d4c984d808b29896521b608f86fc",
+   "sha256": "20b66bf5ca69ad10bf84e70449597acddf3878133c2c2ca0edd87d4828c7aae1",
    "files": {
     "index.html": "176bb7d2d0c4bcf346961d11c20ad2ede932d6300473d525e18e187f3f52be8f",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
@@ -53,7 +53,7 @@
     "src/arch/armv7/ui/multi-view.js": "3247f24cb2d614a48be5662afb4f052773e04b92e6d35931c9dab9d19dfb0c24",
     "src/arch/armv7/ui/pipe-view.js": "0964e8175d3dc524c1f80c1bef713b1055ec9fa06901b8b2b36ae4103a3d9936",
     "src/arch/armv7/ui/single-view.js": "7ec7bcb88f4008b9969c9051b85f63174e198252ee7d1ed0300b613707838bef",
-    "src/arch/contract.js": "55af509ec9e0519a7765966111df1cb6c6a93d9a14d86c84efa5ba9aac84d2d8",
+    "src/arch/contract.js": "c586fdea68072378319767d40a053810d83f5065443b5b79a04f06f0fc7912b8",
     "src/arch/gpu/engine.js": "9651b980853dfec368b49eea21843893442fccd47ac6632234b45fde4eb5e829",
     "src/arch/gpu/exports.js": "a63519ccc0f40aa87664fde8c4797893a078161e4d158ae4106bee0b4aac8208",
     "src/arch/gpu/index.js": "3faefa35c31933bda97af2fd5ea7d287940502433a6f7e86f77979623d3f811f",
@@ -94,38 +94,69 @@
     "src/arch/i8086/ui/overlap-timeline.js": "40fe38f82c4be4a0eb04b30ef3bd3883540a9919ee8c33c093dc2838cab9fba3",
     "src/arch/i8086/ui/queue-panel.js": "9b7bf71e6fe3fba788696ba836a7f93836e628c01b1ad988f998a1233456263c",
     "src/arch/i8086/waveform.js": "feea764cb5f5e90b998d0eb5e0cefe321ab8d8438b4c57589a1f2380a2f54dac",
+    "src/arch/pico2/audio/tap.js": "4d71d22959869f6ce01ed1b473668cef091305bca6bf24c7e361c0be5855b8c4",
     "src/arch/pico2/boot/image.js": "15c646f78281e3888f5e389741ac19772449432dd19c32785add99029e018e06",
-    "src/arch/pico2/boot/rom.js": "185fc9d7eb86af0bca8ae9b9d7ac38459fc0a8ec28efc9d6441260db9c4adb66",
+    "src/arch/pico2/boot/rom.js": "18e30d8f023df51572154580ff6344ea23bf7902dacf6616cebbdb23e20d79f2",
+    "src/arch/pico2/c/target.js": "3411db719a27dbe1cd655f8a8d1ed4f438bdb50d6a0db737ed2a0c1fd2aea052",
+    "src/arch/pico2/clock.js": "f9f0e39c9aec4d36790cf770e24837f8fd135f89c63a642a088a4b7a2c948e03",
     "src/arch/pico2/core/decode.js": "47b2f49cbe446e7e42f32cca9b326575b813afa141587b7aaf62c3bc88eb0007",
     "src/arch/pico2/core/disasm.js": "38b9298f2a1a749dc545648b08a5522c32ff100860d5ce6902b032ce500ddae4",
-    "src/arch/pico2/core/elf.js": "aa951c65bc58b3cc041359de2220db8af5a09ad015a785a64fb58c5f836260b0",
+    "src/arch/pico2/core/elf.js": "bff5808e3664c244e9975e9b99aa3bf93f564ae5b298b606a4cca1e482bd9b64",
     "src/arch/pico2/core/hart.js": "43e11ca31182069609aa3d188eaab5ec6ba7995bc3fd08f77232fb94864ebd4b",
     "src/arch/pico2/core/history.js": "763b87d3bcc0f1db85e848ae0a93943ab6763e63ba150dfb54f00edf1a0d02ec",
     "src/arch/pico2/core/irqctrl.js": "c52451ca7b9c4d72a404a140db066b08b3ded37fef0856ad541b9acb8320088e",
     "src/arch/pico2/core/pmp.js": "fc15ab10850f47c3c42efada452e1bcb6d23cebb1bc44e8cf4d930dae166710f",
     "src/arch/pico2/core/timing.js": "daa2f9463fe9bb727c2f63dff50445672941c25877d5dc4aa68322c62af30646",
     "src/arch/pico2/core/triggers.js": "3b3f6e2c30e744ad7568601bfd571448a53e81595671ba82df288fc2f7716018",
-    "src/arch/pico2/engine.js": "40241c4cc4aec2578a1b0699134277a0b955a7a704eefca151890138ba67841a",
+    "src/arch/pico2/debug/cc-lines.js": "3190f5c3dc0cb685e3c8edebd73b07a7dc973e53815191542aa35f62a3ea9513",
+    "src/arch/pico2/debug/dwarf-line.js": "63ae5b7a9d2e43ccac856225ef1be76399d2d2fd63440b16ad188e452a725406",
+    "src/arch/pico2/debug/source-session.js": "e74f757ea3d10f45b6bcdb875e914e69c4f7f27c1b145a2e6e8978509d21a25c",
+    "src/arch/pico2/engine.js": "980a8b8c28c1fc9d9c8e8f18658aa154d61ab4f64def24b9936c1d8c2d94546c",
+    "src/arch/pico2/exercise.js": "dcf426ad1fa8b1001f6e3d9057778152b92095be3cf732c90e1102e58646bc11",
     "src/arch/pico2/exports.js": "68f1bf73ab2412e42bbc4fd819d2b3eed0d2da3d9d6230c2443515e3a56f3623",
-    "src/arch/pico2/index.js": "da0e363d5f92527bea38ab94efcf8453b9697e7e14fd8ad0f41b47119ff2de34",
-    "src/arch/pico2/language.js": "eb40ae334e0120bc4599ff4ac67fc170d2ceb725c544f4da2788d72cae7a1ddd",
+    "src/arch/pico2/firmware/import.js": "8fd4d7c1c4ff2973f95ce47d2cd79aef551cffda85c132c09a3d142f9698c33c",
+    "src/arch/pico2/firmware/uf2.js": "1aa916bb0640597500bd46d1b2ef2c5df2ef30350264fd8f4e5b70091d469785",
+    "src/arch/pico2/firmware/validate.js": "1793e2aeaea815f25774184915fb627442734731ee21712eb09552aec2fcb071",
+    "src/arch/pico2/full/assets.js": "3e8ca7f0aea3b4c614bda3203adc1756a0fe0456ce17081cf174ee7793dca7b3",
+    "src/arch/pico2/full/client.js": "33e88ab9b4386fdd123c6eb4201ed864bebaf056106feb8f1035964380ebc2c1",
+    "src/arch/pico2/full/diagnostics.js": "13d45d94eb097d92d0317d5662dd3976526d2a837d1414a9f35792c9569df217",
+    "src/arch/pico2/full/driver.js": "c517bd992d8defa7537474bcb724f338d1cf9f0df9a396f4117a1dc7454f3735",
+    "src/arch/pico2/full/host.js": "1a1d2879d69ce78c9f19e65f5d9124391c6568123819b3c3e8a9ad74eb490803",
+    "src/arch/pico2/full/pack.js": "1a646b34f9ea1efbc42b89218c8107a1b24302b388f1643b3780e847f0da97da",
+    "src/arch/pico2/full/wasi.js": "9b66cdefb993e85807b877bc476660a00a234e28e0b60ff2d4e5596e93326a3a",
+    "src/arch/pico2/full/worker.js": "be33b4cec6999994237549b790e5c01aae950ccc498ee082421e91dff25cbff2",
+    "src/arch/pico2/index.js": "7f41f3d1fa59a84e5aca46c31aeca05b9557112efa5965f1b920933778f6453f",
+    "src/arch/pico2/language.js": "66613d60df6d27fe931d30ad12e7367181b0acfd438f5d08f8169fbe19e0fbd7",
+    "src/arch/pico2/parts/kit.js": "f3ec3e4eae34f5b10c87447472800c4245a6095ed00ba13d0df991033d621166",
+    "src/arch/pico2/pio/asm.js": "508f8f9ad5bc7c64ea8fe566a71db9170a1608d77aa67c94fdce4e193bf077fb",
+    "src/arch/pico2/soc/adc.js": "6e5d68b896fe5aeb37ea14b163c3d4989b6129bab0fff4f3cc023d9d1956a60e",
     "src/arch/pico2/soc/bus.js": "ebb5fb2937de5ad3a8c130573fb90cc7161a9b0c3eaf70b93ffa73b9f6760388",
     "src/arch/pico2/soc/clocks.js": "2d8a39ed7ffd8e2bea2486a43a0e0e1ec5e0517b831e0ea9ad6e6a0bf39655be",
+    "src/arch/pico2/soc/core1.js": "f80ddb4feb77880c2f06ed289bc5efadd70c1a9aadbc0c6969aaa1f0eacbc2f5",
     "src/arch/pico2/soc/counter.js": "60d53603131404a26874d7670f4f9e44d65ff263bf9ed374699401ae74c771fb",
-    "src/arch/pico2/soc/device.js": "6a869c420cb2abafd8a28f9149a6b9c7a00d337d6ba970446c0b8c018edd2194",
-    "src/arch/pico2/soc/gpio.js": "d1407939c7fb723d13da308c14930d8ee00e5f14a18eb6f816cadcca8c1ae7ba",
-    "src/arch/pico2/soc/machine.js": "d41e748d3e5bebc229e967e038a4cd3ddcc81ea77198ebc68bd6cb86bc807e04",
+    "src/arch/pico2/soc/device.js": "79a9bff7436f8568ede4aa5026378e5ea49638962cd08d5dda887f8e81432134",
+    "src/arch/pico2/soc/dma.js": "9157a3444fe78601ed66adc913a51c24f22d0e61ad41838ca90864f6e600b397",
+    "src/arch/pico2/soc/gpio.js": "3b167e435b64329ba144de469686602149091e39575e6f7ac997f0c8c83b1417",
+    "src/arch/pico2/soc/i2c.js": "9eee3f64fc297440a8f406783a8d8975a878023129e2d81846cf9ea067a8bc06",
+    "src/arch/pico2/soc/machine.js": "bcb99c8fc8d19d8895dc6e09ef38ef78a43b7dfbad9436218b304cb55433b3d7",
+    "src/arch/pico2/soc/pio.js": "8e5519f738962e8fcb7ada0d04fd6fbea6e50ea93b27168cce5b8eef63923386",
+    "src/arch/pico2/soc/pwm.js": "4ee7685a88bdb64160acd0d378958936408e521477ceb7c05da0336f3d95db60",
     "src/arch/pico2/soc/regfile.js": "54e19dfca7044dc5407c45f21390bff3968751d317897bed48464ce94dbad980",
-    "src/arch/pico2/soc/regs.generated.js": "de6a563e787069c398ce093316895b127bd106a53d373aec5aa1f1c2bac03cc6",
-    "src/arch/pico2/soc/sio.js": "6fd1fb0a31763e5854fc8ee90990d86fab1dabb3975b7993900e04eba296b918",
+    "src/arch/pico2/soc/regs.generated.js": "d53e647e849b9f2cd5f1612844bff636046669a618c668bb7646e88d11a11e40",
+    "src/arch/pico2/soc/sio.js": "d696c7356d807f2e37b47de8352d28681ff6f356a60d9eb4a2c84803099f521a",
+    "src/arch/pico2/soc/spi.js": "0dadea0f9b32b013eb26c9024c2f61e0f9cdc16db5e112978506ed7633729fca",
     "src/arch/pico2/soc/timer.js": "8b10226c4308fc8ed7721f9430df0778f43f821e4b2c393af031df53660bbd8f",
-    "src/arch/pico2/soc/uart.js": "ccd835ea680bce1648bd8cdeb596838395b9cfdc93b05bb251063089c2bc7d92",
-    "src/arch/pico2/strings.js": "dcb56a2cfd7a099dd0d42cbc0a01cd98c42e660d0dd710c4c96ae316e99defea",
+    "src/arch/pico2/soc/uart.js": "2b7892aee7f08492fc4edbc7f9aeb5ac6269d3614918953713e5eda795d4fbba",
+    "src/arch/pico2/strings.js": "96b339c5c2345429cf22aed32ed3e34604f7dd5fa57f4b584842d6a3b29c91a4",
     "src/arch/pico2/uarch/session.js": "cfa2f726597b2b11d1bafb7de01e3621c0b8e60afa92c4962ab2c0d1f99ba584",
     "src/arch/pico2/uarch/stages.js": "6d8d8c0b8dfd24cc6933b3b5d187bf1f4f1ecd511fe0a772c4c9b608d397e91d",
     "src/arch/pico2/uarch/summary.js": "3000c45c170fda17d09aceb7abec86972cf0f29e70a00732487cdf393e66dd49",
+    "src/arch/pico2/ui/devices-panel.js": "399bb2c4a6da84adc9c72019837952b89577c5eba9cf222913704b778ad5c1f8",
     "src/arch/pico2/ui/geometry.js": "b93d1d4621b0296aaed6affd2ef70481c46b6bebcc4c03e5266d159a4a092844",
-    "src/arch/pico2/ui/pipeline-view.js": "4f676e47925af76deba31fddd9e15f033c2ac1b4d809292285c2b9bcf9552a4b",
+    "src/arch/pico2/ui/pins-panel.js": "d9fefdb48017f7e2ae4b9133635c4e3bf057ba8b590d878e3984eb0ac3ad0d7e",
+    "src/arch/pico2/ui/pio-panel.js": "4a3b24165003f22663500883f6f758b5aa5f02ea71eed2fff0d89cb676cf27dc",
+    "src/arch/pico2/ui/pipeline-view.js": "32f592305a5e59fa3cc13f64cc649348a5f7c9dee24024603023d87dd98eb7e0",
+    "src/arch/pico2/ui/source-view.js": "8b10f14ae7b6267e4c6e4f20c89c21922535c4c2eb5cdb23bf75367e1778f49f",
     "src/arch/registry.js": "1371aa21090f7ed368c9653c5bbbf43ec97016875057cb8af9b95f35e3be0c1f",
     "src/arch/riscv/default-source.js": "8ecff07b0098dd95613081fca760b4cefa3d15f193994391682b75957ff52a4f",
     "src/arch/riscv/editor.js": "488b716a271edc5fd850a1aecfe6ae7e28415a7da337176495eba9b1805a7b8d",
@@ -168,13 +199,13 @@
     "src/asm/disassembler.js": "4b17f19293018bc3fb65b2e08f66ba53f4690dd771efc7bd67633ea63005a22c",
     "src/asm/gcc-import.js": "a809e3b567a2fe52e00e8e364f67e03d5b4eff5506ff0390434511cc908ab391",
     "src/asm/scratch.js": "bc9bbce7e475032d52578838d884e36b516d6947a3661d6488f217ed86b0d514",
-    "src/cc/check.js": "36f2f13adc2f7bfcf0c8b958f7281fc79e8747b63edf55a26db724840c60b26d",
+    "src/cc/check.js": "7fa84f46d7e6c921d02a4a30fd001bced63470e898e5e4addbef76145d9990ba",
     "src/cc/codegen.js": "8e8e5f5af8e8d622f3c9447e0c0de764743a5c5825d576de3da5a5c8501f33d6",
-    "src/cc/compiler.js": "a96777336293c61cbe324d4b3183dbf5e0d91b231e9eedc7c1ea56f58ffa2949",
+    "src/cc/compiler.js": "104bdf2e6e9f97026e2e4f79832c1535c48c69f6bda48f14fa8c4637df596324",
     "src/cc/lexer.js": "291b219a4deb24a9a5653a5ed293a6dcedfba5f3af62f4e3cdcd9aaf5e7e1ced",
     "src/cc/parser.js": "9adb7f30c24838560a98b608d7f6751c43347a244feecd4444156026a6eec8ae",
-    "src/cc/preprocess.js": "611260b45b8a2efd92bbbf797fbba19c6b699343d047fa25f3aa271650f1bed9",
-    "src/cc/runtime.js": "3dc1a3bbf2de871f8dd129948dbe43d393941d153306e5518913407be932fe28",
+    "src/cc/preprocess.js": "447a04da4fa413b7f4b3eaa2798350463a17fe2c426067a82112d99062fe3516",
+    "src/cc/runtime.js": "afbf7f58a406cba8da4424ee92525f777f707d2f25daedfc0ee5367ab4a28c55",
     "src/cc/types.js": "a5aab3e43f9119e080c00cd14878b68889732be95e62b599e8da5d2a5ee8425e",
     "src/core/analytic.js": "7ecdff99de1528c7529b5fb3dbb8a497431ad5c9406a8ca59c8aa8a4ca174f56",
     "src/core/callstack.js": "12b4e3a029fc888fc13a3cbd9335bc11daf7af9a0057732cae0ab063d14819e2",
@@ -187,7 +218,7 @@
     "src/core/profiles.js": "6b9efa63c8e8f66ca741af04b68f7fea0c7ecf06b7ea757f0c3530fc82cc145d",
     "src/core/session.js": "4bf27eff7ec112bb7e6d936e19ed983e33827095c076b277d29db02b4d507e20",
     "src/isa/encoding.js": "4cabfb9181bfa1898eb7097fd6dd1c7b63ff89d68b1e794c6a4da8e5d2d7dc06",
-    "src/main.js": "56ebf3f2f982b3775636e9c8780a61245e4fc40e9cc31e97433622d24a88dd23",
+    "src/main.js": "cc2cdc5009f54880490367af961c9e70116482199fab65f39559eab04955fb33",
     "src/mem/bus.js": "fd0d6af266303d5b5bc043fac4f117571f663b021b51a15f982dae1d3e3d4edb",
     "src/mem/cache.js": "a4b8e994fc7ee9a415005b761d0401369c01a076890af3241dfcd649a793aedc",
     "src/mem/config.js": "4f58325d2625ca445c4c6b5b516b0c26aea920360d3a5b083cbdae69a2448db2",
@@ -202,12 +233,17 @@
     "src/mem/timing.js": "cf2fae0a2dc7c2f401e69e3797b460870c3a41c56c0b7c3f6289510b18ba174a",
     "src/mem/trace-cache.js": "4a3a21f140c904243cd18109a03a76ad5bb0ff1b4c0153636bf5038b38dc0cda",
     "src/shell/arch-id.js": "9e8b4c7457323f3b81850f98165bb0fde456df0d9f958c493a0ede055f6d6669",
+    "src/shell/audio-host.js": "20fa9d07f5ba62b82b1b233c457d39dfdeb93ae740b3200f6729924d77f4b21c",
     "src/shell/capabilities.js": "eb50d55c4e5230acd406832d07a7b9a632062161d0d750d65881f2536dddb047",
     "src/shell/data-io.js": "385d6c613b270b944992ee605c0c0ab283ece5711e41dbc69576f50de50fc1bd",
-    "src/shell/platform-archs.js": "cadc2e0b0f114f06a3470643261c1507dafbaad2cdaaa74f022ec4cadd6bb1bc",
-    "src/shell/share-schema.js": "be240e09be29114aa7d9d48d2a16af748a0915e7c03f772cc97048f853dbaac4",
-    "src/shell/share.js": "7f1ca6479ff836502d1b4d56487cbadea1b97cdeb4836bb868db5d486b944778",
+    "src/shell/platform-archs.js": "fcb860b9fc536a7f387b52b9f9091a7991dc561760eee4e75f7e0324e83f026a",
+    "src/shell/project-session.js": "8302a8965aca13cc8329bba73e714e40ddc6938aa41314bd809e17bf4beb02b1",
+    "src/shell/project-store.js": "58b596edf79c9e0df8fdd91c72e3142799328e5d20cae9936c70fb19669ff189",
+    "src/shell/project.js": "ee62f2274fe51809b925b3ba2b074034b45ac7a024b6ebd147e617f7e65a7917",
+    "src/shell/share-schema.js": "33281ebd7ffbeb36a9ff9416f4b07e87ee26ba2f8890fb7cec7469480e6e8da9",
+    "src/shell/share.js": "47eed00c35aa956e3a847d827086d91f2cff5ff7dc121a3adae530098924bdff",
     "src/shell/vcd.js": "f4d018c7e87f564da50ea8bece641b08abbdbbb7b74eb4d124d30e075aaef18f",
+    "src/shell/zip.js": "09d3ffa42e364342bad2d10a7b35b1a9e85d9d6b72caa0054a5fdc32984e9755",
     "src/uarch/ch07-jalr.js": "752fc9a893e2e29c8452ac6ae43d899ee089438495173d86f2ee69dd9e71949b",
     "src/uarch/compare.js": "bbe493ca5df11665154a5e668e665efd46f4453f0c98292c891c73f17b7f6606",
     "src/uarch/multi-paths.js": "e426ae7596043586ea44e03ac18e2cd6c1c000001c2cc3605bdd696bc7c3fef2",
@@ -230,14 +266,16 @@
     "src/ui/datapath.js": "2856afe6126f9f71d11eca99dac95d7c50e98438e7d0581e60dde6f7bbaad930",
     "src/ui/dock.js": "2951c152bd3db24b01e7cbc8019fb072c0a2704e02e83720a5f45bca79ec6bc9",
     "src/ui/dom.js": "ab31415f9d1919697e2c321ccf69e1038a12a0816d36e84080b29ee2b620809d",
-    "src/ui/editor.js": "08bf0c367f5712c0669bc232150189fd84ec78e071a5d8da65a979ba4281df9d",
+    "src/ui/download-dialog.js": "be7a75a068cbd57abbff40a6a4ba0c2a8209e69910a8e49769b1d5586f34cc44",
+    "src/ui/editor-stack.js": "51f60713ceaaaa6272db95818ef13a07c3f5bbf1649ec565472da485b192adfe",
+    "src/ui/editor.js": "3eaa2645ab5d52090a7497ed77868a872e145b53d73feb3e50491920ff1aad6b",
     "src/ui/examples-dialog.js": "dbde1771fd8e26d4188851b987a6b591740c4305b0706a77ec43892400e9e3cb",
-    "src/ui/exercise-dialog.js": "de3a647833768e51ef6cbc3d7cffa164daa5de6c12f560077c1a112195e1c3d9",
+    "src/ui/exercise-dialog.js": "d48da1ed0b36a93ae40a52c326540daafc17e201640a2419ea21f24a6cb9080b",
     "src/ui/fsm.js": "8a24b73230c381e7ce17008d71abaee609b2025fd8c0c55b993d593d757b31dc",
     "src/ui/help-dialog.js": "aa70355f4bbd9e582ef5cd2a276870741ba8c50a2c3fe39ad835b6ca251a6ffb",
-    "src/ui/icons.js": "2776db164c2999d759719a4d0945f82b42de966373e7445e2f6a6118699aeb52",
+    "src/ui/icons.js": "d2db51325b0c8026bdf509845b6bd8ed39b3ce15f59724255e1b2419903c4228",
     "src/ui/info-button.js": "dd9de96b23a02fdc6f2bf5d29b8373cdcb6cc790c1c608d7cfe126a021665e40",
-    "src/ui/listing.js": "468a65dcb1360bd92bad7c46fd8ff4d1c3311627d881eeae5135b3a23af08e2c",
+    "src/ui/listing.js": "fd7afcc48a53bbfb55d62d27893dff3a0c99e53dcfef2757d127f0740a98bf0c",
     "src/ui/mem-ui.js": "833f2aeb6ad15690aa4ded08a5c02b7486825e50423e9ae3d76ab0c07d293383",
     "src/ui/mem-viewmodel.js": "a8aa106965c6b794b9b2365f6302777f19912fd66af7830b0444846da72c2fd7",
     "src/ui/npu-view.js": "5dfb125be50c12933bf9b751afd4a80ba11efea74c733a5e94273cc7956d4912",
@@ -245,18 +283,24 @@
     "src/ui/pan-zoom.js": "1d4525ca1a15b5526e98659f2dc121e5c0f22113b772740d96df38e6ec4a2c0a",
     "src/ui/platform-figure.js": "f8dcf3ec1cda6ed527ac214764c67970244ccb03126f99741ce7c55453b2473c",
     "src/ui/platform-view.js": "0a1a2db40910cbe4eb77bd5a6b1e4947a9bb1f1871ee2a2b71b753a91aa20086",
+    "src/ui/primary-action.js": "c9dbcaba3341a0655aae2f01ee426a2e616d573950f890db405ed1fc4637a47b",
+    "src/ui/project-explorer.js": "e0aa13cd98b195875eb7bedb5c58ee472df3cd1bf9de1dacef46a10886d31edd",
     "src/ui/schematic.js": "fc3f966784612656b7f35da1d3b331721197e683889f616b40afec48ea06b894",
     "src/ui/split-math.js": "e0edce05f827d405f27fc4a13f225652b7b44ca3773a4d47c4162cf86f99054a",
-    "src/ui/split.js": "ea902fd6f182c5eca158625effc1c1f136ff97e789a114817b5144aa38c8783d",
-    "src/ui/state-panels.js": "806309285b257eb4bdbc89e0c04463c2c6f61557158deb34cf04c11c9f87d61e",
-    "src/ui/strings.js": "49542e33e15171e8b03a9773f5dbbecc72a83e02dba9059b94b8b0579136cf00",
-    "src/ui/theme.css": "6356c38f28b5f04dcb67d8e138a8301f4986812c7467d75bdc2600195cb63d03",
+    "src/ui/split.js": "0e6fc4a73989614c1d01541270b2d9d32982727ee6d2aa007ce092cd8fcf7c04",
+    "src/ui/state-panels.js": "2289dfa98db0b508ac67b838f11e8285c290a3e8e76e8cda396850dfb0e53cae",
+    "src/ui/strings.js": "0d91804a1c5c7259483917f1f89a7428172fb8edc410b1ad7c765454bf9a0d96",
+    "src/ui/theme.css": "b6ede9b521cab11420f854dd8496263143803b549feacfe714f957e8e4fc2318",
     "src/ui/variant-dialog.js": "3783f1340cc369afdded3037d428c923426b624517f4093804ca1c9bec2b3758",
     "src/ui/view-mode.js": "f4f703b6888cc419a12303595941decd730fad34332b8bc0898a050a58a07b1a",
     "src/ui/waveform.js": "7fdb0ebc4f6216ba3b4e4c59655258e1e6f82bbc096a3b887c511651766673b0",
     "src/ui/wire-colours.js": "8b9e402a48835295370b5c888b2da6135bd6122c19452dfbea55122ddf05bac4",
-    "src/ui/workspaces.js": "a9320a9dd53338e9692133897cb37a045b9de9e5a79aa39b87adbe1b2a3f2ace",
-    "src/worker/run.js": "47c4e5624010c71bb1fcb44bc408bed3b5649f8b0f3d5089b51bc287b41c965d",
+    "src/ui/workspaces.js": "58040e5acc1b04b64496a65cb797343223998b30955841bb7969db49a15d6780",
+    "src/worker/audio-processor.js": "bdd0d12ab3b37d5b430e0b26c506f38c18d1bdbebe963831314f64543955aa79",
+    "src/worker/audio-ring.js": "d4f867ce93728e9c8b635a3ca431d8cbd3556d5cdcec0876edddc361130f53c5",
+    "src/worker/live-ring.js": "4b841a9be00d538008dfdeab4841f3c9cb4753e4a1837ab52bf3581db84379e8",
+    "src/worker/realtime.js": "9cc76c35b3c0d0c6b7496e08b025aec6f7a662ebec5bddbfe879200a5a6929b1",
+    "src/worker/run.js": "3e575d131cbdc0b11b11011677c517b0586bb8899031eded510d15382c50b5d2",
     "content/armv7/data/single-delays.json": "32bf024aa47df44b3008d629c3873ee493266325c9ef5802811e7f6ec1d5cdb5",
     "content/armv7/exercises/add64.json": "0def460790652be2ea88b174e47ff697cab19aaaa4404a7e6736ae1a1f603b6b",
     "content/armv7/exercises/count-byte.json": "349e6ede1e1520675645dd59c710730acbe408d55ccee48ab922e1bfe92d765c",
@@ -274,7 +318,7 @@
     "content/armv7/geometry/pipe.json": "512229e313b4bfd93685967e830c21e2813bd5a42196ccb4df20a75824ed3517",
     "content/armv7/geometry/single-extended.json": "86691bfed0bc4b898db4e627e667137efe1653ee2e84c27d453c081bbce7f953",
     "content/armv7/geometry/single.json": "838e00624ea0d9492a8fa769f8f966597ef46f5980171c03b00712c49b6a5956",
-    "content/armv7/help/docs/index.html": "f4365f4a3fee9af26591c041e7ddfe926a829bd120f1775fe9d3ff048624d8d0",
+    "content/armv7/help/docs/index.html": "3b3c0a0255735d693f0c2c928899cddef61f67fca41e168cf6b6f813916b9953",
     "content/armv7/help/help.json": "76f2e420f34a5a571bc7f9000284b48a31302a5da2b488eb6c3497aa3da2597a",
     "content/armv7/templates/base-sum.s": "47a87edbb931b4a240d29d7a7e381bc738c22043398cf90ee3ae2800fe5209aa",
     "content/armv7/templates/block-copy.s": "ab594712d970f178ad67c0fab7e6b268222a16c7b609a0c1f1005c6f603ee12d",
@@ -301,6 +345,7 @@
     "content/branding/mavilera/mavilera-logo-armv7.svg": "94326f9f514b533e088cfdc5926a5d31e7dc6f41aa6a704d34d802ff18204d6c",
     "content/branding/mavilera/mavilera-logo-gpu.svg": "17b8e22a68d80dfe4ed50c769f6a3f2d1c923455fdd6c037709def69572ee097",
     "content/branding/mavilera/mavilera-logo-npu.svg": "42e66255e07a396c95736864340706ded4fe2a75b25a471499ce46571acb5663",
+    "content/branding/mavilera/mavilera-logo-pico2.svg": "bd3f1c6f60f74ccd000370bb7a2ff8ea9b10851408f3aec7ef130efa7e0b8a87",
     "content/branding/mavilera/mavilera-logo-sap-1.svg": "b22df4048e2c097437aa33ce51cd5a4eabf996419068de5ad9d382800a663680",
     "content/branding/mavilera/mavilera-logo-sap-2.svg": "6ce4c01ab8882354e0f8a41299cfe3424249959361bf3b1474263d9fd29499ca",
     "content/branding/mavilera/mavilera-logo.svg": "7a3473b77953a5d55fae2072f2fc69f0cfa9a8ce1e091c467ceb8a80937937a0",
@@ -310,6 +355,7 @@
     "content/branding/mavilera/mavilera-name-armv7.svg": "6bbde62f6c2070ed6ae1e4bc2ddd27230488125439a1dfa49a41fd72eefd0a04",
     "content/branding/mavilera/mavilera-name-gpu.svg": "0e51e6a713c137cc23d2a1b6d1770b5a7134d31931f81071e88dc6f9f1febe23",
     "content/branding/mavilera/mavilera-name-npu.svg": "901fc0d03d9e328bbbf68e537aa33601a5a0675d2777de9d0806737c3013a027",
+    "content/branding/mavilera/mavilera-name-pico2.svg": "6440b1d741cc8416eebb240025033135fe0bc9db00287683e23dead698143beb",
     "content/branding/mavilera/mavilera-name-riscv.svg": "1f96a24fa485ad928c0152e915660e47d18f7624cff30342666cc17f92bdae71",
     "content/branding/mavilera/mavilera-name-sap-1.svg": "9633da4d7ab655658fa6fed24e8a9252bb7f458b0eee744e07a929839f14f89b",
     "content/branding/mavilera/mavilera-name-sap-2.svg": "9a2232663b94bbe399bcfdd80c1bcbf061d20ec6fe4a5011294dd5efd2c00f80",
@@ -400,7 +446,7 @@
     "content/gpu/templates/nested.simt": "4f7ac856a4fbe4b2179005fd006b1159cfae8625722dcd0d2b83fedaa6189ef5",
     "content/gpu/templates/straight.simt": "3577f7143561e5c2a50d6d87748eab66630a39911cd1efd409e5fc1004a04c1b",
     "content/gpu/templates/warp8.simt": "740f189af184a961b70e07d3c558edea615ddce470307d0586e71b696c3595f1",
-    "content/help/docs/index.html": "da1f3417e7132e7a3ed13d004741dabe2c17450d54a3d4536ec8dd7781140e10",
+    "content/help/docs/index.html": "01980056f7305dc24a4b181abe4a3f53296a7a124e86cc66bbf3a449e798de32",
     "content/help/help.json": "e380d375a28a87ee6ecc18cc026462d4c81250dbb4f1c1b2597785785882bc70",
     "content/help/narrative-ch06.json": "612026b34976e25ec309b125a1a2de5d116598fa77cceaa5dcd86805733bad6a",
     "content/help/narrative-ch07.json": "9006e11087d7edae8e4c4714a373b7e52d6da745e8f00bc82d537fb77491a933",
@@ -421,13 +467,55 @@
     "content/i8086/templates/single-step.asm": "a4243ed4a2cffe31fd6562eb54e6deaf47982eb032fda04abc2722f31fdd0222",
     "content/i8086/templates/strings.asm": "fa131b43a5c0b5ae73c2c8234d8d390ed7b45fc58be98df2ed28b584fd75cd3c",
     "content/i8086/templates/sum-table.asm": "25a52161a9eedc05478b905494222db73f4c3e709a2cd7363a8e39f6cf0be7e6",
+    "content/pico2/exercises/blink-period.json": "7863e7487abea3c3cd1fc839ef51d2a24c8b0bfb59a3981297c5460c31307536",
+    "content/pico2/exercises/count-ones.json": "3beab637b7eeed31dce7f1d3e6c7c6c407841ea6313fdf8e66f4eb81cecb3a75",
+    "content/pico2/exercises/count-presses.json": "7e68f7c2b88eabf3d6addcb39a283a2b88938c36031064e7aac64800c91a0f1a",
+    "content/pico2/exercises/index.json": "eeb42ae8f54429c1f8af12fe67cd11c48bab96ae8e6cb2979dd08d2b8dda9078",
+    "content/pico2/exercises/pio-pulse.json": "64010c02af1bec9738b92a5e7dcc0874a1347a8b9ba800108a6b3fdb11bcff14",
+    "content/pico2/exercises/print-number.json": "2fa4014fd58f4730a5b5294eafc0bf12140d78f90f8f25808223d8db4fde39b3",
+    "content/pico2/exercises/pwm-duty.json": "7493e63d8f21f1340fdf20af2212aecc95a37af9ddded2f707a330fa019f50c7",
+    "content/pico2/exercises/sum-words.json": "146570396eaf2a84c994c643e8d1854468f01fad7dbf5ee943286b5e7a5ecb98",
+    "content/pico2/exercises/two-core-sum.json": "4ba8d1901b8f86e0b4091f0e7f88306886fed37f1893d2fa39ea2df184e4b381",
+    "content/pico2/help/docs/index.html": "b834c52ffbe448ea497c31464d7fe5d41c0a6d159dff754bedd7417a0cca553f",
+    "content/pico2/help/help.json": "c6250b3f2648249e29eca081454ddd7d027de4af3988aa270f4d29a1671de1e1",
+    "content/pico2/templates/adc-knob.c": "abbf95a7d66f0938a006bf075687f7e7e2ef1f452eb0ef427bf2eb45ae4ad3e7",
+    "content/pico2/templates/blink.c": "4c398fe78d844f856a9f6737307560380cf2706f869e7c3bbf58c7b187012e24",
+    "content/pico2/templates/blink.s": "bbf1e1a64a6bb2a8abd7436192e63058545df2ce81cf542fa4d05f399d9cf2bb",
+    "content/pico2/templates/dma-copy.s": "1e5b5b5230ffe2b7b555d1c56856f66c463ec9428ff1a5d0d956998c3d4dc031",
+    "content/pico2/templates/dma-sine.c": "7b9c812e264aecde944f46c798cc33ec0126b9f7a2b9ef5c7212218554277226",
+    "content/pico2/templates/fifo-message.s": "f4bfb97ade62cca78c7a361f8d6b201a2b065530ffa2c60f1049f6662415beaa",
+    "content/pico2/templates/gpio-button.c": "a96eead1441fd1470974515940eec3b714964e53de9e9a9905a4bba47951fc94",
+    "content/pico2/templates/hello-uart.s": "1887d38692d1253079dfb05dff44b36c0d71a96b09841983ae32b0584cadc951",
+    "content/pico2/templates/hello.c": "d68c61f23466f2b59b901ea105b5421a28ec700556dfd50ce6a4166815c21295",
+    "content/pico2/templates/i2c-lcd.c": "385406793d6d140f636ce788ac7485e85e8bcb737e4d31546d9e43383069d609",
+    "content/pico2/templates/i2c-mcp9808.c": "66d72123793d8e23ddb3e1278539cfd27835ebb94698048a82b98f91187cbb06",
+    "content/pico2/templates/index.json": "9a51e95a28186cc2e66f2a2ce0b180dd745b2a883db62c39c046cb334c4a1027",
+    "content/pico2/templates/load-use.s": "614a844b1db2d9d78fff84123aef956dd69c6f31c682682f7e63f1a7860d4f68",
+    "content/pico2/templates/pio-blink.pio": "d4faaf355bd5dac83c519a2f3ad2db8e9f92e0bed2d270e56516d12a4bf7ca7a",
+    "content/pico2/templates/pio-blink.s": "b05f4ad4ce027246f6b37841cc5a7ea241618372f7b12e3483beff389b60983a",
+    "content/pico2/templates/pio-popcount.c": "6a8081c9b28c233570bd486a22569360f4f846e050f9723c1ad60c421a80a40f",
+    "content/pico2/templates/pio-popcount.pio": "9c1f4a0d7410d01a89bd83c06a181a222f3ff21217e045417938b22d3fe2c95f",
+    "content/pico2/templates/pio-square.pio": "1f0967d0ed04b5e7ba366f13ee763e0f10afcbeba6bec2d3fd08153d400656bf",
+    "content/pico2/templates/pio-square.s": "57ffd80a291f2ecc7e7e29994fadebe9f160725181373d7b0c60a01ff408809c",
+    "content/pico2/templates/pwm-fade.s": "b01e08b88cda266cf79a0acfcc34bfdd9fd4eb9759937db16f2605a95e82403f",
+    "content/pico2/templates/pwm-tone.c": "7cc7e8c52208cb46f2989f45271ce059c72f03b5cf761a8b68dba1c3fac41067",
+    "content/pico2/templates/spi-loopback.s": "00e603883daa075ed6c6a33354af0f6a5356fefac90cd5c414cc6e4879730fe4",
+    "content/pico2/templates/sum-array.c": "c2d46a6fc52e49fb586b559f1980c3dba18e422a3d3ba0e9e4f249b7b5d72167",
+    "content/pico2/templates/temperature.c": "4fbbc3bcba720d4c2d08f5b3e2a58c692773b1ec4c96d1761275d4662bbd6aeb",
+    "content/pico2/templates/time-us.c": "dbfb6efae878ae0529e0baec8b8110dd5e03b286817e9e7cc64ed96e8d6f0a78",
+    "content/pico2/templates/timer-irq.s": "566c3a4dfd7030126e2956d2c5d682f779de0377ba8b87ff4d56b65118e86c6e",
+    "content/pico2/templates/tour.s": "26a727f149a14fb693fe658fd9b60c3ae7fd30b5b60d25810c802159bf8c86b4",
+    "content/pico2/templates/twinkle.c": "b503144152a93817431dce56464424f6231541374517c3d8af039c659629da99",
+    "content/pico2/templates/two-cores.c": "7c054a2a8f4fbd6033f7b33db0efadedfa328117a8a24a40f6c5acd7764fb868",
+    "content/pico2/templates/uart-echo.s": "8db3e69c059f1afcd8709b990247d99f37d5827cf626be2d40efa564b12c1f76",
+    "content/pico2/templates/zcmp-call.s": "37b36648e1c6a6c268d3358cb170c15de29679e6963473fc9524f7878807db3f",
     "content/sap-1/exercises/both-differences.json": "9e3f5095dcabd9caf4c76ccfea51f1b00f3d54a656a61b75ce1fa70a9bda5664",
     "content/sap-1/exercises/index.json": "21f8be0c7c8ef70cf916df631dc07be1096ffc79e165a91ae4768f75e336734d",
     "content/sap-1/exercises/negate.json": "d937f215c441d805a6378860c3a7041d1b85d93888e683ada335977689e12c1c",
     "content/sap-1/exercises/running-total.json": "50439eb30bf4dfccc10f8e6d882ccf1da759dd67e33aa022220792f2a35d2f95",
     "content/sap-1/exercises/sum-four.json": "77b1042b731b4eaa49eb6b0da05fccb8232f11a0be06534b5ec42a2cf182ad72",
     "content/sap-1/exercises/times-ten.json": "44f7df0465b09c6885f7d1c1b9cdf8728e49cd1828a8f6c1edc780f432013699",
-    "content/sap-1/help/docs/index.html": "ed865abd4589cf1a5420044aec2cc41e115db576acffa90aa9180991cc4522ab",
+    "content/sap-1/help/docs/index.html": "80b6c49ec9ef5aea12f132bf63c8fd279c1565a00f307c3b101747e813c67e1a",
     "content/sap-1/help/help.json": "50ed6611b427bfa526487a38cd189be302107d829d97b8f046bbad377202a45b",
     "content/sap-1/templates/code-is-data.asm": "f127d497700a8752b3c1d6b44ec238cfe1cfcfcce3b7b2bcc4fabe60d0fb371f",
     "content/sap-1/templates/index.json": "4a87e9e8181b55a8a8fab038db46ff1808660fe86c9f3fdc6a32f1cbfb88546b",
@@ -442,7 +530,7 @@
     "content/sap-2/exercises/sum-to-n.json": "f632c4c56fb88ff611acd8a7bf25c958742686968fb115d241840d67022eb12e",
     "content/sap-2/exercises/swap.json": "7492ed3992bd539df45a03635592d243d68a75da7095b6199e368368799409fc",
     "content/sap-2/exercises/times-four.json": "5d4e0cb0cb0f61afe3a6b33c41edb7f1e312c647d226fa9821aaed6c7adc7691",
-    "content/sap-2/help/docs/index.html": "4f97013215d175ff7ad7c082f3b572a032931fb589c73ff8e602d72ee5736be7",
+    "content/sap-2/help/docs/index.html": "0f62071b1a5e96596e48c5d71ce76b56ce32e51920be4fb5b9c402cfcabbb6c6",
     "content/sap-2/help/help.json": "6198a622e8f4b1b3cb089849cff6fef763b73e7e3ca37d0987714fb3a8f391fd",
     "content/sap-2/templates/alu-next-fetch.asm": "36949e946acd60bee920cb3e0fa2b070ef6a255a22c3574933d4dcdf4d76e30f",
     "content/sap-2/templates/call-states.asm": "31995d560e4b335eaca10ba0493b1a89147751d403efc3e7e58e0ca11991f1ea",
@@ -497,12 +585,12 @@
    }
   },
   "corpus": {
-   "sha256": "f987372cd708bd8102e1023a0e2e7c16bb2b8e20b59b4cbade9b1a99ab198ebf",
+   "sha256": "32528edf8729faaabea9155b3f02a930453e340e36aa3cea5615cff944df1fbd",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
     "test/arch-contract.test.mjs": "eede5e6cb2b7354d629e9fec7da43b96b3d9f3b5176ce58925754dea2ed2be8d",
     "test/arch-riscv.test.mjs": "e5d2c2e2ee4652fe9fde85cb0362ca22af2c283e194c5bb050db48d7c7957369",
-    "test/arch-switcher.test.mjs": "8b6cdb1fb49175dc72bdb6b1045cb34f735e74417ac5909ade4a580caa4808ca",
+    "test/arch-switcher.test.mjs": "8bbdf00ab50e2ea44e4ba2c89e217a73f99c4166b75004ea2ac00113df672e8a",
     "test/armv7-engine.test.mjs": "1b39155e1328969cca9a0643235c0706a8a17933e15dd7d0cb265be4ecf0cd76",
     "test/armv7-equivalence.test.mjs": "aa4880cc750ec6580a90b3461083f1322fd5ecb91b39f01d225ef8afb4bb372b",
     "test/armv7-gnu-oracle.test.mjs": "a3c1006add7d634db8ab34d22b7b5e69b31bc1e63af4753355021ab9e24d9f87",
@@ -526,11 +614,11 @@
     "test/branding.test.mjs": "c1776e86d1911ef529d11bebfaafb815896304bfedd2565b2f1635d8ef19bd90",
     "test/cache-anim.test.mjs": "9ac0709b15e3ba44a79c013eee240af131d7142f66cd705927a84b49ece21cd3",
     "test/callstack.test.mjs": "01c15bbc006ca53f10430a9976d7ba39eb44e4be1564e7dc5078bd5a8c335500",
-    "test/capabilities.test.mjs": "20699c73c91881ec2060f93863488c1916a6c379fae033d6a35c51a50ee6abb0",
+    "test/capabilities.test.mjs": "bb52702172eeb01e1a72facad85b7245e4bef44a6d4cc298c0e2987933db4af1",
     "test/cc.test.mjs": "de3777dd752660b4faf4688c903f86b2f191fd1fb92c011db59c7c30f66acf73",
     "test/ch07-content.mjs": "17bd83ee475efd32d55748506eb848b28ea85727c51aaa6f83e517dcfaa29487",
     "test/compare-memory.test.mjs": "6b46bd74b52f98c2290ed39138ab5a7e28191d13cf11bc112a217b37a68e1e72",
-    "test/contract-v10.test.mjs": "0c9e06410da5daa89cf10de210c1761d569af67e6de66dff615582c8af8fa6c3",
+    "test/contract-v10.test.mjs": "68d4836c7507f8eff5817778344d8480c6bccb45689265232caef146603b61fc",
     "test/contract-v9.test.mjs": "4c165eea1ba96ec3a972e21556673fdf135a3d6cf621c7f5710ff83bd989ac32",
     "test/cpu-gpu.test.mjs": "bb8c40a7a6452e78a421d107762111e3ab25d978039b7d3a2247e77cfacf5d4d",
     "test/data-io.test.mjs": "b92820292d425cc50b2a0859433d7283427e346d796870c849ff575bf8094268",
@@ -542,7 +630,7 @@
     "test/exports.test.mjs": "ed16579a3249e06ea7c3cc08cb6494732bd8ec09b05474ebc66702a6ed4eca39",
     "test/fields.test.mjs": "d6eabc49998748ab762e546d07f8131c30cf9acdf45b71c57f813f018a16ae88",
     "test/fixtures/arch/acc4/index.js": "d9314ecf1b7c7f9fa6fed51e32a1d54f1d08271601d81a0b84fe9f18ecd79cf3",
-    "test/fixtures/dom-snapshot.json": "e904d550903aacea0f8cb0b927b190160204a0cce7831b69d469e230313e5158",
+    "test/fixtures/dom-snapshot.json": "351b8654f4b963cf3d6c643df05f53b428cd37431fdefcc88a70f05e497913a7",
     "test/fixtures/drawing-review.json": "84458b7cd332e5455eef99a02796e9ef4e2913e65ac4ff72a30bb774af9af975",
     "test/fixtures/exercise/sum.json": "086fa0c5dc7322ce10c2c1f4c53d6919dfbd74c2cb9422a0a7c1a954b51eb363",
     "test/fixtures/gcc/README.md": "aa0fd9f856c08c2c00acc7eb94ce17b3ee3eb6cd706e6989b4bddc9ec833c1a9",
@@ -661,28 +749,48 @@
     "test/pan-zoom.test.mjs": "735ff1fa587f2dff99e6f69db7c913462da58f6090d3be12207cbfe67368bb4e",
     "test/pico2-act-regressions.test.mjs": "062a614ee358ee11410ebe09f945bfe3b6fe685e27e985535cb8f98242d9956c",
     "test/pico2-asm.test.mjs": "f2b99eb9f64ef19c19345054de9e77d7b4d8129ea0eccfb4c54c420051d385c6",
+    "test/pico2-audio.test.mjs": "ce6398097b1419e740f9d6adf88309d0d7575c4e67d6bc0046af32c630e8d59e",
+    "test/pico2-buses.test.mjs": "ae2ee2a6b1c9c64d2fe6d1c39e4d671f6ae7916f29fb1b59daabc317b14f71bf",
+    "test/pico2-cc.test.mjs": "0d918977446e059023559a20ab2c68c5286a8980ccf2cd3af8fdbcbc6ae8d052",
     "test/pico2-decode.test.mjs": "c3cbdb8d7ef4bdd53399c1c06dbde560585ff96a1afd517a30afede692132255",
+    "test/pico2-dma.test.mjs": "2387837de8e9fab110d3535e643c647fc23fe0346b873400a2bd04f5e92ac4ae",
+    "test/pico2-docs.test.mjs": "1b5b77a8c93fd7d33b0fe988865e872ac16f6e903c8fc7edd1bf735a03e70175",
+    "test/pico2-dwarf-line.test.mjs": "b086bb12f06bad1d64a63704029ffd97a9ffaf917de48ef4a451e9ef133546ca",
     "test/pico2-elf.test.mjs": "61c6fb44d80ac3edf2e85b35ce951c5db43fa9721990addab86da1e8b671cfbf",
     "test/pico2-engine.test.mjs": "401aaa7e1a1498016259b99af906b79f9b361181012bf6c9707afc08e71c34d4",
+    "test/pico2-full-assets.test.mjs": "d46e698289bd87960c010f970d5428fd59455e091d5e9ed42b8ae6697839b9b8",
+    "test/pico2-full.test.mjs": "4cc674de3ad6e4353781d799c833c37f425d06d05dfe7b111078d94b6cd81b0e",
     "test/pico2-hart.test.mjs": "ad7ccdf412bef0c3d66920e9ae3b730dc2fbe092aeede20b5284baa1fcad7b39",
     "test/pico2-history.test.mjs": "3a31f0546300b91f649b5a37557952665bce4b5cbc5bc79ce7b15f47a1a129f4",
+    "test/pico2-import.test.mjs": "43092ae3a91b8dcdf7e6d4db2923251080d22d159efe5090e07276ce7fdfcfb0",
     "test/pico2-irqctrl.test.mjs": "14d881a7bd1244fc7bcf0b73120a2a642b0d1dc23ec45e8c9fa452dbb69db9a0",
+    "test/pico2-lite.test.mjs": "8c52934d1af79c1a4ab52a9c95c1558f8b47cfa7c1938cd62af8e0ccd65c3236",
+    "test/pico2-multicore.test.mjs": "0f0cba1709b0c324ef8b4ab2a2ec30edc779b63feb232db688c0f0314206b1c6",
+    "test/pico2-pio.test.mjs": "fcc6934057c936562b7f0ae5d11382a93200bea59c1ce1b61005a569efc5a06d",
     "test/pico2-pipeline-session.test.mjs": "50b896d93d619340de730e1cd478ad4b20d110785b46cb123043664feb6d28aa",
     "test/pico2-platform.test.mjs": "e6cda882a2e10021fd75a87405cf2e0c7ffda8844db01846259a2410fea3e212",
     "test/pico2-pmp.test.mjs": "1511cfbce5a77096a21182f839ed5a5f257db35b65cbb85825663b92d9d6b595",
+    "test/pico2-pwm.test.mjs": "8749896273f9e98509e5d349b4c79e2ab8c03b1f52c179e1a114ca4b44119c8f",
+    "test/pico2-realtime.test.mjs": "f2d25aefab88edd26996737ca2a04a0566e736b3311afb6c817f1da8770c8cf4",
     "test/pico2-stages.test.mjs": "5489fcdfd24250dcd2a7a8858c1ce6bfcdcd2a1b1ca19cac3411c824899e4ae7",
+    "test/pico2-templates.test.mjs": "dcfe677d8f3a0060590f9984efe4944d90a14f54ebc9b142d087026a03be74e7",
     "test/pico2-timing.test.mjs": "b3193ca60e731e7ac1513f21c92539e34610c43b4206002f7f576ed8b404677b",
     "test/pico2-triggers.test.mjs": "efd1e75999978f8d2c30d7ecf0bd6b207fb43051de80c8a1fa988a947d8f1b90",
+    "test/pico2-uf2.test.mjs": "d357b516e797fd31c1a37594cc07ca28ce94df9ee508aa2a91599a9146ddb4f7",
+    "test/pico2-validate.test.mjs": "d932f7920800ae52e7f50aac7628a808e568e7d3136752753f1c40d980135729",
     "test/pico2-zcmp.test.mjs": "44d3161001609272e0aa9f863c4a25178dcbab72df1cbaa3734e2aad73b2908e",
     "test/pipe-paths.test.mjs": "31bc769f9fa7fe11d70890b8ef50ecb6d43fe7a4caf0ddaab21f59612570a0f4",
     "test/pipe-summary.test.mjs": "0bdac87854cd92cd0714b53cb6463e7c3b5c4ffe999f80038c8561b5a1074327",
     "test/pipe.test.mjs": "618238ebb1045ddfb48071dad1bf5c0957af60444dc27162cf8b744bcb1c9313",
-    "test/platform.test.mjs": "906b7e4509196a371acf7706e9b4fa25890bd61f521bc0b7ba46492218a4af45",
+    "test/platform.test.mjs": "a8a45e369a85ad066308e95b81ad78923450a5f2380040f1d25f8693e1a855e7",
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
+    "test/project-session.test.mjs": "550d105d191891d5264061df286c804f557956c3aa964fc382a6a22f15c8955b",
+    "test/project.test.mjs": "6a56ff7f625541be2650a7382c3f6c8de9a92adc48d68538d30d2dd07198313a",
     "test/random.test.mjs": "f4c2506d4c73ec9b028993e06efeb9608b99e1dc8552021d111efdf8fe0bc59e",
-    "test/release.test.mjs": "64b257653588d5da9dd84c00cf13dd563609c95307f4d480119ed0f93992d6fd",
+    "test/realtime-pacing.test.mjs": "cf40d04f1766f0537138e5e9d36bfed0a61502f510f007d47230854444f430b7",
+    "test/release.test.mjs": "b5bc6d9ec56d8b96ebd0441d575db00db01c025a81cc260aa50bb158e9c1e5b7",
     "test/sap1-bus-model.test.mjs": "1913ce4c7182278de219f52d06c958f68eed155fe7f433de9fd849df8417b841",
     "test/sap1-engine.test.mjs": "11d8227fda92d105613f0a2c05679b14aa18a4b113b4709c92f1c31292f71eaa",
     "test/sap1-extras.test.mjs": "8b0e7cbdab16c97c8d073fb72cb0a398d00f961cebce4d5f8755014cd76c9a20",
@@ -698,7 +806,8 @@
     "test/schematic.test.mjs": "6d8f2e8d30c8a5e906d8a2c2fcf36bcd4ceb8e65f79e344a53ccf5cc31d6417e",
     "test/scratch.test.mjs": "123bc357f09f04cb5d84c9091a400d4a921bae9fcadc78ea37488e153e04e7f7",
     "test/session.test.mjs": "04431e64dddb0ba9b9526cdf2c2d747482b365d0d053a34b7475d60c7c9e1ef5",
-    "test/share.test.mjs": "5f480d5098c2597c40fe57c7295ea941b5d65abb83561666f37cae0f6f376463",
+    "test/share-v2.test.mjs": "69368bc0d69fc74e18da1955b7ffa3eaf5a051da430b126d30c03f5076e3bdb1",
+    "test/share.test.mjs": "95a2e0374ceb1f16a3562462ba90599bee82558cb23777be4ab93501c0500da8",
     "test/shell-format.test.mjs": "87f41b1f21a9cda817696e4a1c66aa75e27c464e9309ec2be4c17dc263e341a4",
     "test/single-paths.test.mjs": "24664755d1c04dac1707ac7f301fb93572195afeb67d6175dc4f7bb7c416f66c",
     "test/single.test.mjs": "5e814551e3fe2fa48e252181f93333d9655219e2a6f57f2153c67792d43f8a02",
@@ -710,13 +819,14 @@
     "test/uninit.test.mjs": "7703a40cd13f36bbcb96384d60a633b7c713cb962a00ae2bb5210b6e179bc234",
     "test/view-mode.test.mjs": "71efd4ef3157af058ce6068eb7a964f1fbdaab173293d82ebd539d4390cdeebe",
     "test/wire-colours.test.mjs": "ab8c01ea4d3a9bb40e8c800203ba4b19b80354411b0bc6bfabbf1251d959e673",
-    "test/workspaces.test.mjs": "59903c7db8c97d4c83e9d4963a8d4750e2165e73467a6f559690d56c8d8baa40",
+    "test/workspaces.test.mjs": "9869c14600cdcff936cbcf84cc68015d18a6b47febc5a7045a4db9fa4d00502b",
+    "test/zip-browser.test.mjs": "21786a81ea8bd672658ebc37ff84dcc1f99fe5e09d1a8555dc8920efa4d1477e",
     "test/zip.test.mjs": "0a6206256fdb0685cd376c12e48f07c15f65695c7920a0a2521a289f776ff2f5",
-    "(not published: tests that need the private book repository or hold exercise solutions)": "54 files, sha256 ea94beeb7bda5aae0af117e5c2763e74011fd6dc64a24360e252081fd393e2c2"
+    "(not published: tests that need the private book repository or hold exercise solutions)": "63 files, sha256 005b64fa87fc5826fc917491f02a7d67bef773a75e8101cbb88887e7513bd0a6"
    }
   },
   "tools": {
-   "sha256": "cb5824981c4beca294a51ea76559f17456796ac8812d03a4d8a76b16bea745e1",
+   "sha256": "47474ee1ea33568f8efbcc69ee199a425ca72e9cb3d950e4133dfb31ddb1a8f2",
    "files": {
     "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
     "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
@@ -737,15 +847,16 @@
     "tools/armv7/preview-single.html": "8d3505b1ba2fb3f496149166e6dd61de8d8a1943f03b50805d3b4f431d2f61de",
     "tools/armv7/preview-single.mjs": "ee92e3577f35afd87e8af647a71064cb9dd06b41402c780f8da5d67428d330dc",
     "tools/armv7/single-smoke.mjs": "5b25e4c9a04ecc83d6e56d8123042bf0a12ade6f4709bc82f544704f8eadafb1",
-    "tools/browser-smoke.mjs": "3365c0e61005313b6fb9f8016d0272d3fa9cf7619c614b73c509b835b8848f0c",
-    "tools/browser.mjs": "bdfb9016c4e657546371a233980d41ba41264f99b1f3add9bdfcbc664175018d",
+    "tools/browser-smoke.mjs": "b42e8b1d5ed9c457af5c931cd3bf953eb18563453cda4ba9997aa5b53aab2305",
+    "tools/browser.mjs": "174908d0563baeab99a44e0f7c8e3f18589fff2710689a8bb05501b0ef9255b3",
     "tools/cpu-gpu-smoke.mjs": "f98c49bebee35acf459506dff73b783ac948bf789290e7755fb13e4a6cc270a2",
     "tools/dock-smoke.mjs": "284e1d6da94633addcb394f5c46dae2420f8a861887b675ef96a7b537c914bb7",
-    "tools/gen-pico2-regs.mjs": "e514e205de189b6945e9b165753782da609d814270b5d08b7518561d9846dd0c",
+    "tools/firefox-bidi.mjs": "3eca8347769505cf9b4c74b5177621c9026c93c369bf23012912c71ff28a638f",
+    "tools/gen-pico2-regs.mjs": "bf7485268f7cbaae2220f525e85e845d83ee84b9d8e5ba40a2826c512b9cc6f5",
     "tools/gpu/host-templates.mjs": "b289b183fab05e761b6f24b968ef9b40d9a54398ee30e0bb09e05ab0b49fbb35",
     "tools/gpu/lab-templates.mjs": "f266a9ef4bd02489e0730f16531ad5e211ac0f2aed5a68ec4b91c4ef67b8f98e",
     "tools/gpu/make-exercises.mjs": "06a178e652771ddfd7b280600070d984bdf18602f426336528e2edcbbd9f3a8f",
-    "tools/header-smoke.mjs": "edd8f6d526fb18a78accd98589c041175fa3b17753c09e61a59304648ba6d6cd",
+    "tools/header-smoke.mjs": "9c3ff6252887b0f7fd0b397a8494b1a499632b5630b592518f4137e3654e2969",
     "tools/i8086/biu-check.mjs": "92a17e962aa62184b72b8faf9b1a70baf121387e296fa538355e6131bac4731a",
     "tools/i8086/irq-smoke.mjs": "e2521252c77cf63d0e6a2561ed18024a1c4b1c31cdaa486f5388534b185c0d03",
     "tools/i8086/lockstep.mjs": "24ef1ae139fcdc0d27a45e05e43fa378883a8274e083911aab7a054b77980642",
@@ -763,42 +874,82 @@
     "tools/logo/hero-variants.js": "fdc287e1dbaff28e47374e8d459b06953e91d5dac872bc53c4b56b9e0d6427e3",
     "tools/logo/lockup-parts.mjs": "04f1c6f2b474d5fcc66080320aa87a7a1ea326207e706a5ed897576f6bff606d",
     "tools/logo/make-hero-variants.mjs": "e1a15d33ff93bd5f96db598bd88daf5a0a22b6c05ce2400c77d2752f2f34ed2d",
-    "tools/logo/make_logo.py": "28bdfc59c8d93e1f3dac88010474423380cb211eb076d8fafee90d53634dd9e9",
+    "tools/logo/make_logo.py": "7907f7412fa08d713baab531024246a025972f3125c9820883390269b0ea74bb",
     "tools/logo/mark.json": "7cda5546946400fcc89ffd6fac072265e57c27ddec00fd2a554d76a81923a496",
     "tools/logo/markfit.py": "3aaae38a8ce17fd4e8520c835e4d719c79e0666a5af9971a6138b4df1014acad",
     "tools/logo/seg.py": "966e267dabda7f2e49bd60296c0e4f3f712526d1160e2143c504b6fbd2ac76bf",
     "tools/logo/svgo.config.mjs": "5c03a29148d1674b45a3dad2a3459ed5c2fead60121a95dd1518a8541249c60b",
     "tools/make-boot-screen.mjs": "bfe0ff7e2a98d4a12c9b4d8a956b87f9969b3a589a40f43643cccda9e8bb3421",
     "tools/make-exercises.mjs": "a6c86017aa4abadca666e4617fb1d148a5fa977aa5dbe2c15b2e280928e4b67d",
-    "tools/make-mavilera-brand.mjs": "c2324e45ea14f0528588fb83308e315dd802a80bb035164005cf990166e342e0",
+    "tools/make-mavilera-brand.mjs": "4faee842e853693c58f5a39f2ed92802dcdf8da3efbe11474ad4da6e51c94932",
     "tools/make-sap1-exercises.mjs": "e8c754b46ecf83398bf030f48b2ba2f40a34dee52d03e40fdf49ba19845d57bc",
     "tools/make-sap2-exercises.mjs": "b25aa4d90efcbf7ebe72cac3fc277653619fb8205213f3b22784afeda471d401",
     "tools/minify.mjs": "d4d8ce86001274c36ca7f0ecfbb605a433fe8ba0c56774149b6473efecf09ca2",
     "tools/mobile-smoke.mjs": "fdfc238c5059141782f3adbc1afafdc46cc47d14216f4a070efa9db4644893a4",
     "tools/models-smoke.mjs": "9a7c3de8edda5ab3dec559130a8b09e41820ae77db0f601c6bca416617d1469d",
-    "tools/module-smoke.mjs": "acfbe4b3723edc264a5353563aebd2b8c28279fcf44ad4e71f91e9c1bf2664f0",
+    "tools/module-smoke.mjs": "155547fb0806e403c3966284a527a1505ec9313a18574019be8458caeeed62f6",
     "tools/npu-smoke.mjs": "919d7b70a1844b9af0c087c4185f28e82b2eac09a37161717a73be96e543e7e5",
     "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
     "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
+    "tools/pico-full/README.md": "fb8ce85910f6bb2fac1e5bda6ec6dc450ac020d2e46c1d61746d55819b98b81e",
+    "tools/pico-full/build-ccd.ps1": "c88be7c3d86739c65988341971123e4d2aef004289dea655b139786cc5b16ef1",
+    "tools/pico-full/build-check.ps1": "06b56700985489cadde3b5ae3f5b283649471515483652c7ae94e55680c0ef3e",
+    "tools/pico-full/build-llvm.ps1": "b28815bbd92b6e30a468f410a050b9a829de295bbcb5cc8dd9ae97d5247fb586",
+    "tools/pico-full/build-pack.mjs": "e148289375e57e83236b6ca6e411c89c33c1a566799920e495b5a63a4f518cd4",
+    "tools/pico-full/build-profile.ps1": "e279eb52e3b456d6fa562152a78a25d68a500cb622b7306c2799a83032cb493c",
+    "tools/pico-full/build-runtimes.ps1": "ce73497026f6a2ad4967f813bb48c2490fe5e23a41d25b9af05ef3666f0f387d",
+    "tools/pico-full/ccd/ccd-client.mjs": "40587b23227ebd6613434cc52da424a0b1ba4aa0bf12563bb4b46e0debee9310",
+    "tools/pico-full/ccd/ccd-server.mjs": "1c9711a34510932c1b9fe43e9f38a064269436b9340965163add3a11ed74e110",
+    "tools/pico-full/ccd/ccwrap.c": "f04e964b8f3956e638664ea7a88fcbece370b735c3f791647d0f9e8484302bc0",
+    "tools/pico-full/check-pack.mjs": "837e936b52f2005f0d47e8d94f6eefbe539a32c694c705223ba07de54e5088f6",
+    "tools/pico-full/check/CMakeLists.txt": "a288f55ffe63ae8a84caedaacb719bc739031803f474a4482f429bd6ab699dd5",
+    "tools/pico-full/cmake/TC-picolibc-rv32.cmake": "42b804c80c0de188874d5bba49b3d65c520a3a4d6d2f7059f1412eba9b05ac1a",
+    "tools/pico-full/cmake/Toolchain-RV32-wasmclang.cmake": "00898ec1bd6885d91e3f327cfeb9d455827de512080eb1752d4f6387e9a4fb46",
+    "tools/pico-full/cmake/Toolchain-WASI-LLVM.cmake": "f75cc60faba4d6a198f31b6fdc5278b3fc99a1343fa42f0d9ee9ddbde1a80c51",
+    "tools/pico-full/cmake/cxx-shim/cassert": "e63b3328a2ff575bafde3cf6d00ebd6b0801b8f5e09db8d36c08cae5073cadac",
+    "tools/pico-full/cmake/pico_riscv_wasmclang.cmake": "b43b6021fc2ec41695f70a2b1534b2d5c251b3e8f27969bc14cc17ddca681a1d",
+    "tools/pico-full/env.ps1": "7335648015129047072115cf387ea0a312af4a12aa05473f807c0a964c6ed056",
+    "tools/pico-full/excluded.json": "39798a870582faad355331082636baf01d93d9456c23ca14980c5637be208070",
+    "tools/pico-full/fetch.ps1": "1d2a1a7a284bc8e5c536a8a86fa9bad1304aabb16c0793cd4a139d3475402dec",
+    "tools/pico-full/llvm-23.1.5-wasi.patch": "c2d5fdf88a2dbe9aa3054a56afe2d172f6035b782664f5038365b59099e0c08a",
+    "tools/pico-full/pins.json": "65f3f86da11e3dc6712fea9bbdfd550db36d3bad99f80ab29cb231f817cdac92",
+    "tools/pico-full/profile/CMakeLists.txt": "667fb241f4f43289d4fc7362c0d6b3acda1a1c31dc020a08e83275a05565e36b",
+    "tools/pico-full/profile/main.c": "3085bf04a4877d9155e08d9f8d10dd64f7c9b47cbcfc328b529031152be14990",
+    "tools/pico-full/stage.mjs": "5ef7f70b5167291713c3f3ed672cd33e51f0dade37fc0a028db6384135a0b010",
+    "tools/pico-full/start-ccd.ps1": "965ed9f9d12a8a35b340062b2b1cdcc6393ae18ec15cc2babd31cc850fa02e44",
     "tools/pico2-act-run.mjs": "b564ebf04ecb82b3b41ce0e448a8308f4a31bf8691e00fa5937a5171938209da",
     "tools/pico2-act/make-config.py": "4b5575b7ff03879b240206474576a61aed9616f95e634169cc98540febb65ea9",
+    "tools/pico2-audio-smoke.mjs": "1e4c6af722ab4ce74e5b708696dbd0f3c2b78a15b1b29368f09329d07bdec274",
+    "tools/pico2-buses-smoke.mjs": "9ac55a430a5f9256995ad2013c71c7e95b021525418e973e4996f4a59a0e6e9e",
+    "tools/pico2-c-smoke.mjs": "097b5d7c44e58d15e33cb411bcfab0b1c8a1e583e9ab918f4d1c812a767b6399",
+    "tools/pico2-cores-smoke.mjs": "8fb1f329994e760fa851ce4170fce81b9a6d2deeb29761b1e42fda4b01ee5dcb",
     "tools/pico2-decode-oracle.mjs": "abaf6c244cef199a592be0ac730d0edabf369916c69c78e2ce412cd623e74d89",
+    "tools/pico2-full-accept.mjs": "c3cbf350f76a7dde38d12e575a379ebeb2e1c3c166b6325403f84788114fb4e7",
+    "tools/pico2-full-shell-smoke.mjs": "399d67bde02e216cffe0e0334f3c51dc5ce937000a5247a83941910b123af682",
+    "tools/pico2-full-smoke.mjs": "23767e99c9cbe1aece43e3f8a768a8c0452724df34cfdc5bd39fab169e3d81f7",
+    "tools/pico2-import-smoke.mjs": "6249bd80510464f7cc99245279fe837ec5590f3ea4bd48c6372ca1b95bd8eabb",
+    "tools/pico2-lite-smoke.mjs": "a9988c4144add87dfe66c2de373efc55dda68f24b619eb13f2d5d64106f6bed8",
+    "tools/pico2-pio-smoke.mjs": "2dfd3a365e3238a23581bc31e4cc6e30149f7f975cf129b6eb6a15991d3db7ed",
+    "tools/pico2-pioasm-check.mjs": "54aca8709c974b8856cbd2f8794e725e7f39f71363c229980b2466356624e82a",
+    "tools/pico2-projects-smoke.mjs": "7d00b9322a2ec59eece10f879cb30247c9de86ff64454ee81936a4f71bd9f94b",
+    "tools/pico2-realtime-smoke.mjs": "c8cdd2b3f6fbf7c99de07b1193c970c2d0f332964ed236392435ec95e0546530",
+    "tools/pico2/make-exercises.mjs": "d7800dfe521687624f46bea8a7d22e02f143270722b8ff5d6baa5546437b9205",
     "tools/release-zips.mjs": "1561fe8cd612e9f505acdb881d0fc3046a3b6c229e4be328e08357b3a576f78e",
     "tools/release.mjs": "c1073137739a635449f6da4a2fbeb9d5c9e6acde5b3f7ed30485209d318b5d1f",
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
-    "tools/serve.mjs": "b4989cc1c2fe803d7303e78e0905eb18d8a35ab74f96036b8a70d6cd5a30d3e0",
-    "tools/site-files.mjs": "37120836f4fc601129f6474c866c275ccd7b064d159454e43be9074b6b4ae9bf",
+    "tools/serve.mjs": "af6feecf0aa7efaa7de1f09780e38d56979c12a2ffca9864f1b97a067ec31aa1",
+    "tools/site-files.mjs": "2d9e368ac41435f801d6622a635b762571d5bbc3597107a93e6690a9edb8b000",
     "tools/view-mode-smoke.mjs": "90f72bc0e92b337ea622d7f82a7f67f1a338892e228ed617571e84aac10377d3",
     "tools/zip.mjs": "ead8c71f183e52385ce4dd42a4b921731a435bcb19b6c6d84ce3e4fec4dc09d4",
-    "(not published: scripts that read the private book repository, and the publication scripts)": "19 files, sha256 18d43e039a3f606dc829710fadef7c570341f1c3f0ca1f19c5962d06080de0fd"
+    "(not published: scripts that read the private book repository, and the publication scripts)": "19 files, sha256 a04e388bd7857ab7518574d0c80048fa0d3bc524f16ed69e8e02beff661f7109"
    }
   }
  },
  "reference": {
   "repository": "book repository (private; paths not listed)",
-  "commit": "43371e4b9f802a2cfca81b07d4a41c7aa100e3c4",
+  "commit": "e3a39fda7155abe5b431df54a8846d47fea61c91",
   "uncommitted": 0,
   "groups": {
    "chapter 6 reference RTL and model": {
@@ -838,7 +989,7 @@
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1548,\"pass\":1548,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1264,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1758,\"pass\":1758,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1430,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -3063,6 +3214,11 @@
   },
   {
    "file": "test/contract-v10.test.mjs",
+   "name": "v10: language.imageKinds lists kinds from IMAGE_KINDS once each and needs loadImage; imageImport needs loadImage",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
    "name": "v10: realtime and its capability go together",
    "ok": true
   },
@@ -3074,6 +3230,11 @@
   {
    "file": "test/contract-v10.test.mjs",
    "name": "v10: the version is 10 and the new names are listed",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v10.test.mjs",
+   "name": "v10: View.layout gives a datapath view its default pane sizes, within limits",
    "ok": true
   },
   {
@@ -6207,6 +6368,121 @@
    "ok": true
   },
   {
+   "file": "test/pico2-audio.test.mjs",
+   "name": "a 1 kHz square wave from PWM on the speaker pin gives frames at 48 kHz of machine time, mostly at 1 kHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-audio.test.mjs",
+   "name": "engine: configure from the shell's option values, drainAudio up to the present time, the setting survives reset and snapshot",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-audio.test.mjs",
+   "name": "PWM + DMA sine: a channel paced by the slice's wrap DREQ streams a 64-entry table into CC; both converters give the tone",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-audio.test.mjs",
+   "name": "the ideal DAC falls back to pin-accurate for a pin that is not a free-running trailing-edge PWM output",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "ADC: DIV paces free-running conversions (one per 1 + INT + FRAC/256 cycles of clk_adc) and DMA reads the FIFO by DREQ 48",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "ADC: free-running round robin into the FIFO (RROBIN 0b00110 from input 0: 0, 1, 2, 1, 2 …), SHIFT, OVER, THRESH and IRQ 35",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "ADC: one-shot conversion takes 96 clk_adc cycles; the code is round(V / 3.3 x 4096); the temperature sensor needs TS_EN",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "I2C: write and read through a repeated START; a NACK aborts (7B_ADDR_NOACK, flush, STOP); IC_CLR_TX_ABRT clears it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "P1-M7 exit criterion: ADC, SPI0/1, I2C0/1 registers read their SVD reset values once out of reset",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "parts: BMP280/BME280 raw values compensate back to the environment; MCP9808 below zero; the LCD in 4-bit mode; the 24C02 page",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "save and load carry the ADC, SPI, I2C state and the kit (EEPROM, LCD, environment)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "SPI: a frame takes bits x CPSDVSR x (1 + SCR) clk_peri cycles; loopback returns each byte; the RX FIFO overruns (ROR); DREQ",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-buses.test.mjs",
+   "name": "SPI: frames reach the kit's BME280 only while its chip select GP17 is low and the pins select SPI",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "<rp2350.h>: every register macro is the SVD address; three checked against pico-sdk hardware/regs; the helpers declared",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "exit criterion: 32 generated subset programs give the same exit code on pico2 as in the RISC-V module, both modes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "exit criterion: programs.c 1-5 of the book give the same exit code and output on pico2, both modes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "helpers: pin_input and pin_read follow an external drive; pin_write drives the pad; a helper without the header is undeclared",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "putchar output: the same text on pico2 (UART0) as on the RISC-V module (console)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "the descriptor opens cLanguage with the C extra language; it validates",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "the example at each clock: the same UART text and 100 ms LED period (TIMER0 counts microseconds from clk_ref)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "the example: its UART text, ten LED edges 100 ms apart on GPIO 25, exit code 0",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "the RISC-V module's compiler is unchanged for its own targets: no <rp2350.h>, putchar still ecall 64",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-cc.test.mjs",
+   "name": "the start-up (P1-M4 D36 Q2): clk_ref 12 MHz from the crystal, clk_sys = clk_peri = the chosen 1, 4 or 12 MHz (default 4); the four blocks out of reset; UART0 divisor; TIMER0 in microseconds",
+   "ok": true
+  },
+  {
    "file": "test/pico2-decode.test.mjs",
    "name": "a compressed instruction decodes to its 32-bit operation and keeps its mnemonic and length",
    "ok": true
@@ -6257,6 +6533,126 @@
    "ok": true
   },
   {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "aliases: AL1 TRANS_COUNT_TRIG and AL3 READ_ADDR_TRIG start the channel; a null trigger raises the IRQ only with IRQ_QUIET",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "arbitration: two unpaced channels alternate; a HIGH_PRIORITY pair goes before one low-priority transfer per round",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "bus errors: a read from SIO halts the channel with READ_ERROR, raises its IRQ, does not chain; restarts only after the flag is cleared",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "CHAIN_TO: the chained channel starts the cycle after the last write; a channel ignores triggers while busy or disabled",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "CHAN_ABORT stops a channel; RP2350-E5: it chains if it wrote last; RP2350-E8: a zero-length sequence chains only if it wrote last",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "memory to memory, 32-bit, unpaced: one transfer per cycle from the cycle after the trigger; BUSY; IRQ 10",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "MODE: TRIGGER_SELF restarts with the reload count and raises the IRQ each time; ENDLESS never counts down",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "pacing timer X/Y = 1/10: one transfer every 10 cycles",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "PWM DREQ: a slice wrapping every 100 cycles paces a channel that writes its CC (the double-buffered value each period)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "rings, decrement, increment by two, byte and halfword transfers, BSWAP",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "sniffer: CRC-32 (reversed data, reversed and inverted out) of \"123456789\" is 0xcbf43926; CRC-32/MPEG-2 0x0376e6e7; CRC-16-CCITT 0x29b1; sum; parity",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dma.test.mjs",
+   "name": "UART TX DREQ: bytes go to UARTDR only while the TX FIFO has room, in order, without overflow",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "citations of the datasheet use sections of the cited release; help blocks that cite it record their source",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "every diagnostic that reports a gap of the model has its line in Limits of the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "internal links of the guide resolve; its contents list every section",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "Limits of the model names exactly the blocks the machine does not model, or only stores",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "no student text calls the module a development stage; help topic ids are unique",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "the descriptor names the guide and the exercises; the guide is a page of its own with the module's title",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "the engine's warnings have the contract's shape, so the shell shows them in the console (P1-M9: they did not before)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-docs.test.mjs",
+   "name": "the guide names every template and every exercise",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dwarf-line.test.mjs",
+   "name": "refusals: 64-bit DWARF, truncation, an unknown file number, a reserved length",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dwarf-line.test.mjs",
+   "name": "SDK-built ELFs of the P1-M2 set: the line table reads, and main has a line in its own C file",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dwarf-line.test.mjs",
+   "name": "version 4: include directories, 1-based files, DW_LNE_define_file, two units share one file table",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-dwarf-line.test.mjs",
+   "name": "version 5: every standard opcode, last row of one address wins, sequences sorted, lookups as addr2line",
+   "ok": true
+  },
+  {
    "file": "test/pico2-elf.test.mjs",
    "name": "load and run: the program leaves 55 in `result` and stops at ebreak",
    "ok": true
@@ -6304,6 +6700,146 @@
   {
    "file": "test/pico2-engine.test.mjs",
    "name": "wfi with no interrupt enabled stops with an error",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "blink-period: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "count-ones: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "count-presses: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "inputs reach the program at their times; a wrong answer is reported with expected and actual",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "pio-pulse: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "print-number: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "pwm-duty: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "sum-words: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "the index lists eight exercises in the module's groups, each file present",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "the runner refuses what a Pico 2 test cannot do, and names it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-exercises.test.mjs",
+   "name": "two-core-sum: the starter builds and fails; the model solution passes every test at clk_sys 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full-assets.test.mjs",
+   "name": "a server that does not answer is a network error",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full-assets.test.mjs",
+   "name": "download: a WebAssembly file is compiled while it arrives",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full-assets.test.mjs",
+   "name": "download: progress rises to the size and ends done; the bytes are those of the file",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full-assets.test.mjs",
+   "name": "gzip-encoded files are decoded, then checked against the decoded size and hash",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full-assets.test.mjs",
+   "name": "integrity: a file whose SHA-256 differs from the manifest is refused",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full-assets.test.mjs",
+   "name": "probe: the manifest of the current version, with absolute URLs; nothing cached without Cache API",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "build: a .pio file in a project becomes <file>.pio.h for the C files; the built program runs its state machine",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "build: a program with the precompiled header gives an ELF",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "build: a rebuild does not see the previous build's files",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "build: an undefined function is a link error located where it is called",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "build: C files, a header and an assembly file link together; .txt and .md files are left out",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "build: compile errors in two files are all reported with file and line; nothing is linked",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "diagnostics: clang errors in project files and SDK headers, notes, lld undefined symbols",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "driver: templates expand whole-argument placeholders and the object list; a missing value is an error",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "driver: the precompiled header is used only when the first directive includes its header",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "in-memory file system: files make their folders; list, rename, unlink",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "pack: write then read gives the meta and every file; other bytes are refused",
    "ok": true
   },
   {
@@ -6437,6 +6973,31 @@
    "ok": true
   },
   {
+   "file": "test/pico2-import.test.mjs",
+   "name": "descriptor: imageImport on, image kinds uf2/elf/bin, the C source view registered; the descriptor validates",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-import.test.mjs",
+   "name": "loadImage: a UF2 built here boots at its ENTRY_POINT and runs; the notes become warnings; a refused file throws the reason",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-import.test.mjs",
+   "name": "matchFiles: the longest run of trailing path components, without case; the file name at least",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-import.test.mjs",
+   "name": "SDK builds: UF2 and ELF imported, booted, and in the same state after 200 000 steps; the ELF brings functions and lines",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-import.test.mjs",
+   "name": "source session: a line breakpoint on main's first line is reached from reset; step line moves to another line; back line returns",
+   "ok": true
+  },
+  {
    "file": "test/pico2-irqctrl.test.mjs",
    "name": "csrrs/csrrc forms of the window registers go through the instruction path",
    "ok": true
@@ -6474,6 +7035,161 @@
   {
    "file": "test/pico2-irqctrl.test.mjs",
    "name": "taking the external interrupt pushes the preemption level; a lower priority no longer interrupts; mret pops it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "an assembly program gets no debug record",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "editions: a module without editions is unchanged; bad edition shapes are refused",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "editions: pico2 declares Lite (default) and Full; each edition's descriptor is valid",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "MAVILERA C functions: the global text labels, each up to the next",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "MAVILERA C line table: every instruction with a C line maps to it; start-up and helpers have none",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "MAVILERA C stepping by line follows the example; a line breakpoint has the line's addresses",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "primary button: Build from a changed or unbuilt text, then Run, Pause while running, Run again after the end",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "research D38: Step line and Back line on the shell's own engine (Language.lineStep), mixed with single steps; the C source view only for opened images",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-lite.test.mjs",
+   "name": "the C source view's reset starts the UART output afresh (Run again shows the text once)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "a word out of sequence restarts the handshake (each word echoed)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "an LR reservation of one core is lost when the other changes the word; save/load in the middle of a two-core run repeats it exactly",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "doorbells: OUT on one core sets IN of the other (IRQ 26 there); CPUID per core; MTIMECMP per core; RISCV_SOFTIRQ per core",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "engine: Step is one instruction of core 0 with core 1 alongside; Back after core 1 has run replays; a breakpoint in core 1's code stops Run",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "FIFOs: 4 deep each way, VLD/RDY, WOF on a full write, ROE on an empty read, IRQ 25 on each core",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "h3.block on core 1 sleeps until core 0 executes h3.unblock; the sleeping core idles along; cycles stay within an instruction",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "launch: core 0 sends 0, 0, 1, mtvec, sp, entry with echoes; core 1 runs there, answers through the FIFO and parks on return",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-multicore.test.mjs",
+   "name": "PSM FRCE_OFF.PROC1: core 1 held off and parked; released, it drains its FIFO and sends core 0 a 0",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "a count-down loop (jmp x-- to itself) takes (X + 1) x (1 + delay) cycles, skipped or not; a forced read in the middle sees the true X",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "autopull and autopush at their thresholds, FIFO join (8 deep), FDEBUG TXOVER/RXUNDER, FSTAT and FLEVEL",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "EXEC: out exec runs the shifted-out instruction next; an INSTR write that stalls is latched (EXEC_STALLED) until it completes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "FJOIN_RX_PUT/GET (RP2350): mov rxfifo[], isr read by the system through RXF0_PUTGETn; mov osr, rxfifo[y]",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "IRQ flags: set and wait between two state machines (seen on the next cycle), REL, the flags register and IRQ0_INTE to the interrupt line",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "IRQ NEXT/PREV across blocks (RP2350): a state machine of PIO0 sets a flag of PIO1, one of PIO1 waits on it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "MOV STATUS (TX level < N, and an IRQ flag on RP2350), MOV PINDIRS, and the DMA paced by the TX DREQ",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "research D43 (Q3 B): a .pio file beside an assembly program: its words at <name>_program in the data section, its symbols; errors in its own file; pioasm's version 0",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "research D43 (Q3 B): MAVILERA C includes \"<file>.pio.h\", generated from the .pio file at each build; without the file, a hint",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "save and load in the middle of PIO activity: the run from the checkpoint repeats exactly",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "set, side-set and delays: a square wave whose period is the instructions and their delays, exact to the cycle",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "the assembler: every instruction form of RP-001 §11.4 against its encoding; side-set rules; errors with lines",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "the clock divider: integer 3 gives an enable every 3 cycles; 2.5 alternates periods of 2 and 3 (first-order delta-sigma)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pio.test.mjs",
+   "name": "wait pin through the synchroniser (2 cycles) and with INPUT_SYNC_BYPASS (none); jmp pin",
    "ok": true
   },
   {
@@ -6622,6 +7338,101 @@
    "ok": true
   },
   {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "a slice reset by RESETS returns to its reset values and drops its IRQ",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "DIVMODE: gated by B high, counting B rising edges, falling edges (the B pin is an input; CC_B ignored)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "double buffering: a CC write mid-period applies from the next wrap; 0 % and 100 % have no edges; A_INV inverts",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "EN at 0x0f0 aliases every CSR.EN; a disabled slice holds its count; CTR reads and writes the count",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "hello_pwm: TOP 3, A = 1, B = 3 at divider 1: A high 1 cycle in 4, B 3 in 4, rising edges aligned (RP-001 Fig. 117)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "interrupts: a wrap sets INTR; INTE0/INTE1 drive IRQ 8 and 9; writing 1 to INTR clears it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "period = (TOP + 1) x (PH_CORRECT + 1) x (DIV_INT + DIV_FRAC/16): divider 1, 2.5 and 256 (DIV_INT 0)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "PH_ADV inserts a count, PH_RET deletes one (divider 2); the bits read 1 until done",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-pwm.test.mjs",
+   "name": "phase-correct: 0..TOP..0 with two counts at TOP and at 0; the pulse is centred on the wrap; period doubles",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "a snapshot carries the UART output, the pin log and the checkpoints: an engine restored after a run elsewhere shows the text and steps back",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "advance: a sleeping core idles to the slice end without a step; an input wakes it at the cycle given",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "advance: slices of any size end where run() ends (same steps, same state hash)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "advance: the cycles returned are the clk_sys cycles run; machine time follows the clock",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "inputs are checked; breakpoints stop a slice before the instruction",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "replay: an engine created with the input log meets the same steps and the same state (pins, idle)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "replay: UART bytes typed during a run give the same echo and state on replay",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "reset returns to the inputs the engine was created with; stepping back past an input withdraws it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "snapshot and restore carry the input log and the idle cycle (the Worker hand-over)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-realtime.test.mjs",
+   "name": "the clock option (D36 Q2): the assembler predefines its symbols; a program's own .equ wins; the device templates run at 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
    "file": "test/pico2-stages.test.mjs",
    "name": "a loop: the first taken branch sets the BTB, the next ones are predicted; the diagram shows F, X and M per step",
    "ok": true
@@ -6644,6 +7455,146 @@
   {
    "file": "test/pico2-stages.test.mjs",
    "name": "stage model cycles = ticks on the five P1-M2 firmwares (500 000 steps each), and after stepping back",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template adc-knob (adc-knob.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template blink-asm (blink.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template blink-c (blink.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template dma-copy (dma-copy.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template dma-sine (dma-sine.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template fifo-message (fifo-message.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template gpio-button (gpio-button.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template hello-c (hello.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template hello-uart (hello-uart.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template i2c-lcd (i2c-lcd.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template i2c-mcp9808 (i2c-mcp9808.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template load-use (load-use.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template pio-blink (pio-blink.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template pio-popcount (pio-popcount.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template pio-square (pio-square.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template pwm-fade (pwm-fade.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template pwm-tone (pwm-tone.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template spi-loopback (spi-loopback.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template sum-array (sum-array.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template temperature (temperature.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template time-us (time-us.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template timer-irq (timer-irq.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template tour (tour.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template twinkle (twinkle.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template two-cores (two-cores.c): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template uart-echo (uart-echo.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 template zcmp-call (zcmp-call.s): runs to its end and shows what its comment says",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-templates.test.mjs",
+   "name": "pico2 templates: the sixteen of the approved lists (D34 Q8, D39 Q10) and of P1-M6 (design Q8), in views and languages of Pico Lite",
    "ok": true
   },
   {
@@ -6709,6 +7660,61 @@
   {
    "file": "test/pico2-triggers.test.mjs",
    "name": "trigger CSRs: tselect is 2 bits, tinfo says type 2 and ignores writes, tdata1 reads as an exact-address mcontrol",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-uf2.test.mjs",
+   "name": "bytes that are not a RISC-V program for the RP2350 are refused with the validator's message",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-uf2.test.mjs",
+   "name": "every picotool UF2 of the pico-examples build is reproduced byte for byte from its ELF (those the validator accepts)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-uf2.test.mjs",
+   "name": "the UF2 passes the strict validator with the E10 block noted, and holds the ELF's pages",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "a minimal flash image: accepted, entry from ENTRY_POINT, touched sector completed with zero pages",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "check 1-2: length, magic, the E10 block skipped only when exact, NOT_MAIN_FLASH skipped",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "check 3: family named, payload, alignment, container and MD5 flags",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "check 4: block numbering",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "check 5-6: one binary type, flash start and size, RAM images, data outside",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "check 7-9: block loop, IMAGE_DEF, entry, partition table refused, TBYB / LOAD_MAP / VECTOR_TABLE as notes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "ELF and .bin inputs: refused when not RISC-V ELF, read as a flash image from 0x10000000",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-validate.test.mjs",
+   "name": "SDK builds of the P1-M2 set: UF2 and ELF accepted, same pages and build id, entry as the simulator boots it",
    "ok": true
   },
   {
@@ -7062,8 +8068,133 @@
    "ok": true
   },
   {
+   "file": "test/project-session.test.mjs",
+   "name": "auto-save: a change is stored after the delay; the status goes Saving → Saved (a memory store says not kept)",
+   "ok": true
+  },
+  {
+   "file": "test/project-session.test.mjs",
+   "name": "projects: new, list, open, rename, delete (the open one: the newest other opens, or a fallback)",
+   "ok": true
+  },
+  {
+   "file": "test/project-session.test.mjs",
+   "name": "start: migrate a kept program on the first start, then open the last project; create when nothing is kept",
+   "ok": true
+  },
+  {
+   "file": "test/project-session.test.mjs",
+   "name": "the C compiler (pico2 P1-F2, D33 Q5): set, cleared to the module default, kept in storage and through a .zip",
+   "ok": true
+  },
+  {
+   "file": "test/project-session.test.mjs",
+   "name": "undo of a delete: the file comes back at its place and as the entry if it was; once only",
+   "ok": true
+  },
+  {
+   "file": "test/project-session.test.mjs",
+   "name": "zip: an archive from another tool (no or a foreign comment): the name from the file name, main.* the entry",
+   "ok": true
+  },
+  {
+   "file": "test/project-session.test.mjs",
+   "name": "zip: export then import gives the same files, name and entry (archive comment); a re-export is byte-identical",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "P1-F1 migration: a single stored program becomes a one-file project named after it",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "P1-F1: a project has files, an entry (the first file by default), one open tab and a version",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "P1-F1: a project reads back from storage; damaged tabs are repaired, another version is refused",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "P1-F1: add, rename (entry and tabs follow), duplicate, delete (entry moves, last file kept)",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "P1-F1: changes return a new project and leave the old one untouched",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "P1-F1: file names are flat and checked; extensions follow the module",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "P1-F1: tabs open, close (a neighbour becomes active; the last tab stays) and do not change the content",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "Q2 (D31): the memory store lists by module, newest first, keeps copies and checks what it stores",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "Q3 (D31): Build assembles every assembly file, the entry first; a .c entry is compiled alone; headers are not built",
+   "ok": true
+  },
+  {
+   "file": "test/project.test.mjs",
+   "name": "Q7 (D31): limits of 64 files and 2 MiB of text",
+   "ok": true
+  },
+  {
    "file": "test/random.test.mjs",
    "name": "WS-V-011: random instruction streams in lock-step with rvsim.py",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "a breakpoint and a pause end the run; the program's end too",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "a fast host: machine time stays within 1 % of the wall clock over 3 s at 1, 4 and 12 MHz (and across the start-up from the ring oscillator)",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "a sleeping core: the loop waits ahead of the wall clock instead of spinning, and machine time still follows",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "a slow host: the run reaches its fraction of real time; the catch-up cap drops the rest",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "an input during the run is stamped at the run's cycle and logged",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "live states about 30 times a second; every UART byte once, in order",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "LiveRing: the newest state, every UART byte across writes, lost bytes counted when the page falls a ring behind",
+   "ok": true
+  },
+  {
+   "file": "test/realtime-pacing.test.mjs",
+   "name": "Pacer: the cap moves the reference; the fraction is machine time over wall time",
    "ok": true
   },
   {
@@ -7922,6 +9053,41 @@
    "ok": true
   },
   {
+   "file": "test/share-v2.test.mjs",
+   "name": "Q5 (D31): a project goes through a link (version 2) and a settings file unchanged; source = the entry",
+   "ok": true
+  },
+  {
+   "file": "test/share-v2.test.mjs",
+   "name": "Q5 (D31): a project is refused where the architecture has no projects; a later version is refused",
+   "ok": true
+  },
+  {
+   "file": "test/share-v2.test.mjs",
+   "name": "Q5 (D31): a single program is still written as version 1, and version-1 links open where projects are on",
+   "ok": true
+  },
+  {
+   "file": "test/share-v2.test.mjs",
+   "name": "Q5 (D31): names, extensions, duplicates, the entry and the limits of a project are checked",
+   "ok": true
+  },
+  {
+   "file": "test/share-v2.test.mjs",
+   "name": "research D43 (contract v10 draft Language.companion): a single program carries its .pio file through a link and a settings file; checked",
+   "ok": true
+  },
+  {
+   "file": "test/share-v2.test.mjs",
+   "name": "the extensions of a pico2 project: assembly, C, headers and (P1-M8, design Q5) PIO programs",
+   "ok": true
+  },
+  {
+   "file": "test/share-v2.test.mjs",
+   "name": "WS-N-013: a three-file project fits in a link",
+   "ok": true
+  },
+  {
    "file": "test/share.test.mjs",
    "name": "W-D29 decision 4: links and files carry the architecture; none means riscv, another is refused naming it",
    "ok": true
@@ -8532,6 +9698,41 @@
    "ok": true
   },
   {
+   "file": "test/zip-browser.test.mjs",
+   "name": "archive comment (project name and entry, written by the session): kept, read back, files unaffected; non-ASCII refused",
+   "ok": true
+  },
+  {
+   "file": "test/zip-browser.test.mjs",
+   "name": "crc32 equals node:zlib",
+   "ok": true
+  },
+  {
+   "file": "test/zip-browser.test.mjs",
+   "name": "Q7: a round trip keeps names and texts; big text is deflated, tiny text stored; the output is deterministic",
+   "ok": true
+  },
+  {
+   "file": "test/zip-browser.test.mjs",
+   "name": "Q7: archives written by tools/zip.mjs read back",
+   "ok": true
+  },
+  {
+   "file": "test/zip-browser.test.mjs",
+   "name": "Q7: one common top folder is removed; folder entries are skipped; deeper folders are refused",
+   "ok": true
+  },
+  {
+   "file": "test/zip-browser.test.mjs",
+   "name": "Q7: unsafe names in an archive are refused; the writer refuses names a project cannot hold",
+   "ok": true
+  },
+  {
+   "file": "test/zip-browser.test.mjs",
+   "name": "Q7: wrong extensions, non-UTF-8 text, too many files, too many bytes and damaged data are refused",
+   "ok": true
+  },
+  {
    "file": "test/zip.test.mjs",
    "name": "zip: names that leave the archive folder are refused",
    "ok": true
@@ -8548,7 +9749,7 @@
   "browsers": [
    {
     "name": "chrome",
-    "version": "Chrome/157.0.8103.38",
+    "version": "Chrome/157.0.8103.50",
     "installed": true,
     "results": [
      {
@@ -8624,6 +9825,10 @@
       "ok": true
      },
      {
+      "name": "Widen the editor, then fold it: Widen ends and the listing and the registers come back; the pane's fold button is a minus, a plus when folded",
+      "ok": true
+     },
+     {
       "name": "a reload keeps the program, the step reached, breakpoints and watchpoints",
       "ok": true
      },
@@ -8640,7 +9845,7 @@
       "ok": true
      },
      {
-      "name": "release site: the landing page and the documentation load and pass the axe-core scan in both themes (WS-U-034)",
+      "name": "release site: the landing page, the documentation and the guide of every laboratory load and pass the axe-core scan in both themes (WS-U-034)",
       "ok": true
      },
      {
@@ -8727,6 +9932,10 @@
       "ok": true
      },
      {
+      "name": "Widen the editor, then fold it: Widen ends and the listing and the registers come back; the pane's fold button is a minus, a plus when folded",
+      "ok": true
+     },
+     {
       "name": "a reload keeps the program, the step reached, breakpoints and watchpoints",
       "ok": true
      },
@@ -8743,7 +9952,7 @@
       "ok": true
      },
      {
-      "name": "release site: the landing page and the documentation load and pass the axe-core scan in both themes (WS-U-034)",
+      "name": "release site: the landing page, the documentation and the guide of every laboratory load and pass the axe-core scan in both themes (WS-U-034)",
       "ok": true
      },
      {
@@ -8760,7 +9969,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/157.0.8103.38",
+      "version": "Chrome/157.0.8103.50",
       "installed": true,
       "results": [
        {
@@ -8836,7 +10045,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/157.0.8103.38",
+      "version": "Chrome/157.0.8103.50",
       "installed": true,
       "results": [
        {
@@ -8912,7 +10121,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/157.0.8103.38",
+      "version": "Chrome/157.0.8103.50",
       "installed": true,
       "results": [
        {
@@ -8988,7 +10197,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/157.0.8103.38",
+      "version": "Chrome/157.0.8103.50",
       "installed": true,
       "results": [
        {
@@ -9064,7 +10273,7 @@
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/157.0.8103.38",
+      "version": "Chrome/157.0.8103.50",
       "installed": true,
       "results": [
        {
@@ -9134,13 +10343,89 @@
      }
     ]
    },
+   "pico2": {
+    "axeCore": "4.14.0",
+    "exitStatus": 0,
+    "browsers": [
+     {
+      "name": "chrome",
+      "version": "Chrome/157.0.8103.50",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: Pico 2 Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "practice exercises: the list opens, the first loads its starter, its tests run and fail on it; the dialog passes axe-core (WS-F-148)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 12 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     },
+     {
+      "name": "edge",
+      "version": "Edg/151.0.4129.78",
+      "installed": true,
+      "results": [
+       {
+        "name": "loads as \"MAVILERA: Pico 2 Laboratory\" without errors and without horizontal scrolling at 1366 x 768 (WS-U-011)",
+        "ok": true
+       },
+       {
+        "name": "assemble the default program, step three times, step back once (WS-F-090)",
+        "ok": true
+       },
+       {
+        "name": "every view loads, a processor view with its drawing; no other architecture's module is fetched (W-D29)",
+        "ok": true
+       },
+       {
+        "name": "service worker: after the first visit the page reloads with the network off (WS-N-012)",
+        "ok": true
+       },
+       {
+        "name": "single-file build opened from the disk: runs, every view loads, no network request (WS-N-002)",
+        "ok": true
+       },
+       {
+        "name": "practice exercises: the list opens, the first loads its starter, its tests run and fail on it; the dialog passes axe-core (WS-F-148)",
+        "ok": true
+       },
+       {
+        "name": "axe-core 4.14.0 scan (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa) of 12 view states and drawings; drawings without the contrast and label-in-name rules (WS-U-034)",
+        "ok": true
+       }
+      ]
+     }
+    ]
+   },
    "gpu": {
     "axeCore": "4.14.0",
     "exitStatus": 0,
     "browsers": [
      {
       "name": "chrome",
-      "version": "Chrome/157.0.8103.38",
+      "version": "Chrome/157.0.8103.50",
       "installed": true,
       "results": [
        {
@@ -9208,6 +10493,64 @@
        }
       ]
      }
+    ]
+   }
+  },
+  "pico2": {
+   "lite": {
+    "exitStatus": 0,
+    "tail": [
+     "  ok   Open in Full copies an assembly program into a new Full project; a MAVILERA C program stays (reason given) — project \"hello-uart\": hello-uart.s",
+     "  ok   a project's link (v2) opened in Lite goes to Full — v2 link → Full, files hello-uart.s",
+     "  ok   no errors in the page"
+    ]
+   },
+   "c": {
+    "exitStatus": 0,
+    "tail": [
+     "  ok   dark: C is offered and shows the example; it compiles with the start-up code in the assembly — ✔ Compiled: 225 line(s) of assembly, 194 instruction word(s).",
+     "  ok   dark: a run prints the example's text on UART0 and ends with exit code 0 — console: \"Hello from C on the Pico 2!\"; a0 x10 0x00000000 0 ",
+     "  ok   dark: axe-core passes on the page in C mode"
+    ]
+   },
+   "realtime": {
+    "exitStatus": 0,
+    "tail": [
+     "  ok   replay is bit-exact: a fresh engine with the run's inputs reaches the same machine state at the same step; the inputs survive a reload — 3 inputs, 8887054 steps, hash 4b640cc1 = 4b640cc1; after the reload \"3 inputs given (pins and UART), each at its clock cycle.\"",
+     "  ok   the pipeline view: Real time says it runs at full speed there — noted",
+     "all checks passed"
+    ]
+   },
+   "audio": {
+    "exitStatus": 0,
+    "tail": [
+     "  ok   the PWM tab lists slice 7 on GP14; the DMA tab channel 0 paced by PWM wrap 7 — PWM \"7yesfree-running19918 (15)01540.000 kHz15.0 %0.0 %GP14\"; DMA \"0busyyes0x200401e40x400a80981 / 1endless4+1 / fixed256 B (read)—PWM wrap 7raised—\"",
+     "  ok   Render and play: 2 s at full speed, then played — ℹ Playing 2.0 s of rendered sound.",
+     "all checks passed"
+    ]
+   },
+   "cores": {
+    "exitStatus": 0,
+    "tail": [
+     "  ok   the template \"Two cores, two LEDs\" builds; Real time runs both cores to the end: exit code 1 — ✔ Opened the template \"Two cores, two LEDs\". Its first lines say what to try.The text that was in the editor is kept: File ▸ Restore previous text. | ✔ Halted at pc = 0x2000010c.",
+     "  ok   the registers panel has the Core 1 group; Step moves core 0 by one instruction while core 1 runs alongside; Back returns — core 1 running; step d76a4063 → d2700a80, back d76a4063",
+     "all checks passed"
+    ]
+   },
+   "buses": {
+    "exitStatus": 0,
+    "tail": [
+     "  ok   the I2C tab lists the transfers to the LCD at 0x27 and shows the LCD — I2C0 0x27 write 99",
+     "  ok   \"Read a knob with the ADC\": GP26 set to 1.65 V in the Pins panel before Run reads 2048 = 1650 mV — result 2048 = 1650 mV",
+     "all checks passed"
+    ]
+   },
+   "pio": {
+    "exitStatus": 0,
+    "tail": [
+     "  ok   a share link carries the program and its .pio file: a new page shows both tabs (D43) — 2721 characters",
+     "  ok   Open in Full: the pair becomes a two-file project, which assembles (D43) — pio-blink.pio,pio-blink.s",
+     "all checks passed"
     ]
    }
   }

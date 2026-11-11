@@ -1,0 +1,41 @@
+{
+  "name": "MAVILERA: Pico 2 Laboratory",
+  "short_name": "MAVILERA",
+  "description": "A Raspberry Pi Pico 2 with the RP2350's two Hazard3 RISC-V cores: an assembler and MAVILERA's C subset, every instruction timed by Hazard3's documented cycle counts with a view of its three-stage pipeline, and the chip's GPIO, UART, timers, PWM, DMA, ADC, SPI, I2C and PIO in real time, with a lab kit of sensors and a display, sound from a pin, templates and practice exercises. Checked against an RP2350 emulator, Hazard3's hardware design and the RISC-V architecture tests.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f7",
+  "theme_color": "#145e56",
+  "categories": [
+    "education",
+    "developer"
+  ],
+  "icons": [
+    {
+      "src": "assets/c137287fb630/content/branding/mavilera/mavilera-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/c137287fb630/content/branding/mavilera/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/c137287fb630/content/branding/mavilera/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/c137287fb630/content/branding/mavilera/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

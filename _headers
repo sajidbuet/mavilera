@@ -28,6 +28,12 @@
   Cache-Control: no-cache
 /i8086/index.html
   Cache-Control: no-cache
+/pico2/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/pico2/sw.js
+  Cache-Control: no-cache
+/pico2/index.html
+  Cache-Control: no-cache
 /gpu/assets/*
   Cache-Control: public, max-age=31556952, immutable
 /gpu/sw.js
