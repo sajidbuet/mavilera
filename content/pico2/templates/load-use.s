@@ -9,7 +9,7 @@
 #   s3 = cycles of loop 1, s4 = cycles of loop 2, s3 - s4 = 8: one stall per iteration.
 # Both loops end with a taken backward branch: after the first iteration Hazard3's branch
 # predictor remembers it, and the last iteration, not taken, costs a misprediction.
-# Try: Assemble in the Pipeline view, step cycle by cycle and look for the stall in X and the
+# Try: Assemble in the Core view, step cycle by cycle and look for the stall in X and the
 # bubble after the mispredicted branch; compare CPI by cause.
         .text
 _start: csrw    mcountinhibit, zero     # count cycles and instructions

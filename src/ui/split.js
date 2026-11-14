@@ -29,6 +29,9 @@ export class Split {
     this.panes = [];
     this.dividers = [];
     this.onApply = null; // called after every change of sizes or folds (the panes' own controls follow it)
+    // a column whose panes may each fill it, the others hidden with their headings (the author, 2026-11-13); set by the shell
+    this.fillable = false;
+    this.filled = -1;
     live.add(this);
   }
 
@@ -47,6 +50,7 @@ export class Split {
     this.collapsed = saved?.collapsed ?? this.defaultCollapsed.slice();
     this.dividers = [];
     this.folds = [];
+    this.filled = -1;
     const children = [];
     panes.forEach((p, i) => {
       if (i > 0) children.push(this.divider(i - 1), this.foldButton(i - 1));
@@ -56,6 +60,7 @@ export class Split {
       p.node._index = i;
       if (p.collapsible) this.toggleButton(p);
       else p.node._toggle?.remove();
+      if (this.fillable && panes.length > 1) this.fillButton(p); else p.node._fill?.remove();
       children.push(p.node);
       if (p.foldable && !p.collapsible) children.push(this.strip(p));
     });
@@ -148,9 +153,43 @@ export class Split {
     }
   }
 
+  /**
+   * The heading's "fill the column" button (the author, 2026-11-13): the pane takes the whole column and the column's other panes
+   * are hidden, their headings too; the same button (or Esc in the pane) shows them again. Not saved: a reload shows the column.
+   */
+  fillButton(p) {
+    if (!p.node._fill) {
+      p.node._fill = el('button.pane-fill', { type: 'button', onclick: (e) => { e.stopPropagation(); const s = p.node._split; s?.fill(s.filled === p.node._index ? -1 : p.node._index); } });
+      p.node.addEventListener('keydown', (e) => {
+        const s = p.node._split;
+        if (e.key === 'Escape' && s?.filled === p.node._index) { e.stopPropagation(); s.fill(-1); p.node._fill.focus(); }
+      });
+    }
+    const head = p.header ?? p.node.querySelector(':scope > h2');
+    if (head) head.insertBefore(p.node._fill, p.node._toggle?.parentNode === head ? p.node._toggle : null);
+  }
+
+  /** Let pane i fill the column (-1: every pane back); a folded pane opens first. */
+  fill(i) {
+    if (i >= 0 && this.collapsed[i]) { this.collapsed[i] = false; this.save(); }
+    this.filled = i;
+    this.apply();
+  }
+
   /** Sizes and states onto the panes and dividers. */
   apply() {
     const vertical = this.dir === 'row';
+    this.root.classList.toggle('split-filled', this.filled >= 0);
+    this.panes.forEach((p, i) => {
+      p.node.classList.toggle('pane-filled', i === this.filled);
+      const b = p.node._fill;
+      if (!b || p.node._split !== this) return;
+      const on = i === this.filled, name = p.title ?? p.id;
+      const label = on ? STRINGS.layout.unfillColumn(name) : STRINGS.layout.fillColumn(name);
+      b.replaceChildren(icon(on ? 'unfillColumn' : 'fillColumn', { size: 16 }));
+      b.setAttribute('aria-label', label); b.title = on ? `${label} (Esc)` : label;
+      b.setAttribute('aria-pressed', String(on));
+    });
     // Grow factors of the open panes sum to 1, so that they share all the room a folded pane leaves.
     const open = this.fracs.reduce((s, f, i) => s + (this.collapsed[i] ? 0 : f), 0) || 1;
     this.panes.forEach((p, i) => {
@@ -266,6 +305,7 @@ export class Split {
 
   /** Fold or open pane i; the last open pane cannot fold. */
   toggle(i) {
+    if (this.filled >= 0) { this.filled = -1; this.apply(); } // a fold shows the column's panes again
     if (!this.collapsed[i] && this.collapsed.filter((c) => !c).length === 1) return;
     this.collapsed[i] = !this.collapsed[i];
     this.apply();

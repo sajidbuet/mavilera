@@ -145,10 +145,23 @@ async function openPage(cdp, { width = 1366, height = 768, colorScheme = null, r
         await sleep(50);
       }
     },
-    /** A key press as the user makes it (keyDown and keyUp), with modifiers 1 Alt, 2 Ctrl, 4 Meta, 8 Shift. */
-    async key(key, { code = key, keyCode = 0, modifiers = 0 } = {}) {
+    /**
+     * A mouse event at page point (x, y): type 'mousePressed', 'mouseMoved' (with `down`: the left button held) or 'mouseReleased'.
+     */
+    async mouse(type, x, y, { down = false, clickCount = 1, modifiers = 0 } = {}) {
+      const pressed = type === 'mousePressed' || (type === 'mouseMoved' && down);
+      await send('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' && !down ? 'none' : 'left', buttons: pressed ? 1 : 0, clickCount, modifiers });
+    },
+    /** Text typed into the focused field, as the keyboard's text input gives it (Input.insertText). */
+    async type(text) { await send('Input.insertText', { text }); },
+    /**
+     * A key press as the user makes it (keyDown and keyUp), with modifiers 1 Alt, 2 Ctrl, 4 Meta, 8 Shift. With `text` (Enter: '\r')
+     * the key also gives its character, so that the browser's own default action follows (a native button's activation, a text
+     * field's change).
+     */
+    async key(key, { code = key, keyCode = 0, modifiers = 0, text = undefined } = {}) {
       const base = { key, code, windowsVirtualKeyCode: keyCode, nativeVirtualKeyCode: keyCode, modifiers };
-      await send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
+      await send('Input.dispatchKeyEvent', text === undefined ? { type: 'rawKeyDown', ...base } : { type: 'keyDown', text, unmodifiedText: text, ...base });
       await send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
     },
     async screenshot(format = 'png', quality = undefined) {

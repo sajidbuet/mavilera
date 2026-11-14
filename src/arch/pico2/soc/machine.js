@@ -27,7 +27,8 @@ import { Adc } from './adc.js';
 import { Spi } from './spi.js';
 import { I2c } from './i2c.js';
 import { Pio } from './pio.js';
-import { createKit, ENV_DEFAULTS, envClamp } from '../parts/kit.js';
+import { Circuit } from './circuit.js';
+import { moduleKit, ENV_DEFAULTS, envClamp } from '../parts/kit.js';
 import { SVD_BLOCKS } from './regs.generated.js';
 import { buildRom, romLookup, romCodeName } from '../boot/rom.js';
 
@@ -44,7 +45,8 @@ class Inputs {
       const [, kind, a, b] = this.q.shift();
       if (kind === 'pin') this.m.pins.drive(a, b);
       else if (kind === 'uart') this.m.uart[a].receive(b);
-      else if (kind === 'adc') this.m.adc.setVolts(a, b); // P1-M7: a voltage on GPIO 26 + a
+      else if (kind === 'adc') this.m.circuit.adcInput(a, b); // P1-M7: a voltage on GPIO 26 + a (P1-B2: channel 0 turns the knob)
+      else if (kind === 'part') this.m.circuit.control(a, b); // P1-B2: a control of the circuit (a button, a switch, a potentiometer)
       else if (kind === 'env') this.m.setEnv(a, b);       // P1-M7: the lab kit's environment (and the die temperature)
     }
     this.next = this.q.length ? this.q[0][0] : Infinity;
@@ -87,12 +89,12 @@ export class Machine {
     // P1-M7: ADC, SPI0/1, I2C0/1, and the lab kit's parts with their environment (machine state; `kitOn` follows the engine
     // option `parts`)
     this.env = { ...ENV_DEFAULTS };
-    this.kit = createKit(() => this.env); this.kitOn = false;
-    for (const b of this.kit.spi) for (const { cs } of b.parts) this.pins.csPins |= 1 << cs;
+    this.kit = moduleKit([], () => this.env); this.kitOn = false; this.circuitTap = -1; // B2-4: the circuit's modules (setModules)
     this.adc = new Adc(this);
     this.spi = [new Spi(this, 0), new Spi(this, 1)];
     this.i2c = [new I2c(this, 0), new I2c(this, 1)];
     this.pio = new Pio(this); // P1-M8: PIO0-2 (one scheduler device; each block's registers a device of the map)
+    this.circuit = new Circuit(this); // P1-B2: the circuit outside the chip (the fixed P1-B1 parts and the student's)
     this.audio = new AudioTap(this); // P1-M5: the speaker (observes a pin; not machine state)
     this.inputs = new Inputs(this);
     const models = {
@@ -117,7 +119,7 @@ export class Machine {
       this.blocks.push(dev);
     }
     this.resettable = this.blocks.filter((d) => d.resetBit >= 0);
-    this.events = [this.timer[0], this.timer[1], this.uart[0], this.uart[1], this.sio, this.pwm, this.dma, this.adc, this.spi[0], this.spi[1], this.i2c[0], this.i2c[1], this.pio, this.inputs];
+    this.events = [this.timer[0], this.timer[1], this.uart[0], this.uart[1], this.sio, this.pwm, this.dma, this.adc, this.spi[0], this.spi[1], this.i2c[0], this.i2c[1], this.pio, this.circuit, this.inputs]; // P1-B2: capacitors' events
     this.image = null;   // chunks of a loaded SDK image or program, kept for reset
     this.powerOn();
   }
@@ -130,6 +132,7 @@ export class Machine {
     this.hart = this.harts[0]; this.coreBits = [0, 0];
     this.core1.reset(); this.core1On = false;
     this.pins.reset();
+    this.circuit.reset(); // P1-B2: controls at their defaults, islands unsolved (solved as the pins are updated below)
     this.env = { ...ENV_DEFAULTS }; this.kit.reset(); this.adc.powerOn(); // P1-M7: outside the chip, back to their defaults
     this.pio.reset(); // P1-M8: the pins' input history (the blocks are reset with the other devices)
     for (const d of this.blocks) d.reset();
@@ -139,6 +142,7 @@ export class Machine {
     this.timeline = [[0, 0, ROSC_HZ]];
     this.ready = true;
     this.pins.updateAll();
+    this.circuit.refresh(); // P1-B2: the islands without pins, and the pins of a changed circuit
     this.pins.clearLog(); // the reset state is the start, not an event
     for (const u of this.uart) u.clearLog(); // and the UARTs' output starts empty (P1-L1: the C source view resets its engine)
     this.retime();
@@ -349,11 +353,26 @@ export class Machine {
   core1Changed() { this.core1On = this.core1.running; this.deadline = -1; }
 
   /** P1-M7: set a value of the environment (an input of the run, at its cycle). */
-  setEnv(key, value) { const v = envClamp(key, value); if (Number.isFinite(v)) this.env[key] = v; }
-  /** P1-M7: connect or disconnect the lab kit (the engine option `parts`); the parts' chip selects follow their pins. */
-  setKit(on) {
-    this.kitOn = !!on;
-    for (const s of this.spi) for (const { cs } of this.kit.spi[s.index].parts) s.pinLevel(cs, this.pins.level[cs]);
+  setEnv(key, value) {
+    const v = envClamp(key, value);
+    if (!Number.isFinite(v)) return;
+    this.env[key] = v;
+    this.circuit.setEnv(this.env); // B2-4: light sensors and thermistors follow the environment
+  }
+  /** P1-M7: connect or disconnect the lab kit (the engine option `parts`): B2-4 (research D54 Q1 A), the kit preset of the circuit. */
+  setKit(on) { this.circuit.configure({ kit: !!on }); }
+  /**
+   * B2-4: the circuit's kit modules (netlist.js `modules`) get their models; the pins on a BME280's chip-select net are watched;
+   * `tap`: the pad of the circuit's sounding part (the audio's pin, the engine reads it), −1 none.
+   */
+  setModules(mods, tap = -1) {
+    this.kit = moduleKit(mods, () => this.env);
+    this.kitOn = this.kit.all.length > 0;
+    this.circuitTap = tap;
+    let cs = 0;
+    for (const x of this.kit.modules) if (x.bus === 'spi') for (const g of x.pins.CSB?.pads ?? []) cs |= 1 << g;
+    if (this.pins) this.pins.csPins = cs >>> 0;
+    if (this.spi && this.pins) for (const s of this.spi) for (let g = 0; g < 30; g++) if ((cs >>> g) & 1) s.pinLevel(g, this.pins.level[g]);
   }
 
   // ---- interrupts ----
@@ -381,6 +400,7 @@ export class Machine {
     this.freq = f;
     for (const t of this.timer) t.retime(now);
     this.sio.retime(now);
+    this.circuit?.retime(); // P1-B2: capacitor trajectories are in seconds, their events in cycles
   }
   /** Simulated nanoseconds at cycle c. */
   nsAt(c) {
@@ -411,6 +431,7 @@ export class Machine {
       blocks: this.blocks.map((d) => d.save()), pins: this.pins.save(), inputs: this.inputs.save(), freq: { ...this.freq },
       env: { ...this.env }, kit: this.kit.save(), kitOn: this.kitOn, // P1-M7
       pio: this.pio.save(), // P1-M8
+      circuit: this.circuit.save(), // P1-B2
       timeline: this.timeline.map((e) => e.slice()), deadline: this.deadline,
     };
   }
@@ -423,10 +444,11 @@ export class Machine {
     h1.x.set(c.x); h1.pc = c.pc; h1.restoreSys(c.sys); h1.ticks = c.ticks; h1.trapped = false; h1.irqc.irq.set(c.lines); h1.irqc.dirty = true;
     h1.setIrq(this.coreBits[1]); h1.flushCache();
     this.core1.load(c.launch); this.core1On = this.core1.running;
-    if (s.kit) { this.kit.load(s.kit); this.env = { ...s.env }; this.kitOn = s.kitOn; } // P1-M7 (before the blocks: I2C refers to parts)
+    if (s.kit) { this.kit.load(s.kit); this.env = { ...s.env }; } // P1-M7 (before the blocks: I2C refers to parts); B2-4: per module
     this.blocks.forEach((d, i) => d.load(s.blocks[i]));
     if (s.pio) this.pio.load(s.pio); // P1-M8
     this.pins.load(s.pins); this.inputs.load(s.inputs); this.freq = { ...s.freq };
+    this.circuit.load(s.circuit); // (B2-4: the circuit, kit preset included, is configured before a state is loaded: engine.js)
     this.timeline = s.timeline.map((e) => e.slice()); this.deadline = s.deadline;
     h.flushCache();
   }

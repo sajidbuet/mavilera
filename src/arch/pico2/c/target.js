@@ -310,7 +310,7 @@ function routines(clk = clockConfig()) {
     adc_read: () => {
       const A = (r) => off('ADC', r);
       return ['# adc_read(input): on first use clk_adc from the 12 MHz crystal, the ADC out of reset and on (EN, wait READY); an input 0-3',
-        '# (GP26-GP29) gets its pad\'s digital side off, input 4 the temperature sensor\'s bias; select it, START_ONCE, wait READY, RESULT', 'adc_read:',
+        '# (GP26-GP29) gets its pad\'s digital side and pulls off, input 4 the temperature sensor\'s bias; select it, START_ONCE, wait READY, RESULT', 'adc_read:',
         I('li', `t0, ${hex(base('ADC'))}`, 'ADC'), I('lw', `t1, ${A('CS')}(t0)`), I('andi', 't1, t1, 1', 'CS.EN: already on?'), I('bnez', 't1, .Ladc_read_on'),
         I('li', `t2, ${hex(base('CLOCKS'))}`), I('li', 't1, 0x860', 'CLK_ADC_CTRL: ENABLE, AUXSRC = the crystal (12 MHz)'), I('sw', `t1, ${off('CLOCKS', 'CLK_ADC_CTRL')}(t2)`),
         I('li', `t2, ${hex(base('RESETS') + ATOMIC.CLR)}`), I('li', `t1, ${hex(1 << RESET_BITS.ADC)}`), I('sw', `t1, ${off('RESETS', 'RESET')}(t2)`, 'the ADC out of reset'),
@@ -320,7 +320,7 @@ function routines(clk = clockConfig()) {
         '.Ladc_read_on:', I('li', 't1, 4'), I('bgeu', 'a0, t1, .Ladc_read_temp', 'input 4 and above: the temperature sensor'),
         I('slli', 't3, a0, 2', 'input x 4'),
         I('li', `t2, ${hex(reg('PADS_BANK0', 'GPIO26') + ATOMIC.SET)}`, 'PADS_BANK0 GPIO26, set alias'), I('add', 't2, t2, t3'), I('li', `t1, ${hex(PAD.OD)}`), I('sw', 't1, 0(t2)', 'OD: output off'),
-        I('li', `t2, ${hex(reg('PADS_BANK0', 'GPIO26') + ATOMIC.CLR)}`, 'clear alias'), I('add', 't2, t2, t3'), I('li', `t1, ${hex(PAD.IE)}`), I('sw', 't1, 0(t2)', 'IE: digital input off'),
+        I('li', `t2, ${hex(reg('PADS_BANK0', 'GPIO26') + ATOMIC.CLR)}`, 'clear alias'), I('add', 't2, t2, t3'), I('li', `t1, ${hex(PAD.IE | PAD.PUE | PAD.PDE)}`), I('sw', 't1, 0(t2)', 'IE, PUE, PDE: digital input and pulls off (as the SDK\'s adc_gpio_init; research D51 Q7)'),
         I('j', '.Ladc_read_sel'),
         '.Ladc_read_temp:', I('li', 'a0, 4'), I('li', `t2, ${hex(base('ADC') + ATOMIC.SET)}`), I('li', 't1, 2'), I('sw', `t1, ${A('CS')}(t2)`, 'CS.TS_EN: the sensor\'s bias on'),
         '.Ladc_read_sel:', I('lw', `t1, ${A('CS')}(t0)`), I('li', 't2, 0xffff0fff'), I('and', 't1, t1, t2', 'clear AINSEL'), I('slli', 't2, a0, 12'), I('or', 't1, t1, t2'),

@@ -30,8 +30,8 @@ const PROJECT = {
 const code = async (p) => { try { await p; } catch (e) { assert.ok(e instanceof ShareError, `not a ShareError: ${e}`); return e.code; } return null; };
 
 test('the extensions of a pico2 project: assembly, C, headers and (P1-M8, design Q5) PIO programs', () => {
-  assert.deepEqual(projectExtensions(pico2), ['.s', '.c', '.h', '.pio']);
-  assert.equal(S.extensions.join(), '.s,.c,.h,.pio');
+  assert.deepEqual(projectExtensions(pico2), ['.s', '.c', '.h', '.pio', 'circuit.json']); // v12 draft (P1-B2): the circuit by its fixed name
+  assert.equal(S.extensions.join(), '.s,.c,.h,.pio,circuit.json');
   assert.equal(shareSchema(riscv).projects, false, 'a released module has no projects');
 });
 

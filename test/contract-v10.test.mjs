@@ -19,8 +19,8 @@ const full = () => ({
 const problems = (d) => validateDescriptor(d);
 const has = (d, text) => problems(d).some((p) => p.includes(text));
 
-test('v10: the version is 10 and the new names are listed', () => {
-  assert.equal(CONTRACT_VERSION, 10);
+test('v10: the version is at least 10 (v11 raised it, §28) and the new names are listed', () => {
+  assert.ok(CONTRACT_VERSION >= 10);
   assert.ok(CAPABILITIES.includes('realtime') && CAPABILITIES.includes('audio'));
   assert.ok(ENGINE_HOOKS.includes('advance') && ENGINE_HOOKS.includes('drainAudio'));
   assert.deepEqual([...REALTIME_TRANSPORTS], ['postMessage', 'sab']);

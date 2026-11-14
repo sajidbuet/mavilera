@@ -889,6 +889,10 @@ export const STRINGS = {
     collapse: (p) => `Fold ${p}`,
     expand: (p) => `Open ${p}`,
     enlargeUp: (p) => `Fold the pane above and enlarge ${p} upward`, openAbove: 'Open the pane above again',
+    infoSide: (p) => `Move ${p} to the right column, in place of the registers (the drawing gets the whole middle column)`,
+    infoUnder: (p) => `Put ${p} back under the drawing`,
+    fillColumn: (p) => `${p} fills the column (the column's other panes are hidden)`,
+    unfillColumn: (p) => `Show the column's other panes again beside ${p}`,
     maximisePane: (p) => `Maximise ${p}`, restorePane: (p) => `Restore ${p}`, maximiseShort: 'Maximise', restoreShort: 'Restore',
     // the folded dock's bar names the memory panel's tab shown (author, 2026-11-10)
     dockBarOne: (tab) => `${tab} (folded): open`, dockBarWith: (tab) => `${tab} · Console (folded): open`,

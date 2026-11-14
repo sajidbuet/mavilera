@@ -98,11 +98,12 @@
         <li><a href="#c">MAVILERA C</a></li>
         <li><a href="#devices">The chip's devices</a></li>
         <li><a href="#lab-kit">The lab kit and analogue inputs</a></li>
-        <li><a href="#pipeline">The Pipeline view</a></li>
+        <li><a href="#pipeline">The Core view</a></li>
         <li><a href="#pio">PIO</a></li>
         <li><a href="#sound">Sound</a></li>
         <li><a href="#cores">Two cores</a></li>
         <li><a href="#speed">Real time, speed and replay</a></li>
+        <li><a href="#circuits">Circuits on the Board</a></li>
         <li><a href="#templates">Templates</a></li>
         <li><a href="#exercises">Exercises</a></li>
         <li><a href="#files">Files and sharing</a></li>
@@ -128,7 +129,7 @@
         Hazard3 cores, the RP2350's address map (§2.2) and the devices listed under <a href="#devices">The chip's
         devices</a>.</p>
       <p>It is a teaching tool. A program runs one instruction at a time or at the speed of the real chip; every instruction
-        takes the clock cycles the datasheet gives for Hazard3, and the Pipeline view shows why. Programs are written in
+        takes the clock cycles the datasheet gives for Hazard3, and the Core view shows why. Programs are written in
         Hazard3 assembly language or in MAVILERA C, a teaching subset of C compiled in the page. What the model leaves out is
         listed under <a href="#limits">Limits of the model</a>, and how it was checked under
         <a href="#checks">How the models were checked</a>.</p>
@@ -252,7 +253,7 @@
         clock cycle you make it. The parts answer their buses byte by byte; their measuring times, filters, interrupt pins and
         the EEPROM's write time are not modelled.</p>
 
-      <h2 id="pipeline">The Pipeline view</h2>
+      <h2 id="pipeline">The Core view</h2>
       <!-- RP-001 §3.8.7; research: E-TIMING-1, D15 -->
       <p>Hazard3 has three pipeline stages: F (fetch), X (execute) and M (memory). The view shows them cycle by cycle: which
         instruction is in each stage, the drawing of the stages, the cycles each instruction cost and the cause of every extra
@@ -302,6 +303,31 @@
         cycle. <strong>Replay</strong> in the Pins panel starts the program again and gives the same inputs at the same
         cycles: the run repeats exactly. A share link and a settings file carry the inputs with the program.</p>
 
+      <h2 id="circuits">Circuits on the Board</h2>
+      <p>The Board view draws the circuit around the board: at first the demo circuit (a push button on GP15, a knob on
+        GP26 with its 3.3&nbsp;V and ground), the board's own LED on GP25, and, when chosen in the Pins panel, the lab kit's
+        modules and a speaker. All of them except the board's LED are parts you can move, re-wire, change or delete, and add to.
+        The circuit is simulated with the program: each pin's voltage is solved from the parts on its net whenever something
+        changes, at that clock cycle, and the chip reads its input from that voltage. Capacitors charge and discharge exactly
+        to the cycle.</p>
+      <p><strong>Editing.</strong> Turn on <em>Edit circuit</em> in the Board's heading (the program cannot run while it is on).
+        Choose a part from the tray (its picture is its symbol; its name is in the tooltip) and click the sheet, or press A.
+        Click a pin to start a wire and click again to bend it; end it on a pin, a pad, a junction or another wire. The tools
+        above the tray select and move, draw wires, delete parts or wires, pan, turn, mirror, undo and redo. Everything can be
+        done from the keyboard: arrow keys move a cursor on the grid, Enter selects, W starts a wire, F2 changes a value in
+        Inspect, and ? lists every key. The Circuit tab lists the same circuit as a table with a menu for each pin's
+        connection; there a part of your own can also be defined from the simple parts (<em>Define a part</em>).</p>
+      <p><strong>Where the values come from.</strong> 5&nbsp;mm LEDs: Kingbright WP7113 series (red ID, yellow YD, green GD, blue
+        QBC/D, white QWC/D); diodes: Vishay 1N4148 and the 1N5819 Schottky diode; transistor: onsemi BC547B; light sensor:
+        Advanced Photonix PDV-P8001; thermistor: Vishay NTCLE100E3103 (10&nbsp;kΩ, B 3977&nbsp;K); 7-segment display:
+        Kingbright SC56-11SRWA and SA56-11SRWA; RGB LED: Kingbright WP154A4SUREQBFZGW. An LED's knee voltage and resistance are
+        read from two points of its datasheet's curve (2&nbsp;mA and 10&nbsp;mA, the currents a pin gives). Chosen where no
+        datasheet gives them: a switch's 0.05&nbsp;Ω, the light sensor's resistance at 10&nbsp;lux (5.74&nbsp;kΩ, the middle of
+        the datasheet's 3-11&nbsp;kΩ) and its 1&nbsp;MΩ in the dark, the resistances of the 7-segment and the RGB LED's red. The
+        board's own LED keeps generic values, since the board's documentation does not name its part.</p>
+      <p><strong>Light and temperature</strong> for the light sensor and the thermistor are the Pins panel's Environment values
+        (Light in lux, Temperature in °C), inputs of the run that Replay repeats.</p>
+
       <h2 id="templates">Templates</h2>
       <p>Each template begins with what it shows and what to try. The laboratory's tests run every one of them and check
         what its comment says.</p>
@@ -335,6 +361,14 @@
           <tr><td>PIO</td><td>PIO blinks the LED</td><td>Assembly + .pio</td></tr>
           <tr><td>PIO</td><td>A square wave from PIO with side-set</td><td>Assembly + .pio</td></tr>
           <tr><td>PIO</td><td>PIO counts the 1 bits of a word</td><td>MAVILERA C + .pio</td></tr>
+          <tr><td>Circuits on the Board</td><td>An LED and its resistor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Circuits on the Board</td><td>A traffic light</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Circuits on the Board</td><td>A voltage divider into the ADC</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Circuits on the Board</td><td>A transistor switches an LED</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Circuits on the Board</td><td>A bouncing button and a capacitor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Circuits on the Board</td><td>A voltage from PWM and an RC filter</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Circuits on the Board</td><td>A night light with a light sensor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Circuits on the Board</td><td>A thermometer with a thermistor</td><td>MAVILERA C + circuit</td></tr>
         </tbody>
       </table></div>
 
@@ -389,7 +423,7 @@
         <thead><tr><th>What</th><th>Checked against</th><th>Result</th></tr></thead>
         <tbody>
           <tr><td>The core's instructions</td><td>riscv-arch-test, the RISC-V architecture tests, with the Sail reference model</td><td>245 of 255 tests pass; the failures were examined: each is a point where Hazard3's own design differs from the reference model, except one that is not yet explained.</td></tr>
-          <tr><td>Instruction timing</td><td>135 timing cases measured on Hazard3's hardware design (the RP2350 version), simulated with Verilator and with Icarus Verilog</td><td>The laboratory gives the hardware design's count in every case, except 18 where the design and the datasheet differ: there it gives the datasheet's (see <a href="#pipeline">The Pipeline view</a>).</td></tr>
+          <tr><td>Instruction timing</td><td>135 timing cases measured on Hazard3's hardware design (the RP2350 version), simulated with Verilator and with Icarus Verilog</td><td>The laboratory gives the hardware design's count in every case, except 18 where the design and the datasheet differ: there it gives the datasheet's (see <a href="#pipeline">The Core view</a>).</td></tr>
           <tr><td>The machine and its devices</td><td>The Pico SDK's example programs built for RISC-V and run on rp2350js (an open-source RP2350 emulator, patched where it lacked features)</td><td>Identical UART text and pin sequences, and pin timing within 1&nbsp;% or 2&nbsp;µs: 4 of 4 programs on the timers, UART and GPIO; 4 of 6 on PWM and DMA, 3 of 4 on two cores and 9 of 10 on ADC, SPI and I2C, each difference traced to a feature the emulator lacks; 13 of 13 PIO programs.</td></tr>
           <tr><td>PIO, a second time</td><td>rp2040-pio-emulator, an independent PIO emulator, on PIO-only tests</td><td>21 of 22 tests identical cycle by cycle; the one difference is a feature that emulator lacks (refilling the output register between OUT instructions, RP2350 Datasheet §11.5.4.2).</td></tr>
           <tr><td>The PIO assembler</td><td>pioasm, the Pico SDK's assembler, on 38 programs</td><td>The same words for every program.</td></tr>
@@ -428,10 +462,26 @@
         <li>A perfect bus: every fetch, load and store takes no wait states, so code in flash, the APB peripherals and bus
           conflicts cost less than on the chip.</li>
         <li>Instruction timing from the datasheet where Hazard3's hardware design differs (18 cases; see
-          <a href="#pipeline">The Pipeline view</a>).</li>
+          <a href="#pipeline">The Core view</a>).</li>
         <li>DMA's security and memory-protection settings are stored, not enforced.</li>
         <li>The ADC is an ideal converter; the lab kit's parts are ideal and answer at once.</li>
         <li>Sound: the converters are models of a loudspeaker's hearing of the pin, not of an audio circuit.</li>
+      </ul>
+      <h3>The circuit outside the chip</h3>
+      <!-- research: P1-B2 design docs/architecture/pico2-p1b2-user-circuits.md §7 risk 5, §16 -->
+      <ul>
+        <li>A teaching model, not a circuit simulator such as SPICE: resistors, switches and potentiometers are linear; LEDs,
+          diodes and the NPN transistor are piecewise linear (off, or a fixed voltage behind a resistance; the transistor cut off,
+          active or saturated); there are no inductors, no reverse breakdown, and temperature changes only the thermistor.</li>
+        <li>A pin's output is a source behind its datasheet's typical resistance at each drive strength; the drive does not
+          weaken further under a heavy load, and the pads' protection diodes are not modelled. Pins read their input through the
+          typical switching points.</li>
+        <li>I2C and SPI modules are models at the level of bytes on their bus: their wires carry no edges, their pull-ups only
+          decide whether they answer.</li>
+        <li>The speaker and the piezo buzzer listen to their pin and draw no current; the buzzer's capacitance is not
+          modelled.</li>
+        <li>Part values come from named parts' datasheets (see <a href="#circuits">Circuits on the Board</a>); a few that no
+          datasheet gives are chosen, and graph readings are about ±0.02&nbsp;V.</li>
       </ul>
       <h3>Speed and browsers</h3>
       <ul>

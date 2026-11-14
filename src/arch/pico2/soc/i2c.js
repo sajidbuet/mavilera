@@ -18,6 +18,8 @@
 
 import { Device } from './device.js';
 
+const PAD_PUE = 0x8; // the pad's pull-up enable (PADS_BANK0, soc/gpio.js)
+
 export const F_I2C = 3;
 export const i2cOfPin = (n) => (n >>> 1) & 1;
 const FIFO = 16, LOG = 256;
@@ -83,13 +85,29 @@ export class I2c extends Device {
     this.next = this.phase.end; this.m.schedule(this);
     this.update();
   }
-  /** The part of the lab kit at a 7-bit address on this instance, when SDA and SCL select I2C on the kit's pins. */
+  /**
+   * The kit module at a 7-bit address on this instance (P1-B2 stage B2-4, research D51 Q13 A, D54): a module of the circuit whose
+   * SDA net holds a pad with I2C SDA of this instance (F3, an even pin, (n >> 1) & 1) and whose SCL net one with its SCL; it
+   * answers when it is powered (VCC on 3V3, VSYS or VBUS, GND on ground) and both lines are pulled up (a resistor to 3V3, or the
+   * pad's own pull-up). Otherwise a diagnostic says why, once.
+   */
   find(addr) {
-    const kit = this.m.kitOn ? this.m.kit?.i2c[this.index] : null;
-    if (!kit || kit.sda < 0) return null;
-    const fn = (n) => this.m.pins.ctrl[n] & 0x1f;
-    if (fn(kit.sda) !== F_I2C || fn(kit.scl) !== F_I2C) { this.m.diag('i2cKitPins', this.name, kit.sda, kit.scl); return null; }
-    return kit.parts.find((p) => p.address === addr) ?? null;
+    if (!this.m.kitOn) return null;
+    const p = this.m.pins, fn = (n) => p.ctrl[n] & 0x1f;
+    const mine = (pads, odd) => pads.find((g) => fn(g) === F_I2C && (g & 1) === odd && ((g >>> 1) & 1) === this.index);
+    for (const x of this.m.kit.modules) {
+      if (x.bus !== 'i2c' || x.part.address !== addr) continue;
+      const sda = mine(x.pins.SDA.pads, 0), scl = mine(x.pins.SCL.pads, 1);
+      if (sda === undefined || scl === undefined) {
+        if (x.pins.SDA.pads.length && x.pins.SCL.pads.length) this.m.diag('i2cKitPins', this.name, x.pins.SDA.pads[0], x.pins.SCL.pads[0]);
+        continue;
+      }
+      if (!x.powered) { this.m.diag('moduleUnpowered', x.id, x.name); continue; }
+      const pulled = (info, g) => info.pullUp || (p.pad[g] & PAD_PUE) !== 0;
+      if (!pulled(x.pins.SDA, sda) || !pulled(x.pins.SCL, scl)) { this.m.diag('moduleNoPullUp', x.id, x.name); continue; }
+      return x.part;
+    }
+    return null;
   }
   event(now) {
     const ph = this.phase;

@@ -1411,10 +1411,17 @@ table.cmp-table td.num { text-align: right; }
 .cv-more > summary { cursor: pointer; color: var(--ui-text-2); }
 .cv-more[open] > summary { margin-bottom: 0.2rem; }
 /* the lower pane of the middle column: up arrow beside Maximise, and Maximise gives it the whole workspace */
-.pane-up { margin-left: auto; flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; min-height: 0; padding: 0; border: 1px solid transparent; background: transparent; color: var(--ui-text-2); }
-.pane-up .icon { width: 16px; height: 16px; }
+/* a pane filling its column (split.js fill, 2026-11-13): the column's other panes, dividers and headings are hidden */
+.split-filled > :not(.pane-filled) { display: none !important; }
+.split-filled > .pane-filled { flex: 1 1 0px !important; }
+.pane-fill { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; min-height: 0; padding: 0; margin-left: auto; border: 1px solid transparent; background: transparent; color: var(--ui-text-2); }
+.pane-fill[aria-pressed="true"] { color: var(--primary); border-color: var(--primary); }
+.pane-fill + .pane-side, .pane-fill + .pane-up, .pane-fill + .pane-max, .pane-fill + .pane-toggle { margin-left: 0.15rem; }
+.pane-up, .pane-side { margin-left: auto; flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; min-height: 0; padding: 0; border: 1px solid transparent; background: transparent; color: var(--ui-text-2); }
+.pane-up .icon, .pane-side .icon { width: 16px; height: 16px; }
 .pane-up + .pane-max { margin-left: 0.15rem; }
-.pane-up[hidden], .pane-max[hidden] { display: none; }
+.pane-side + .pane-up, .pane-side + .pane-toggle, .pane-side + .pane-max { margin-left: 0.15rem; } /* the details pane's side button (2026-11-13) */
+.pane-up[hidden], .pane-max[hidden], .pane-side[hidden] { display: none; }
 .workspace.mid-max [data-split="root"] > [data-pane="dock"], .workspace.mid-max [data-split="root"] > .split-divider, .workspace.mid-max [data-split="root"] > .divider-fold-box,
 .workspace.mid-max [data-split="work"] > [data-pane="editor"], .workspace.mid-max [data-split="work"] > [data-pane="right"], .workspace.mid-max [data-split="work"] > .split-divider,
 .workspace.mid-max [data-split="work"] > .divider-fold-box, .workspace.mid-max [data-split="mid"] > :not(.max-pane) { display: none !important; }
@@ -1528,7 +1535,7 @@ html.ws-mobile.kb-open .ws-strip { display: none; }
 .ws-mobile .split > .divider-fold-box, .ws-mobile .split > .split-divider { display: none; }
 .ws-mobile .split > .pane > h2 > .pane-toggle { display: none; }
 .ws-mobile .split.ws-duo > .pane > h2 > .pane-toggle { display: inline-flex; }
-.ws-mobile .pane.ws-force > h2 > .pane-toggle, .ws-mobile .pane-max, .ws-mobile .pane-up, .ws-mobile .zoom-btn { display: none !important; }
+.ws-mobile .pane.ws-force > h2 > .pane-toggle, .ws-mobile .pane-max, .ws-mobile .pane-up, .ws-mobile .pane-side, .ws-mobile .pane-fill, .ws-mobile .zoom-btn { display: none !important; }
 .ws-mobile[data-layout="fill"] .split.ws-duo > .split-divider:not(.ws-edge) { display: block; }
 .ws-mobile .split-column.ws-duo > .split-divider { height: 10px; }
 .ws-mobile .pane.ws-force > h2 { writing-mode: horizontal-tb; flex: none; padding: 0.3rem 0.5rem 0.3rem 0.65rem; min-height: 36px; border-bottom: 1px solid var(--border); }

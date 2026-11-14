@@ -6,7 +6,7 @@
 # frees its frame and returns with one cm.popret. Hazard3 runs them as micro-operations:
 # cm.push of two registers takes 1 + 2 cycles, cm.popret one more for the return.
 # At the end a0 = fact(6) = 720.
-# Try: Assemble in the Pipeline view and step through a cm.push: X holds it for several cycles
+# Try: Assemble in the Core view and step through a cm.push: X holds it for several cycles
 # while M stores one register per cycle. Watch sp in the Registers panel.
         .text
 _start: li      a0, 6

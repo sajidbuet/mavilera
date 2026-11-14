@@ -35,7 +35,14 @@ function run(t) {
   assert.ok(p.ok, `${t.file}: ${JSON.stringify(p.diagnostics.slice(0, 3))}`);
   const e = descriptor.engine.create(p, { runLimit: 10_000_000 }); // the shell's run limit (WS-F-090)
   if (t.opts) e.configure(t.opts); // P1-M7: the parts (and the speaker) as the shell applies a template's options
+  if (t.circuit) e.configure({ circuit: readFileSync(new URL(t.circuit, dir), 'utf8') }); // B2-4: the template's circuit file
   for (const i of TEST_INPUTS[t.id] ?? []) e.input(i); // P1-M7: what a student would set in the Pins panel first
+  // B2-4: inputs at machine times (ms) while it runs: a bouncing button, a change of light
+  for (const [ms, i] of TIMED_INPUTS[t.id] ?? []) {
+    // in small steps: the clock changes at start-up, so a step sized by the present frequency could pass the input's time
+    while (e.clock().timeNs < ms * 1e6) assert.equal(e.advance({ cycles: Math.min(2000, Math.max(1, Math.ceil(((ms * 1e6 - e.clock().timeNs) / 1e9) * e.machine.freq.sys))) }).stop, STOP.CHUNK, `${t.file}: ended before ${ms} ms`);
+    e.input(i);
+  }
   if (t.endless) { // a template that plays until paused (`endless` in the index): run 4 s of machine time
     while (e.clock().timeNs < 4e9) assert.equal(e.advance({ cycles: 400_000 }).stop, STOP.CHUNK, `${t.file}: ${e.state().error}`);
     return { state: e.state(), engine: e, program: p };
@@ -132,17 +139,47 @@ const EXPECT = {
   // P1-M9 (research D45 Q3): inputs at their times, through the module's exercise runner (TIMED below)
   'gpio-button': () => {},
   'uart-echo': () => {},
+  // P1-B2 B2-4 (research D54 Q6 A): the circuit templates, with their circuit files; the hand calculations in each comment
+  'circuit-led': ({ engine }) => {
+    const m = engine.machine, log = m.pins.log, t = [];
+    for (let i = 0; i < log.pins.length; i++) if (log.pins[i] === 16) t.push(m.nsAt(log.cycles[i]) / 1e6);
+    assert.ok(spacedBy(t.slice(-10), 200), t.join(', '));
+    // half the time at about 5.7 mA ((3.3 − 1.65)/(45 + 220 + 25); a little less with GP16's pull-down): a mean of 2.4-2.9 mA
+    const led = engine.live().circuit.leds.find((x) => x.part === 'D1');
+    assert.ok(led.mA > 2.4 && led.mA < 2.9, `${led.mA} mA`);
+  },
+  'traffic-light': ({ state: s }) => assert.equal(s.output, 'red\nred and yellow\ngreen\nyellow\n'.repeat(2)),
+  'divider-adc': ({ state: s }) => assert.equal(s.output, 'GP27: 2048 = 1650 mV\n'.repeat(3)),
+  'npn-switch': ({ state: s, engine }) => {
+    assert.equal(s.output, 'base high: the transistor conducts, the LED is on\nbase low: the transistor is cut off, the LED is off\n'.repeat(3));
+    // saturated: (3.3 − 1.8425 − 0.0575)/(330 + 18.75 + 1.25) = 4.0 mA half the time
+    const led = engine.live().circuit.leds.find((x) => x.part === 'D1');
+    assert.ok(led.mA > 1.7 && led.mA < 2.1, `${led.mA} mA`);
+  },
+  // two presses, each bouncing three times 0.1 ms apart: the capacitor keeps GP14 low between bounces, so each counts once
+  'rc-debounce': ({ state: s }) => { assert.equal(s.output, 'press 1\npress 2\n'); assert.equal(x(s, 10), 2); },
+  'pwm-rc-dac': ({ state: s }) => {
+    const mv = [...s.output.matchAll(/: (\d+) mV/g)].map((k) => Number(k[1]));
+    [825, 1650, 2475].forEach((want, i) => assert.ok(Math.abs(mv[i] - want) <= 10, `${s.output}`));
+  },
+  'ldr-night-light': ({ state: s }) => assert.equal(s.output, 'light: LED off\ndark: LED on\n'),
+  'ntc-thermometer': ({ state: s }) => assert.match(s.output, /^(GP28 = 11[34]\d mV: about 40 C\n){3}$/),
 };
+/** B2-4: inputs given while a template runs: [ms of machine time, input]. */
+const press = (ms) => [[ms, 1], [ms + 0.1, 0], [ms + 0.2, 1], [ms + 0.3, 0], [ms + 0.4, 1], [ms + 50, 0]].map(([t, v]) => [t, { kind: 'part', id: 'SW1', value: v }]);
+const TIMED_INPUTS = { 'rc-debounce': [...press(100), ...press(300)], 'ldr-night-light': [[350, { kind: 'env', key: 'light', value: 2 }]] };
 /** Templates that wait for inputs given while they run: the inputs and what to see, as a Pico 2 exercise test (exercise.js). */
 const TIMED = {
   'gpio-button': { inputs: [{ us: 0, pin: 15, level: 1 }, ...[5, 15, 25, 35, 45].flatMap((ms) => [{ us: ms * 1000, pin: 15, level: 0 }, { us: (ms + 3) * 1000, pin: 15, level: 1 }])],
     expect: { output: [1, 2, 3, 4, 5].map((n) => `press ${n}\n`).join(''), exit: 5, pins: { 25: 1 } } },
   'uart-echo': { inputs: [{ us: 2000, uart: 'Hello, Pico 2!\r' }], expect: { output: 'HELLO, PICO 2!\n', exit: 0 } },
 };
-const TEST_INPUTS = { 'adc-knob': [{ kind: 'adc', channel: 0, volts: 1.65 }], 'i2c-mcp9808': [{ kind: 'env', key: 'temp', value: 21.5 }] };
+const TEST_INPUTS = { 'adc-knob': [{ kind: 'adc', channel: 0, volts: 1.65 }], 'i2c-mcp9808': [{ kind: 'env', key: 'temp', value: 21.5 }],
+  'ntc-thermometer': [{ kind: 'env', key: 'temp', value: 40 }] };
 
 test('pico2 templates: the sixteen of the approved lists (D34 Q8, D39 Q10) and of P1-M6 (design Q8), in views and languages of Pico Lite', () => {
-  assert.equal(index.templates.length, 27); // and Twinkle, Twinkle (the author's request, 2026-11-10); P1-M7's five (design Q6); P1-M8's three (design Q7); P1-M9's two (research D45 Q3)
+  assert.equal(index.templates.length, 35); // and Twinkle, Twinkle (the author's request, 2026-11-10); P1-M7's five (design Q6); P1-M8's three (design Q7); P1-M9's two (research D45 Q3); P1-B2's eight circuits (research D54 Q6 A)
+  for (const t of index.templates) if (t.circuit) assert.ok(readFileSync(new URL(t.circuit, dir), 'utf8').includes('"mavilera-pico2-circuit"'), `${t.id}: circuit ${t.circuit}`);
   for (const t of index.templates) if (t.opts) for (const [k, v] of Object.entries(t.opts)) assert.ok(descriptor.language.options.find((o) => o.id === k)?.values.some((o) => o.id === v), `${t.id}: opts ${k}=${v}`);
   assert.deepEqual(Object.keys(EXPECT).sort(), index.templates.map((t) => t.id).sort());
   const lite = withEdition(descriptor, 'lite');

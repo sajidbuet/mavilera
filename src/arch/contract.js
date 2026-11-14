@@ -15,7 +15,11 @@
 // instruction sets, §26) approved on 2026-11-04; version 10 (a paced real-time Worker, an audio sink, an optional
 // SharedArrayBuffer transport and `.wasm` assets, for the `pico2` module, §27) DRAFTED 2026-11-06, the four extensions
 // approved in principle by the author on 2026-11-05 (ADR-0008 in the research repository), the field shapes approved on
-// 2026-11-09 (research D35; advance counts clock cycles). A change raises CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
+// 2026-11-09 (research D35; advance counts clock cycles); version 11 (page views: View.engine 'page', ViewContext.engine/input/option,
+// ViewInstance.live, for pico2's Board view, §28) approved by the author on 2026-11-12 (research D50); version 12 (opened
+// 2026-11-12 for pico2's user circuits, research D51 Q2 A, §29: Language.companions, ViewContext.companion/setCompanion,
+// holdRun, link inputs adc/env/part) approved by the author on 2026-11-13 and frozen with release 1.6.0 (research D53, D57). A change raises
+// CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
 //
 // Decisions of 2026-10-28 that the shell implements on this contract:
 // - the fields inspector uses Language.fields(); without it the inspector is disabled with a reason;
@@ -26,7 +30,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-export const CONTRACT_VERSION = 10;
+export const CONTRACT_VERSION = 12;
 
 /**
  * The output an engine keeps (author, 2026-10-29): when its output passes twice this many characters, the oldest are
@@ -523,6 +527,11 @@ export async function withVariant(d, variant) {
  * @property {{drawing?: number, editor?: number}} [layout]  v10 (draft, added 2026-11-07 for pico2): a datapath view's default
  *           pane sizes, as fractions: `drawing` of the middle column's height for the drawing (shell default 0.64), `editor`
  *           of the width for the editor (default 0.22); the user's own resizing, which the shell keeps, still wins
+ * @property {'page'} [engine]                v11 (draft, added 2026-11-11 for pico2's Board view, P1-B1, research D48 Q2 B): a
+ *           datapath view without a model of its own, which draws the page's engine (ViewContext.engine). The shell runs the
+ *           program as in the instruction view (its step, back and state are not called; it keeps the engine's state when the
+ *           view changes between it and the instruction view), lays the page out as for a drawing view, calls `render()` after
+ *           every refresh and `live(state)` with each live state of a real-time run
  *
  * @typedef {object} ViewContext
  * @property {Record<string, any>} strings
@@ -535,6 +544,13 @@ export async function withVariant(d, variant) {
  * @property {(name: 'stepUnit'|'backUnit') => void} [command]  v4: the view's own buttons run the shell's command
  * @property {() => object} [memConfig]       v4: the memory setting, for a view that builds its own models
  * @property {(name: string, data: string | Uint8Array, type?: string) => void} [download]  v4
+ * @property {() => Engine | null} [engine]   v11 (draft): the page's engine (for a view with `engine: 'page'`)
+ * @property {(input: object) => void} [input]  v11 (draft): an input by the shell's own path, as PanelContext.input (to the
+ *           Worker during a run, else the engine; logged for Replay)
+ * @property {(id: string) => string | null} [option]  v11 (draft): the present value of a Language option (engine options too)
+ * @property {(id: string) => string | null} [companion]  v12 draft: the view companion's text (arch-contract.md §29)
+ * @property {(id: string, text: string | null) => void} [setCompanion]  v12 draft: a new view companion text from the view
+ * @property {(reason: string | null) => void} [holdRun]  v12 draft (pico2 P1-B2 B2-3): hold Run and Step with a reason; null releases
  *
  * @typedef {object} ViewInstance
  * @property {Element} root                   the main pane
@@ -574,6 +590,8 @@ export async function withVariant(d, variant) {
  * @property {{get: () => object, apply: (o: object) => void}} [options]  v2: the view's settings in share links
  * @property {(input: object) => void} [input]  v8: as Engine.input, for the view's model; without it a panel's
  *           inputs are disabled in the view
+ * @property {(state: object) => void} [live]  v11 (draft): a page view gets each live state (Engine.live) of a real-time run,
+ *           at most once per animation frame; a state the page did not draw has its `pins.busy` added into the next one
  *
  * @typedef {object} ViewState            v4: state() is null while no program is loaded
  * @property {number} pc
@@ -645,6 +663,15 @@ export function validateDescriptor(d) {
     need(o.panel === undefined || (d.panels ?? []).some((p) => p.id === o.panel), `language option ${o.id}: panel names one of the descriptor's panels`);
   }
   if (L.extraLanguages) need(d.capabilities?.cLanguage === true || L.extraLanguages.every((x) => x.id !== 'c'), 'C without capability cLanguage');
+  // v12 draft (pico2 P1-B2, research D51 Q1 A, Q2 A; arch-contract.md §29): Language.companions, a list of companion files; one of
+  // editor 'view' at most, with an engine option name and (for projects) a fixed file name
+  if (L.companions !== undefined) {
+    need(Array.isArray(L.companions) && L.companions.every((c) => ID.test(c?.id ?? '') && typeof c.extension === 'string' && c.extension.startsWith('.')
+      && (c.editor === 'text' || c.editor === 'view')), 'language.companions: [{id, extension, editor: \'text\' | \'view\'}]');
+    const views = (L.companions ?? []).filter((c) => c?.editor === 'view');
+    need(views.length <= 1, 'language.companions: at most one companion of editor \'view\'');
+    for (const c of views) need(typeof c.option === 'string' && c.option && (c.projectFile === undefined || /^[\w.-]+$/.test(c.projectFile)), `language.companions ${c.id}: a view companion names its engine option`);
+  }
   for (const k of ['help', 'detail']) if (L.editor?.[k] !== undefined) need(isFn(L.editor[k]), `language.editor.${k} is a function`); // v5
   for (const x of L.extraLanguages ?? []) {
     need(ID.test(x.id ?? '') && typeof x.label === 'string' && isFn(x.load), `extra language ${x.id}: id, label, load`);
@@ -784,6 +811,7 @@ export function validateDescriptor(d) {
     if (v.profile !== undefined) need(profiles.has(v.profile), `view ${v.id}: profile ${v.profile} is not in engine.profiles`);
     if (v.profile !== undefined && profiles.has(v.profile)) need(variantOf(d, v.profile) === active, `view ${v.id}: profile ${v.profile} is of another variant`); // v9
     if (v.names !== undefined) need(L.disassembly?.names?.includes(v.names), `view ${v.id}: names ${v.names} not in language.disassembly.names`);
+    if (v.engine !== undefined) need(v.engine === 'page' && v.kind === 'datapath', `view ${v.id}: engine 'page' is for datapath views`); // v11 (draft)
     if (v.layout !== undefined) { // v10 (draft)
       const { drawing, editor, ...rest } = v.layout ?? {};
       need(v.kind === 'datapath', `view ${v.id}: layout is for datapath views`);

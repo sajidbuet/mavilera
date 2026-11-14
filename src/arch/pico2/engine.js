@@ -21,6 +21,8 @@ import { ROM_SIZE } from './soc/bus.js';
 import { STACK_TOP } from './language.js';
 import { PICO2_STRINGS as S } from './strings.js';
 import { ENV_KEYS } from './parts/kit.js';
+import { validateCircuit, canonicalText } from './circuit/format.js';
+import { speakerPad } from './circuit/presets.js';
 
 /** The CSRs the register panel shows, after x0 to x31: [id, read(hart)]. mcycle and minstret are the low 32 bits. */
 export const CSR_VIEW = Object.freeze([
@@ -47,9 +49,12 @@ function normInput(x) {
   }
   if (x?.kind === 'adc' && Number.isInteger(x.channel) && x.channel >= 0 && x.channel < 4 && Number.isFinite(x.volts)) return { kind: 'adc', channel: x.channel, volts: x.volts };
   if (x?.kind === 'env' && ENV_KEYS.includes(x.key) && Number.isFinite(x.value)) return { kind: 'env', key: x.key, value: x.value };
+  // P1-B2: a control of the circuit outside the chip (a user button or switch 0/1, a potentiometer 0-1), by its part's id
+  if (x?.kind === 'part' && typeof x.id === 'string' && /^[A-Za-z][A-Za-z0-9_.]{0,24}$/.test(x.id) && Number.isFinite(x.value)) return { kind: 'part', id: x.id, value: x.value };
   throw new Error(`pico2: not an input: ${JSON.stringify(x)}`);
 }
-const queueArgs = (e) => (e.kind === 'pin' ? ['pin', e.pin, e.level] : e.kind === 'adc' ? ['adc', e.channel, e.volts] : e.kind === 'env' ? ['env', e.key, e.value] : ['uart', e.uart, e.bytes]);
+const queueArgs = (e) => (e.kind === 'pin' ? ['pin', e.pin, e.level] : e.kind === 'adc' ? ['adc', e.channel, e.volts] : e.kind === 'env' ? ['env', e.key, e.value]
+  : e.kind === 'part' ? ['part', e.id, e.value] : ['uart', e.uart, e.bytes]);
 const cloneEntry = (e) => ({ ...e, ...(e.bytes ? { bytes: e.bytes.slice() } : {}) });
 
 /** FNV-1a (32 bits) over bytes, continued from `h`. */
@@ -428,10 +433,26 @@ export function create(program, { historyWords = 1 << 22, runLimit = 50_000_000,
   let audioCfg = { pin: -1, converter: 'pin' };
   /** Contract v10 draft (P1-M5): the engine's settings {speaker: 'none' | 'gpN', dac: 'pin' | 'ideal'} (not machine state). */
   const configure = (values = {}) => {
-    if (values.speaker !== undefined) { const k = /^gp(\d+)$/.exec(String(values.speaker)); audioCfg.pin = k ? Number(k[1]) : -1; }
+    if (values.speaker !== undefined) audioCfg.speaker = String(values.speaker);
     if (values.dac !== undefined) audioCfg.converter = values.dac === 'ideal' ? 'ideal' : 'pin';
+    if (values.parts !== undefined) audioCfg.parts = values.parts === 'kit' ? 'kit' : 'none'; // P1-M7 (design Q2)
+    // P1-B2 (research D51 Q1 A): the student's circuit (circuit.json text, an object, or null for none), validated; a circuit that
+    // does not validate leaves the demo circuit and is reported once (the build shows its message). B2-4 (research D54): the
+    // lab kit and the speaker pin are presets of the effective circuit (circuit/presets.js)
+    let c;
+    if (values.circuit !== undefined) { try { c = values.circuit ? validateCircuit(values.circuit) : null; } catch (err) { m.diag('circuitInvalid', err.message); c = null; } }
+    let changed = false;
+    try {
+      changed = m.circuit.configure({ circuit: c, kit: audioCfg.parts === 'kit', speaker: speakerPad(audioCfg.speaker) });
+      if (c !== undefined) audioCfg.circuit = c ? canonicalText(c) : null;
+    } catch (err) { m.diag('circuitInvalid', err.message); }
+    // the audio's pin (P1-M5): the circuit's sounding part's pad; a speaker GPIO without a pad (GP23-25, GP29) listens as before
+    const g = /^gp(\d+)$/.exec(audioCfg.speaker ?? '');
+    audioCfg.pin = m.circuitTap >= 0 ? m.circuitTap : g && speakerPad(audioCfg.speaker) < 0 ? Number(g[1]) : -1;
     m.audio.configure(audioCfg);
-    if (values.parts !== undefined) { audioCfg.parts = values.parts === 'kit' ? 'kit' : 'none'; m.setKit(audioCfg.parts === 'kit'); } // P1-M7 (design Q2)
+    // a run has one circuit (research D51 Q3 A): a changed circuit starts the program again from reset, with the inputs the
+    // engine was created with, so that every checkpoint (and a replay from reset) has the circuit the run uses
+    if (changed) reset();
   };
   /**
    * Contract v10 (capability audio): the speaker's 48 kHz frames since the last call, up to the present machine time (no later
@@ -445,7 +466,11 @@ export function create(program, { historyWords = 1 << 22, runLimit = 50_000_000,
     adc: m.adc.view(), spi: m.spi.map((x) => x.view()), i2c: m.i2c.map((x) => x.view()), parts: partsState(),
     pio: m.pio.view() }); // P1-M8: the three PIO blocks (the PIO tab)
   /** P1-M7: the lab kit as the Pins panel shows it: connected or not, the LCD's lines, the environment, the ADC voltages. */
-  const partsState = () => ({ on: m.kitOn, lcd: m.kitOn ? m.kit.lcd.lines() : null, env: { ...m.env }, volts: m.adc.volts.slice(), adcOn: (m.adc.r.get(0) & 1) === 1 });
+  // P1-B2 (research D51 Q8 A): `wired`, per ADC input, whether parts of the student's circuit are wired to its pin (GP27, GP28: the
+  // Pins panel's voltage is then not a source, its field shows the circuit's voltage); input 0 is the knob's, always settable
+  // B2-4: `lcd` the first LCD module's lines (the Pins panel's), `lcds` every LCD module's by part name (the Board's drawing)
+  const partsState = () => ({ on: m.kitOn, lcd: m.kit.lcd ? m.kit.lcd.lines() : null, lcds: Object.fromEntries(m.kit.modules.filter((x) => x.model === 'lcd').map((x) => [x.id, x.part.lines()])), env: { ...m.env }, volts: m.adc.volts.slice(), adcOn: (m.adc.r.get(0) & 1) === 1,
+    wired: [0, 1, 2, 3].map((ch) => ch > 0 && ch < 3 && ((m.circuit.k.mask >>> (26 + ch)) & 1) === 1) });
   /** The speaker as the interface shows it: {pin, converter, active ('pin' | 'ideal'), fallback}. */
   const audioStatus = () => ({ pin: audioCfg.pin, converter: audioCfg.converter, active: m.audio.mode, fallback: m.audio.fallback });
   /** Contract v10 draft (P1-M4): the machine's clock, cheap: {cycle, timeNs, clkSys} (the real-time loop reads it often). */
@@ -453,12 +478,23 @@ export function create(program, { historyWords = 1 << 22, runLimit = 50_000_000,
   /**
    * Contract v10 draft (P1-M4, D36 Q4): the live view's state during a real-time run: pc, registers, counts, machine time,
    * the 30 GPIOs (level, output enable, external drive) and UART0's bytes from the count `uartFrom` on (total: the count now).
+   * P1-B1 (research D47, D48; the Board view): also each pin's state code (`state`: 0, 1, in, pu, pd, as soc/gpio.js), `busy`
+   * (its state changes in the pin log since the previous live() call, or since the log position `pinsFrom`, counted up to 2:
+   * 2 = "changed more than once", the Board's purple), `logTotal` (the log position now) and `bus` (I2C bytes and SPI frames so
+   * far, monotonic: the Board's bus activity). Reads only: no new simulation.
    */
-  const live = ({ uartFrom = 0 } = {}) => {
+  let pinsAt = 0;
+  const live = ({ uartFrom = 0, pinsFrom } = {}) => {
     const u = m.uart[0].out, total = u.base + u.bytes.length, from = Math.min(total, Math.max(uartFrom, u.base));
-    const p = m.pins, N = 30;
+    const p = m.pins, N = 30, lg = p.log, logTotal = lg.base + lg.pins.length;
+    const busy = new Uint8Array(N);
+    for (let i = Math.max(lg.base, Math.min(logTotal, pinsFrom ?? pinsAt)) - lg.base; i < lg.pins.length; i++) { const n = lg.pins[i]; if (n < N && busy[n] < 2) busy[n]++; }
+    pinsAt = logTotal;
     return { ...clock(), pc: hart.pc >>> 0, registers: regs(), retired, steps, sleeping: Boolean(hart.sleeping), halted, parts: partsState(),
-      pins: { level: p.level.slice(0, N), oe: p.padOe.slice(0, N), ext: p.ext.slice(0, N), fn: Uint8Array.from(p.ctrl.subarray(0, N), (c) => c & 0x1f) },
+      pins: { level: p.level.slice(0, N), oe: p.padOe.slice(0, N), ext: p.ext.slice(0, N), drv: p.drv.slice(0, N), fn: Uint8Array.from(p.ctrl.subarray(0, N), (c) => c & 0x1f),
+        state: p.state.slice(0, N), busy, logTotal },
+      bus: { i2c: m.i2c.map((x) => x.bytes), spi: m.spi.map((x) => x.frames) },
+      circuit: m.circuit.live(), // P1-B2: LEDs' mean currents since the previous call, nets' volts, warnings
       uart: { from, bytes: u.bytes.slice(from - u.base), total } };
   };
 
@@ -475,6 +511,8 @@ export function create(program, { historyWords = 1 << 22, runLimit = 50_000_000,
     // and the newest part of the observation logs (UART output, pin changes), which the machine state leaves out
     snapshot: () => ({ m: m.save(), retired, steps, halted, error, haltRec, inputs: log.map(cloneEntry), idleTo, cps: cps.slice(), obs: saveObs(), audio: { ...audioCfg } }),
     restore: (s) => {
+      // P1-B2: the circuit the snapshot was taken with, before its machine state (which refers to the circuit's islands)
+      if (s.audio) m.circuit.configure({ circuit: s.audio.circuit ? validateCircuit(s.audio.circuit) : null, kit: s.audio.parts === 'kit', speaker: speakerPad(s.audio.speaker) }, { quiet: true });
       m.load(s.m); ring.clear(); okLog = []; okBase = s.steps;
       if (s.obs) loadObs(s.obs);
       ({ retired, steps, halted, error, haltRec } = s);

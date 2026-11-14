@@ -50,7 +50,7 @@ export class Adc extends Device {
   /** clk_sys cycles per clk_adc cycle, or 0 when clk_adc is stopped. */
   ratio() { const f = this.m.freq; return f.adc && f.sys ? f.sys / f.adc : 0; }
   input(ch) {
-    if (ch < 4) return this.volts[ch];
+    if (ch < 4) return this.m.circuit?.adcNow(ch) ?? this.volts[ch]; // P1-B2: a settling net (a capacitor) at this cycle
     if (!(this.cs & CS_TS_EN)) { this.m.diag('adcTempOff'); return 0; }
     return tempSensorVolts(this.m.env?.temp ?? 25);
   }

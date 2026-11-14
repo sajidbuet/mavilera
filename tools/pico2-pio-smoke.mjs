@@ -1,7 +1,7 @@
 // pico2-pio-smoke.mjs -- PIO in a real browser (pico2 P1-M8, docs/architecture/pico2-p1m8-pio.md §4). Checks: "PIO blinks the LED"
 // (assembly and its .pio file, research D43) opens as two editor tabs, builds in Lite and runs in Real time to its end: GP25 changed
 // while the core only waited, and the PIO tab lists the program and state machine 0; "A square wave from PIO with side-set" runs in Real time at the default
-// 4 MHz keeping up with real time (no "% of real time" below 95 % shown while it plays); "PIO counts the 1 bits of a word" (MAVILERA C)
+// 4 MHz keeping up with real time (after its first 0.2 s, at most two status lines below 90 %); "PIO counts the 1 bits of a word" (MAVILERA C)
 // prints its four counts; File ▸ Remove PIO file makes its build fail with the hint, Add PIO file brings the file back and it builds;
 // an error in the .pio file is marked in that file's tab; axe-core finds nothing with the two editor tabs and the PIO tab open; a
 // share link carries the pair (a new page shows both tabs); Open in Full makes the pair a two-file project that assembles.
@@ -99,7 +99,10 @@ try {
         await p.waitFor(`/^Pause/.test(${primary})`, 10000);
         await p.waitFor(`!/^Pause/.test(${primary})`, 30000);
         const rt = await p.eval(`(clearInterval(globalThis.__rtObs), globalThis.__rt)`);
-        const slow = rt.filter((s) => /% of real time/.test(s));
+        // each status line once, after the first 0.2 s of machine time: before that the fraction covers a few milliseconds that
+        // include the start (JIT warm-up), and a line sampled twice counted twice (failures seen at 0.000-0.029 s, 2026-11-14)
+        const steady = [...new Set(rt)].filter((s) => { const m = /Real time · ([0-9.]+) s/.exec(s); return m && Number(m[1]) >= 0.2; });
+        const slow = steady.filter((s) => /% of real time/.test(s));
         const late = slow.filter((s) => { const m = /(\d+) % of real time/.exec(s); return m && Number(m[1]) < 90; });
         if (late.length > 2) throw new Error(`below 90 % of real time: ${late.slice(0, 3).join(' | ')}`);
         return `${rt.length} status samples, ${slow.length} below 95 %`;

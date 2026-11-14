@@ -187,10 +187,12 @@ test('parts: BMP280/BME280 raw values compensate back to the environment; MCP980
 test('save and load carry the ADC, SPI, I2C state and the kit (EEPROM, LCD, environment)', () => {
   const m = machine(['ADC', 'I2C0']);
   m.setKit(true); m.setEnv('temp', 33); m.adc.setVolts(2, 1.2);
-  m.kit.i2c[0].parts.find((p) => p.address === 0x50).mem[7] = 0x42;
+  // B2-4 (research D54): the kit's modules are parts of the circuit, each with its model
+  const rom = () => m.kit.all.find((p) => p.address === 0x50 && p.mem);
+  rom().mem[7] = 0x42;
   const s = JSON.parse(JSON.stringify(m.save()));
-  m.setEnv('temp', 0); m.adc.setVolts(2, 0); m.kit.i2c[0].parts.find((p) => p.address === 0x50).mem[7] = 0;
+  m.setEnv('temp', 0); m.adc.setVolts(2, 0); rom().mem[7] = 0;
   m.load(s);
-  assert.equal(m.env.temp, 33); assert.equal(m.adc.volts[2], 1.2); assert.equal(m.kit.i2c[0].parts.find((p) => p.address === 0x50).mem[7], 0x42);
+  assert.equal(m.env.temp, 33); assert.equal(m.adc.volts[2], 1.2); assert.equal(rom().mem[7], 0x42);
   assert.equal(JSON.stringify(m.save()), JSON.stringify(s));
 });

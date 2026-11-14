@@ -34,6 +34,7 @@ import { ROOT, listFiles, registry, archFiles, archPage, hashFiles, hashOfHashes
 import { buildOffline } from './offline.mjs';
 import { minify } from './minify.mjs';
 import { heroSvg, heroCss } from './logo/hero-logo.mjs';
+import { PLATFORM_ARCHS } from '../src/shell/platform-archs.js';
 
 const DIST = join(ROOT, 'dist');
 const SIZE_LIMIT = 2097152; // WS-N-004 as raised by W-D38 (draft, 2026-11-04; 1.25 MB by W-D31): 2 MB per application, without examples
@@ -198,9 +199,12 @@ for (const p of listFiles(join(ROOT, 'content/branding/mavilera'))) {
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const site = JSON.parse(read('site/architectures.json'));
 const tools = site.tools ?? [];
-// a module's name lockup (chip and name) where one exists (author, 2026-11-04); `alt` names the link it stands in
-const logoOf = (id, cls, alt, up = '') => (existsSync(join(ROOT, 'content/branding/mavilera', `mavilera-name-${id}.svg`))
-  ? `<img class="${cls}" src="${up}brand/mavilera-name-${id}.svg" alt="${esc(alt)}" width="${(/viewBox="0 0 (\d+) 192"/.exec(read(`content/branding/mavilera/mavilera-name-${id}.svg`)) ?? [0, 820])[1]}" height="192">` : '');
+// a module's name lockup (chip and name) where one exists (author, 2026-11-04); `alt` names the link it stands in.
+// The file is the one the header switcher names (src/shell/platform-archs.js), since it is not always
+// mavilera-name-<id>.svg: the 8086's is mavilera-name-8086.svg (its id is i8086), fixed 2026-11-11.
+const nameFile = (id) => PLATFORM_ARCHS.find((a) => a.id === id)?.logo ?? `mavilera-name-${id}.svg`;
+const logoOf = (id, cls, alt, up = '') => (existsSync(join(ROOT, 'content/branding/mavilera', nameFile(id)))
+  ? `<img class="${cls}" src="${up}brand/${nameFile(id)}" alt="${esc(alt)}" width="${(/viewBox="0 0 (\d+) 192"/.exec(read(`content/branding/mavilera/${nameFile(id)}`)) ?? [0, 820])[1]}" height="192">` : '');
 // the laboratories that can be opened: the built modules and the tools inside them (the NPU in RISC-V, which links into it)
 const labOf = new Map();
 for (const a of registry()) {

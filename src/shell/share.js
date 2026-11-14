@@ -81,8 +81,25 @@ function normalise(S, s, version = s?.files ? SHARE_VERSION_PROJECT : SHARE_VERS
   if (s.platform) out.platform = normalisePlatform(s.platform);
   // v10 draft (Language.companion, research D43): a single program's companion file (pico2: its .pio file)
   if (s.companion && !project) out.companion = normaliseCompanion(S, s.companion);
+  // v12 draft (Language.companions; pico2 P1-B2, research D51 Q1 A): a single program's view companions (pico2: its circuit file);
+  // the module checks the content when the engine takes it
+  if (Array.isArray(s.companions) && s.companions.length && !project) out.companions = normaliseViewCompanions(S, s.companions);
   if (project) Object.assign(out, project);
   return out;
+}
+
+/** v12 draft: the view companions of a single-program state, [{name, text}]: flat names with one of the view companions' extensions, one each. */
+function normaliseViewCompanions(S, list) {
+  if (!S.viewCompanions?.length) throw new ShareError('field', 'this architecture has no companion files of that kind', { field: 'companions' });
+  const seen = new Set();
+  return list.map((c) => {
+    const name = c?.name, ext = typeof name === 'string' ? S.viewCompanions.find((e) => name.toLowerCase().endsWith(e)) : null;
+    if (typeof name !== 'string' || !FILE_NAME.test(name) || !ext || seen.has(ext)) throw new ShareError('field', `companion file name ${JSON.stringify(String(name))}`, { field: 'companions' });
+    if (typeof c.text !== 'string') throw new ShareError('field', `no text for ${name}`, { field: 'companions' });
+    if (new TextEncoder().encode(c.text).length > LIMITS.bytes) throw new ShareError('field', 'the companion file is too large', { field: 'companions' });
+    seen.add(ext);
+    return { name, text: c.text };
+  });
 }
 
 /** v10 draft (research D43): the companion file of a single-program state, {name, text}: a flat name with the companion's extension. */
@@ -109,7 +126,7 @@ function normaliseProject(S, s) {
   const files = s.files.map((f) => {
     const name = f?.name;
     const ext = typeof name === 'string' && name.includes('.') ? name.slice(name.lastIndexOf('.')).toLowerCase() : '';
-    if (typeof name !== 'string' || !FILE_NAME.test(name) || !S.extensions.includes(ext)) throw new ShareError('field', `file name ${JSON.stringify(String(name))}`, { field: 'files' });
+    if (typeof name !== 'string' || !FILE_NAME.test(name) || !(S.extensions.includes(ext) || S.extensions.includes(name.toLowerCase()))) throw new ShareError('field', `file name ${JSON.stringify(String(name))}`, { field: 'files' });
     if (seen.has(name)) throw new ShareError('field', `two files named ${name}`, { field: 'files' });
     if (typeof f.text !== 'string') throw new ShareError('field', `no text for ${name}`, { field: 'files' });
     seen.add(name);
@@ -139,6 +156,12 @@ export function normaliseInputs(list) {
     if (e.kind === 'uart' && int(e.uart, 0, 1) && Array.isArray(e.bytes) && e.bytes.length <= 4096 && e.bytes.every((b) => int(b, 0, 255))) {
       return { ...base, kind: 'uart', uart: e.uart, bytes: e.bytes.slice() };
     }
+    // pico2 P1-M7 (an ADC input's volts, the lab kit's environment; links refused them before P1-B2) and P1-B2 (a control of the
+    // circuit: a part's id and value); the module checks the ranges when the engine takes them
+    const num = (v) => typeof v === 'number' && Number.isFinite(v);
+    if (e.kind === 'adc' && int(e.channel, 0, 3) && num(e.volts)) return { ...base, kind: 'adc', channel: e.channel, volts: e.volts };
+    if (e.kind === 'env' && typeof e.key === 'string' && /^[a-z]{1,16}$/.test(e.key) && num(e.value)) return { ...base, kind: 'env', key: e.key, value: e.value };
+    if (e.kind === 'part' && typeof e.id === 'string' && /^[A-Za-z][A-Za-z0-9_.]{0,24}$/.test(e.id) && num(e.value)) return { ...base, kind: 'part', id: e.id, value: e.value };
     throw new ShareError('field', `not an input: ${JSON.stringify(e).slice(0, 80)}`, { field: 'inputs' });
   }).sort((a, b) => a.cycle - b.cycle);
 }

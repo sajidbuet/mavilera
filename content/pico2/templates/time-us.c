@@ -7,7 +7,7 @@
  * the toolbar (CLK_SYS_HZ): at 4 MHz one microsecond is 4 clock cycles of Hazard3.
  * Try: Compile, then Run. Set Translation to Register, build and run again: fewer loads and
  * stores, fewer microseconds. Change clk_sys to 12 MHz: the same cycles take a third of the
- * time. The Pipeline view shows where the cycles go.
+ * time. The Core view shows where the cycles go.
  */
 #include <rp2350.h>
 

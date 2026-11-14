@@ -80,19 +80,26 @@ export class Spi extends Device {
   }
   /** A frame to the parts on this instance's pins (the kit: SCK and MOSI must select SPI; MISO carries the reply back). */
   exchange(out) {
-    const kit = this.m.kitOn ? this.m.kit?.spi[this.index] : null;
-    let inV = 0;
-    if (kit && kit.sck >= 0) {
-      const p = this.m.pins, fn = (n) => p.ctrl[n] & 0x1f;
-      const wired = fn(kit.sck) === F_SPI && fn(kit.mosi) === F_SPI;
-      let reply = 0, who = null;
-      if (wired) for (const { cs, part } of kit.parts) if (p.level[cs] === 0) { reply = part.transfer(out) ?? 0; who = cs; }
-      if (who !== null && fn(kit.miso) === F_SPI) inV = reply;
-      this.logFrame(who, out, inV);
-      return inV;
+    // P1-B2 stage B2-4 (research D54): the circuit's SPI modules on this instance: a module is selected while a pad on its CSB net
+    // is low; it takes the frame when its SCK and SDI nets reach pads that select this instance's SCK and TX, and its reply comes
+    // back when its SDO net reaches a pad that selects this instance's RX
+    const p = this.m.pins, fn = (n) => p.ctrl[n] & 0x1f;
+    const role = (pads, r) => pads.some((g) => fn(g) === F_SPI && (g & 3) === r && spiOfPin(g) === this.index);
+    let inV = 0, who = null;
+    if (this.m.kitOn) {
+      for (const x of this.m.kit.modules) {
+        if (x.bus !== 'spi') continue;
+        const cs = (x.pins.CSB?.pads ?? []).find((g) => p.level[g] === 0);
+        if (cs === undefined) continue;
+        if (!role(x.pins.SCK.pads, 2) || !role(x.pins.SDI.pads, 3)) { this.m.diag('spiModulePins', x.id, x.name); continue; }
+        if (!x.powered) { this.m.diag('moduleUnpowered', x.id, x.name); continue; }
+        const reply = x.part.transfer(out) ?? 0;
+        who = cs;
+        if (role(x.pins.SDO.pads, 0)) inV = reply;
+      }
     }
-    this.logFrame(null, out, 0);
-    return 0;
+    this.logFrame(who, out, inV);
+    return inV;
   }
   logFrame(cs, tx, rx) {
     this.log.push({ cycle: this.now, cs, tx, rx });
@@ -101,9 +108,8 @@ export class Spi extends Device {
   }
   /** The kit parts' chip selects follow their pins (called by the machine when a pin's level changes). */
   pinLevel(n, level) {
-    const kit = this.m.kit?.spi[this.index];
-    if (!kit) return;
-    for (const { cs, part } of kit.parts) if (cs === n) part.select(this.m.kitOn && level === 0);
+    if (this.index !== 0) return; // a module's chip select is its own pin, not an instance's: followed once (B2-4)
+    for (const x of this.m.kit?.modules ?? []) if (x.bus === 'spi' && (x.pins.CSB?.pads ?? []).includes(n)) x.part.select(level === 0);
   }
   /** Recompute the pins that show this instance's CSn (their level follows a frame in flight). */
   csPins() {

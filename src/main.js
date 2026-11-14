@@ -209,6 +209,10 @@ const diag = {
   },
 };
 let running = false;
+// v12 draft (pico2 P1-B2 stage B2-3, ViewContext.holdRun): a view holds Run and Step while it edits the program's circuit; the
+// reason is the Run button's tooltip and the console's answer to Run, Step or F5
+let runHold = null;
+let runBtnRef = null; // the Run button, once made (syncHold)
 let lastStop = null; // how the last run ended: {stop, pc}, for the narrow screen's status
 let selected = null;
 let dirty = false;
@@ -284,6 +288,29 @@ const compEd = COMP ? new Editor({ language: { editor: COMP.editor ?? arch.langu
 const compFiles = () => (comp ? [{ name: comp.name, text: comp.text }] : []);
 /** The editor shown: the program's, or the companion's. */
 const activeEd = () => (compOn && comp ? compEd : editor);
+// v12 draft (Language.companions; pico2 P1-B2, research D51 Q1 A): a companion a view edits (pico2: the circuit, edited in the Board
+// view; no editor tab). One-file shell: kept in this browser, carried by links, settings files and templates (`companions`), saved
+// with the program; projects: the project's file of the fixed name (`projectFile`). The engine gets its text as the engine setting
+// `option` with the others (withEngineOpts, applyEngineOpts); a changed circuit starts the program again (the engine's rule, D51 Q3 A).
+const VCOMP = (arch.language.companions ?? []).find((c) => c.editor === 'view') ?? null;
+let vcomp = null; // {name, text}, or null (one-file shell)
+/** The view companion's text, or null. */
+const vcompText = () => (!VCOMP ? null : PROJECTS ? (project()?.files.find((f) => f.name === VCOMP.projectFile)?.text ?? null) : (vcomp?.text ?? null));
+/** Set the view companion (a template, link, file, restore or the view; null: none); `apply`: give it to the engines now. */
+function setVcomp(c, { apply = true } = {}) {
+  if (!VCOMP) return;
+  const text = c && typeof c.text === 'string' ? c.text : null;
+  if (PROJECTS) {
+    if (!project()) return;
+    const has = project().files.some((f) => f.name === VCOMP.projectFile);
+    if (text === null) { if (has) proj.deleteFile(VCOMP.projectFile); } else if (has) proj.setText(VCOMP.projectFile, text); else proj.addFile(VCOMP.projectFile, text);
+    if (has || text !== null) afterFiles(false);
+  } else {
+    vcomp = text === null ? null : { name: typeof c.name === 'string' ? c.name : `${stem(sourceName())}${VCOMP.extension}`, text };
+    store.set('pips.vcompanion', vcomp ? JSON.stringify(vcomp) : '');
+  }
+  if (apply) applyEngineOpts();
+}
 /** The open project (projects only). */
 let proj = null;
 const project = () => proj?.project ?? null;
@@ -542,6 +569,14 @@ function setToolLabel(b, name, label, key) {
   b.replaceChildren(icon(name), el('span.tool-label', { text: label }));
   b.setAttribute('aria-label', tip);
   b.title = tip;
+  if (b === runBtnRef) syncHold();
+}
+/** The Run button while a view holds runs (v12 draft holdRun): marked unavailable, its tooltip the reason. */
+function syncHold() {
+  const b = runBtnRef;
+  if (!b) return;
+  if (runHold) { b.setAttribute('aria-disabled', 'true'); b.title = runHold; }
+  else if (b.hasAttribute('aria-disabled')) { b.removeAttribute('aria-disabled'); b.title = b.getAttribute('aria-label') ?? ''; }
 }
 // An export of a whole run (WS-F-124 to WS-F-126); `.dp-only` items exist only in a datapath view.
 const runExport = (label, action, cls = '') => el(`button${cls}`, { type: 'button', onclick: action, title: STRINGS.exportRunTitle, text: label });
@@ -610,6 +645,7 @@ if (soundOn) {
 // Run again; ui/primary-action.js) in place of Build and Run
 const PRIMARY_BTN = Boolean(EDITION?.primary);
 const runBtn = tool('play', STRINGS.run, () => (PRIMARY_BTN ? primaryClick() : running ? pause() : startRun()), { key: 'F5', cls: '.tool-run' });
+runBtnRef = runBtn;
 const runStatus = el('span.run-status', { role: 'status', 'aria-live': 'polite' });
 // the image kinds the architecture opens (contract v10 draft, Language.imageKinds; default .hex and .bin); none in an
 // edition without image import (pico2 Lite)
@@ -715,8 +751,9 @@ const asmValues = () => Object.fromEntries(asmOpts.map((x) => [x.o.id, x.sel.val
 /** The build options only (assemble, compile, the program's key). */
 const buildValues = () => Object.fromEntries(asmOpts.filter((x) => x.o.apply !== 'engine').map((x) => [x.o.id, x.sel.value]));
 /** The engine settings (Engine.configure). */
-const engineValues = () => Object.fromEntries(asmOpts.filter((x) => x.o.apply === 'engine').map((x) => [x.o.id, x.sel.value]));
-const HAS_ENGINE_OPTS = asmOpts.some((x) => x.o.apply === 'engine');
+const engineValues = () => ({ ...Object.fromEntries(asmOpts.filter((x) => x.o.apply === 'engine').map((x) => [x.o.id, x.sel.value])),
+  ...(VCOMP ? { [VCOMP.option]: vcompText() } : {}) }); // v12 draft: the view companion (pico2: the circuit)
+const HAS_ENGINE_OPTS = asmOpts.some((x) => x.o.apply === 'engine') || Boolean(VCOMP);
 const shownOpts = asmOpts.filter((x) => !x.o.panel);
 const buildOpts = el('span.cc-opts.build-opts', { hidden: shownOpts.length === 0 }, shownOpts.map((x) => x.label));
 /** An engine just made gets the engine settings. */
@@ -776,7 +813,14 @@ async function openTemplate(t) {
     if (!rc.ok) { consolePanel.message(STRINGS.templates.failed(`${t.companion}: ${rc.status}`), 'error'); return; }
     companion = { name: t.companion, text: await rc.text() };
   }
-  await applyShared({ view: t.view, profile: t.profile ?? OWN_PROFILES[0].id, lang: t.lang, name: t.file, source: await r.text(), opts: t.opts ?? null, companion,
+  // v12 draft (pico2 P1-B2): a template may come with its circuit file
+  let companions = null;
+  if (t.circuit && VCOMP) {
+    const rc = await fetch(new URL(t.circuit, contentUrl('templates')));
+    if (!rc.ok) { consolePanel.message(STRINGS.templates.failed(`${t.circuit}: ${rc.status}`), 'error'); return; }
+    companions = [{ name: t.circuit, text: await rc.text() }];
+  }
+  await applyShared({ view: t.view, profile: t.profile ?? OWN_PROFILES[0].id, lang: t.lang, name: t.file, source: await r.text(), opts: t.opts ?? null, companion, companions,
     ...Object.fromEntries(SETTINGS.map((v) => [v.settings.key, t[v.settings.key] ?? null])), mem: t.mem ? readConfig(t.mem) : null },
     STRINGS.templates.opened(t.title));
 }
@@ -833,7 +877,7 @@ const speedField = el('label.tool-field', {}, el('span', { text: STRINGS.speed }
 const profileField = el('label.tool-field.arch-field', {}, el('span', { text: STRINGS.profile }), profileSel);
 const group = (cls, ...items) => el(`div.tb-group${cls}`, {}, items);
 // File ▸ Save: the program, and its companion file with it (two downloads)
-const saveBtn = btn(STRINGS.save(arch.language.extension), () => { download(sourceName(), editor.value); if (comp) download(comp.name, comp.text); });
+const saveBtn = btn(STRINGS.save(arch.language.extension), () => { download(sourceName(), editor.value); if (comp) download(comp.name, comp.text); if (vcomp) download(vcomp.name, vcomp.text, 'application/json'); });
 const removeCompBtn = COMP ? el('button', { type: 'button', text: COMP.remove, hidden: true, onclick: () => removeComp() }) : null;
 const fileMenuBox = fileMenu(
     btn(STRINGS.open, () => fileInput.click()),
@@ -1021,7 +1065,15 @@ const memsysOf = {}; // view id -> the MemorySystem the view was given (null: id
 /** A view with its own model and drawing (kind datapath or bus). */
 const isDp = (id = mode) => ['datapath', 'bus'].includes(viewOf(id)?.kind);
 const isCmp = (id = mode) => viewOf(id)?.kind === 'compare';
-const uv = () => (isDp() ? inst[mode] ?? null : null); // the datapath view in use, or null in the ISA and comparison views
+/**
+ * v11 (View.engine 'page'; pico2's Board view, P1-B1, research D48 Q2 B): a drawing view without a model of its own, which
+ * draws the page's engine. The shell runs the program as in the instruction view (uv() stays null: step, run, the Worker, inputs,
+ * registers) and lays the page out as for a drawing view; it calls the view's render() after each refresh and live() with each
+ * live state of a real-time run.
+ */
+const isPageView = (id = mode) => viewOf(id)?.engine === 'page';
+const uv = () => (isDp() && !isPageView() ? inst[mode] ?? null : null); // the datapath view in use, or null in the ISA, comparison and page views
+const pv = () => (isPageView() ? inst[mode] ?? null : null); // the page-engine view in use, or null
 
 // --- the memory model applied to the views (each gets its own MemorySystem) ------------------------------
 const makeMemsys = () => buildMemsys(memCfg, { platform: memCfg.devices ? new Platform(session.platformConfig) : null }).memsys; // null: ideal memory of the default size, the book's processors
@@ -1360,19 +1412,33 @@ const pInfo = panel(STRINGS.view.info, el('div'), '.p-info', 'inspect');
 // The lower pane of the middle column (instruction inspector, cycle details, pipeline details) has, besides its
 // fold arrow: an up arrow that folds the pane above so that it grows upward (the same place then shows a down arrow
 // that opens the pane above again), and Maximise, which gives it the whole workspace (Esc restores).
-function paneControls(node, title) {
+function paneControls(node, title, { side = false } = {}) {
   const L = STRINGS.layout;
   const up = el('button.pane-up', { type: 'button', onclick: () => midSplit.setCollapsed(midSplit.panes[0].id, !midSplit.collapsed[0]) });
   const max = el('button.pane-max', { type: 'button', onclick: () => setMidMax(node, !workspace.classList.contains('mid-max')) });
-  node.querySelector(':scope > h2').append(up, max);
+  // a drawing view's details (author, 2026-11-13, pico2 Board): to the third column in place of the registers, so that the
+  // drawing has the whole middle column; and back under the drawing
+  const sideBtn = side ? el('button.pane-side', { type: 'button', onclick: () => setInfoSide(!infoSide) }) : null;
+  node.querySelector(':scope > h2').append(...[sideBtn, up, max].filter(Boolean));
   node.addEventListener('keydown', (e) => { if (e.key === 'Escape' && workspace.classList.contains('mid-max')) { setMidMax(node, false); max.focus(); } });
   const sync = () => {
     const here = node._split === midSplit && midSplit.panes[1]?.node === node;
     up.hidden = !here;
     max.hidden = !here;
+    if (sideBtn) {
+      const h = node.querySelector(':scope > h2'), at = node._split === rightSplit;
+      sideBtn.hidden = !(here || at) || Boolean(ws?.mobile);
+      if (h && sideBtn.parentNode !== h) h.insertBefore(sideBtn, node._toggle?.parentNode === h ? node._toggle : null);
+      const shown = h?.querySelector('.panel-title, :scope > span')?.textContent?.trim() || title; // the view's own name ("Board details")
+      const label = at ? L.infoUnder(shown) : L.infoSide(shown);
+      sideBtn.replaceChildren(icon(at ? 'growBack' : 'dockRight'));
+      sideBtn.setAttribute('aria-label', label); sideBtn.title = label;
+      sideBtn.setAttribute('aria-pressed', String(at));
+    }
     if (!here) return;
     const h = node.querySelector(':scope > h2'); // a view replaces the heading when it loads: the controls join the new one
     if (h && up.parentNode !== h) h.insertBefore(max, node._toggle?.parentNode === h ? node._toggle : null), h.insertBefore(up, max);
+    if (sideBtn && h) h.insertBefore(sideBtn, up);
     const aboveFolded = midSplit.collapsed[0];
     up.replaceChildren(icon(aboveFolded ? 'growBack' : 'growUp')); // not a chevron: those are the dividers' (author, 2026-11-10)
     const label = aboveFolded ? L.openAbove : L.enlargeUp(title);
@@ -1641,6 +1707,9 @@ function editorStatus() {
 // the console to the right column, and has no dock (spec §11.1: the drawing needs the height).
 const midSplit = new Split('column', 'mid');
 const rightSplit = new Split('column', 'right');
+// a pane of the middle or right column may fill its column, the others hidden with their headings (the author, 2026-11-13)
+midSplit.fillable = true;
+rightSplit.fillable = true;
 const workSplit = new Split('row', 'work');
 const dockSplit = new Split('row', 'dock');
 const rootSplit = new Split('column', 'root');
@@ -1649,8 +1718,19 @@ const dockBarText = el('span', { text: STRINGS.layout.dockBar });
 const dockBar = el('div.dock-bar', { onclick: () => rootSplit.setCollapsed('dock', false) }, icon('unfold', { size: 14 }), dockBarText);
 const dock = el('div.dock', {}, dockBar, dockSplit.root);
 const workspace = el('div.workspace', {}, rootSplit.root);
-const syncMidControls = [paneControls(pInfo, STRINGS.view.info), paneControls(pFields, STRINGS.layout.panes.inspector)];
+// a drawing view's details pane in the third column in place of the registers (author, 2026-11-13); kept in this browser
+let infoSide = store.get('pips.infoSide') === '1';
+function setInfoSide(on) {
+  infoSide = on;
+  store.set('pips.infoSide', on ? '1' : '');
+  const had = pInfo.contains(document.activeElement);
+  configureLayout();
+  syncMidControls.forEach((f) => f());
+  if (had) pInfo.querySelector('.pane-side')?.focus(); // the keyboard stays on the button that moved the pane
+}
+const syncMidControls = [paneControls(pInfo, STRINGS.view.info, { side: true }), paneControls(pFields, STRINGS.layout.panes.inspector)];
 midSplit.onApply = () => syncMidControls.forEach((f) => f());
+rightSplit.onApply = () => syncMidControls[0]();
 // Folding the widened editor (its heading, View ▸ Show) also ends Widen: the columns that stepped aside come back, where
 // before only the folded editor's strip was left on an empty workspace (author, 2026-11-10)
 workSplit.onApply = () => { if (workspace.classList.contains('ed-wide') && workSplit.isCollapsed('editor')) setEditorWide(false); };
@@ -1679,29 +1759,38 @@ function configureLayout() {
   workspace.classList.remove('mid-max');
   setEditorWide(false, { quiet: true }); // a new view starts with every column in place
   pInfo.classList.remove('max-pane'); pFields.classList.remove('max-pane');
-  midSplit.configure(dp ? [{ node: pDatapath, id: 'datapath', min: 220, size: drawingSize, title: STRINGS.view.panel },
-    { node: pInfo, id: 'info', min: 90, size: 1 - drawingSize, collapsible: true, collapsed: pj, title: P.info }]
-    : cmp ? [{ node: pCompare, id: 'compare', min: 120, size: 1 }]
-      : [{ node: pListing, id: 'listing', min: 120, size: 0.6, title: STRINGS.listing },
-        { node: pFields, id: 'inspector', min: 90, size: 0.4, collapsible: true, collapsed: sec, title: P.inspector }],
-  `mid.${k}`);
-  rightSplit.configure(dp ? [{ node: pRegs, id: 'registers', min: 140, size: 0.5 },
+  // the details pane in the third column (setInfoSide): the drawing has the middle column to itself; the registers, counters
+  // and console stay in the third column, folded at first under the details (their headings open them); own saved sizes
+  const side = dp && infoSide && !ws?.mobile;
+  const sk = side ? '.side' : '';
+  midSplit.configure(side ? [{ node: pDatapath, id: 'datapath', min: 220, size: 1, title: STRINGS.view.panel }]
+    : dp ? [{ node: pDatapath, id: 'datapath', min: 220, size: drawingSize, title: STRINGS.view.panel },
+      { node: pInfo, id: 'info', min: 90, size: 1 - drawingSize, collapsible: true, collapsed: pj, title: P.info }]
+      : cmp ? [{ node: pCompare, id: 'compare', min: 120, size: 1, title: STRINGS.view.comparison }]
+        : [{ node: pListing, id: 'listing', min: 120, size: 0.6, title: STRINGS.listing },
+          { node: pFields, id: 'inspector', min: 90, size: 0.4, collapsible: true, collapsed: sec, title: P.inspector }],
+  `mid.${k}${sk}`);
+  rightSplit.configure(side ? [{ node: pInfo, id: 'info', min: 140, size: 0.7, collapsible: true, title: P.info },
+    { node: pRegs, id: 'registers', min: 140, size: 0.1, collapsible: true, collapsed: true, title: STRINGS.registers },
+    { node: pCounters, id: 'counters', min: 70, size: 0.1, collapsible: true, collapsed: true, title: P.counters },
+    { node: pConsole, id: 'console', min: 80, size: 0.1, collapsible: true, collapsed: true, title: STRINGS.console }]
+    : dp ? [{ node: pRegs, id: 'registers', min: 140, size: 0.5, title: STRINGS.registers },
     { node: pCounters, id: 'counters', min: 70, size: 0.26, collapsible: true, collapsed: pj, title: P.counters },
     { node: pConsole, id: 'console', min: 80, size: 0.24, collapsible: true, collapsed: pj, title: STRINGS.console }]
-    : [{ node: pRegs, id: 'registers', min: 140, size: 0.56 },
+    : [{ node: pRegs, id: 'registers', min: 140, size: 0.56, title: STRINGS.registers },
       // folded at first where the module has no call stack yet (it would only say so; GUI pass, 2026-11-10)
       { node: pCalls, id: 'calls', min: 64, size: 0.14, collapsible: true, collapsed: sec || !CAP.callStack.enabled, title: P.calls },
       { node: pCounters, id: 'counters', min: 70, size: 0.3, collapsible: true, collapsed: sec, title: P.counters }],
-  `right.${k}`);
+  `right.${k}${sk}`);
   // projects: the Files pane first (its share taken from the editor and the middle column); its own saved sizes
   const ex = PROJECTS ? 0.14 : 0;
   // (projector mode folds it like the other secondary panes: editor, main view and registers stay open)
   workSplit.configure([...(PROJECTS ? [{ node: pExplorer, id: 'explorer', min: 185, size: ex, collapsible: true, collapsed: pj, title: STRINGS.projects.files }] : []),
     { node: pEditor, id: 'editor', min: 220, size: dp ? editorSize : 0.3 - ex / 2, collapsible: true, title: P.editor },
-    { node: midSplit.root, id: 'mid', min: dp ? 360 : 300, size: dp ? 0.78 - editorSize - ex : 0.44 - ex / 2 },
+    { node: midSplit.root, id: 'mid', min: dp ? 360 : 300, size: side ? 0.66 - editorSize - ex : dp ? 0.78 - editorSize - ex : 0.44 - ex / 2 },
     // folded, the column is a strip named after its panes (author, 2026-11-10)
-    { node: rightSplit.root, id: 'right', min: 230, size: dp ? 0.22 : 0.26, foldable: true,
-      title: (dp ? [STRINGS.registers, P.counters, STRINGS.console] : [STRINGS.registers, P.calls, P.counters]).join(' · ') }], `work.${k}${PROJECTS ? '.files' : ''}`);
+    { node: rightSplit.root, id: 'right', min: 230, size: side ? 0.34 : dp ? 0.22 : 0.26, foldable: true,
+      title: (side ? [P.info, STRINGS.registers, P.counters, STRINGS.console] : dp ? [STRINGS.registers, P.counters, STRINGS.console] : [STRINGS.registers, P.calls, P.counters]).join(' · ') }], `work.${k}${PROJECTS ? '.files' : ''}${sk}`);
   // the dock, in every view (D7): the shared memory panel, and in the ISA and comparison views the console;
   // a datapath view needs the height, so there it starts folded
   dockSplit.configure(dp ? [{ node: pMemory, id: 'memory', min: 220, size: 1 }]
@@ -1757,7 +1846,8 @@ function syncDockBar() {
 function fillViewMenu(list) {
   const dp = isDp();
   const panes = [...(PROJECTS ? [[workSplit, 'explorer', STRINGS.projects.files]] : []), [workSplit, 'editor', P.editor],
-    ...(dp ? [[midSplit, 'info', P.info], [rightSplit, 'counters', P.counters], [rightSplit, 'console', STRINGS.console], [rootSplit, 'dock', MEM_PANE.panel]]
+    ...(dp ? [[pInfo._split ?? midSplit, 'info', P.info], ...(pInfo._split === rightSplit ? [[rightSplit, 'registers', STRINGS.registers]] : []),
+      [rightSplit, 'counters', P.counters], [rightSplit, 'console', STRINGS.console], [rootSplit, 'dock', MEM_PANE.panel]]
       : [...(isCmp() ? [] : [[midSplit, 'inspector', P.inspector]]), [rightSplit, 'calls', P.calls], [rightSplit, 'counters', P.counters], [rootSplit, 'dock', P.dock]])];
   // the third column as a whole, before its own panes (GUI walkthrough, 2026-11-11: it folds to a strip, and View had no entry for it)
   panes.splice(panes.findIndex(([s]) => s === rightSplit), 0, [workSplit, 'right', P.right]);
@@ -1805,11 +1895,13 @@ function setZoom(on) {
 /** Open what an element of the drawing stands for: a shared panel or an information tab, flashed. */
 function openTarget(t) {
   if (!t) return;
-  if (t.panel === 'registers') { flashPanel(pRegs); return; }
+  if (t.panel === 'registers') { if (rightSplit.isCollapsed('registers')) rightSplit.setCollapsed('registers', false); flashPanel(pRegs); return; }
   if (t.panel === 'memory') { setZoom(false); showMemoryPanel(0); return; } // the memory lives in the shared panel
   setZoom(false);
   ws.reveal('datapath'); // a narrow screen: the details are under the drawing there
-  if (midSplit.isCollapsed('info')) midSplit.setCollapsed('info', false);
+  const infoAt = pInfo._split ?? midSplit; // under the drawing, or in the third column (setInfoSide)
+  if (infoAt === rightSplit && workSplit.isCollapsed('right')) workSplit.setCollapsed('right', false);
+  if (infoAt.isCollapsed('info')) infoAt.setCollapsed('info', false);
   if (viewParts[mode]?.tabs.selectTitle(t.tab)) flashPanel(pInfo);
 }
 
@@ -1850,6 +1942,7 @@ for (const li of consolePanel.msgs.children) ws.note(li.className === 'msg-error
 function redrawDrawing() {
   const v = uv();
   drawingStale = false;
+  if (pv()) { pv().render(); return; } // v11: a page view
   if (!v) return;
   v.render();
   refreshWave();
@@ -1961,6 +2054,16 @@ const viewContext = () => ({
   command: (name) => (name === 'stepUnit' ? stepUnit() : name === 'backUnit' ? backUnit() : name.startsWith('view:') ? setMode(name.slice(5)) : undefined),
   memConfig: () => memCfg,
   download: (name, data, type) => download(name, data, type),
+  // v11 (pico2's Board view, research D48): the page's engine, an input by the shell's own path (the Pins panel's: to the
+  // Worker during a run, else the engine; logged for Replay), and the value of a Language option (engine settings included)
+  engine: () => engine ?? null,
+  input: (x) => giveInput(x),
+  option: (id) => asmOpts.find((x) => x.o.id === id)?.sel.value ?? null,
+  // v12 draft (pico2 P1-B2): the view companion's text (pico2: the circuit), and a new text from the view (the Board's editor)
+  companion: (id) => (VCOMP && VCOMP.id === id ? vcompText() : null),
+  setCompanion: (id, text) => { if (VCOMP && VCOMP.id === id) { cancelRun(); setVcomp(text === null ? null : { name: vcomp?.name, text }); dirty = true; editorStatus(); saveSoon(); } },
+  // v12 draft (pico2 P1-B2 stage B2-3): hold Run and Step with a reason (null: release); a run under way pauses
+  holdRun: (reason) => { runHold = reason || null; if (runHold && running) pause(); syncHold(); },
 });
 
 /** Load a view (its module and content) and build its panes. Returns false if it could not be loaded. */
@@ -2052,15 +2155,17 @@ async function setMode(next) {
   const isa = VIEWS[0].id;
   if (next !== isa && !(await loadView(next))) return;
   const wasIsa = mode === isa;
+  const wasEngineView = wasIsa || isPageView(mode); // v11: the instruction view and page views share the page's engine
+  const profileBefore = session.profile;
   mode = next;
   viewButtons.forEach((b, i) => b.setAttribute('aria-selected', String(VIEWS[i].id === mode)));
   const sc = isDp(); // a datapath view
   const cmp = isCmp();
-  for (const b of toolbar.querySelectorAll('.dp-only')) b.hidden = !sc;
+  for (const b of toolbar.querySelectorAll('.dp-only')) b.hidden = !sc || isPageView(); // v11: a page view has no model to export
   if (sc) {
     const parts = viewParts[mode];
     parts.header.append(zoomBtn);
-    pDatapath.replaceChildren(parts.header, uv().root);
+    pDatapath.replaceChildren(parts.header, inst[mode].root);
     pInfo.replaceChildren(head(parts.info, 'inspect'), parts.tabs.root);
   } else setZoom(false);
   workspace.classList.toggle('dp-mode', sc);
@@ -2089,6 +2194,9 @@ async function setMode(next) {
   profileSel.value = session.profile;
   syncLangControls();
   store.set('pips.view', mode);
+  // v11 (research D48 Q2 B): between the instruction view and a page view of the same profile the program and the
+  // engine's state stay as they are (the Board shows the run the instruction view made, and the reverse)
+  if (wasEngineView && (mode === isa || isPageView()) && session.profile === profileBefore && session.program) { refresh(true); return; }
   if (session.imported) reimport(); else doAssemble();
 }
 
@@ -2461,6 +2569,7 @@ function exportVcd() {
 }
 
 function ensureRunnable() {
+  if (runHold) { consolePanel.message(runHold, 'warn'); return false; } // a view edits the circuit (v12 draft holdRun)
   // an image language builds asynchronously (in its Worker): Run or Step starts the build; the console says when it is done
   if (PROJECTS && cCompiler()?.image && (dirty || !session.program || imageBuild.busy) && usesImageLanguage()) {
     if (!imageBuild.busy) doAssemble({ user: true });
@@ -2760,6 +2869,10 @@ function rtLive(msg, bytes) {
     if (rt.out.length > OUTPUT_LIMIT * 2) { const k = rt.out.length - OUTPUT_LIMIT; rt.out.splice(0, k); rt.dropped += k; }
     rt.outDirty = true;
   }
+  // v11 (research D48 Q12): a live state not drawn yet is replaced by the newer one; its pins' change counts (pico2's
+  // `pins.busy`, the Board's purple) are carried into the newer state, so that a slow page does not lose them
+  const was = rt.pending?.state?.pins?.busy, now = msg?.state?.pins?.busy;
+  if (was && now && was.length === now.length) for (let i = 0; i < now.length; i++) now[i] = Math.min(2, now[i] + was[i]);
   if (msg) rt.pending = msg;
   if (!rt.ring && !rt.drawQueued) { rt.drawQueued = true; requestAnimationFrame(rtDraw); } // the ring's poll draws itself
 }
@@ -2778,6 +2891,7 @@ function rtDraw() {
   regs.update({ registers: s.registers, pc: s.pc, changed: [] });
   listing.markPc(s.pc);
   for (const { inst } of archPanels) inst.live?.(s.pins, s); // the Pins panel (contract v10 draft PanelInstance.live; the whole live state second)
+  pv()?.live?.(s); // v11: a page view (pico2's Board), at most once per frame
 }
 
 function endRealtime() {
@@ -3021,6 +3135,8 @@ function refresh(programChanged = false) {
   const nl = from > 0 ? output.indexOf('\n', from) : -1;
   const shown = from > 0 ? output.slice(nl >= 0 && nl < output.length - 1 ? nl + 1 : from) : output; // from a line's start
   consolePanel.setOutput(Array.from(shown, (c) => c.charCodeAt(0)), (s?.outputDropped ?? 0) + output.length - shown.length);
+  // v11: a page view draws the page's engine (pico2's Board), unless no workspace shows it (a narrow screen)
+  if (pv()) { if (drawingHidden()) drawingStale = true; else { drawingStale = false; pv().render(); } }
   updateWsStatus();
 }
 
@@ -3077,7 +3193,7 @@ const hasTraps = (id) => capability(arch, 'traps', profileOf(id)).enabled;
 /** The program with its view and settings, as share.js takes it. */
 function shareState() {
   return { arch: arch.id, view: mode, profile: mode === VIEWS[0].id ? session.profile : isaProfile, subset: subsetSel.value || null, lang, name: sourceName(), // no subset: an empty menu
-    source: editor.value, cc: xlValues(), ...(asmOpts.length ? { opts: asmValues() } : {}), ...(comp ? { companion: { ...comp } } : {}),
+    source: editor.value, cc: xlValues(), ...(asmOpts.length ? { opts: asmValues() } : {}), ...(comp ? { companion: { ...comp } } : {}), ...(vcomp && !PROJECTS ? { companions: [{ ...vcomp }] } : {}),
     ...(inputEngine()?.restart && inputEngine().inputs?.().length ? { inputs: inputEngine().inputs() } : {}), // v10 draft (P1-M4, D36 Q5)
     ...Object.fromEntries(SETTINGS.map((v) => [v.settings.key, viewSettings(v)])),
     ...(memCfg.mode !== 'ideal' || memCfg.words !== 256 || memCfg.devices ? { mem: memCfg } : {}),
@@ -3113,7 +3229,7 @@ async function applyShared(st, message) {
   const dropped = session.breakpoints.size;
   session.breakpoints.clear();
   // File ▸ Restore: the text before (one-file shell), or the project open before (projects: the state becomes a new project)
-  store.set('pips.source.before', JSON.stringify(PROJECTS ? { project: project().id } : { lang, text: editor.value, companion: comp }));
+  store.set('pips.source.before', JSON.stringify(PROJECTS ? { project: project().id } : { lang, text: editor.value, companion: comp, vcompanion: vcomp }));
   for (const x of xlOpts) { const v = st.cc?.[x.o.id]; if (v) { x.sel.value = v; store.set(`pips.cc.${x.o.id}`, v); } }
   for (const x of asmOpts) { const v = st.opts?.[x.o.id]; if (v && x.o.values.some((o) => o.id === v)) { x.sel.value = v; store.set(x.key, v); } } // v10 draft
   queueMicrotask(() => applyEngineOpts()); // P1-M5: a link's or template's speaker and converter (after the engine is made)
@@ -3131,7 +3247,8 @@ async function applyShared(st, message) {
   if (PROJECTS) {
     // a link v2 carries the project; a single program (link v1, template, settings file) becomes a one-file project
     const one = singleName(st);
-    const files = st.files ?? [{ name: one, text: st.source }, ...(st.companion && st.companion.name !== one ? [st.companion] : [])]; // research D43: the pair
+    const files = st.files ?? [{ name: one, text: st.source }, ...(st.companion && st.companion.name !== one ? [st.companion] : []), // research D43: the pair
+      ...(VCOMP && st.companions?.length ? [{ name: VCOMP.projectFile, text: st.companions[0].text }] : [])]; // v12 draft: the circuit
     const title = st.project ?? (st.files ? STRINGS.projects.sharedProject : files[0].name.replace(/\.\w+$/, ''));
     await proj.newProject(title, files, st.entry ?? files[0].name);
     message = { text: message, note: STRINGS.projects.fromLink(project().name) };
@@ -3144,6 +3261,7 @@ async function applyShared(st, message) {
     editor.value = st.source;
     store.set(sourceKey(), st.source);
     setComp(st.companion ?? null); // a state without one has none: its program would not be built with another's
+    setVcomp(st.companions?.[0] ?? null, { apply: false }); // v12 draft: nor run with another's circuit (applied with the options below)
     syncLangControls();
   }
   if (st.view === mode) {
@@ -3217,6 +3335,7 @@ function restoreBefore() {
     editor.value = b.text;
     store.set(sourceKey(), b.text);
     setComp(b.companion ?? null);
+    setVcomp(b.vcompanion ?? null);
     store.set('pips.source.before', '');
     doAssemble();
     consolePanel.message(STRINGS.share.restored, 'ok');
@@ -3320,6 +3439,12 @@ async function openFile(file) {
       afterFiles(true);
       consolePanel.message(STRINGS.projects.addedFile(name), 'ok');
     } catch (e) { consolePanel.message(STRINGS.projects.refused(e.message), 'error'); }
+    return;
+  }
+  if (VCOMP && low.endsWith(VCOMP.extension.toLowerCase())) { // v12 draft (pico2 P1-B2): a circuit file becomes the program's circuit
+    setVcomp({ name: file.name, text: await file.text() });
+    dirty = true; editorStatus(); saveSoon();
+    consolePanel.message(STRINGS.companion.opened(file.name), 'ok');
     return;
   }
   if (COMP && low.endsWith(COMP.extension.toLowerCase())) { // research D43: a .pio file becomes the program's companion
@@ -3641,6 +3766,7 @@ if (editionNote) store.set('pips.editionNote', '');
 if (PROJECTS) await startProjects(); // projects: the open project's files (src/shell/project-session.js)
 else editor.value = store.get(sourceKey()) ?? (lang === XID ? XL.example : EXAMPLE);
 if (COMP) { let c = null; try { c = JSON.parse(store.get('pips.companion') || 'null'); } catch { /* none kept */ } setComp(c); }
+if (VCOMP && !PROJECTS) { let c = null; try { c = JSON.parse(store.get('pips.vcompanion') || 'null'); } catch { /* none kept */ } setVcomp(c, { apply: false }); }
 const kept = isShareFragment(location.hash) ? null : keptWorkspace();
 restoreEditorState(kept);
 if (PROJECTS) editor.addAreaListener('scroll', () => saveSoon()); // every file's editor, also those opened later

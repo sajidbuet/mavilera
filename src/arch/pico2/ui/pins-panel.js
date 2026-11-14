@@ -71,7 +71,8 @@ export class PinsPanel {
       f.label.append(slider);
       return { ...f, slider };
     });
-    this.envFields = Object.entries(R.keys).map(([k, [label, unit]]) => ({ k, ...num(`${label} (${unit})`, R.envTitle, -1000, 2000, 0.01, (v) => this.ctx.input({ kind: 'env', key: k, value: v })) }));
+    // (B2-4: light, in lux, reaches 100 000 lx in sunshine; the machine clamps every key to its range, parts/kit.js)
+    this.envFields = Object.entries(R.keys).map(([k, [label, unit]]) => ({ k, ...num(`${label} (${unit})`, R.envTitle, k === 'light' ? 0 : -1000, k === 'light' ? 100000 : 2000, k === 'light' ? 1 : 0.01, (v) => this.ctx.input({ kind: 'env', key: k, value: v })) }));
     // one folding section, closed at first, keeps the pins in view (the memory pane is short)
     this.envBox = el('details.pp-env', {}, el('summary', { text: R.section }),
       el('div.pp-analog', { role: 'group', 'aria-label': R.analog }, this.volts.map((v) => v.label)),
@@ -117,7 +118,20 @@ export class PinsPanel {
     const active = globalThis.document?.activeElement;
     const show = (input, v) => { if (input !== active && (input.value === '' || Number(input.value) !== v)) input.value = String(+v.toFixed(3)); };
     this.volts.forEach((f, n) => { show(f.input, p.volts[n]); show(f.slider, p.volts[n]); });
+    // P1-B2 (research D51 Q8 A): GP27/GP28 with parts wired to them show the circuit's voltage and take no input
+    this.wired = p.wired ?? [];
+    this.lockVolts();
     for (const f of this.envFields) show(f.input, p.env[f.k]);
+  }
+
+  /** P1-B2: an ADC field whose pin has the student's parts wired to it is read-only (it shows their voltage). */
+  lockVolts() {
+    this.volts.forEach((f, n) => {
+      const w = Boolean(this.wired?.[n]);
+      f.input.readOnly = w; if (f.slider) f.slider.disabled = w || this.accepts === false;
+      if (f.input.dataset.title === undefined) f.input.dataset.title = f.input.title;
+      f.input.title = w ? PICO2_STRINGS.board.circuit.wiredAdc : f.input.dataset.title;
+    });
   }
 
   /** The pins as Engine.live gives them: {level, oe, ext, fn} (arrays of 30); P1-M7: the whole live state second (its `parts`). */
@@ -134,7 +148,8 @@ export class PinsPanel {
       c.value.textContent = `${lv ? P.highShort : P.lowShort} · ${by}`;
       c.fn.textContent = FUNCTIONS[f] ?? `F${f}`;
       c.fn.title = P.fnTitle;
-      const want = String(ext);
+      // the panel's own drive (P1-B2: on a pin of the circuit, `ext` is what the circuit makes the pin read, `drv` the drive given here)
+      const want = String(pins.drv?.[n] ?? ext);
       if (c.drive.value !== want) c.drive.value = want;
     }
   }
@@ -144,6 +159,7 @@ export class PinsPanel {
     for (const c of this.cells) c.drive.disabled = !accepts;
     for (const f of [...this.volts, ...this.envFields]) { f.input.disabled = !accepts; if (f.slider) f.slider.disabled = !accepts; }
     this.syncParts(state?.parts ?? null);
+    this.lockVolts();
     this.status.textContent = !state ? P.noProgram : running ? P.running : P.stopped;
     if (state?.pins) this.live(state.pins);
     const n = state?.inputs ?? 0;

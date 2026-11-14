@@ -33,6 +33,9 @@ export function shareSchema(arch) {
     projects: arch.capabilities?.projects === true,
     // v10 draft (Language.companion; pico2 Lite, research D43): a single program may carry its companion file (the field `companion`)
     companion: arch.language.companion?.extension?.toLowerCase() ?? null,
+    // v12 draft (Language.companions; pico2 P1-B2, research D51 Q1 A): the companions a view edits (pico2: the circuit), the field
+    // `companions: [{name, text}]` of a single program
+    viewCompanions: (arch.language.companions ?? []).filter((c) => c.editor === 'view').map((c) => c.extension.toLowerCase()),
     extensions: projectExtensions(arch),
   };
 }
@@ -47,5 +50,8 @@ export function projectExtensions(arch) {
   const list = [arch.language.extension, ...extra.map((x) => x.extension).filter(Boolean)];
   if (extra.some((x) => x.id === 'c')) list.push('.h');
   list.push(...(arch.language.extraExtensions ?? []));
+  // v12 draft (pico2 P1-B2): a project's view companion is one file of a fixed name (pico2: circuit.json), listed by its name
+  // (project.js checkName accepts a whole name)
+  for (const c of arch.language.companions ?? []) if (c.editor === 'view' && c.projectFile) list.push(c.projectFile);
   return [...new Set(list.map((e) => e.toLowerCase()))];
 }

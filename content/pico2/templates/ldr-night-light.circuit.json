@@ -1,0 +1,139 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: content (Apache-2.0). A circuit of a Pico 2 template, written for the application (P1-B2, research D54 Q6 A); made by tools/pico2/make-template-circuits.mjs.",
+ "format": "mavilera-pico2-circuit",
+ "version": 2,
+ "parts": [
+  {
+   "id": "BTN",
+   "type": "button",
+   "x": -330.2,
+   "y": 496.3
+  },
+  {
+   "id": "D1",
+   "type": "led",
+   "x": 0,
+   "y": 1092.2
+  },
+  {
+   "id": "GND1",
+   "type": "ground",
+   "x": -393.7,
+   "y": 547.1
+  },
+  {
+   "id": "GND2",
+   "type": "ground",
+   "x": 419.1,
+   "y": 356.6
+  },
+  {
+   "id": "KNOB",
+   "type": "potentiometer",
+   "x": 419.1,
+   "y": 242.3,
+   "rot": 90
+  },
+  {
+   "id": "L1",
+   "type": "ldr",
+   "x": -254,
+   "y": 889
+  },
+  {
+   "id": "PWR1",
+   "type": "power",
+   "x": 419.1,
+   "y": 140.7
+  },
+  {
+   "id": "R1",
+   "type": "resistor",
+   "x": -127,
+   "y": 977.9,
+   "value": "10k",
+   "rot": 90
+  },
+  {
+   "id": "R2",
+   "type": "resistor",
+   "x": -254,
+   "y": 1092.2,
+   "value": "220"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "J1",
+   "x": -127,
+   "y": 889
+  }
+ ],
+ "wires": [
+  {
+   "a": "BTN.1",
+   "b": "GND1.1"
+  },
+  {
+   "a": "BTN.2",
+   "b": "GP15"
+  },
+  {
+   "a": "D1.A",
+   "b": "R2.2"
+  },
+  {
+   "a": "GND2.1",
+   "b": "KNOB.2"
+  },
+  {
+   "a": "GP26",
+   "b": "KNOB.W"
+  },
+  {
+   "a": "J1",
+   "b": "L1.2"
+  },
+  {
+   "a": "J1",
+   "b": "R1.1"
+  },
+  {
+   "a": "KNOB.1",
+   "b": "PWR1.1"
+  }
+ ],
+ "labels": [
+  {
+   "net": "3V3",
+   "at": "L1.1",
+   "x": -342.9,
+   "y": 863.6
+  },
+  {
+   "net": "GND",
+   "at": "D1.K",
+   "x": 88.9,
+   "y": 1117.6
+  },
+  {
+   "net": "GND",
+   "at": "R1.2",
+   "x": -127,
+   "y": 1066.8
+  },
+  {
+   "net": "GP16",
+   "at": "R2.1",
+   "x": -330.2,
+   "y": 1082.2
+  },
+  {
+   "net": "GP27",
+   "at": "J1",
+   "x": -114.3,
+   "y": 876.3
+  }
+ ],
+ "defs": []
+}

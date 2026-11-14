@@ -30,11 +30,12 @@ export const projectBytes = (p) => p.files.reduce((n, f) => n + enc.encode(f.tex
 
 /**
  * Throws ProjectError if `name` is not a valid file name or its extension is not one of `extensions` (lower case, with
- * the dot; none given: any).
+ * the dot; none given: any). v12 draft (pico2 P1-B2): an entry without a leading dot is a whole file name allowed as well (the view
+ * companion's fixed name, `circuit.json`).
  */
 export function checkName(name, extensions) {
   if (typeof name !== 'string' || !FILE_NAME.test(name)) throw new ProjectError('name', `not a valid file name: ${JSON.stringify(String(name))}`, { name });
-  if (extensions?.length && !extensions.includes(extOf(name))) {
+  if (extensions?.length && !extensions.includes(extOf(name)) && !extensions.includes(name.toLowerCase())) {
     throw new ProjectError('extension', `${name}: only ${extensions.join(', ')} files`, { name, extensions });
   }
   return name;

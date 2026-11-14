@@ -1,0 +1,600 @@
+{
+ "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: code (test fixture).",
+ "recorded": "main bc2e446 (before P1-B2), tools/pico2/record-circuit-compat.mjs",
+ "scenarios": [
+  {
+   "name": "run:tour",
+   "steps": 40,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "5ae1625b488b3935",
+   "pinEvents": 0,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:hello-uart",
+   "steps": 336,
+   "halted": true,
+   "error": null,
+   "output": "41178f3d5a1367ab",
+   "outputLength": 34,
+   "pins": "3385e53765a680c4",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:uart-echo",
+   "steps": 6011261,
+   "halted": false,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "ce0026115ecd3d16",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:blink-asm",
+   "steps": 3000164,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "ed49f8baecd5e666",
+   "pinEvents": 11,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:timer-irq",
+   "steps": 242,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "d43509f211cdef5d",
+   "pinEvents": 6,
+   "levels": "000000000000000000000000010000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:load-use",
+   "steps": 94,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "5ae1625b488b3935",
+   "pinEvents": 0,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:zcmp-call",
+   "steps": 54,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "5ae1625b488b3935",
+   "pinEvents": 0,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:blink-c",
+   "steps": 3000529,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "7809bd303b2a3709",
+   "pinEvents": 12,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:hello-c",
+   "steps": 988,
+   "halted": true,
+   "error": null,
+   "output": "e5d64ec76134c91e",
+   "outputLength": 36,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:sum-array",
+   "steps": 369,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:time-us",
+   "steps": 12798,
+   "halted": true,
+   "error": null,
+   "output": "4fe6248c8b1890e1",
+   "outputLength": 28,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:gpio-button",
+   "steps": 6931963,
+   "halted": false,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "aa69b739d5c65484",
+   "pinEvents": 4,
+   "levels": "100000000000000100000000000000",
+   "inMask": 32768,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:pwm-fade",
+   "steps": 1200721,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "30bdf706f793e35d",
+   "pinEvents": 3043,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:pwm-tone",
+   "steps": 62985,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "b3e5d48cc615d001",
+   "pinEvents": 2146,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:dma-sine",
+   "steps": 240690,
+   "halted": false,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "4faf57c5414c737a",
+   "pinEvents": 160293,
+   "levels": "100000000000001000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:twinkle",
+   "steps": 3810,
+   "halted": false,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "9af8db2bf7c3622e",
+   "pinEvents": 2519,
+   "levels": "100000000000001000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:dma-copy",
+   "steps": 121,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "5ae1625b488b3935",
+   "pinEvents": 0,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:two-cores",
+   "steps": 5700940,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "ddf1ad4554bfb6e1",
+   "pinEvents": 19,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:fifo-message",
+   "steps": 219,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "5ae1625b488b3935",
+   "pinEvents": 0,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:adc-knob",
+   "steps": 4414,
+   "halted": false,
+   "error": null,
+   "output": "4087c612d0c4dc0a",
+   "outputLength": 132,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:temperature",
+   "steps": 4947,
+   "halted": false,
+   "error": null,
+   "output": "336bc65e412bfa5e",
+   "outputLength": 160,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:i2c-mcp9808",
+   "steps": 7098,
+   "halted": false,
+   "error": null,
+   "output": "f0910d598177cb2f",
+   "outputLength": 57,
+   "pins": "8ae9d6f77fca9c26",
+   "pinEvents": 5,
+   "levels": "100011000000000000000000000000",
+   "inMask": 48,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:i2c-lcd",
+   "steps": 433598,
+   "halted": false,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "8ae9d6f77fca9c26",
+   "pinEvents": 5,
+   "levels": "100011000000000000000000000000",
+   "inMask": 48,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:spi-loopback",
+   "steps": 259,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "5ae1625b488b3935",
+   "pinEvents": 0,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:pio-blink",
+   "steps": 6000126,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "99bc3b7732eb91ee",
+   "pinEvents": 10,
+   "levels": "000000000000000000000000010000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:pio-square",
+   "steps": 3000079,
+   "halted": true,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "49400bd1c0fedd76",
+   "pinEvents": 881,
+   "levels": "000000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "run:pio-popcount",
+   "steps": 15255,
+   "halted": true,
+   "error": null,
+   "output": "dd880e5ded172b6c",
+   "outputLength": 90,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "button-5",
+   "steps": 620916,
+   "halted": true,
+   "error": null,
+   "output": "60b47c7c7edbdf26",
+   "outputLength": 40,
+   "pins": "0c61e54193c0dbae",
+   "pinEvents": 9,
+   "levels": "100000000000000000000000010000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "button-high-low",
+   "steps": 866389,
+   "halted": false,
+   "error": null,
+   "output": "1e10417156f6318c",
+   "outputLength": 16,
+   "pins": "686087a7ba6d7347",
+   "pinEvents": 6,
+   "levels": "100000000000000100000000000000",
+   "inMask": 32768,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "knob",
+   "steps": 7943,
+   "halted": true,
+   "error": null,
+   "output": "99491f3235ce0bca",
+   "outputLength": 226,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0.42,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "knob-12",
+   "steps": 7565,
+   "halted": false,
+   "error": null,
+   "output": "aafe9c9a20ddcb7b",
+   "outputLength": 168,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    2.2,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "temperature",
+   "steps": 4948,
+   "halted": false,
+   "error": null,
+   "output": "90247860e9d79acb",
+   "outputLength": 160,
+   "pins": "1cfdaaf39f9b098d",
+   "pinEvents": 1,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  },
+  {
+   "name": "drives",
+   "steps": 1511282,
+   "halted": false,
+   "error": null,
+   "output": "e3b0c44298fc1c14",
+   "outputLength": 0,
+   "pins": "96a748415c848975",
+   "pinEvents": 8,
+   "levels": "100000000000000000000000000000",
+   "inMask": 0,
+   "volts": [
+    0,
+    0,
+    0,
+    1.666667
+   ]
+  }
+ ]
+}

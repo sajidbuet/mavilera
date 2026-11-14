@@ -8,7 +8,8 @@
     "sound": "PWM, DMA and sound",
     "cores": "Two cores",
     "buses": "ADC, I2C and SPI",
-    "pio": "PIO"
+    "pio": "PIO",
+    "circuits": "Circuits on the Board"
   },
   "templates": [
     { "id": "tour", "file": "tour.s", "group": "isa", "view": "isa", "lang": "asm", "title": "A tour of Hazard3's extensions" },
@@ -37,6 +38,14 @@
     { "id": "spi-loopback", "file": "spi-loopback.s", "group": "buses", "view": "isa", "lang": "asm", "title": "SPI in loopback" },
     { "id": "pio-blink", "file": "pio-blink.s", "companion": "pio-blink.pio", "group": "pio", "view": "isa", "lang": "asm", "title": "PIO blinks the LED" },
     { "id": "pio-square", "file": "pio-square.s", "companion": "pio-square.pio", "group": "pio", "view": "isa", "lang": "asm", "title": "A square wave from PIO with side-set", "opts": {"speaker": "gp14", "dac": "pin"} },
-    { "id": "pio-popcount", "file": "pio-popcount.c", "companion": "pio-popcount.pio", "group": "pio", "view": "isa", "lang": "c", "title": "PIO counts the 1 bits of a word" }
+    { "id": "pio-popcount", "file": "pio-popcount.c", "companion": "pio-popcount.pio", "group": "pio", "view": "isa", "lang": "c", "title": "PIO counts the 1 bits of a word" },
+    { "id": "circuit-led", "file": "circuit-led.c", "circuit": "circuit-led.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "An LED and its resistor" },
+    { "id": "traffic-light", "file": "traffic-light.c", "circuit": "traffic-light.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "A traffic light" },
+    { "id": "divider-adc", "file": "divider-adc.c", "circuit": "divider-adc.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "A voltage divider into the ADC" },
+    { "id": "npn-switch", "file": "npn-switch.c", "circuit": "npn-switch.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "A transistor switches an LED" },
+    { "id": "rc-debounce", "file": "rc-debounce.c", "circuit": "rc-debounce.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "A bouncing button and a capacitor" },
+    { "id": "pwm-rc-dac", "file": "pwm-rc-dac.c", "circuit": "pwm-rc-dac.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "A voltage from PWM and an RC filter" },
+    { "id": "ldr-night-light", "file": "ldr-night-light.c", "circuit": "ldr-night-light.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "A night light with a light sensor" },
+    { "id": "ntc-thermometer", "file": "ntc-thermometer.c", "circuit": "ntc-thermometer.circuit.json", "group": "circuits", "view": "board", "lang": "c", "title": "A thermometer with a thermistor" }
   ]
 }

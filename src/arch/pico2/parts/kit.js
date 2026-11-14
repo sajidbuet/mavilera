@@ -15,9 +15,10 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-export const ENV_DEFAULTS = Object.freeze({ temp: 25, pressure: 1013.25, humidity: 40, ax: 0, ay: 0, az: 1, gx: 0, gy: 0, gz: 0 });
+// `light` (lux, P1-B2 stage B2-4, research D54 Q3 A): the light on the circuit's light sensors (LDR); 300 lx, an indoor room
+export const ENV_DEFAULTS = Object.freeze({ temp: 25, pressure: 1013.25, humidity: 40, ax: 0, ay: 0, az: 1, gx: 0, gy: 0, gz: 0, light: 300 });
 export const ENV_KEYS = Object.freeze(Object.keys(ENV_DEFAULTS));
-const ENV_RANGE = { temp: [-40, 85], pressure: [300, 1100], humidity: [0, 100], ax: [-2, 2], ay: [-2, 2], az: [-2, 2], gx: [-250, 250], gy: [-250, 250], gz: [-250, 250] };
+const ENV_RANGE = { temp: [-40, 85], pressure: [300, 1100], humidity: [0, 100], ax: [-2, 2], ay: [-2, 2], az: [-2, 2], gx: [-250, 250], gy: [-250, 250], gz: [-250, 250], light: [0, 100000] };
 /** A value for an environment key, clamped to what the kit's parts measure. */
 export const envClamp = (k, v) => { const r = ENV_RANGE[k]; return r ? Math.max(r[0], Math.min(r[1], Number(v))) : NaN; };
 
@@ -274,5 +275,36 @@ export function createKit(env) {
     reset() { for (const p of this.all) p.reset(); },
     save() { return this.all.map((p) => p.save()); },
     load(s) { this.all.forEach((p, i) => p.load(s[i])); },
+  };
+}
+
+/** P1-B2 stage B2-4 (research D54): one module's model by its part type's model name, at its I2C address. */
+export function createModule(model, env, address) {
+  switch (model) {
+    case 'bmp280': return new Bmx280(env, { humidity: false, address: address ?? 0x76 });
+    case 'bme280': return new Bmx280(env, { humidity: true });
+    case 'mpu6050': return new Mpu6050(env, address ?? 0x68);
+    case 'mcp9808': return new Mcp9808(env, address ?? 0x18);
+    case 'lcd': return new Lcd1602(address ?? 0x27);
+    case 'eeprom': return new Eeprom24c02(address ?? 0x50);
+    default: return null;
+  }
+}
+
+/**
+ * P1-B2 stage B2-4: the kit as the circuit's modules (circuit/netlist.js `modules`: {id, model, bus, name, address, pins, powered}),
+ * each with its own model; the buses find them by their nets' pads (soc/i2c.js, soc/spi.js). State saved per module, in the
+ * modules' order (the circuit's, which a state is loaded with).
+ */
+export function moduleKit(mods, env) {
+  const modules = mods.map((x) => ({ ...x, part: createModule(x.model, env, x.address) })).filter((x) => x.part);
+  return {
+    modules,
+    lcd: modules.find((x) => x.model === 'lcd')?.part ?? null,
+    names: new Map(modules.map((x) => [x.part, `${x.id} (${x.name})`])),
+    all: modules.map((x) => x.part),
+    reset() { for (const p of this.all) p.reset(); },
+    save() { return this.all.map((p) => p.save()); },
+    load(s) { this.all.forEach((p, i) => { if (s?.[i]) p.load(s[i]); }); },
   };
 }

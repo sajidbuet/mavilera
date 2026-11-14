@@ -77,7 +77,7 @@ test('citations of the datasheet use sections of the cited release; help blocks 
   for (const [, c] of all.matchAll(/chapters? (\d+)/g)) assert.ok(CHAPTERS.has(c), `chapter ${c}`);
   for (const s of help.sections) for (const b of s.blocks) {
     const t = JSON.stringify(b);
-    if (/Datasheet|§/.test(t) && !b.refs) assert.ok(Array.isArray(b.sources) && b.sources.every((x) => /^RP-001/.test(x)), `${s.id}: a block citing the datasheet has sources`);
+    if (/Datasheet|§/.test(t) && !b.refs) assert.ok(Array.isArray(b.sources) && b.sources.every((x) => /^RP-00[12]\b/.test(x)), `${s.id}: a block citing the datasheet has sources`);
   }
   assert.ok(help.sections.some((s) => s.blocks.some((b) => b.refs?.some(([t, url, d]) => t === 'RP2350 Datasheet' && url && /Release 8/.test(d)))), 'the Sources topic');
   assert.match(text(section('sources')), /Release 8 \(build 80d627281ed5\)/);

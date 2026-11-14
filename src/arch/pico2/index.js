@@ -207,6 +207,10 @@ export const descriptor = {
     // tab opened on demand; assembled with an assembly program (language.js), included by a MAVILERA C program as "<file>.pio.h"
     companion: { extension: '.pio', label: S.pioFile.label, add: S.pioFile.add, addTitle: S.pioFile.addTitle, remove: S.pioFile.remove,
       example: S.pioFile.example, comment: ';', editor: PIO_EDITOR },
+    // P1-B2 (research D51 Q1 A, Q2 A; contract v12 draft Language.companions): the companion files as a list; the circuit is a
+    // companion edited by a view (the Board), not in an editor tab, and reaches the engine as its setting `circuit`
+    companions: [{ id: 'pio', extension: '.pio', editor: 'text' },
+      { id: 'circuit', extension: '.circuit.json', editor: 'view', option: 'circuit', projectFile: 'circuit.json', label: S.circuitFile.label }],
     options: [CLOCK_OPTION, SPEAKER_OPTION, DAC_OPTION, PARTS_OPTION], // P1-M4 (D36 Q2): the clock, passed to assemble and compile; P1-M5: the speaker; P1-M7: the parts
     // research D38 (contract v10 draft Language.lineStep): Step line and Back line on the editor for a program with a line
     // table (MAVILERA C, Pico SDK C), with the C source view's rules (debug/source-session.js) on the shell's own engine
@@ -290,6 +294,12 @@ export const descriptor = {
     { id: 'source', label: S.viewSource, icon: 'code', kind: 'datapath', profile: 'hazard3', imageOnly: true, layout: { drawing: 0.72, editor: 0.19 }, load: async () => {
       const { SourceView, sourceInstance } = await import('./ui/source-view.js');
       return { create: (ctx) => sourceInstance(new SourceView(ctx), ctx) };
+    } },
+    // P1-B1 (research D47, D48): the board and its circuit, drawn from the page's engine (contract v11 View.engine 'page':
+    // the same run as the instruction view, the state kept between the two); last of the views (D48 Q1 B); Lite and Full
+    { id: 'board', label: S.viewBoard, icon: 'board', kind: 'datapath', engine: 'page', profile: 'hazard3', layout: { drawing: 0.72, editor: 0.19 }, load: async () => {
+      const { BoardView, boardInstance } = await import('./ui/board-view.js');
+      return { create: (ctx) => boardInstance(new BoardView(ctx), ctx) };
     } },
   ],
   exports: { trace: (program, { cap }) => trace(program, { cap }), traceJsonLines, traceCsv },

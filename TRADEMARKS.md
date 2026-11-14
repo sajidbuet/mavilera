@@ -28,3 +28,8 @@ Apache-2.0 grant.
 RISC-V is a trademark of RISC-V International; Arm, Intel, MOS and other architecture names belong to their
 owners. They appear only to identify the architectures a simulator implements. This project is independent
 of those organisations and is not endorsed by them.
+
+Raspberry Pi is a trademark of Raspberry Pi Ltd; Pico and RP2350 are names of its products. The Pico 2
+Laboratory names them only to identify the board and chip it simulates; its drawing of the board (the Board
+view) is MAVILERA's own, made from the dimensions and pinout in the Pico 2 datasheet, with no Raspberry Pi
+logo. MAVILERA is not affiliated with or endorsed by Raspberry Pi Ltd.

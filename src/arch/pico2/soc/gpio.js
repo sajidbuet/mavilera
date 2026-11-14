@@ -26,12 +26,14 @@ export class Pins {
     this.m = m; this.log = { cycles: [], pins: [], states: [], base: 0 };
     this.tapPin = -1; this.tapLevel = 0; // the speaker pin (P1-M5): its level changes go to m.audio; not machine state
     this.csPins = 0; // P1-M7: the pins that carry a kit part's chip select (set by the machine)
+    this.cmask = 0;  // P1-B2: the pins on an island of the circuit outside the chip (soc/circuit.js), or tied to a rail
     this.reset();
   }
   reset() {
     this.ctrl = new Uint32Array(NUM_PINS).fill(F_NULL);
     this.pad = new Uint32Array(NUM_PINS);
-    this.ext = new Int8Array(NUM_PINS).fill(-1);    // external drive: -1 none, 0, 1
+    this.ext = new Int8Array(NUM_PINS).fill(-1);    // external drive: -1 none, 0, 1 (P1-B2: on a circuit's pin, what its input reads)
+    this.drv = new Int8Array(NUM_PINS).fill(-1);    // P1-B2: the host's drive of the pin (the Pins panel, the board's button)
     this.level = new Uint8Array(NUM_PINS);          // level on the pin
     this.input = new Uint8Array(NUM_PINS);          // input to the peripherals (after IE, ISO, INOVER)
     this.isoOut = new Uint8Array(NUM_PINS); this.isoOe = new Uint8Array(NUM_PINS); // pad values held while ISO is set
@@ -56,6 +58,7 @@ export class Pins {
     if (pad & PAD_OD) oe = 0;
     if (pad & PAD_ISO) { out = this.isoOut[n]; oe = this.isoOe[n]; } else { this.isoOut[n] = out; this.isoOe[n] = oe; }
     this.padOut[n] = out; this.padOe[n] = oe;
+    if ((this.cmask >>> n) & 1) m.circuit.pad(n); // P1-B2: the circuit outside the chip sets ext[n] (and of its island's other pins)
     let level;
     if (oe) level = out;
     else if (this.ext[n] >= 0) level = this.ext[n];
@@ -91,15 +94,16 @@ export class Pins {
     while (rest !== 0) { const n = 31 - Math.clz32(rest & -rest); rest &= rest - 1; this.update(n); }
   }
   updateAll() { for (let n = 0; n < NUM_PINS; n++) this.update(n); }
-  /** Drive pin n from outside (-1 releases it). */
-  drive(n, v) { this.ext[n] = v; this.update(n); }
+  /** Drive pin n from outside (-1 releases it). P1-B2: on a circuit's pin the drive is a source of its island (circuit/pad.js). */
+  drive(n, v) { this.drv[n] = v; if (!((this.cmask >>> n) & 1)) this.ext[n] = v; this.update(n); }
   save() {
-    return { ctrl: this.ctrl.slice(), pad: this.pad.slice(), ext: this.ext.slice(), level: this.level.slice(), input: this.input.slice(), isoOut: this.isoOut.slice(),
+    return { ctrl: this.ctrl.slice(), pad: this.pad.slice(), ext: this.ext.slice(), drv: this.drv.slice(), level: this.level.slice(), input: this.input.slice(), isoOut: this.isoOut.slice(),
       isoOe: this.isoOe.slice(), padOut: this.padOut.slice(), padOe: this.padOe.slice(), state: this.state.slice(), edges: this.edges.slice(), inMask: this.inMask,
       logTotal: this.log.base + this.log.cycles.length };
   }
   load(s) {
     for (const k of ['ctrl', 'pad', 'ext', 'level', 'input', 'isoOut', 'isoOe', 'padOut', 'padOe', 'state', 'edges']) this[k].set(s[k]);
+    this.drv.set(s.drv ?? s.ext);
     this.inMask = s.inMask;
     const lg = this.log, keep = s.logTotal - lg.base;
     if (keep >= 0) { lg.cycles.length = Math.min(keep, lg.cycles.length); lg.pins.length = lg.cycles.length; lg.states.length = lg.cycles.length; }

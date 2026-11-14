@@ -20,6 +20,21 @@ const ICONS = {
   build: [['M12 3 20 7.5v9L12 21l-8-4.5v-9z', 'M4 7.5 12 12l8-4.5', 'M12 12v9']],
   chip: [['M7 7h10v10H7z', 'M9.5 3.5V7M14.5 3.5V7M9.5 17v3.5M14.5 17v3.5M3.5 9.5H7M3.5 14.5H7M17 9.5h3.5M17 14.5h3.5', 'M10 10h4v4h-4z']],
   clock: [['M12 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16z', 'M12 8v4l3 2']],
+  // a small board with pins down both sides and a connector on top (pico2's Board view, P1-B1)
+  board: [['M7 4.5h10v16H7z', 'M10 4.5V2.8h4v1.7', 'M4 8h3M4 11.5h3M4 15h3M4 18.5h3M17 8h3M17 11.5h3M17 15h3M17 18.5h3', 'M10 11h4v4h-4z']],
+  // the circuit editor's tools (pico2 P1-B2 stage B2-3): select (an arrow pointer), wire (a wire between two connection nodes,
+  // with a bend), delete a part (a part's box crossed out), delete a wire (a wire crossed out), turn, mirror, undo, redo
+  select: [['M5.5 3.5 18 13.2l-5.6.8 3.4 6.4-2.4 1.2-3.4-6.4-4.5 3.4z']],
+  wire: [['M5 18.5V9.5h14V5'], ['M5 16.4a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2zM19 2.9a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2z']],
+  deletePart: [['M2.5 12H6M18 12h3.5', 'M6 8h12v8H6z', 'M8.5 5.5l7 13M15.5 5.5l-7 13']],
+  deleteWire: [['M3 16.5V8h12', 'M13 13.5l7 7M20 13.5l-7 7'], ['M3 14.4a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2z']],
+  rotate: [['M18.5 13a6.5 6.5 0 1 1-2-5.6', 'M17.5 3.5v4.4h-4.4']],
+  mirror: [['M12 3v18', 'M9 6.5 3.5 17.5H9z', 'M15 6.5l5.5 11H15z']],
+  undo: [['M8.5 5 4 9.5 8.5 14', 'M4 9.5h10a5.5 5.5 0 0 1 0 11h-3']],
+  redo: [['M15.5 5 20 9.5 15.5 14', 'M20 9.5H10a5.5 5.5 0 0 0 0 11h3']],
+  // a pane filling its column, and the column's panes shown again (the shell's panes, 2026-11-13)
+  fillColumn: [['M6 3h12v18H6z'], ['M8.5 5.5h7v13h-7z']],
+  unfillColumn: [['M6 3h12v18H6z', 'M6 9h12M6 15h12'], ['M8.5 4.8h7v2.6h-7z']],
   steps: [['M3.5 19H8v-4.5h4.5V10H17V5.5h3.5']],
   pipeline: [['M3.5 5.5h8v3h-8zM8 10.5h8v3H8zM12.5 15.5h8v3h-8z']],
   npu: [['M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4zM4 10h4v4H4zM10 10h4v4h-4zM16 10h4v4h-4zM4 16h4v4H4zM10 16h4v4h-4zM16 16h4v4h-4z']], // a 3 x 3 array of PEs (NPU view)

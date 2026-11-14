@@ -187,7 +187,7 @@ try {
       });
 
       await check('the pipeline view: Real time says it runs at full speed there', async () => {
-        await p.eval(`[...document.querySelectorAll('.mode-btn')].find((b) => b.textContent.includes('Pipeline'))?.click(); true`);
+        await p.eval(`[...document.querySelectorAll('.mode-btn')].find((b) => b.textContent.includes('Core'))?.click(); true`);
         await sleep(800);
         await p.eval(`document.querySelector('.tool-run').click(); true`);
         await sleep(500);
