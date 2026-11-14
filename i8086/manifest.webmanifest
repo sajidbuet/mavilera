@@ -14,25 +14,25 @@
   ],
   "icons": [
     {
-      "src": "assets/b108b30c9c58/content/branding/mavilera/mavilera-icon.svg",
+      "src": "assets/7a189372e4dc/content/branding/mavilera/mavilera-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "assets/b108b30c9c58/content/branding/mavilera/icon-192.png",
+      "src": "assets/7a189372e4dc/content/branding/mavilera/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/b108b30c9c58/content/branding/mavilera/icon-512.png",
+      "src": "assets/7a189372e4dc/content/branding/mavilera/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/b108b30c9c58/content/branding/mavilera/icon-maskable-512.png",
+      "src": "assets/7a189372e4dc/content/branding/mavilera/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
