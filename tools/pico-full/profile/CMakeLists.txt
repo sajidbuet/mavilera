@@ -19,14 +19,21 @@ set(PICO_PLATFORM rp2350-riscv CACHE STRING "" FORCE)
 include($ENV{PICO_SDK_PATH}/pico_sdk_init.cmake)
 project(pico_full_profile C CXX ASM)
 set(CMAKE_C_STANDARD 11)
-pico_sdk_init()
 
 # -Og -g (the SDK's Debug is -Og without -g); host paths of the SDK and this build are replaced in debug information and
 # __FILE__ by the guest paths the pack uses
+# (2026-11-14) also the sysroot and clang's resource directory, whose include directories were left in the first pack's
+# debug information as host paths; and no build date in binary info (it was the pack's date, not the student's build,
+# and made the pack differ from day to day). Set before pico_sdk_init(), which adds the SDK's own libraries
+# (boot_stage2's bs2_default_library kept the build folder's path when these came after it).
+file(TO_CMAKE_PATH "$ENV{PICO_FULL_WORK}" _work)
 foreach(LANG IN ITEMS C CXX ASM)
   set(CMAKE_${LANG}_FLAGS_DEBUG "-Og -g")
   string(APPEND CMAKE_${LANG}_FLAGS " -ffile-prefix-map=$ENV{PICO_SDK_PATH}=/pico/sdk -ffile-prefix-map=${CMAKE_BINARY_DIR}=/pico/build")
+  string(APPEND CMAKE_${LANG}_FLAGS " -ffile-prefix-map=${_work}/build/sysroot-rv32=/pico/sysroot -ffile-prefix-map=${_work}/build/clang-wasm/lib/clang/23=/pico/clang")
 endforeach()
+add_compile_definitions(PICO_NO_BI_PROGRAM_BUILD_DATE=1)
+pico_sdk_init()
 
 add_executable(base main.c)
 target_link_libraries(base pico_stdlib)

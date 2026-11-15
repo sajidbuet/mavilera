@@ -4,7 +4,8 @@
 // the build times, for the research repository's P1-M2 harness (experiments/p1m2-oracle: run-pico2.mjs --via import, then
 // compare.mjs against the GCC builds of the same programs).
 //
-//   node tools/pico2-full-accept.mjs --out <dir> [--browser chrome|edge]   (env: PICO_FULL_SITE, PICO_EXAMPLES_SRC)
+//   node tools/pico2-full-accept.mjs --out <dir> [--browser chrome|edge|firefox]   (env: PICO_FULL_SITE, PICO_EXAMPLES_SRC)
+// Firefox (Pico Full release gate, research D45 Q1): through tools/firefox-bidi.mjs, headless, a fresh profile.
 //
 // Writes <dir>/<browser>/<program>.elf and <dir>/<browser>/builds.json. Development only.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
@@ -13,6 +14,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { launch } from './browser.mjs';
+import { launchFirefox } from './firefox-bidi.mjs';
 import { startServer } from './serve.mjs';
 
 const args = process.argv.slice(2);
@@ -26,7 +28,7 @@ const J = JSON.stringify;
 
 for (const name of BROWSERS) {
   const { server, url } = await startServer({ port: 0, picoFull: SITE });
-  const b = await launch(name);
+  const b = name === 'firefox' ? await launchFirefox({ headless: true }) : await launch(name);
   if (!b) { console.log(`${name}: not installed, skipped`); server.close(); continue; }
   try {
     const p = await b.newPage({ width: 1366, height: 768 });

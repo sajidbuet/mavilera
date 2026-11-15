@@ -47,7 +47,7 @@ const MONO = { n: '#000000', l: '#000000', p: '#ffffff' };
 const TOKEN = { n: '--mv-navy', l: '--mv-blue', p: '--mv-pale' };
 const HEADER = `Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
      Rights class: content (Apache-2.0). Written by tools/make-mavilera-brand.mjs from logo/; edit those, not this file.
-     The name MAVILERA is a provisional project name, not licensed as a trademark (TRADEMARKS.md).`;
+     The name MAVILERA is not licensed as a trademark (TRADEMARKS.md).`;
 
 /** The view box and the paths ({cls, d}) of a master in logo/. */
 function master(file) {

@@ -26,6 +26,12 @@ E-CC-WASM-1, so `PICO_FULL_WORK=C:\Research\pico2-sim-scratch\e-cc-wasm-1` reuse
 | 6 | `node build-pack.mjs` | `out\sdk-pack-<sha12>.bin`, `out\manifest.json` | ~12 s |
 | 7 | `build-check.ps1`, `node check-pack.mjs` | pico-examples built by CMake and from the pack; loadable images compared | ~2 min |
 
+## Reproducibility (2026-11-14, `docs/architecture/pico2-full-release-gates.md`)
+- `llvm.wasm` rebuilt from steps 1-2 in a fresh work folder is bit-identical to `pins.json` `outputs.llvmWasm` (61 min).
+- The pack is bit-identical across work folders when `SOURCE_DATE_EPOCH` (seconds) is set for `build-pack.mjs` (it fixes the
+  meta's `created`); without it only that field differs. Host paths are mapped to guest paths (`/pico/...`) in every object, and
+  binary info carries no build date. A changed runtime option needs a fresh `build\picolibc-rv32` (CMake keeps cached values).
+
 ## What the pack builder checks (it stops on any failure)
 - Sources compiled by both `base` and `full` give the same code and data (allocated sections and relocations); only debug
   line numbers may differ (`crt0_riscv.S`: the further libraries' defines move preprocessed lines).

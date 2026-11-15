@@ -25,7 +25,11 @@ Copy-Item "$SYSROOT\lib\baremetal\libclang_rt.builtins-riscv32.a" "$rtdir\libcla
 # picolibc
 $pb = Join-Path $B 'picolibc-rv32'
 cmake -G Ninja -S $PICOLIBC_SRC -B $pb "-DCMAKE_TOOLCHAIN_FILE=$PF\cmake\TC-picolibc-rv32.cmake" `
-  -DCMAKE_BUILD_TYPE=MinSizeRel "-DCMAKE_INSTALL_PREFIX=$SYSROOT" -DTESTS=OFF -DPOSIX_CONSOLE=OFF -D__THREAD_LOCAL_STORAGE=ON
+  -DCMAKE_BUILD_TYPE=MinSizeRel "-DCMAKE_INSTALL_PREFIX=$SYSROOT" -DTESTS=OFF -DPOSIX_CONSOLE=OFF -D__THREAD_LOCAL_STORAGE=ON `
+  -D__SINGLE_THREAD=ON -D__IO_LONG_LONG=ON
+# __SINGLE_THREAD and __IO_LONG_LONG as in the first pack (E-CC-WASM-1's build tree had them in its CMake cache; this script
+# lacked them, found by the rebuild of 2026-11-14): core 0 only in the pack (pico_multicore left out), and printf of
+# long long for picolibc's own stdio. A changed option needs a fresh build folder (the CMake cache keeps old values).
 if ($LASTEXITCODE) { throw 'picolibc configure failed' }
 cmake --build $pb --target install
 if ($LASTEXITCODE) { throw 'picolibc build failed' }

@@ -16,7 +16,7 @@
 // Output: PICO_FULL_WORK\out\sdk-pack-<sha12>.bin and manifest.json (sizes, SHA-256, gzip size).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: code.
 
-import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, existsSync, unlinkSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname, basename, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
@@ -126,7 +126,7 @@ log(`objects: base ${bySource.base.size}, full ${bySource.full.size}; shared sou
 if (differing.length) throw new Error('the further libraries change shared code; the pack would not match CMake builds');
 
 // base link order from the response file (ninja -d keeprsp), main.c first
-unlinkSync(join(PB, 'base.elf'));   // relink only (ninja -t clean would remove the objects too)
+rmSync(join(PB, 'base.elf'), { force: true });   // relink only (ninja -t clean would remove the objects too); absent after an interrupted run
 execFileSync('ninja', ['-C', PB, '-d', 'keeprsp', 'base.elf'], { stdio: 'ignore' });
 const rsp = readFileSync(join(PB, 'CMakeFiles', 'base.rsp'), 'utf8').split(/\s+/).filter(Boolean);
 if (rsp.some((a) => !a.endsWith('.obj'))) throw new Error(`unexpected entries in base.rsp: ${rsp.filter((a) => !a.endsWith('.obj')).join(' ')}`);
@@ -256,8 +256,11 @@ files.push([PCH.source, new TextEncoder().encode(`#include "${PCH.header}"\n`)])
 const module = await WebAssembly.compile(readFileSync(join(W, 'build', 'llvm.wasm')));
 
 // ---- 5. self-check in a fresh file system from the pack bytes ----
+// SOURCE_DATE_EPOCH (seconds, the reproducible-builds convention) fixes `created`, so two builds give the same pack bytes
+// (2026-11-14: the rebuild in two work folders gave 669 identical files, differing only here)
+const CREATED = process.env.SOURCE_DATE_EPOCH ? new Date(Number(process.env.SOURCE_DATE_EPOCH) * 1000) : new Date();
 const meta = {
-  created: new Date().toISOString(), pins: PINS, board: 'pico2', platform: 'rp2350-riscv', profile: '-Og -g (CMake Debug with -g)',
+  created: CREATED.toISOString(), pins: PINS, board: 'pico2', platform: 'rp2350-riscv', profile: '-Og -g (CMake Debug with -g)',
   stdio: 'uart', pch: { header: PCH.header, source: PCH.source, path: PCH.path }, templates,
   libraries: { base: [...new Set(baseObjs.map((p) => basename(p).split('-')[1]))], archive: [...new Set(archived)].sort(),
     excluded: JSON.parse(readFileSync(join(PF, 'excluded.json'), 'utf8')) },

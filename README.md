@@ -10,8 +10,8 @@ architecture-neutral educational platform for interactive exploration of
 computer and microprocessor architecture. Every simulator runs entirely in the
 browser; no program or data is uploaded.
 
-MAVILERA is a provisional project name, pending legal clearance, and is not a
-registered trademark (see [`TRADEMARKS.md`](TRADEMARKS.md)).
+MAVILERA is not a registered trademark; its name status was resolved on 2026-11-15
+(see [`TRADEMARKS.md`](TRADEMARKS.md)).
 
 | Module | Status | Address |
 |---|---|---|
@@ -22,7 +22,7 @@ registered trademark (see [`TRADEMARKS.md`](TRADEMARKS.md)).
 | **NPU** (a tool of the RISC-V Laboratory) | available (from 1.2.0) | `https://sajidlab.org/mavilera/riscv/?tool=npu` |
 | **GPU Laboratory** | available (from 1.3.0; a preview in 1.2.0) | `https://sajidlab.org/mavilera/gpu/` |
 | **8086 Laboratory** | available (from 1.4.0) | `https://sajidlab.org/mavilera/i8086/` |
-| **Pico 2 Laboratory** (Pico Lite; Board view and user circuits from 1.6.0; Pico Full in development) | available (from 1.5.0) | `https://sajidlab.org/mavilera/pico2/` |
+| **Pico 2 Laboratory** (the RP2350's two Hazard3 RISC-V cores; Pico Lite; Board view and user circuits from 1.6.0; Pico Full in development) | available (from 1.5.0) | `https://sajidlab.org/mavilera/pico2/` |
 | MOS 6502, MIPS | planned, not built | — |
 
 The landing page is `https://sajidlab.org/mavilera/`. Each simulator is
@@ -34,6 +34,38 @@ MAVILERA is independent of RISC-V International, Arm, Intel and any other owner
 of an architecture name, and is not endorsed by them. It needs no textbook,
 course or account; the RISC-V processors and their drawings follow the author's
 book *Microprocessor Architecture and Embedded Systems*.
+
+## What the laboratories run, and how they are checked
+
+- **Pico 2 Laboratory.** A model of the Raspberry Pi Pico 2's RP2350 with its two
+  **Hazard3** RISC-V cores (the RP2350's Arm Cortex-M33 cores are not modelled):
+  every instruction timed by Hazard3's documented cycle counts, a view of its
+  three-stage pipeline, and the chip's GPIO, UART, timers, PWM, DMA, ADC, SPI, I2C
+  and PIO. Both editions use the same model. **Pico Lite** (released) runs programs
+  written in Hazard3 assembly language or in MAVILERA C, a teaching subset of C.
+  **Pico Full** (development page only, not yet in a release) compiles Pico SDK C in
+  the browser and imports UF2/ELF images built with the Pico SDK. MicroPython and
+  the Pico 2 W's wireless chip are not modelled, and no physical board is
+  programmed yet. The model is checked against other emulators, the Hazard3 RTL and
+  the RP2350 datasheet, not yet against a physical Pico 2.
+- **GPU Laboratory.** Among its models, a RISC-V SIMT core with the profiles `lab`
+  (2 warps of 4 lanes) and `lab-l8` (1 warp of 8 lanes), the warp-control
+  instructions `tmc`, `wspawn`, `split`, `join` and `bar` (custom-0) and the
+  thread-identity CSRs `0xCC0`-`0xCC5`. It simulates behaviour; it is not an HDL
+  simulator.
+- **Validation record.** Every release ships `web-sim-validation.json`, written by
+  `tools/verify.mjs`: the checks run (1,833 of 1,833 passed for 1.6.0), the
+  simulator commit, and the commit and SHA-256 of the book material compared
+  against. For 1.6.0 that material is: the example programs of the book's chapters
+  3 and 4 (assembled and run to their halt; no values compared); the chapter 6, 7
+  and 8 processors' programs (memory dumps against the book's golden results, and
+  signal by signal against its reference RTL); the chapter 11 NPU programs (golden
+  results, and the NPU against its RTL); the chapter 11A SIMT programs (golden
+  results and the trace of the book's golden model); and the book's RISC-V
+  simulator tests. **The record covers no Pico 2 program of the book:** the Pico 2
+  Laboratory's checks compare it with emulators, the Hazard3 RTL and the datasheet,
+  as above. A program is described as running in MAVILERA only when a validation
+  record covers it.
 
 # The RISC-V Laboratory
 ## Features
@@ -161,6 +193,13 @@ Laboratory in `riscv/` (shell, documentation, service worker, single-file
 offline build, files under a folder named by their hash). Every path in it is
 relative, so it works under `/mavilera/` or any other base. `BASE_PATH`
 (default `/mavilera/`) only sets the address printed on the landing page.
+
+## Citing
+
+Cite MAVILERA by its version and release tag on `https://github.com/sajidbuet/mavilera`,
+with the release date, or by its DOI: from 1.6.1 every GitHub release is archived on Zenodo, which gives
+it a DOI (the record of each version and the DOI for all versions are on Zenodo).
+[`CITATION.cff`](CITATION.cff) holds the citation metadata.
 
 ## Licence
 

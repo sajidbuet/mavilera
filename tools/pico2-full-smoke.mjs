@@ -3,7 +3,9 @@
 // ELF in the Worker; a compile error comes back located; after a reload everything comes from the cache; with the
 // server's /pico-full/ gone (offline) the cached compiler still builds.
 //
-//   node tools/pico2-full-smoke.mjs [--browser chrome|edge]     (env: PICO_FULL_SITE, from tools/pico-full/stage.mjs)
+//   node tools/pico2-full-smoke.mjs [--browser chrome|edge|firefox]     (env: PICO_FULL_SITE, from tools/pico-full/stage.mjs)
+//
+// Firefox (Pico Full release gate, research D45 Q1) runs through tools/firefox-bidi.mjs, headless with a fresh profile.
 //
 // Development only; skipped, with the reason, without PICO_FULL_SITE.
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
@@ -12,6 +14,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { launch } from './browser.mjs';
+import { launchFirefox } from './firefox-bidi.mjs';
 import { startServer } from './serve.mjs';
 
 const args = process.argv.slice(2);
@@ -30,7 +33,7 @@ let failed = 0;
 for (const name of BROWSERS) {
   let { server, url } = await startServer({ port: 0, picoFull: SITE });
   const port = new URL(url).port;
-  const b = await launch(name);
+  const b = name === 'firefox' ? await launchFirefox({ headless: true }) : await launch(name);
   if (!b) { console.log(`${name}: not installed, skipped`); server.close(); continue; }
   console.log(`${name} (${b.version}), Pico Full compiler`);
   const check = async (label, fn) => {

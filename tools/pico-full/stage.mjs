@@ -8,7 +8,7 @@
 // this folder under /pico-full/ when PICO_FULL_SITE points to it (tools/serve.mjs).
 //   node tools/pico-full/stage.mjs    (env: PICO_FULL_WORK; for the licences PICO_FULL_LICENCES and PICO_SDK_PATH)
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. Rights class: code.
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -44,6 +44,12 @@ if (LIC && SDK && existsSync(LIC) && existsSync(SDK)) {
   mkdirSync(ld, { recursive: true });
   const take = [
     ['llvm-project/LICENSE.TXT', 'LLVM (clang, lld and the LLVM libraries in the compiler): Apache-2.0 WITH LLVM-exception'],
+    // 2026-11-14 (research research/licensing/pico-full-release-licence-review.md G1-G3)
+    ['llvm-project/clang-LICENSE.TXT', 'clang: Apache-2.0 WITH LLVM-exception (its own legacy copyright line)'],
+    ['llvm-project/lld-LICENSE.TXT', 'lld: Apache-2.0 WITH LLVM-exception (its own legacy copyright line)'],
+    ['llvm-project/llvm-lib-Support-Unicode-NOTICE.txt', 'Unicode, Inc. notices of the UTF conversion and character-name code in LLVM Support'],
+    ['llvm-project/libcxx-LICENSE.TXT', 'libc++ (linked into the compiler by wasi-sdk 34, llvm 895aa2c896ad): Apache-2.0 WITH LLVM-exception'],
+    ['llvm-project/libcxxabi-LICENSE.TXT', 'libc++abi (linked into the compiler by wasi-sdk 34, llvm 895aa2c896ad): Apache-2.0 WITH LLVM-exception'],
     ['llvm-project/compiler-rt-LICENSE.TXT', 'compiler-rt (builtins in the SDK pack; wasm32 runtime in the compiler)'],
     ['llvm-project/llvm-lib-Support-BLAKE3-LICENSE', 'BLAKE3 in LLVM Support: CC0-1.0 or Apache-2.0'],
     ['llvm-project/llvm-lib-Support-COPYRIGHT.regex', 'The regular expression code in LLVM Support (Henry Spencer, UC Regents)'],
@@ -65,15 +71,43 @@ if (LIC && SDK && existsSync(LIC) && existsSync(SDK)) {
   }
   writeFileSync(join(ld, 'pico-sdk-LICENSE.TXT'), readFileSync(join(SDK, 'LICENSE.TXT')));
   index.push('pico-sdk-LICENSE.TXT\n    Raspberry Pi Pico SDK (headers, prebuilt objects, linker scripts in the SDK pack): BSD-3-Clause');
-  const printf = readFileSync(join(SDK, 'src', 'rp2_common', 'pico_printf', 'printf.c'), 'utf8');
-  writeFileSync(join(ld, 'pico_printf-NOTICE.txt'), printf.slice(0, printf.indexOf('*/') + 2) + '\n');
+  // the notice is the leading block of // lines of printf.c (until 2026-11-14 this cut at the first */ and copied 907 lines, G5)
+  const printf = readFileSync(join(SDK, 'src', 'rp2_common', 'pico_printf', 'printf.c'), 'utf8').replace(/\r\n/g, '\n').split('\n');
+  const notice = printf.slice(0, printf.findIndex((l) => !l.startsWith('//')));
+  if (notice.length < 5 || !notice.some((l) => /Permission is hereby granted/.test(l))) throw new Error('pico_printf notice not found');
+  writeFileSync(join(ld, 'pico_printf-NOTICE.txt'), notice.join('\n') + '\n');
   index.push('pico_printf-NOTICE.txt\n    pico_printf (Marco Paland), in every SDK program: MIT (the notice of printf.c)');
-  writeFileSync(join(ld, 'llvm-23.1.5-wasi.patch'), readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'llvm-23.1.5-wasi.patch')));
-  index.push('llvm-23.1.5-wasi.patch\n    The changes made to LLVM 23.1.5 for WebAssembly (WASI) in this compiler (Apache-2.0 §4(b)); own port of YoWASP\'s patch');
+  // BSD-3-Clause files of the pack whose copyright holders are not (only) Raspberry Pi (G6): their copyright lines; the terms
+  // are those of pico-sdk-LICENSE.TXT with the holders named here
+  const other = [];
+  const scan = (rel) => {
+    const lines = readFileSync(join(SDK, ...rel.split('/')), 'utf8').split(/\r?\n/).filter((l) => /Copyright|SPDX-License-Identifier/.test(l));
+    if (lines.some((l) => /Copyright/.test(l) && !/Raspberry Pi/.test(l))) other.push(`${rel}\n${lines.map((l) => '    ' + l.replace(/^[\s/*]+/, '')).join('\n')}`);
+  };
+  for (const f of ['src/rp2_common/pico_i2c_slave/i2c_slave.c', 'src/rp2_common/pico_i2c_slave/include/pico/i2c_slave.h',
+    'src/rp2_common/pico_thread_local/include/picotls.h', 'src/rp2_common/pico_atomic/include/stdatomic.h']) scan(f);
+  for (const f of readdirSync(join(SDK, 'src', 'boards', 'include', 'boards'))) if (f.endsWith('.h')) scan(`src/boards/include/boards/${f}`);
+  writeFileSync(join(ld, 'pico-sdk-other-notices.txt'), ['Pico SDK files in this download with copyright holders besides Raspberry Pi. Each is under',
+    'BSD-3-Clause: the terms of pico-sdk-LICENSE.TXT, with the holders below in place of Raspberry Pi.', '', ...other, ''].join('\n'));
+  index.push('pico-sdk-other-notices.txt\n    Pico SDK files by further copyright holders (pico_i2c_slave, picotls.h, stdatomic.h, board headers): BSD-3-Clause');
+  const patch = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'llvm-23.1.5-wasi.patch'), 'utf8');
+  writeFileSync(join(ld, 'llvm-23.1.5-wasi.patch'), patch);
+  // the patch keeps its pinned bytes (pins.json sha256); its notice of changes (Apache-2.0 §4(b), G7) is a file beside it
+  const changed = [...patch.matchAll(/^diff --git a\/(\S+)/gm)].map((x) => '    ' + x[1]);
+  writeFileSync(join(ld, 'llvm-23.1.5-wasi-NOTICE.txt'), ['Changes to llvm-project llvmorg-23.1.5 (392dfff97d29b59d77e5cac6d4b6ef2585fe7117) for',
+    'wasm32-wasip1, in llvm-23.1.5-wasi.patch: a port of YoWASP\'s LLVM WebAssembly patch (https://github.com/YoWASP/clang)',
+    'by Sajid Muhaimin Choudhury, 2026, under Apache-2.0 WITH LLVM-exception (as LLVM). Files changed:', ...changed, ''].join('\n'));
+  index.push('llvm-23.1.5-wasi.patch, llvm-23.1.5-wasi-NOTICE.txt\n    The changes made to LLVM 23.1.5 for WebAssembly (WASI) in this compiler and the files they change (Apache-2.0 §4(b)); own port of YoWASP\'s patch');
   writeFileSync(join(ld, 'LICENCES.txt'), [
     `Pico SDK compiler and files for MAVILERA's Pico 2 Laboratory, version ${version}.`,
     'This download contains third-party software under the licences below. Programs you build with it contain Pico SDK,',
-    'picolibc and pico_printf code under their BSD and MIT terms, as with the official GCC toolchain.', '', ...index, ''].join('\n'));
+    'picolibc and pico_printf code under their BSD and MIT terms, as with the official GCC toolchain.', '',
+    // acknowledgements some picolibc licences ask for in documentation (G4; COPYING.picolibc UCB-1/-2, Other-16, Other-22)
+    'Acknowledgements (picolibc, the C library in the SDK pack):',
+    '    This product includes software developed by the University of California, Berkeley and its contributors.',
+    '    Parts of picolibc were developed at Cygnus Support, Inc.',
+    '    getopt was written by Gregory Pietsch.', '',
+    ...index, ''].join('\n'));
   licences = 'licences/LICENCES.txt';
 } else console.warn('licences not staged: set PICO_FULL_LICENCES (research upstream/licenses) and PICO_SDK_PATH');
 const manifest = { version, created: m.created, compiler, pack, total: compiler.bytes + pack.bytes, transfer: compiler.transferBytes + pack.transferBytes, ...(licences ? { licences } : {}) };

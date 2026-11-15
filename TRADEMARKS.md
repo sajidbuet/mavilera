@@ -2,8 +2,14 @@
 
 Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 
-**MAVILERA** is a provisional project name, pending legal clearance. It is not a registered trademark, no
-clearance search has been made, and no exclusive right is claimed. Do not use the symbol (R) with it.
+**MAVILERA** is the project's name. It is not a registered trademark and no exclusive right is claimed. Do not
+use the symbol (R) with it.
+
+**Name status: resolved by the author on 2026-11-15.** MAVILERA is a free, open-source educational project, not a
+commercial product, so no formal clearance search was commissioned. A web search that day found no product,
+company or trademark named MAVILERA (the nearest names were different words in other classes). This is not a
+legal opinion. If MAVILERA is ever sold, registered or offered as a commercial product, a formal clearance search
+should come first.
 
 ## Code licence and branding
 

@@ -15,6 +15,7 @@ foreach(LANG IN ITEMS C CXX ASM)
   set(CMAKE_${LANG}_FLAGS_DEBUG "-Og -g")
   string(APPEND CMAKE_${LANG}_FLAGS " -ffile-prefix-map=${_sdk}=/pico/sdk -ffile-prefix-map=${CMAKE_BINARY_DIR}=/pico/build -ffile-prefix-map=${EX}=/project")
 endforeach()
+add_compile_definitions(PICO_NO_BI_PROGRAM_BUILD_DATE=1)   # as the profile (2026-11-14)
 
 # name, source (relative to pico-examples), further libraries
 set(PROGRAMS

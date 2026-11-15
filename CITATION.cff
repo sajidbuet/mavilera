@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use MAVILERA, please cite it as below (the DOI of each release is on its Zenodo record)."
+type: software
+title: "MAVILERA: Interactive Microprocessor Architecture Laboratory"
+abstract: >-
+  MAVILERA (Microprocessor Architecture Visualization, Interactive Learning, Execution, and Runtime Analysis) is an
+  open-source, architecture-neutral educational platform of browser-based processor simulators: RISC-V, SAP-1, SAP-2,
+  Armv7, an NPU tool, a GPU laboratory, the 8086 and a Raspberry Pi Pico 2 laboratory with the RP2350's Hazard3 cores.
+  Every simulator runs entirely in the browser.
+authors:
+  - given-names: Sajid Muhaimin
+    family-names: Choudhury
+    orcid: "https://orcid.org/0000-0002-0216-7125"
+version: 1.6.1
+date-released: 2026-11-15
+license: Apache-2.0
+repository-code: "https://github.com/sajidbuet/mavilera"
+url: "https://sajidlab.org/mavilera/"
+keywords:
+  - computer architecture
+  - microprocessor
+  - simulator
+  - education
+  - RISC-V
+  - Raspberry Pi Pico 2
