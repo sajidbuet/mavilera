@@ -197,8 +197,9 @@ relative, so it works under `/mavilera/` or any other base. `BASE_PATH`
 ## Citing
 
 Cite MAVILERA by its version and release tag on `https://github.com/sajidbuet/mavilera`,
-with the release date, or by its DOI: from 1.6.1 every GitHub release is archived on Zenodo, which gives
-it a DOI (the record of each version and the DOI for all versions are on Zenodo).
+with the release date, or by its DOI. Every GitHub release from 1.6.1 is archived on Zenodo with a DOI of its
+own; the DOI for all versions is [10.5281/zenodo.24237544](https://doi.org/10.5281/zenodo.24237544) (1.6.1:
+[10.5281/zenodo.24237545](https://doi.org/10.5281/zenodo.24237545)).
 [`CITATION.cff`](CITATION.cff) holds the citation metadata.
 
 ## Licence
