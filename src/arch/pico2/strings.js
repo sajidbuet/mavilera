@@ -827,7 +827,7 @@ int main(void)
         'Load to Pico writes this project\'s program to a Pico 2 in BOOTSEL mode: the browser asks which board, the project is built if it changed, you confirm, and each sector is erased, written and read back. Then the Pico 2 restarts and runs it.',
         'Check reads the board back and compares it with this build. Download .uf2 saves the program as a file for the RP2350 drive; Copy to the Pico\'s drive writes it there for you (the Pico 2 checks the file itself).',
         'Build numbers count the different programs this project has given in this browser.',
-        'Status: loading onto a board has been tested with simulated USB devices only, not yet with a real Pico 2 (MAVILERA 1.7.0-beta.1). If it fails, Download .uf2 and copying the file to the RP2350 drive always works.',
+        'Status: loading onto a board has been tested with simulated USB devices only, not yet with a real Pico 2 (MAVILERA 1.7.0-beta.2). If it fails, Download .uf2 and copying the file to the RP2350 drive always works.',
       ],
       debugHelp: [
         'For a Pico 2 in BOOTSEL mode. Run restarts it so that it runs the program its flash holds. Save flash reads the flash back into a .bin file (only the sectors this program uses, unless "All 4 MiB" is ticked). Neither writes anything.',

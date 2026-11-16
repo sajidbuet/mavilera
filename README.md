@@ -23,7 +23,7 @@ MAVILERA is not a registered trademark; its name status was resolved on 2026-11-
 | **GPU Laboratory** | available (from 1.3.0; a preview in 1.2.0) | `https://sajidlab.org/mavilera/gpu/` |
 | **8086 Laboratory** | available (from 1.4.0) | `https://sajidlab.org/mavilera/i8086/` |
 | **Pico 2 Laboratory** (the RP2350's two Hazard3 RISC-V cores; Pico Lite; Board view and user circuits from 1.6.0) | available (from 1.5.0) | `https://sajidlab.org/mavilera/pico2/` |
-| **Beta 1.7.0-beta.1**: every laboratory, with **Pico Full** and loading onto a real Pico 2 (to be tested) | beta | `https://sajidlab.org/mavilera/beta/` |
+| **Beta 1.7.0-beta.2**: every laboratory, with **Pico Full** and loading onto a real Pico 2 (to be tested) | beta | `https://sajidlab.org/mavilera/beta/` |
 | MOS 6502, MIPS | planned, not built | — |
 
 The landing page is `https://sajidlab.org/mavilera/`. Each simulator is
@@ -44,7 +44,7 @@ book *Microprocessor Architecture and Embedded Systems*.
   three-stage pipeline, and the chip's GPIO, UART, timers, PWM, DMA, ADC, SPI, I2C
   and PIO. Both editions use the same model. **Pico Lite** (released) runs programs
   written in Hazard3 assembly language or in MAVILERA C, a teaching subset of C.
-  **Pico Full** (in the beta 1.7.0-beta.1, not yet in a stable release) compiles
+  **Pico Full** (in the beta 1.7.0-beta.2, not yet in a stable release) compiles
   Pico SDK C in the browser, imports UF2/ELF images built with the Pico SDK, and
   loads programs onto a real Pico 2 over USB (the Hardware tab: probe, load and
   verify, debugging without a probe, a UART monitor); board loading has been
@@ -175,7 +175,7 @@ every module. Every theme shares every rule; only the colour tokens in
 **Released (stable, `https://sajidlab.org/mavilera/`):** 1.6.1 — the RISC-V, SAP-1, SAP-2, Armv7, GPU, 8086 and
 Pico 2 (Pico Lite, Board view, user circuits) laboratories, and the NPU tool.
 
-**Beta 1.7.0-beta.1 (`https://sajidlab.org/mavilera/beta/`), to be tested:**
+**Beta 1.7.0-beta.2 (`https://sajidlab.org/mavilera/beta/`), to be tested:**
 - **Pico Full** in the Pico 2 Laboratory: projects of several files, Pico SDK C built in the browser by the SDK's own
   compiler (a download of about 25 MB at the first build), import of SDK-built UF2/ELF files, and a read-only list of
   the SDK headers a project includes.
@@ -183,6 +183,7 @@ Pico 2 (Pico Lite, Board view, user circuits) laboratories, and the NPU tool.
   confirmation naming the board and the build, per-sector verify, a progress bar, Check, Download .uf2; debugging
   without a probe (restart, save the flash); a UART monitor (Web Serial) with hex view and a comparison with the
   simulator. **Tested with simulated USB devices only, not yet on a real board.**
+- **Board test reports:** tried it on a real Pico 2? Open a *Board test report* issue on GitHub and paste the Hardware tab's *Copy report* (Log tab); nothing is sent anywhere.
 - **Sample projects** (formerly Templates) in every laboratory, with C | Assembly tabs where a list has both; the
   Pico 2 list in topic groups, with 16 samples in Pico SDK C, among them a complete project (SOS in Morse code on the
   LED and a beeper, meters on the lab kit's LCD, a button).

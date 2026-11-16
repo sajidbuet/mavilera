@@ -161,7 +161,7 @@
       "title": "Lite and Full",
       "blocks": [
         { "p": "This laboratory holds one program in assembly language or in MAVILERA C (Pico Lite). The Language menu above the editor switches between them; each language keeps its own program." },
-        { "p": "A second edition, Pico Full, has projects of several files, C built with the Pico SDK in the browser, the import of SDK-built UF2 and ELF files, and loading onto a real Pico 2 (the Hardware tab). It is offered in the beta release (MAVILERA 1.7.0-beta.1, sajidlab.org/mavilera/beta/) and is not yet part of the stable release. Where it is offered, the switch beside the laboratory's name changes the edition, and each edition keeps its own program." },
+        { "p": "A second edition, Pico Full, has projects of several files, C built with the Pico SDK in the browser, the import of SDK-built UF2 and ELF files, and loading onto a real Pico 2 (the Hardware tab). It is offered in the beta release (MAVILERA 1.7.0-beta.2, sajidlab.org/mavilera/beta/) and is not yet part of the stable release. Where it is offered, the switch beside the laboratory's name changes the edition, and each edition keeps its own program." },
         { "p": "To load a program onto a real Pico 2, use Pico Full: a MAVILERA program in assembly or MAVILERA C runs in the simulator only." }
       ]
     },
@@ -169,7 +169,7 @@
       "id": "board-load",
       "title": "Load to a Pico 2",
       "blocks": [
-        { "notice": "Beta (MAVILERA 1.7.0-beta.1): loading onto a board has been tested with simulated USB devices only, not yet with a real Pico 2. If a load fails, Download .uf2 and copying the file to the RP2350 drive always works; please report what happened." },
+        { "notice": "Beta (MAVILERA 1.7.0-beta.2): loading onto a board has been tested with simulated USB devices only, not yet with a real Pico 2. If a load fails, Download .uf2 and copying the file to the RP2350 drive always works; please report what happened." },
         { "p": "Pico Full can write a project's program to a real Pico 2 or Pico 2 W connected to the computer by USB, from Chrome or Edge on a computer. Everything about the real board is in the Hardware tab at the top of the page, apart from the simulator; Load to Pico in the toolbar opens it. The program is the one the simulator runs: a project built with Pico SDK C, or a UF2, ELF or .bin file built with the Pico SDK. A MAVILERA program (assembly or MAVILERA C) cannot run on a board by itself.", "sources": ["RP-001"] },
         { "ol": [
           "Hold the BOOTSEL button on the Pico 2 while you plug its USB cable in, then let go. The Pico 2 starts in BOOTSEL mode and a drive named RP2350 appears.",
