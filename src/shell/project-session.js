@@ -5,7 +5,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-import { createProject, setText, addFile, renameFile, duplicateFile, setEntry, setCompiler, deleteFile, openTab, closeTab, renameProject, fileText, ProjectError } from './project.js';
+import { createProject, setText, addFile, renameFile, duplicateFile, setEntry, setCompiler, setOption, deleteFile, openTab, closeTab, renameProject, fileText, ProjectError } from './project.js';
 import { writeZip, readZip, readZipComment } from './zip.js';
 
 /** {name?, entry?} from an archive comment written by exportZip; {} for anything else (never trusted beyond strings). */
@@ -14,7 +14,7 @@ function projectNote(comment) {
     const o = JSON.parse(comment);
     if (o?.mavilera !== 'project') return {};
     const str = (v) => (typeof v === 'string' ? v : undefined);
-    return { name: str(o.name), entry: str(o.entry), compiler: str(o.compiler) };
+    return { name: str(o.name), entry: str(o.entry), compiler: str(o.compiler), options: o.options }; // options: cleaned by createProject
   } catch { return {}; }
 }
 
@@ -97,6 +97,8 @@ export class ProjectSession {
   setEntry(name) { return this.apply(setEntry(this.project, name)); }
   /** The extra language that compiles the project's C (pico2 P1-F2); null: the module's first. */
   setCompiler(id) { return this.apply(setCompiler(this.project, id), 'compiler'); }
+  /** v13 (pico2 P1-R4): a build option of the project (`value` null: the compiler's default). */
+  setOption(id, value) { return this.apply(setOption(this.project, id, value), 'options'); }
   deleteFile(name) {
     const index = this.project.files.findIndex((f) => f.name === name);
     this.deleted = { name, text: fileText(this.project, name), index, entry: this.project.entry === name };
@@ -173,13 +175,13 @@ export class ProjectSession {
     const name = note.name ?? fileName.replace(/\.zip$/i, '');
     const entry = (note.entry && files.some((f) => f.name === note.entry) ? note.entry : null)
       ?? files.find((f) => /^main\./i.test(f.name))?.name ?? files[0].name;
-    return this.switchTo(createProject({ module: this.module, name, files, entry, extensions: this.extensions, compiler: note.compiler }));
+    return this.switchTo(createProject({ module: this.module, name, files, entry, extensions: this.extensions, compiler: note.compiler, options: note.options }));
   }
 
-  /** The open project as .zip bytes, with a file name (the project's name made safe); name, entry, compiler in the comment. */
+  /** The open project as .zip bytes, with a file name (the project's name made safe); name, entry, compiler, options in the comment. */
   async exportZip() {
-    const { name, entry, compiler } = this.project;
-    const comment = JSON.stringify({ mavilera: 'project', v: 1, name, entry, ...(compiler ? { compiler } : {}) }).replace(/[^\x20-\x7e]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
+    const { name, entry, compiler, options } = this.project;
+    const comment = JSON.stringify({ mavilera: 'project', v: 1, name, entry, ...(compiler ? { compiler } : {}), ...(options ? { options } : {}) }).replace(/[^\x20-\x7e]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
     const bytes = await writeZip(this.project.files, { comment });
     const base = this.project.name.replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '') || 'project';
     return { bytes, fileName: `${base}.zip` };

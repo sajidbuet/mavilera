@@ -54,7 +54,7 @@
     {
       "id": "pico2",
       "name": "Pico 2",
-      "description": "A Raspberry Pi Pico 2 with the RP2350's two Hazard3 RISC-V cores: an assembler and MAVILERA's C subset, every instruction timed by Hazard3's documented cycle counts with a view of its three-stage pipeline, and the chip's GPIO, UART, timers, PWM, DMA, ADC, SPI, I2C and PIO in real time, with a lab kit of sensors and a display, sound from a pin, templates and practice exercises. Checked against an RP2350 emulator, Hazard3's hardware design and the RISC-V architecture tests.",
+      "description": "A Raspberry Pi Pico 2 with the RP2350's two Hazard3 RISC-V cores: an assembler and MAVILERA's C subset, every instruction timed by Hazard3's documented cycle counts with a view of its three-stage pipeline, and the chip's GPIO, UART, timers, PWM, DMA, ADC, SPI, I2C and PIO in real time, with a lab kit of sensors and a display, sound from a pin, sample projects and practice exercises. Checked against an RP2350 emulator, Hazard3's hardware design and the RISC-V architecture tests. The beta adds Pico Full: Pico SDK C built in the browser and loading onto a real Pico 2 (to be tested).",
       "tagline": "A Raspberry Pi Pico 2 in the browser: Hazard3's RISC-V cores, their pipeline and the chip's devices, in real time.",
       "path": "pico2/",
       "status": "available",

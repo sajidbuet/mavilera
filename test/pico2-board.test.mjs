@@ -68,7 +68,7 @@ test('pico2 board: pinLook, the LED and the speaker follow the rules of D47/D48'
 });
 
 test('pico2 board: every state colour has at least 3:1 contrast against the sheet in every theme (WCAG 1.4.11)', () => {
-  assert.deepEqual(Object.keys(BOARD_PALETTE).sort(), ['black', 'dark', 'dim', 'hc-dark', 'hc-light', 'light', 'sepia']);
+  assert.deepEqual(Object.keys(BOARD_PALETTE).sort(), ['black', 'buet', 'dark', 'dim', 'green', 'hc-dark', 'hc-light', 'light', 'sepia']);
   for (const [theme, p] of Object.entries(BOARD_PALETTE)) for (const k of ['high', 'low', 'z', 'busy']) {
     assert.ok(contrast(p[k], p.sheet) >= 3, `${theme} ${k}: ${contrast(p[k], p.sheet).toFixed(2)}`);
   }
@@ -80,6 +80,8 @@ test('pico2 board: every state colour has at least 3:1 contrast against the shee
 // --- the templates ---------------------------------------------------------------------------------------------------------
 const dir = new URL('../content/pico2/templates/', import.meta.url);
 const index = JSON.parse(readFileSync(new URL('index.json', dir), 'utf8'));
+// Pico Full's samples in Pico SDK C (2026-11-15) need the SDK compiler: test/pico2-sdk-samples.test.mjs runs them
+index.templates = index.templates.filter((t) => t.lang !== 'sdk-c');
 const cc = await descriptor.language.extraLanguages.find((x) => x.id === 'c').load();
 function build(t) {
   const text = readFileSync(new URL(t.file, dir), 'utf8');
@@ -209,11 +211,15 @@ test('pico2 board: the drawn knob gives the Pins panel\'s ADC input 0; a run wit
   assert.equal(replay.state().output, out);
 });
 
-test('pico2 board: the descriptor\'s Board view is a page view, last, and the contract accepts it (v11, approved D50)', () => {
+test('pico2 board: the descriptor\'s Board view is a page view, the last simulator view, and the contract accepts it (v11, approved D50)', () => {
   assert.ok(CONTRACT_VERSION >= 11); // v11 approved (D50); v12 (P1-B2's companions) approved and frozen with 1.6.0 (D57)
-  const v = descriptor.views[descriptor.views.length - 1];
+  // D48 Q1 B: Board is the last of the simulator's views; only the Hardware tab (a real board, capability hardware, Pico Full;
+  // design pico2-hardware-tab.md) follows it
+  const sim = descriptor.views.filter((x) => !x.capability);
+  const v = sim[sim.length - 1];
   assert.equal(v.id, 'board'); assert.equal(v.engine, 'page'); assert.equal(v.kind, 'datapath');
+  assert.deepEqual(descriptor.views.slice(descriptor.views.indexOf(v) + 1).map((x) => x.id), ['hardware']);
   assert.deepEqual(validateDescriptor(descriptor), []);
-  const bad = { ...descriptor, views: [...descriptor.views.slice(0, -1), { ...v, engine: 'own' }] };
+  const bad = { ...descriptor, views: descriptor.views.map((x) => (x === v ? { ...v, engine: 'own' } : x)) };
   assert.ok(validateDescriptor(bad).some((m) => /engine 'page'/.test(m)));
 });

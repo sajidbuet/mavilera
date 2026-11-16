@@ -11,6 +11,8 @@
 // SharedArrayBuffer ring (audio-ring.js); the engine's frames (Engine.drainAudio) go there and pace the run (realtime.js). A run
 // message with `render: {seconds}` runs that much machine time at full speed and returns the frames with the snapshot (Render
 // and play, Q7). A "configure" message passes the module's engine settings (Engine.configure: pico2's speaker and converter).
+// An "audio" message (2026-11-15) changes a real-time run's sink while it runs: {audio: {port | sab, rate}} when Sound is turned
+// on, {audio: null} when it is turned off (machine time then follows the wall clock).
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
@@ -73,10 +75,35 @@ function audioOut(eng, link, rate) {
   };
 }
 
+/**
+ * The run's audio as the pacing loop sees it, switchable while the run goes on (2026-11-15: Sound turned off and on again
+ * during a run). With a link the frames go to the sink and pace machine time; without one machine time follows the wall
+ * clock and the frames are drained and dropped, so they neither pile up nor play late when Sound comes back.
+ */
+let audioLink = null;
+function audioSlot(eng) {
+  return {
+    get rate() { return audioLink?.rate ?? 48000; },
+    active: () => audioLink?.active() === true,
+    ahead: () => audioLink?.ahead() ?? 0,
+    pump: () => { if (audioLink) audioLink.pump(); else if (eng.drainAudio) while (eng.drainAudio(1 << 14)); },
+    close: () => { audioLink?.close(); audioLink = null; },
+  };
+}
+/** Sound on or off during a real-time run: the new link (or none); frames made before it are dropped. */
+function setAudio(a) {
+  audioLink?.close();
+  audioLink = null;
+  if (!engine) return;
+  if (engine.drainAudio) while (engine.drainAudio(1 << 14)); // what was made while there was no sink: not played late
+  audioLink = audioOut(engine, a, a?.rate ?? 48000);
+}
+
 function realtime(m) {
   const rt = m.realtime;
   const ring = rt.ring ? new LiveRing(rt.ring) : null;
-  const audio = audioOut(engine, rt.audio, rt.audio?.rate ?? 48000);
+  audioLink = audioOut(engine, rt.audio, rt.audio?.rate ?? 48000);
+  const audio = engine.drainAudio ? audioSlot(engine) : null;
   runRealtime({
     engine, breakpoints: new Set(m.run?.breakpoints ?? []), resumed: Boolean(m.run?.resumed), uartFrom: rt.uartFrom ?? 0,
     now: () => performance.now(), soon, later, paused: () => pauseRequested, audio,
@@ -130,12 +157,16 @@ onmessage = async (e) => {
     opts = m.run;
     started = 0;
     applied = 0;
-    for (const x of queued) if (x.configure) engine.configure?.(x.configure); else if (engine.input) { engine.input(x); applied += 1; } // before the first slice, as the page gave them
+    const audioChange = queued.findLast?.((x) => 'audio' in x);
+    for (const x of queued) if (x.configure) engine.configure?.(x.configure); else if ('audio' in x) { /* below */ } else if (engine.input) { engine.input(x); applied += 1; } // before the first slice, as the page gave them
     if (m.render && engine.advance && engine.clock) render(m);
-    else if (m.realtime && engine.advance && engine.clock && engine.live) realtime(m);
+    else if (m.realtime && engine.advance && engine.clock && engine.live) { realtime(m); if (audioChange) setAudio(audioChange.audio); }
     else slice();
   } else if (m.type === 'pause') {
     pauseRequested = true;
+  } else if (m.type === 'audio') { // Sound turned on (a new link) or off (null) during a real-time run
+    if (!loading) setAudio(m.audio ?? null);
+    else queued.push({ audio: m.audio ?? null });
   } else if (m.type === 'input') {
     if (loading) queued.push(m.x);
     else if (engine?.input) { engine.input(m.x); applied += 1; }

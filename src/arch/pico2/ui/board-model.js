@@ -85,6 +85,9 @@ export const BOARD_PALETTE = Object.freeze({
   // undef (P1-B2, research D51 Q6 A): a net between V_IL and V_IH, where the level read is not defined
   light: { sheet: '#ffffff', high: '#c62828', low: '#1565c0', z: '#6b6b6b', busy: '#8e24aa', undef: '#8a5a00' },
   sepia: { sheet: '#faf4e8', high: '#b71c1c', low: '#0d47a1', z: '#6b6b6b', busy: '#7b1fa2', undef: '#7f5300' },
+  // green and BUET (2026-11-15): light themes on a white sheet, the light theme's state colours
+  green: { sheet: '#ffffff', high: '#c62828', low: '#1565c0', z: '#6b6b6b', busy: '#8e24aa', undef: '#8a5a00' },
+  buet: { sheet: '#ffffff', high: '#c62828', low: '#1565c0', z: '#6b6b6b', busy: '#8e24aa', undef: '#8a5a00' },
   'hc-light': { sheet: '#ffffff', high: '#a00000', low: '#0034a0', z: '#444444', busy: '#6c1f96', undef: '#6b4400' },
   dark: { sheet: '#101a2b', high: '#ff6b6b', low: '#64b5f6', z: '#a6a6a6', busy: '#d39ae6', undef: '#f2c14e' },
   dim: { sheet: '#262d37', high: '#ff7b7b', low: '#74bdf7', z: '#a6a6a6', busy: '#d6a2e8', undef: '#f2c14e' },

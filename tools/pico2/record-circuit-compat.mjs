@@ -43,7 +43,7 @@ const sha = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
  */
 export const SCENARIOS = [
   // the templates of `bc2e446` (B2-4's circuit templates, with circuits of their own, came later: test/pico2-templates.test.mjs)
-  ...index.templates.filter((t) => !t.circuit).map((t) => [`run:${t.id}`, t.id, '4', [], 2]),
+  ...index.templates.filter((t) => !t.circuit && t.lang !== 'sdk-c').map((t) => [`run:${t.id}`, t.id, '4', [], 2]),
   ['button-5', 'gpio-button', '4', [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2].map((s, i) => [s, { kind: 'pin', pin: 15, level: i % 2 ? -1 : 0 }]), 2],
   ['button-high-low', 'gpio-button', '1', [[0.03, { kind: 'pin', pin: 15, level: 1 }], [0.06, { kind: 'pin', pin: 15, level: 0 }], [0.09, { kind: 'pin', pin: 15, level: -1 }],
     [0.12, { kind: 'pin', pin: 15, level: 0 }], [0.15, { kind: 'pin', pin: 15, level: -1 }]], 1],

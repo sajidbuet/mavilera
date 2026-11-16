@@ -15,25 +15,35 @@ foreach(LANG IN ITEMS C CXX ASM)
   set(CMAKE_${LANG}_FLAGS_DEBUG "-Og -g")
   string(APPEND CMAKE_${LANG}_FLAGS " -ffile-prefix-map=${_sdk}=/pico/sdk -ffile-prefix-map=${CMAKE_BINARY_DIR}=/pico/build -ffile-prefix-map=${EX}=/project")
 endforeach()
-add_compile_definitions(PICO_NO_BI_PROGRAM_BUILD_DATE=1)   # as the profile (2026-11-14)
+# the pack's fixed build date, as the profile (P1-R4, research D58)
+include(${CMAKE_CURRENT_LIST_DIR}/../cmake/build-date.cmake)
+pico_full_build_date(_build_date)
+add_compile_definitions(PICO_PROGRAM_BUILD_DATE="${_build_date}")
 
-# name, source (relative to pico-examples), further libraries
+# name, source (relative to pico-examples), further libraries (separated by ","), USB stdio (1) or UART only (0)
+# P1-R4: one program per new object set (hello_multicore: uart_mc; hello_usb: usb) and pico_status_led (an archive library)
 set(PROGRAMS
-  "hello_uart|uart/hello_uart/hello_uart.c|"
-  "blink|blink/blink.c|"
-  "timer_lowlevel|timer/timer_lowlevel/timer_lowlevel.c|"
-  "hello_gpio_irq|gpio/hello_gpio_irq/hello_gpio_irq.c|"
-  "hello_timer|timer/hello_timer/hello_timer.c|"
-  "hello_watchdog|watchdog/hello_watchdog/hello_watchdog.c|"
-  "hello_pwm|pwm/hello_pwm/hello_pwm.c|hardware_pwm"
-  "hello_adc|adc/hello_adc/hello_adc.c|hardware_adc")
+  "hello_uart|uart/hello_uart/hello_uart.c||0"
+  "blink|blink/blink.c||0"
+  "timer_lowlevel|timer/timer_lowlevel/timer_lowlevel.c||0"
+  "hello_gpio_irq|gpio/hello_gpio_irq/hello_gpio_irq.c||0"
+  "hello_timer|timer/hello_timer/hello_timer.c||0"
+  "hello_watchdog|watchdog/hello_watchdog/hello_watchdog.c||0"
+  "hello_pwm|pwm/hello_pwm/hello_pwm.c|hardware_pwm|0"
+  "hello_adc|adc/hello_adc/hello_adc.c|hardware_adc|0"
+  "hello_multicore|multicore/hello_multicore/multicore.c|pico_multicore|0"
+  "multicore_fifo_irqs|multicore/multicore_fifo_irqs/multicore_fifo_irqs.c|pico_multicore|0"
+  "hello_usb|hello_world/usb/hello_usb.c||1"
+  "status_blink|status_led/status_blink/status_blink.c|pico_status_led|0")
 foreach(P IN LISTS PROGRAMS)
   string(REPLACE "|" ";" F "${P}")
   list(GET F 0 NAME)
   list(GET F 1 SRC)
   list(GET F 2 LIBS)
+  list(GET F 3 USB)
+  string(REPLACE "," ";" LIBS "${LIBS}")
   add_executable(${NAME} ${EX}/${SRC})
   target_link_libraries(${NAME} pico_stdlib ${LIBS})
   pico_enable_stdio_uart(${NAME} 1)
-  pico_enable_stdio_usb(${NAME} 0)
+  pico_enable_stdio_usb(${NAME} ${USB})
 endforeach()

@@ -80,3 +80,8 @@ h3 { font-size: 18px; margin: 0; line-height: 1.3; }
 
 footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-2); font-size: 14px; }
 footer p { margin: 4px 0; }
+
+/* the release channel's note (author, 2026-11-15): a beta says so and links the stable site; the stable site may link a beta */
+.channel-note { max-width: 72rem; margin: 0.75rem auto 0; padding: 0.6rem 1rem; border-radius: 10px; background: var(--primary-soft); color: inherit; border: 1px solid var(--primary); font-size: 0.95rem; }
+.channel-note strong { color: var(--primary); }
+.channel-note a { font-weight: 600; }

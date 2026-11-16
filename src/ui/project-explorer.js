@@ -22,12 +22,16 @@ export class ProjectExplorer {
    *   onImport(file), onExport(); each may throw an Error whose message is shown
    * @param {string[]} extensions  the allowed file extensions (for the hint)
    */
-  constructor(h, extensions, compilers = []) {
+  constructor(h, extensions, compilers = [], options = []) {
     this.h = h;
     this.extensions = extensions;
     // contract v10 draft: a module with several C compilers offers the choice per project (onCompiler(id); pico2 P1-F2)
     this.compilers = compilers;
     this.compilerBtns = [];
+    // contract v13 (pico2 P1-R4): the compiler's project options ([{id, label, title, values, default}]), each a group
+    // of choices in the Project menu (onOption(id, value))
+    this.options = options;
+    this.optionBtns = [];
     this.project = null;
     this.selected = null;
     this.title = el('h3.proj-name');
@@ -48,8 +52,11 @@ export class ProjectExplorer {
     this.menu = this.projectMenu();
     this.importInput = el('input', { type: 'file', accept: '.zip', hidden: true,
       onchange: (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) this.run(() => this.h.onImport(f)); } });
+    // contract v14 (pico2 Full, 2026-11-15): the headers the project includes from outside it (the SDK, the C library),
+    // listed read-only under the files; filled by renderHeaders, hidden for a module without them
+    this.hdrs = el('div.proj-hdrs', { hidden: true });
     this.root = el('div.proj-explorer', {}, // in the shell's Files pane, a labelled section (no landmark of its own)
-      el('div.proj-head', {}, this.title, this.status), this.acts, this.form, this.msg, this.list, this.importInput);
+      el('div.proj-head', {}, this.title, this.status), this.acts, this.form, this.msg, this.list, this.hdrs, this.importInput);
     // this.menu (the Project menu) is placed by the shell in the pane's header
   }
 
@@ -93,6 +100,16 @@ export class ProjectExplorer {
             ...(this.compilerBtns = this.compilers.map((c) => el('button.proj-choice', { type: 'button', 'data-compiler': c.id, 'aria-pressed': 'false',
               onclick: () => { menu.open = false; this.run(() => this.h.onCompiler(c.id)); } },
             el('span.proj-check', { 'aria-hidden': 'true' }, icon('check', { size: 12 })), el('span', { text: c.label })))))] : []),
+        ...this.options.flatMap((o) => [el('hr.menu-sep'),
+          el('div.proj-menu-group', { role: 'group', 'aria-label': o.label, title: o.title ?? o.label },
+            el('span.proj-menu-label', { text: o.label, 'aria-hidden': 'true' }),
+            ...o.values.map((v) => {
+              const b = el('button.proj-choice', { type: 'button', 'data-option': o.id, 'data-value': v.id, 'aria-pressed': 'false',
+                onclick: () => { menu.open = false; this.run(() => this.h.onOption(o.id, v.id)); } },
+              el('span.proj-check', { 'aria-hidden': 'true' }, icon('check', { size: 12 })), el('span', { text: v.label }));
+              this.optionBtns.push(b);
+              return b;
+            }))]),
         el('hr.menu-sep'),
         item(S().deleteProject, () => this.confirm(S().confirmDeleteProject(this.project?.name ?? ''), S().delete, () => this.h.onDeleteProject()))));
     menu.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.open) { e.stopPropagation(); menu.open = false; menu.querySelector('summary').focus(); } });
@@ -136,7 +153,34 @@ export class ProjectExplorer {
     this.acts.setAttribute('aria-label', S().fileActions(name));
     const compiler = project.compiler ?? this.compilers[0]?.id;
     for (const b of this.compilerBtns) b.setAttribute('aria-pressed', String(b.dataset.compiler === compiler));
+    for (const b of this.optionBtns) {
+      const o = this.options.find((x) => x.id === b.dataset.option);
+      const v = project.options?.[o.id];
+      b.setAttribute('aria-pressed', String(b.dataset.value === (o.values.some((x) => x.id === v) ? v : o.default)));
+    }
     this.setStatus(status);
+    this.h.onRendered?.();
+  }
+
+  /**
+   * The read-only headers (contract v14): `h` null hides the section; else {L: the module's wording (head, title, kinds,
+   * notLoaded, missing, none), list: [{name, path, kind, text}] | null (not loaded yet), onOpen(header)}.
+   */
+  renderHeaders(h) {
+    this.hdrs.hidden = !h;
+    if (!h) { this.hdrs.replaceChildren(); return; }
+    const { L, list, onOpen } = h;
+    const items = (list ?? []).map((x) => el('li', {}, x.path
+      ? el('button.proj-hdr', { type: 'button', 'data-name': x.name, title: `${x.name} · ${L.kinds[x.kind] ?? x.kind}`, onclick: () => onOpen(x) },
+        el('span.proj-ficon.proj-k-h', {}, icon('file', { size: 15 })), el('span.proj-file-name.mono', { text: x.name }),
+        el('span.proj-hdr-kind', { text: L.kinds[x.kind] ?? x.kind }))
+      : el('span.proj-hdr.proj-hdr-missing', { title: L.missing },
+        el('span.proj-ficon.proj-k-x', {}, icon('file', { size: 15 })), el('span.proj-file-name.mono', { text: x.name }),
+        el('span.proj-hdr-kind', { text: L.missing }))));
+    this.hdrs.replaceChildren(
+      el('h4.proj-hdrs-head', { id: 'proj-hdrs-head', title: L.title, text: L.head }),
+      list === null ? el('p.note', { text: L.notLoaded }) : !list.length ? el('p.note', { text: L.none })
+        : el('ul.proj-hdr-list', { role: 'list', 'aria-labelledby': 'proj-hdrs-head' }, items));
   }
 
   setStatus(status) {

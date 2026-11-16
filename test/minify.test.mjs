@@ -58,7 +58,8 @@ test('every shipped JavaScript module minifies and still parses as a module; the
       const out = minify(p, text);
       before += text.length;
       after += out.length;
-      assert.match(out, /Copyright \(c\) 2026 Sajid Muhaimin Choudhury/, `${p}: the copyright line`);
+      if (/(^|\/)vendor\//.test(p)) assert.equal(out, text, `${p}: vendored code ships as pinned`); // pico2 P1-F3
+      else assert.match(out, /Copyright \(c\) 2026 Sajid Muhaimin Choudhury/, `${p}: the copyright line`);
       assert.equal(minify(p, out), out, `${p}: minified twice is minified once`);
       modules[p] = out;
     } else if (p.endsWith('.json')) {

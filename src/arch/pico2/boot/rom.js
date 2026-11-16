@@ -25,7 +25,22 @@ const FUNCTIONS = [
   ['SP', 'set_ns_api_permission'], ['SR', 'bootrom_state_reset'], ['SS', 'set_bootrom_stack'], ['XM', 'flash_select_xip_read_mode'],
   ['VB', 'validate_ns_buffer'],
 ];
-const IMPLEMENTED = new Set(['SR']);
+const IMPLEMENTED = new Set(['SR', 'GS']);
+
+// P1-R4 (found with the USB object set: pico_unique_id's constructor asks for the chip id, and TinyUSB's descriptors use it as the
+// serial number): get_sys_info(out, words, flags) with SYS_INFO_CHIP_INFO (0x1) only, as the pico-sdk 079c6f3 callers expect
+// (pico_unique_id/unique_id.c: 4 words returned, word 0 the flags answered, then package_sel and the 64-bit chip id low, high;
+// boot/bootrom_constants.h, RP-020). The id is the model's own fixed value (no OTP is modelled); other flags are not answered
+// (word 0 says which were), a buffer too small gives BOOTROM_ERROR_BUFFER_TOO_SMALL (-13).
+export const MODEL_CHIP_ID = Object.freeze({ packageSel: 0, low: 0x4d415649, high: 0x4c455241 }); // "MAVI" "LERA", little-endian words
+const SYS_INFO_CHIP_INFO = 0x0001, BOOTROM_ERROR_BUFFER_TOO_SMALL = -13;
+/** {result, writes: [[address, word]]} of get_sys_info. */
+export function romGetSysInfo(out, words, flags) {
+  const data = [flags & SYS_INFO_CHIP_INFO];
+  if (flags & SYS_INFO_CHIP_INFO) data.push(MODEL_CHIP_ID.packageSel, MODEL_CHIP_ID.low, MODEL_CHIP_ID.high);
+  if (words < data.length) return { result: BOOTROM_ERROR_BUFFER_TOO_SMALL, writes: [] };
+  return { result: data.length, writes: data.map((v, i) => [(out + 4 * i) >>> 0, v]) };
+}
 
 const SLOT_BASE = 0x100;
 export const CORE1_RETURN = 0x7e00; // P1-M6: a slot of the module's own (not a bootrom address)

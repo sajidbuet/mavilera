@@ -37,7 +37,11 @@ if (!ARCHITECTURES[ID]) throw new Error(`--arch: one of ${Object.keys(ARCHITECTU
 const arch = (await ARCHITECTURES[ID]()).descriptor;
 // the views the module's own page shows (a tool inside the module, as the NPU in RISC-V, has views of its own)
 const { PLATFORM_ARCHS, toolViews } = await import(pathToFileURL(join(ROOT, 'src/shell/platform-archs.js')).href);
-const PAGE_VIEWS = toolViews(arch, PLATFORM_ARCHS.find((a) => a.id === ID && !a.module));
+// v14 View.capability (pico2's Hardware tab, Full only): a fresh page opens the module's first edition, which shows only
+// the views whose capability it has on (as src/main.js filters them)
+const { withEdition } = await import(pathToFileURL(join(ROOT, 'src/arch/contract.js')).href);
+const FIRST = arch.editions ? withEdition(arch, null) : arch;
+const PAGE_VIEWS = toolViews(arch, PLATFORM_ARCHS.find((a) => a.id === ID && !a.module)).filter((v) => !v.capability || FIRST.capabilities?.[v.capability] === true);
 const { STRINGS } = await import(pathToFileURL(join(ROOT, 'src/ui/strings.js')).href);
 const TITLE = `${STRINGS.appName}: ${arch.strings.appFull}`;
 

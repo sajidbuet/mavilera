@@ -3,6 +3,7 @@
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 . "$PSScriptRoot\env.ps1"
 Need $env:PICO_SDK_PATH 'PICO_SDK_PATH'; Need $env:PICO_EXAMPLES_SRC 'PICO_EXAMPLES_SRC'; Need "$CCD\clang.exe" 'ccd stand-ins'
+NeedEpoch; HostTools; NeedTinyUsb   # P1-R4: build date, pioasm, hello_usb
 $cb = Join-Path $B 'check'
 cmake -G Ninja -S "$PF\check" -B $cb "-DCMAKE_TOOLCHAIN_FILE=$PF\cmake\pico_riscv_wasmclang.cmake" `
   -DCMAKE_BUILD_TYPE=Debug -DPICO_CLIB=picolibc "-DPICO_SDK_PATH=$env:PICO_SDK_PATH"

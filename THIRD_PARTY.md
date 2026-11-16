@@ -2,8 +2,21 @@
 
 Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 
-The shipped site contains no third-party code (spec §5.4). The components
-below are development dependencies only: they are installed by `npm install`
+## Shipped code
+
+The shipped site contained no third-party code (spec §5.4) until pico2 P1-F3, which vendors one library with the author's
+approval (research D20, ADR-0010 option A: "vendor picoflash `pkg/` (MIT, pinned, licence kept, THIRD_PARTY.md)"; P1-F3 Q11 A):
+
+| Component | Version | Licence | Where | Purpose | Approved |
+|---|---|---|---|---|---|
+| [picoflash](https://github.com/piersfinlayson/picoflash) `pkg/` (5 of its files), Copyright (c) 2025-2026 Piers Finlayson | 0.1.5, commit `9f647ee9c46a21f4d1efc2d272f19be6cd309d1d` (upstream HEAD re-checked 2026-11-15), unchanged | MIT (`src/arch/pico2/vendor/picoflash/LICENSE`) | `src/arch/pico2/vendor/picoflash/` (loaded only by Pico Full's Load to Pico, `src/arch/pico2/hw/transport.js`) | The PICOBOOT command layer over WebUSB (command packets, stalls, timeouts), behind MAVILERA's own validator, command allow-list and per-sector verify | Author, 2026-11-07 (research D20) |
+
+The files are byte-identical to the pinned commit (SHA-256 in `src/arch/pico2/vendor/picoflash/VENDOR.json`, checked by
+`test/layout.test.mjs`).
+
+## Development dependencies
+
+The components below are development dependencies only: they are installed by `npm install`
 into `node_modules/`, used by the tests and tools, and never copied into the
 site or the offline build. Each needs the author's approval before it is added.
 

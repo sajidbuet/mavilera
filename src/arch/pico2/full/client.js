@@ -55,8 +55,11 @@ export class FullCompiler {
     return this.ready;
   }
 
-  /** Builds `files` ([{name, text}]): {ok, elf, diagnostics, log, times, pch}. */
-  build(files) { return this.call('build', { files: files.map((f) => ({ name: f.name, text: f.text })) }); }
+  /** Builds `files` ([{name, text}]) with `options` {stdio: 'uart' | 'usb'} (P1-R4): {ok, elf, diagnostics, log, times, pch, set}. */
+  build(files, options = {}) { return this.call('build', { files: files.map((f) => ({ name: f.name, text: f.text })), options: { ...options } }); }
+
+  /** The SDK and C-library headers `files` include, as the build finds them: [{name, path, kind, text} | {name, path: null}]. */
+  headers(files, options = {}) { return this.call('headers', { files: files.map((f) => ({ name: f.name, text: f.text })), options: { ...options } }); }
 
   /** Removes the cached files (they download again on the next load). */
   async forget() { this.ready = null; return this.call('forget'); }

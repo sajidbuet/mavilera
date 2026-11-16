@@ -117,6 +117,35 @@ test('the C compiler (pico2 P1-F2, D33 Q5): set, cleared to the module default, 
   assert.throws(() => s.setCompiler('Not An Id'), (e) => e instanceof ProjectError);
 });
 
+test('project options (v13, pico2 P1-R4): set, cleared, kept in storage and through a .zip; malformed ones dropped', async () => {
+  const { optionValues, setOption, createProject, MAX_OPTIONS } = await import('../src/shell/project.js');
+  const store = persistentStore();
+  const s = session(store);
+  await s.start({ id: null, defaults: [{ name: 'main.c', text: 'int main(void){return 0;}\n' }] });
+  assert.ok(!('options' in s.project), 'none by default');
+  const OPTS = [{ id: 'stdio', label: 'Output', default: 'uart', values: [{ id: 'uart', label: 'UART' }, { id: 'usb', label: 'UART and USB' }] }];
+  assert.deepEqual(optionValues(s.project, OPTS), { stdio: 'uart' }, 'the default filled in');
+  s.setOption('stdio', 'usb');
+  assert.deepEqual(s.project.options, { stdio: 'usb' });
+  assert.deepEqual(optionValues(s.project, OPTS), { stdio: 'usb' });
+  await s.saveNow();
+  assert.deepEqual((await store.get(s.project.id)).options, { stdio: 'usb' });
+  const { bytes } = await s.exportZip();
+  await s.importZip(bytes, 'copy.zip');
+  assert.deepEqual(s.project.options, { stdio: 'usb' }, 'carried in the archive comment');
+  s.setOption('stdio', null);
+  assert.ok(!('options' in s.project), 'cleared: no field');
+  assert.throws(() => s.setOption('Bad Id', 'x'), (e) => e instanceof ProjectError);
+  assert.throws(() => s.setOption('stdio', 'UPPER'), (e) => e instanceof ProjectError);
+  assert.deepEqual(optionValues({ options: { stdio: 'radio' } }, OPTS), { stdio: 'uart' }, 'an unknown value: the default');
+  const p = createProject({ module: 'm', files: [{ name: 'a.c', text: '' }], options: { stdio: 'usb', 'bad key': 'x', n: 7, ok: 'Bad Value', list: ['a'] } });
+  assert.deepEqual(p.options, { stdio: 'usb' }, 'only well-formed entries are kept');
+  let q = createProject({ module: 'm', files: [{ name: 'a.c', text: '' }] });
+  for (let i = 0; i < MAX_OPTIONS; i++) q = setOption(q, `o${i}`, 'v');
+  assert.throws(() => setOption(q, 'another', 'v'), /more than 8 options/);
+  assert.equal(Object.keys(setOption(q, 'o0', 'w').options).length, MAX_OPTIONS, 'changing one of eight is allowed');
+});
+
 test('zip: an archive from another tool (no or a foreign comment): the name from the file name, main.* the entry', async () => {
   const { writeZip } = await import('../src/shell/zip.js');
   const files = [{ name: 'util.s', text: 'u: ret\n' }, { name: 'main.s', text: 'call u\n' }];

@@ -15,7 +15,7 @@ import { ProjectExplorer, ProjectsDialog } from './ui/project-explorer.js';
 import { DownloadDialog } from './ui/download-dialog.js';
 import { ProjectSession } from './shell/project-session.js';
 import { openProjectStore } from './shell/project-store.js';
-import { buildPlan, fileText, createProject } from './shell/project.js';
+import { buildPlan, fileText, createProject, optionValues } from './shell/project.js';
 import { ListingPanel, FieldsTable, dataTable, symbolTable } from './ui/listing.js';
 import { RegistersPanel, MemoryPanel, CountersPanel, ConsolePanel, CallStackPanel, OUTPUT_LIMIT } from './ui/state-panels.js';
 import { STOP, IMAGE_KINDS, capability, withVariant, variantOf, withEdition, activeEdition } from './arch/contract.js';
@@ -27,6 +27,8 @@ import { createShare, isShareFragment, LINK_LIMIT, normalisePlatform, defaultPla
 import { shareSchema, settingValue, projectExtensions } from './shell/share-schema.js';
 import { DataDialog } from './ui/data-dialog.js';
 import { ExamplesDialog } from './ui/examples-dialog.js';
+import { sampleTabs, langTabOf, langTabsOf } from './ui/sample-tabs.js';
+import { HeaderViewer } from './ui/header-viewer.js';
 import { HelpDialog } from './ui/help-dialog.js';
 import { ExerciseDialog } from './ui/exercise-dialog.js';
 import { recordFrames, vcd } from './shell/vcd.js';
@@ -75,7 +77,10 @@ const startProfile = [TOOL?.profile, store.get('pips.profile')].find((p) => p &&
 const preEditionAll = await withVariant(base, startProfile ? variantOf(base, startProfile) : null);
 // contract v10 (pico2 P1-M9, research D45 Q1): an edition marked `development` is offered on the development page only; a
 // release page and the offline file leave it out (pico2: Lite only until Pico Full's gates pass), and one edition left shows no switch
-const DEVELOPMENT_PAGE = location.protocol !== 'file:' && !document.querySelector('meta[name="risc-vista-edition"][content="release"]');
+// A beta release (1.7.0-beta.1, author 2026-11-15: Pico Full with board loading, to be tested) offers the development editions
+// too; its pages carry <meta name="mavilera-channel" content="beta"> (tools/release.mjs --beta). The offline file never does.
+const BETA_PAGE = Boolean(document.querySelector('meta[name="mavilera-channel"][content="beta"]'));
+const DEVELOPMENT_PAGE = location.protocol !== 'file:' && (BETA_PAGE || !document.querySelector('meta[name="risc-vista-edition"][content="release"]'));
 const preEdition = !DEVELOPMENT_PAGE && preEditionAll.editions?.some((e) => e.development)
   ? { ...preEditionAll, editions: preEditionAll.editions.filter((e) => !e.development) } : preEditionAll;
 // v10 draft (pico2 P1-L1, research D34): the edition this page opens in: `?edition=` in the address, else the one chosen
@@ -94,7 +99,9 @@ const variantLabel = (v) => (v ? base.variants[v].label : base.strings?.variantL
 /** The profiles of this page's variant, in menu order; the first is the default. */
 const OWN_PROFILES = arch.engine.profiles.filter((p) => (p.variant ?? null) === arch.activeVariant);
 mergeStrings(arch.strings); // the architecture's interface text over the shell's (phase 4)
-const VIEWS = toolViews(arch, TOOL); // the views this tool shows (the NPU tool: ISA, its single-cycle view, NPU)
+// the views this tool shows (the NPU tool: ISA, its single-cycle view, NPU); v14 View.capability (pico2's Hardware tab,
+// design pico2-hardware-tab.md §9): a view whose capability is off in this edition is not shown (a link naming it opens the first)
+const VIEWS = toolViews(arch, TOOL).filter((v) => !v.capability || arch.capabilities?.[v.capability] === true);
 // share links and settings files of this architecture (WS-F-122; what they may hold comes from the descriptor)
 const { encodeFragment, decodeFragment, settingsFile, readSettingsFile } = createShare(shareSchema(arch));
 const EXAMPLE = arch.language.defaultSource;
@@ -227,6 +234,9 @@ const XID = XL?.id ?? null;
 const C_LANGS = XL ? (arch.language.extraLanguages ?? []).filter((x) => x.extension === XL.extension) : [];
 const cCompiler = () => (EDITION?.compiler ? C_LANGS.find((x) => x.id === EDITION.compiler)
   : C_LANGS.find((x) => x.id === project()?.compiler) ?? C_LANGS[0]) ?? null;
+// v13 (pico2 P1-R4, research D58): the build options a project keeps for its image compiler (ExtraLanguage.projectOptions),
+// offered in the Project menu where the edition names that compiler (pico2 Full: Output, UART or UART and USB)
+const PROJECT_OPTIONS = (EDITION?.compiler ? C_LANGS.find((x) => x.id === EDITION.compiler)?.projectOptions : null) ?? [];
 let cc = null; // XL's compiler, loaded with its first use (XL.load, WS-N-011)
 let cMap = null; // source line of each line of the generated assembly (WS-F-082), or null
 const sourceKey = () => (lang === 'asm' ? 'pips.source' : `pips.source.${lang}`);
@@ -259,7 +269,7 @@ const langOfFile = (name) => (XL && name.toLowerCase().endsWith(XL.extension) ? 
 // projects: one editor per open file behind tabs (src/ui/editor-stack.js), the same interface for the rest of the shell
 const editor = PROJECTS ? new EditorStack({
   language: arch.language,
-  onChange: (name, text) => { dirty = true; try { proj.setText(name, text); } catch { /* not a file of the project */ } editorStatus(); saveSoon(); },
+  onChange: (name, text) => { dirty = true; try { proj.setText(name, text); } catch { /* not a file of the project */ } editorStatus(); saveSoon(); scheduleHeaders(); },
   onCursorLine: () => { editorStatus(); saveSoon(); },
   onHoverLine: (line) => linkFromC(line),
   onGutterClick: (line, name) => toggleBreakLine(line, name),
@@ -456,7 +466,7 @@ const platformView = !CAP.devices.enabled ? null : new PlatformView({
 const periph = platformView ? new PeripheralsView(platformView) : { root: el('div'), update: () => {} }; // the disabled tab's pane
 // the architecture's own panels (contract v8; SAP-2: the ports), tabs of the memory pane after the shell's; their
 // inputs go to the engine, the Worker or the view in use (giveInput)
-const archPanels = await Promise.all((arch.panels ?? []).map(async (p) => ({ p, inst: (await p.load()).create({ strings: STRINGS,
+const archPanels = await Promise.all((arch.panels ?? []).filter((p) => !p.capability || CAP[p.capability]?.enabled).map(async (p) => ({ p, inst: (await p.load()).create({ strings: STRINGS,
   input: (x) => giveInput(x), message: (text, kind) => consolePanel.message(text, kind),
   // v10 draft (pico2 P1-M4): the Pins panel's Replay and Forget
   command: (c) => (c === 'replay' ? replayInputs() : c === 'forget' ? forgetInputs() : undefined),
@@ -627,18 +637,36 @@ function syncSound() {
   soundBtn.setAttribute('aria-pressed', String(soundOn));
 }
 syncSound();
+/**
+ * A real-time run's link to the sound, made again while it runs (2026-11-15: before, Sound turned off and on during a run
+ * stayed silent until the next run, and off could stall machine time paced by a sink no longer playing). With Sound on: a new
+ * link to the AudioWorklet, given to the Worker; off: none (the Worker paces by the wall clock and drops the frames).
+ */
+function relinkAudio() {
+  if (!AUDIO || !(running && rt && workerRun)) return;
+  const link = soundOn && audioHost.on && rt.engine?.drainAudio ? audioHost.connect({ shared: arch.realtime?.transports?.includes('sab') }) : null;
+  try {
+    getWorker().postMessage({ type: 'audio', audio: link ? { port: link.port ?? null, sab: link.sab ?? null, rate: arch.audio.sampleRate } : null }, link?.port ? [link.port] : []);
+  } catch { audioHost.disconnect(); return; }
+  rt.audio = Boolean(link);
+  if (link) runStatus.dataset.audio = link.transport; else delete runStatus.dataset.audio;
+}
 async function toggleSound() {
   if (!soundOn) {
     if (!(await audioHost.enable())) { consolePanel.message(STRINGS.audio.unavailable, 'error'); return; }
     soundOn = true;
-  } else { soundOn = false; await audioHost.disable(); }
+    relinkAudio(); // a run under way plays from now
+  } else { soundOn = false; relinkAudio(); await audioHost.disable(); }
   store.set(SOUND_KEY, soundOn ? 'on' : 'off');
   syncSound();
-  if (running && rt) consolePanel.message(STRINGS.audio.nextRun);
 }
-// remembered sound wakes at the first click or key on the page (the browser's rule for starting audio)
+// remembered sound wakes at the first click or key on the page (the browser's rule for starting audio); a run already going
+// (started before that click) is linked then
 if (soundOn) {
-  const wake = () => { audioHost.enable(); document.removeEventListener('pointerdown', wake, true); document.removeEventListener('keydown', wake, true); };
+  const wake = () => {
+    audioHost.enable().then((ok) => { if (ok && soundOn && rt && !rt.audio) relinkAudio(); });
+    document.removeEventListener('pointerdown', wake, true); document.removeEventListener('keydown', wake, true);
+  };
   document.addEventListener('pointerdown', wake, true); document.addEventListener('keydown', wake, true);
 }
 // v10 draft (pico2 Lite, P1-L1, research D34 Q4): an edition with `primary` has one state-aware button (Build, Run, Pause,
@@ -653,6 +681,27 @@ const imageKinds = () => arch.language.imageKinds ?? IMAGE_KINDS.slice(0, 2);
 const pickImages = !(EDITION && !CAP.imageImport.enabled);
 const fileInput = el('input', { type: 'file', accept: ['.s,.asm,.S,.c', ...(PROJECTS ? ['.h', '.zip', ...(arch.language.extraExtensions ?? [])] : []), ...(COMP ? [COMP.extension] : []), ...(pickImages ? imageKinds().map((k) => `.${k}`) : []), '.json'].join(','), hidden: true, onchange: (e) => { openFile(e.target.files[0]); e.target.value = ''; } });
 const assembleBtn = gate(tool('build', TL.build, () => doAssemble({ user: true }), { key: 'Control+Enter', cls: '.tool-build' }), CAP.assembler);
+// v13 (capability hardware; pico2 P1-F3, research D58 Q10 A): Load to Pico after Build and Run. The module's hardware part is
+// loaded now, so that the click reaches the browser's device chooser at once (its user activation lasts about 5 s); without WebUSB
+// the button is Download .uf2 (design §2.4). Where the capability is off (pico2 Lite, Q12 A) there is no button at all.
+const HW_PART = CAP.hardware?.enabled && arch.hardware ? await arch.hardware.load().catch(() => null) : null;
+const hw = HW_PART ? HW_PART.create({ strings: STRINGS, message: (text, kind) => consolePanel.message(text, kind),
+  project: () => (PROJECTS && project() ? { id: project().id, name: project().name } : null), program: () => session.program ?? null,
+  build: () => hardwareBuild(), image: () => (session.imported ? { kind: session.imported.kind, bytes: session.imported.content, name: session.imported.name } : null),
+  download: (name, bytes, type) => download(name, bytes, type) }) : null;
+// pico2 Hardware tab (design pico2-hardware-tab.md §8, author 2026-11-15): the button opens the module's hardware view (a view
+// whose instance offers `hardware`) and starts the load in the same click, since the device chooser needs the click's activation;
+// the view shows the shared session's state when it is drawn
+const HW_VIEW = VIEWS.find((v) => v.capability === 'hardware')?.id ?? null;
+const hwView = () => (HW_VIEW ? inst[HW_VIEW]?.hardware ?? null : null);
+const hwUsb = Boolean(hw?.caps?.webusb && hw.caps.secure);
+const loadBtn = hw ? tool(hwUsb ? 'board' : 'download', hwUsb ? hw.label : STRINGS.hw?.download ?? hw.label, () => {
+  const v = hwView();
+  if (HW_VIEW) setMode(HW_VIEW);
+  if (!hwUsb) { consolePanel.message(STRINGS.hw?.noWebUsb ?? '', 'warn'); if (v) v.download(); else hw.download?.(); return; }
+  if (v) v.load(); else hw.load(); // at once, inside the click (the chooser comes first)
+}, { cls: '.tool-load' }) : null;
+if (loadBtn && hw.title) loadBtn.title = hwUsb ? hw.title : STRINGS.hw?.downloadTitle ?? hw.title;
 
 /** The primary button's action now (Lite): from the run, the text's changes and the program's state. */
 function primaryNow() {
@@ -824,13 +873,40 @@ async function openTemplate(t) {
     ...Object.fromEntries(SETTINGS.map((v) => [v.settings.key, t[v.settings.key] ?? null])), mem: t.mem ? readConfig(t.mem) : null },
     STRINGS.templates.opened(t.title));
 }
-/** The templates as menu items: a heading per group, a button per template. */
-function templateItems(ix, make) {
+/** Whether a template's language belongs to this edition: pico2 Full lists assembly and its compiler's (Pico SDK C), not
+ * MAVILERA C (P1-L1); Lite lists assembly and its languages, not Pico SDK C (sample projects of 2026-11-15); a module without
+ * editions lists all. */
+const templateLangOk = (t) => !EDITION || !t.lang || t.lang === 'asm'
+  || (EDITION.compiler ? t.lang === EDITION.compiler : (EDITION.languages ?? []).includes(t.lang));
+/** The templates this page lists: a tool's own on its page only (CPU + GPU), in this edition's languages. */
+const listedTemplates = (ix) => ix.templates.filter((t) => (!t.tool || t.tool === TOOL?.id) && templateLangOk(t));
+// the language tabs of the list (author, 2026-11-15): C (any of the module's C compilers), Assembly, later MicroPython; shown
+// only where the list has more than one (src/ui/sample-tabs.js)
+const C_IDS = ['c', ...C_LANGS.map((x) => x.id)];
+const templateTabs = (ix) => langTabsOf(listedTemplates(ix), C_IDS);
+/** The tab to open on: the one chosen last, else the editor's language, else the first. */
+function templateTabStart(tabs) {
+  const kept = store.get('pips.sampleTab');
+  if (tabs.includes(kept)) return kept;
+  const now = lang === XID ? 'c' : 'asm';
+  return tabs.includes(now) ? now : tabs[0];
+}
+/** The templates as menu items: a heading per group, a button per template; `tab`: only that language family's. */
+function templateItems(ix, make, tab = null) {
+  const shown = listedTemplates(ix).filter((t) => !tab || langTabOf(t, C_IDS) === tab);
   return Object.entries(ix.groups).flatMap(([g, title]) => {
-    const items = ix.templates.filter((t) => t.group === g && (!t.tool || t.tool === TOOL?.id) // a tool's own templates on its page only (CPU + GPU)
-      && (!EDITION?.compiler || !t.lang || t.lang === 'asm' || t.lang === EDITION.compiler)); // pico2 Full: no MAVILERA C templates (P1-L1)
+    const items = shown.filter((t) => t.group === g);
     return items.length ? [el('p.menu-head', { text: title }), ...items.map(make)] : [];
   });
+}
+/** The list with its language tabs where it needs them: {nodes, tabs}. `wrap(nodes)` places a tab's items (the dialog's list). */
+function templateList(ix, make, wrap = (n) => n) {
+  const tabs = templateTabs(ix);
+  if (!tabs.length) return wrap(templateItems(ix, make));
+  const T = STRINGS.templates;
+  const t = sampleTabs({ tabs, labels: T.tabs, label: T.tabsLabel, selected: templateTabStart(tabs),
+    fill: (k) => wrap(templateItems(ix, make, k)), onSelect: (k) => store.set('pips.sampleTab', k) });
+  return [t.root];
 }
 const templatesMenu = dropMenu(
   el('summary.tool', { title: STRINGS.templates.menuTitle }, icon('code'), el('span.tool-label', { text: STRINGS.templates.menu })),
@@ -839,7 +915,7 @@ const templatesMenu = dropMenu(
     if (list.dataset.filled) return;
     try {
       const ix = await loadTemplates();
-      list.replaceChildren(...templateItems(ix, (t) => el('button', { type: 'button', text: t.title, onclick: () => openTemplate(t) })),
+      list.replaceChildren(...templateList(ix, (t) => el('button', { type: 'button', text: t.title, onclick: () => openTemplate(t) })),
         el('hr.menu-sep'), el('button', { type: 'button', text: STRINGS.templates.more, onclick: () => examplesDialog.open() }));
       list.dataset.filled = '1';
     } catch (e) {
@@ -920,7 +996,7 @@ const flyTitles = () => {
 };
 for (const f of [speedFly, archFly]) for (const ev of ['pointerenter', 'focus']) f.querySelector('summary').addEventListener(ev, flyTitles);
 const toolbar = el('div.toolbar', { role: 'toolbar', 'aria-label': TL.group },
-  group('.tb-run', assembleBtn, runBtn), // Lite too (the author, 2026-11-11): Build beside the state-aware Run
+  group('.tb-run', assembleBtn, runBtn, loadBtn), // Lite too (the author, 2026-11-11): Build beside the state-aware Run; P1-F3: Load (Full)
   group('.tb-step', stepBackBtn, stepBtn, lineBackBtn, lineStepBtn, stepOverBtn, stepOutBtn, runToCursorBtn, resetBtn),
   group('.tb-speed', speedField, soundBtn, archCtx, speedFly, archFly),
   runStatus,
@@ -934,7 +1010,8 @@ function dropMenu(summary, items, { onOpen = null, cls = '' } = {}) {
   const list = el('div.menu-list', { role: 'group' }, items);
   const menu = el(`details.menu${cls}`, {}, summary, list);
   menu.addEventListener('toggle', () => { if (menu.open) onOpen?.(list); });
-  menu.addEventListener('click', (e) => { if (e.target.closest('.menu-list button')) menu.open = false; });
+  // a choice closes the menu; a tab (the Sample projects' language tabs) only switches the list
+  menu.addEventListener('click', (e) => { const b = e.target.closest('.menu-list button'); if (b && b.getAttribute('role') !== 'tab') menu.open = false; });
   // Escape closes the innermost open menu only (a menu can sit in a More menu)
   menu.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.open) { e.stopPropagation(); menu.open = false; menu.querySelector('summary').focus(); } });
   document.addEventListener('click', (e) => { if (!menu.contains(e.target)) menu.open = false; });
@@ -958,7 +1035,7 @@ function moreMenu(label, title, groups) {
 const header = document.querySelector('.app-header');
 // View ▸ Theme (author, 2026-11-10; it was a header button cycling system, dark, light): as the system ('', no
 // data-theme), or one of the token sets of theme.css. The choice is the platform's (pips.theme), kept for every module.
-const THEMES = ['', 'light', 'dark', 'dim', 'black', 'sepia', 'hc-light', 'hc-dark'];
+const THEMES = ['', 'light', 'dark', 'dim', 'black', 'sepia', 'green', 'buet', 'hc-light', 'hc-dark']; // green, BUET: author, 2026-11-15
 function setTheme(t) {
   if (!THEMES.includes(t)) t = '';
   if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
@@ -1261,7 +1338,9 @@ const editionSwitch = arch.editions?.length > 1 ? el('div.edition-switch', { rol
   })) : null;
 header.replaceChildren(
   el('div.brand', {}, header.querySelector('.app-logo') ?? el('span.app-logo', { 'aria-hidden': 'true' }),
-    el('div.brand-text', {}, header.querySelector('.app-title'), el('span.app-subtitle', { text: STRINGS.appFull }))),
+    el('div.brand-text', {}, header.querySelector('.app-title'), el('span.app-subtitle', { text: STRINGS.appFull })),
+    // a beta release says so beside the name (1.7.0-beta.1, author 2026-11-15)
+    BETA_PAGE ? el('span.beta-badge', { text: STRINGS.beta.badge, title: STRINGS.beta.title(document.querySelector('meta[name="risc-vista-version"]')?.content ?? '') }) : null),
   ...(editionSwitch ? [editionSwitch] : []),
   focusCrumb,
   viewTabs,
@@ -1287,7 +1366,7 @@ toolbarFit = overflowBar({ bar: toolbar, more: toolbarMore.menu, sections: toolb
   { cls: 'tb-compact' },
   { node: runToCursorBtn, group: 'simulation' }, { node: memBtn, group: 'program' }, { node: templatesMenu, group: 'program' },
   { node: archCtx, group: 'processor' }, { node: speedField, group: 'simulation' },
-  { node: exerciseBtn, group: 'program' }, { node: fileMenuBox, group: 'program' },
+  { node: exerciseBtn, group: 'program' }, ...(loadBtn ? [{ node: loadBtn, group: 'program' }] : []), { node: fileMenuBox, group: 'program' },
   { node: resetBtn, group: 'simulation' }, { node: stepOutBtn, group: 'simulation' }, { node: stepOverBtn, group: 'simulation' },
   { node: lineBackBtn, group: 'simulation' }, { node: stepBackBtn, group: 'simulation' }, { node: lineStepBtn, group: 'simulation' },
   { cls: 'tb-mini' }] });
@@ -1356,7 +1435,7 @@ document.body.append(dataDialog.root);
 // the example library (WS-F-123): an example opens like a shared program, in the view of its processor
 // the view that runs an example's profile: the first view of that profile that is not the comparison (the ISA view: the first profile)
 const viewForProfile = (profile) => VIEWS.find((v) => !isCmp(v.id) && (v.profile ?? OWN_PROFILES[0].id) === profile)?.id ?? VIEWS[0].id;
-const examplesDialog = new ExamplesDialog({ index: contentUrl('examples'), templates: () => loadTemplates(), onTemplate: (t) => openTemplate(t), templateItems, onOpen: async (x, text) => {
+const examplesDialog = new ExamplesDialog({ index: contentUrl('examples'), templates: () => loadTemplates(), onTemplate: (t) => openTemplate(t), templateList, onOpen: async (x, text) => {
   let source = text;
   if (x.gcc) { const imps = await arch.language.importers(); source = (imps.find((i) => i.test(text)) ?? imps[0]).convert(text, x.file).text; }
   await applyShared({ view: viewForProfile(x.profile), profile: x.profile === OWN_PROFILES[0].id ? x.profile : isaProfile,
@@ -1557,7 +1636,14 @@ const explorer = PROJECTS ? new ProjectExplorer({
     doAssemble(); // an image language not yet downloaded only says that Build will offer it
     consolePanel.message(STRINGS.projects.compilerSet(cCompiler().label), 'ok');
   },
-}, projectExtensions(arch), EDITION?.compiler ? [] : C_LANGS.map((x) => ({ id: x.id, label: x.label }))) : null; // no choice where the edition names the compiler (D34 Q6)
+  onRendered: () => scheduleHeaders(), // v14: the read-only headers follow the project's files
+  onOption: (id, value) => { // v13 (pico2 P1-R4, research D58): a build option of the project (the compiler's projectOptions)
+    const o = PROJECT_OPTIONS.find((x) => x.id === id);
+    proj.setOption(id, value === o?.default ? null : value);
+    explorer.render(project(), editor.active, proj.status);
+    if (o?.changed) consolePanel.message(o.changed(value), 'ok');
+  },
+}, projectExtensions(arch), EDITION?.compiler ? [] : C_LANGS.map((x) => ({ id: x.id, label: x.label })), PROJECT_OPTIONS) : null; // no choice where the edition names the compiler (D34 Q6)
 const projectsDialog = PROJECTS ? new ProjectsDialog({
   list: () => proj.list(),
   onOpen: (id) => proj.openProject(id).catch((e) => consolePanel.message(STRINGS.projects.refused(e.message), 'error')),
@@ -2383,6 +2469,29 @@ function doCompile() {
 // optional download: asked for only when the student builds (Build, Ctrl+Enter, Run), never at page load.
 const imageBuild = { busy: false, langs: new Map(), dialog: null };
 
+// contract v14 (pico2 Full, 2026-11-15): the headers the project includes from outside it (the Pico SDK, the C library),
+// read-only under the explorer's files; asked of the image language's loaded part (null until its compiler is loaded: nothing
+// is downloaded for this), a short while after the files change, and after each build
+let headersTimer = 0, headersSeq = 0, headerViewer = null;
+function scheduleHeaders() {
+  if (!PROJECTS || !explorer) return;
+  clearTimeout(headersTimer);
+  headersTimer = setTimeout(() => { refreshHeaders(); }, 500);
+}
+async function refreshHeaders() {
+  const x = cCompiler();
+  if (!explorer || !x?.image || !x.headersText) { explorer?.renderHeaders(null); return; }
+  const files = project().files;
+  if (!files.some((f) => /\.(c|h|S)$/.test(f.name))) { explorer.renderHeaders(null); return; }
+  const seq = ++headersSeq;
+  const b = imageBuild.langs.get(x.id);
+  let list = null;
+  try { list = b?.headers ? await b.headers(files, optionValues(project(), x.projectOptions ?? [])) : null; } catch { list = null; }
+  if (seq !== headersSeq) return; // a newer request is under way
+  const L = x.headersText;
+  explorer.renderHeaders({ L, list, onOpen: (h) => (headerViewer ??= new HeaderViewer()).open(h, L, L.kinds[h.kind] ?? h.kind) });
+}
+
 /** Whether the open project has a file of the C compilers' extension (else its assembly is assembled as before). */
 const usesImageLanguage = () => project().files.some((f) => f.name.toLowerCase().endsWith(XL.extension));
 
@@ -2425,6 +2534,7 @@ async function imageBuildRun(x, user) {
   if (imageBuild.busy) { if (user) imageBuild.again = true; return; } // a Build pressed meanwhile runs after this one
   imageBuild.busy = true;
   const D = STRINGS.download;
+  const key = imageKey(x); // the sources and options this build is of (P1-F3: Load builds again only when they changed)
   try {
     cancelRun();
     if (lang === XID) { lang = 'asm'; cMap = null; renderAsm(null); editor.setLinked([]); syncLangControls(); } // rows carry C lines
@@ -2440,7 +2550,7 @@ async function imageBuildRun(x, user) {
     const t0 = performance.now();
     consolePanel.clearMessages();
     consolePanel.message(D.building(x.label));
-    const r = await b.build(project().files);
+    const r = await b.build(project().files, optionValues(project(), x.projectOptions ?? [])); // v13: the project's build options
     consolePanel.clearMessages();
     editor.setErrorsByFile(r.diagnostics.filter((d) => d.file), project().entry);
     for (const d of r.diagnostics) consolePanel.message(d.message, d.severity === 'warning' ? 'warn' : 'error', d.file ? { file: d.file, line: d.line, column: d.column } : null);
@@ -2451,13 +2561,34 @@ async function imageBuildRun(x, user) {
       return;
     }
     try { loadBuiltImage(r.image.bytes); } catch (e) { consolePanel.message(`${e.message}`, 'error'); imageBuildFailed(); return; }
+    imageBuild.builtKey = key;
     const image = session.program.segments.reduce((n, s) => n + s.bytes.length, 0); // what goes onto the chip, not the ELF
-    consolePanel.message(D.built(x.label, (image / 1024).toFixed(1), Math.round(performance.now() - t0)), 'ok');
+    consolePanel.message(D.built(x.label, (image / 1024).toFixed(1), Math.round(performance.now() - t0)) + (r.note ? ` (${r.note})` : ''), 'ok');
     flushNotes();
   } finally {
     imageBuild.busy = false;
+    scheduleHeaders(); // v14: the compiler is loaded now, so the read-only headers can be listed
     if (imageBuild.again) { imageBuild.again = false; imageBuildRun(cCompiler(), true); }
   }
+}
+
+/** The key of what an image build is built from: the compiler, the project's files and its build options. */
+function imageKey(x) {
+  const p = project();
+  return textHash(`${x?.id}|${JSON.stringify(p?.files ?? [])}|${JSON.stringify(optionValues(p, x?.projectOptions ?? []))}`);
+}
+
+/**
+ * v13 (pico2 P1-F3, research D58 Q4 A; HardwareContext.build): the program to load onto a board. A project built by an image
+ * language is built again only when its sources or options changed since the last build; any other program (an imported image,
+ * a MAVILERA program) is the one loaded now.
+ */
+async function hardwareBuild() {
+  const x = PROJECTS ? cCompiler() : null;
+  if (!(x?.image && usesImageLanguage())) return session.program ?? null;
+  while (imageBuild.busy) await new Promise((r) => setTimeout(r, 50));
+  if (!(session.imported?.built && imageBuild.builtKey === imageKey(x) && session.program)) await imageBuildRun(x, true);
+  return session.imported?.built && imageBuild.builtKey === imageKey(x) ? session.program : null;
 }
 
 /** Save the built image (P1-F2) in a format of the image language: {extension, convert(bytes) -> bytes | Promise}. */
@@ -2848,7 +2979,7 @@ function startRealtime(opts) {
   } catch { audioHost?.disconnect(); return false; }
   if (link) runStatus.dataset.audio = link.transport; // for the smoke test
   const out = Array.from(shown.output ?? '', (c) => c.charCodeAt(0));
-  rt = { engine: eng, ring: sab ? new LiveRing(sab) : null, out, dropped: (shown.outputDropped ?? 0), raf: 0, fraction: null, last: null };
+  rt = { engine: eng, ring: sab ? new LiveRing(sab) : null, out, dropped: (shown.outputDropped ?? 0), raf: 0, fraction: null, last: null, audio: Boolean(link) };
   workerRun = true;
   workerInputs = [];
   runStatus.textContent = STRINGS.realtime.starting;
@@ -3279,9 +3410,11 @@ async function applyShared(st, message) {
 /** Projects: the file name of a single shared program: its own if a project may hold it, else main + the language's extension. */
 function singleName(st) {
   const exts = projectExtensions(arch);
+  // a C program in any of the module's C languages (pico2: MAVILERA C `c`, or Pico SDK C `sdk-c` for Full's sample projects)
+  const isC = st.lang === XID || C_LANGS.some((x) => x.id === st.lang);
   const ok = st.name && /^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$/.test(st.name) && exts.includes(st.name.slice(st.name.lastIndexOf('.')).toLowerCase());
-  if (ok && (st.lang === XID) === (langOfFile(st.name) === XID)) return st.name;
-  return `main${st.lang === XID ? XL.extension : arch.language.extension}`;
+  if (ok && isC === (langOfFile(st.name) === XID)) return st.name;
+  return `main${isC ? XL.extension : arch.language.extension}`;
 }
 
 /** A link opened in this page (at start or pasted into the address bar). */

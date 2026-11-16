@@ -135,13 +135,31 @@
   --tok-mnemonic: #00544a; --tok-register: #0034a0; --tok-immediate: #763b00; --tok-label: #66007a; --tok-comment: #3b3b3b; --tok-string: #763b00;
 }
 
+/* Green (author, 2026-11-15): the light theme with a forest-green interface; the drawings keep the book's palette */
+:root[data-theme="green"] {
+  --primary: #1f6f43; --primary-hover: #258553; --primary-soft: #e2f2e8; --primary-on: #ffffff;
+  --app-bg: #edf4ef; --surface: #ffffff; --surface-2: #f5faf6; --surface-3: #e5efe8; --border: #d0e1d5; --border-strong: #a8c5b1;
+  --ui-text: #12351f; --ui-text-2: #4f6a58; --code-bg: #fbfdfb; --shadow-pop: 0 8px 24px rgba(18, 53, 31, 0.14);
+}
+/* BUET (author, 2026-11-15): the light theme in BUET maroon, #AC1F24; warm off-white surfaces; the drawings keep the
+   book's palette. Errors stay a distinct, more orange red, and are always worded, never shown by colour alone */
+:root[data-theme="buet"] {
+  --primary: #ac1f24; --primary-hover: #c2272d; --primary-soft: #fae6e6; --primary-on: #ffffff;
+  --app-bg: #f6efef; --surface: #ffffff; --surface-2: #fcf7f7; --surface-3: #f2e6e6; --border: #e6d3d3; --border-strong: #ccabab;
+  --ui-text: #3d1013; --ui-text-2: #6e4b4d; --ui-error: #b8410e; --code-bg: #fffcfc; --shadow-pop: 0 8px 24px rgba(61, 16, 19, 0.14);
+}
+
 /* the MAVILERA logo (content/branding/mavilera/*.svg, from logo/ by tools/make-mavilera-brand.mjs) takes its
    colours from these tokens, so it follows the theme when inlined; the files carry the same values as fallbacks.
-   Only the navy changes: light in the dark themes, black in high contrast light. */
+   The navy is light in the dark themes and black in high contrast light; a theme whose interface is not blue (sepia,
+   green, BUET; author, 2026-11-15) recolours the whole logo: its dark ink, its accent and the pale tint. */
 :root { --mv-navy: #0b2a55; --mv-blue: #5b9bd5; --mv-pale: #c8e1f4; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme]) { --mv-navy: #f2f5fa; } }
 :root[data-theme="dark"], :root[data-theme="dim"], :root[data-theme="black"], :root[data-theme="hc-dark"] { --mv-navy: #f2f5fa; }
 :root[data-theme="hc-light"] { --mv-navy: #000000; }
+:root[data-theme="sepia"] { --mv-navy: #3a2d1c; --mv-blue: #b8732e; --mv-pale: #f0dcbf; }
+:root[data-theme="green"] { --mv-navy: #12351f; --mv-blue: #3fa66a; --mv-pale: #cdeed9; }
+:root[data-theme="buet"] { --mv-navy: #4a0f13; --mv-blue: #ac1f24; --mv-pale: #f3c9ca; }
 
 /* --- base -------------------------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -1968,3 +1986,122 @@ table.listing.an-table td, table.listing.an-table th { padding-right: 1.2rem; }
   .p-editor .panel-head-tools label { min-width: 0; flex: 0 1 auto; }
   .p-editor .panel-head-tools select { max-width: 4.6rem; min-width: 3.2rem; }
 }
+
+/* pico2's Hardware tab (design docs/architecture/pico2-hardware-tab.md; refined 2026-11-15 at the author's request: cards with
+   icons, one main action each, long texts behind "?" buttons, a progress bar with the load's steps, a dark terminal). Two
+   columns, stacked where the pane is narrow */
+.hw-view { container-type: inline-size; display: flex; flex-direction: column; gap: 0.75rem; height: 100%; min-height: 0; overflow: auto; padding: 0.75rem; font-size: 0.86rem; background: var(--surface-2); }
+.hw-cols { display: grid; grid-template-columns: minmax(0, 44fr) minmax(0, 56fr); gap: 0.75rem; flex: 1 0 auto; align-items: start; }
+@container (max-width: 560px) { .hw-cols { grid-template-columns: minmax(0, 1fr); } }
+.hw-left, .hw-right, .hw-panel { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+.hw-right { align-self: stretch; }
+.hw-card { display: flex; flex-direction: column; gap: 0.55rem; padding: 0.75rem 0.9rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05), 0 2px 8px rgb(0 0 0 / 0.04); }
+.hw-card-head { display: flex; align-items: center; gap: 0.5rem; }
+.hw-card-head h3 { margin: 0; font-size: 0.95rem; font-weight: 650; letter-spacing: 0; text-transform: none; color: var(--ui-text); flex: 1 1 auto; }
+.hw-card-icon { display: inline-grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 9px; background: var(--primary-soft); color: var(--primary); flex: none; }
+.hw-card .info-q { width: 1.5rem; height: 1.5rem; border-radius: 50%; font-weight: 700; }
+.hw-card p { margin: 0; }
+.hw-status { display: flex; align-items: center; gap: 0.45rem; font-weight: 600; }
+.hw-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--muted); flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--muted) 18%, transparent); }
+.hw-dot[data-mode="on"] { background: var(--ui-success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-success) 22%, transparent); }
+.hw-dot[data-mode="wait"] { background: var(--ui-warning); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-warning) 22%, transparent); }
+.hw-hint { color: var(--ui-text-2); font-size: 0.82rem; }
+.hw-summary { color: var(--ui-text-2); }
+.hw-acts { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+.hw-acts-gap { flex: 1 1 auto; }
+.hw-btn { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2.1rem; padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ui-text); font: inherit; font-weight: 600; cursor: pointer; }
+.hw-btn:hover:not(:disabled) { background: var(--surface-2); }
+.hw-btn.hw-primary { background: var(--primary); border-color: var(--primary); color: var(--primary-on); padding-inline: 1rem; }
+.hw-btn.hw-primary:hover:not(:disabled) { background: var(--primary-hover); }
+.hw-btn:disabled, .hw-ibtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.hw-ibtn { display: inline-grid; place-items: center; width: 1.95rem; height: 1.95rem; padding: 0; border-radius: 50%; border: 1px solid transparent; background: transparent; color: var(--ui-text-2); cursor: pointer; }
+.hw-ibtn:hover:not(:disabled) { background: var(--surface-2); color: var(--ui-text); border-color: var(--border); }
+.hw-btn:focus-visible, .hw-ibtn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.hw-toggle, .hw-chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem; border: 1px solid var(--border); border-radius: 999px; font-size: 0.8rem; color: var(--ui-text-2); cursor: pointer; user-select: none; }
+.hw-toggle input, .hw-chip input { margin: 0; accent-color: var(--primary); }
+.hw-toggle:has(input:checked), .hw-chip:has(input:checked) { border-color: var(--primary); color: var(--ui-text); background: var(--primary-soft); }
+.hw-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr)); gap: 0.4rem; margin: 0; }
+.hw-fact { padding: 0.35rem 0.55rem; background: var(--surface-2); border-radius: 8px; min-width: 0; }
+.hw-facts dt { color: var(--ui-text-2); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hw-facts dd { margin: 0.1rem 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-code); font-size: 0.8rem; font-weight: 600; }
+.hw-badge { align-self: flex-start; padding: 0.2rem 0.65rem; border-radius: 999px; background: var(--surface-2); color: var(--ui-text-2); font-size: 0.8rem; }
+.hw-badge[data-state="same"] { background: color-mix(in srgb, var(--ui-success) 14%, var(--surface)); color: var(--ui-text); }
+.hw-badge[data-state="other"], .hw-badge[data-state="foreign"] { background: color-mix(in srgb, var(--ui-warning) 16%, var(--surface)); color: var(--ui-text); }
+.hw-fallback { padding: 0.45rem 0.7rem; border-radius: 9px; background: color-mix(in srgb, var(--ui-warning) 14%, var(--surface)); font-size: 0.82rem; }
+/* the load's progress: steps, a line of text, the bar */
+.hw-progress { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.6rem 0.7rem; background: var(--surface-2); border-radius: 10px; }
+.hw-steps { display: flex; margin: 0; padding: 0; list-style: none; gap: 0; }
+.hw-steps li { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; position: relative; font-size: 0.72rem; color: var(--ui-text-2); }
+.hw-steps li + li::before { content: ''; position: absolute; top: 0.35rem; right: 50%; width: 100%; height: 2px; background: var(--border-strong); z-index: 0; }
+.hw-steps li[data-state="done"] + li::before, .hw-steps li[data-state="done"] + li[data-state]::before { background: var(--primary); }
+.hw-step-dot { position: relative; z-index: 1; width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--border-strong); }
+.hw-steps li[data-state="done"] .hw-step-dot { background: var(--primary); border-color: var(--primary); }
+.hw-steps li[data-state="now"] .hw-step-dot { border-color: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 25%, transparent); animation: hw-pulse 1.2s ease-in-out infinite; }
+.hw-steps li[data-state="now"], .hw-steps li[data-state="done"] { color: var(--ui-text); }
+.hw-prog-line { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.82rem; }
+.hw-state { font-weight: 600; min-width: 0; }
+.hw-bar-text { color: var(--ui-text-2); font-variant-numeric: tabular-nums; white-space: nowrap; flex: none; }
+progress.hw-bar { appearance: none; -webkit-appearance: none; width: 100%; height: 0.55rem; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--border-strong) 60%, transparent); overflow: hidden; color: var(--primary); }
+progress.hw-bar::-webkit-progress-bar { background: transparent; }
+progress.hw-bar::-webkit-progress-value { background: var(--primary); border-radius: 999px; transition: width 0.25s ease; }
+progress.hw-bar::-moz-progress-bar { background: var(--primary); border-radius: 999px; }
+progress.hw-bar:indeterminate { background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--primary) 55%, transparent) 0 10px, color-mix(in srgb, var(--primary) 25%, transparent) 10px 20px); background-size: 28px 28px; animation: hw-stripes 0.8s linear infinite; }
+progress.hw-bar:indeterminate::-moz-progress-bar { background: transparent; }
+.hw-progress[data-phase="failed"] progress.hw-bar::-webkit-progress-value, .hw-progress[data-phase="cancelled"] progress.hw-bar::-webkit-progress-value { background: var(--ui-error); }
+@keyframes hw-stripes { to { background-position: 28px 0; } }
+@keyframes hw-pulse { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--primary) 10%, transparent); } }
+@media (prefers-reduced-motion: reduce) { progress.hw-bar:indeterminate, .hw-steps li[data-state="now"] .hw-step-dot { animation: none; } progress.hw-bar::-webkit-progress-value { transition: none; } }
+.hw-error { padding: 0.5rem 0.7rem; border-radius: 9px; background: color-mix(in srgb, var(--ui-error) 12%, var(--surface)); border-left: 3px solid var(--ui-error); }
+.hw-error p:first-child { font-weight: 600; }
+.hw-error p + p { margin-top: 0.2rem; color: var(--ui-text-2); }
+/* the UART monitor: a dark terminal */
+.hw-right .sp-panel { flex: 1 1 auto; min-height: 22rem; }
+.sp-field { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; color: var(--ui-text-2); }
+.sp-field select { min-height: 1.9rem; border-radius: 8px; }
+.sp-log { flex: 1 1 auto; min-height: 12rem; overflow: auto; background: #0f1722; color: #d7e3f4; border-radius: 10px; padding: 0.55rem 0.75rem; font-family: var(--font-code); font-size: 0.8rem; line-height: 1.45; border: 1px solid var(--border-strong); box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.35); }
+.sp-log:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.sp-empty { color: #8fa3bf; font-style: italic; }
+.sp-line { white-space: pre-wrap; overflow-wrap: anywhere; }
+.sp-hex { max-height: 7rem; overflow: auto; background: #0f1722; color: #9fb6d3; border-radius: 10px; padding: 0.45rem 0.75rem; font-size: 0.76rem; }
+.sp-send-row { display: flex; gap: 0.4rem; align-items: center; }
+.sp-input { flex: 1 1 12rem; min-width: 0; min-height: 2.1rem; border-radius: 999px; padding: 0 0.9rem; }
+.sp-send-row .sp-send { background: var(--primary); color: var(--primary-on); }
+.sp-send-row .sp-send:hover:not(:disabled) { background: var(--primary-hover); color: var(--primary-on); }
+.sp-tools { display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center; }
+.sp-counts { color: var(--ui-text-2); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.sp-compare:is(p) { padding: 0.45rem 0.7rem; border-radius: 9px; background: var(--surface-2); font-size: 0.82rem; }
+.hw-help p { margin: 0.3rem 0; }
+.hw-log-list { margin: 0.2rem 0; padding-left: 1.6rem; font-family: var(--font-code); font-size: 0.8rem; }
+/* a beta release's badge beside the name (2026-11-15) */
+.beta-badge { align-self: center; margin-left: 0.4rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--primary); color: var(--primary-on); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; cursor: help; }
+
+/* the read-only headers a project includes from outside it (contract v14; pico2 Full, 2026-11-15): under the files,
+   set apart by a rule; each opens in the header viewer */
+.proj-hdrs { border-top: 1px dashed var(--border); margin-top: 0.4rem; padding-top: 0.3rem; }
+.proj-hdrs-head { margin: 0.1rem 0.2rem 0.25rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ui-text-2); }
+.proj-hdrs .note { margin: 0.1rem 0.3rem; font-size: 0.78rem; }
+.proj-hdr-list { list-style: none; margin: 0; padding: 0; }
+.proj-hdr { display: flex; align-items: center; gap: 0.35rem; width: 100%; padding: 0.15rem 0.3rem; background: none; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ui-text); text-align: left; cursor: pointer; font: inherit; }
+.proj-hdr:hover, .proj-hdr:focus-visible { background: var(--surface-2); }
+.proj-hdr .proj-file-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-style: italic; }
+.proj-hdr-kind { flex: none; font-size: 0.68rem; color: var(--ui-text-2); }
+.proj-hdr-missing { cursor: default; color: var(--ui-text-2); }
+.header-viewer { width: min(60rem, 95vw); max-height: 88vh; display: flex; flex-direction: column; }
+.header-viewer:not([open]) { display: none; }
+.header-viewer h2 { margin: 0 0 0.2rem; font-size: 1rem; }
+.hv-code { flex: 1 1 auto; min-height: 12rem; max-height: 68vh; overflow: auto; margin: 0.4rem 0; padding: 0.5rem 0.7rem; background: var(--code-back); border: 1px solid var(--border); border-radius: var(--radius-sm); white-space: pre; tab-size: 4; }
+.hv-acts { display: flex; gap: 0.4rem; justify-content: flex-end; }
+
+/* the language tabs of the Sample projects (author, 2026-11-15; src/ui/sample-tabs.js): a segmented control above the list,
+   kept in view while the menu's list scrolls; the chosen tab filled, the others outlined */
+.smp-tabs { display: flex; gap: 0; margin: 0 0 0.3rem; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; }
+.menu-list .smp-tabs { position: sticky; top: 0; z-index: 1; background: var(--surface); }
+.smp-tabs .smp-tab, .menu-list .smp-tabs .smp-tab { flex: 1 1 0; text-align: center; border: 0; border-radius: 0; background: var(--surface); color: var(--ui-text);
+  min-height: 2rem; padding: 0.3rem 0.6rem; font-weight: 600; cursor: pointer; }
+.smp-tabs .smp-tab + .smp-tab { border-left: 1px solid var(--border-strong); }
+.smp-tabs .smp-tab[aria-selected="true"], .menu-list .smp-tabs .smp-tab[aria-selected="true"] { background: var(--primary); color: var(--primary-on); }
+.smp-tabs .smp-tab:hover:not([aria-selected="true"]), .menu-list .smp-tabs .smp-tab:hover:not([aria-selected="true"]) { background: var(--surface-2); }
+.smp-tabs .smp-tab:focus-visible { outline: 2px solid var(--ui-text); outline-offset: -4px; }
+.smp-panel { display: flex; flex-direction: column; }
+.examples-dialog .smp-panel { display: block; }
+.smp-panel[hidden], .examples-dialog .smp-panel[hidden] { display: none; }

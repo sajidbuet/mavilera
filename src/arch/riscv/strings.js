@@ -634,7 +634,7 @@ export const RISCV_STRINGS = Object.freeze({
     tabs: { offload: 'Offload', compare: 'Compare', roofline: 'Roofline', amdahl: 'Amdahl', layer: 'Layer', accumulator: 'Accumulator', quant: 'Quantisation' },
     dataSet: 'Data', dataSetTitle: 'The data the program runs on here: its own, or one of the laboratory data sets placed at address 0 (NV, W from 0x010, the vectors from 0x040)',
     ownData: 'the program’s own', bookSet: (n) => `laboratory set, ${n} vector${n === 1 ? '' : 's'}`,
-    empty: 'Assemble a program to measure it. The laboratory templates (Templates ▸ the NPU group) are ready to run.',
+    empty: 'Assemble a program to measure it. The laboratory templates (Sample projects ▸ the NPU group) are ready to run.',
     runFailed: (m) => `The program could not be measured: ${m}`,
     about: (t) => `About: ${t}`,
     offload: {

@@ -1,0 +1,26 @@
+{
+  "_comment": "Third-party code vendored unchanged (pico2 P1-F3, research D20/ADR-0010 option A, P1-F3 Q11 A). Each file is byte-identical to the pinned commit; test/layout.test.mjs checks these SHA-256 values. Copyright (c) 2025-2026 Piers Finlayson, MIT (LICENSE in this folder).",
+  "name": "picoflash pkg/",
+  "url": "https://github.com/piersfinlayson/picoflash",
+  "commit": "9f647ee9c46a21f4d1efc2d272f19be6cd309d1d",
+  "version": "0.1.5 (tag v0.1.5 = 9f647ee; upstream HEAD re-checked 2026-11-15)",
+  "licence": "MIT",
+  "changes": "none",
+  "used": "src/arch/pico2/hw/transport.js imports connection.js, commands.js and target.js (they import constants.js and errors.js); pkg/index.js and pkg/picoboot.js are not copied (never imported: the release ships only reachable modules)",
+  "files": {
+    "commands.js": "5a9bd426c1eb96868d6e2991a3f2901aed2c127fa93aacbbfd06e4057c974638",
+    "connection.js": "dcf45bb4ce51084e98cbaa0642906be428c078fc6104c4571fa9f031a4080e19",
+    "constants.js": "1d1ee093a7fb0a9a543eaa077e6eb4d8a96d748cf2f4824920e63b2d7af14b13",
+    "errors.js": "3132b94017d4f97d882369fdc8cc94b49f1e0a47e7f54e79192f85f954eb7617",
+    "target.js": "e910ef9141b5bfe0cf8856de5348ba8ebede796ff17fc0a255bfe63defbd2655",
+    "LICENSE": "9da0da8be4d5dda7c33e8292964fba4407e52f15bc934be6b5f6954392104e2e"
+  },
+  "gitBlobs": {
+    "commands.js": "300f45af3e7f249715040c56151b98f41121f25a",
+    "connection.js": "6f757eed91c640403a2c069fbcd1a78cbff038dc",
+    "constants.js": "289c7745b99a9492d873a61e4dcd51d5e366ce35",
+    "errors.js": "4420d18f223f59390f78f29f6731dced18798724",
+    "target.js": "4ad1db3a9bc4a697555808d8a194b791b1472612",
+    "LICENSE": "21cc927e6b2f4d8b07a61a9fa9498bc142ec2575"
+  }
+}

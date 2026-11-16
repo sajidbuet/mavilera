@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-15T02:06:09.413Z",
- "version": "1.6.1",
+ "date": "2026-11-16T06:06:45.778Z",
+ "version": "1.7.0-beta.1",
  "pass": true,
  "summary": {
-  "checks": 1833,
-  "passed": 1833,
+  "checks": 1901,
+  "passed": 1901,
   "failed": 0,
   "skipped": 0,
-  "seconds": 2278,
+  "seconds": 3481,
   "smoke": "pass"
  },
  "environment": {
@@ -22,10 +22,10 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "923a57c304d5a8cf752c84057b5df57b1a552723",
-  "uncommitted": 1,
+  "commit": "187af5cba1987bc38e7212c46cb99967cab7c91d",
+  "uncommitted": 19,
   "sources": {
-   "sha256": "d8de0bf44a83827a503be51ce1b0bd2c7aeb20022a79a5997341e43944db360d",
+   "sha256": "6b327e609da66e76487ec5f5da91729b7b2257482e111a5dcfbf002ece1924b1",
    "files": {
     "index.html": "176bb7d2d0c4bcf346961d11c20ad2ede932d6300473d525e18e187f3f52be8f",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
@@ -34,7 +34,7 @@
     "src/arch/armv7/exports.js": "841b3e41f9df906fa9d371a2c1ac2b2e057351b9fe9b8cac0ff4a338a453e44f",
     "src/arch/armv7/index.js": "07f7d84f7bd5084260fe86b40457b6d18b6ea4919387516e093c79dc9ca4a9da",
     "src/arch/armv7/language.js": "337b24f4795acab5a49cf076040403e6facbd7da4be0ad4ac6637195c5207794",
-    "src/arch/armv7/strings.js": "51b648678184e28ba0ddce7bb616c7deb79eb25aad8439c8b1ce0b67835cc15e",
+    "src/arch/armv7/strings.js": "ba0cb92cd78c67f335ad77de73d9ea5ac4533e50ad819d5e7956d4d4772a3b84",
     "src/arch/armv7/uarch/multi-ext.js": "47d58a9757c8a446994980609621920584035b531415eee120141b9cc77ce9aa",
     "src/arch/armv7/uarch/multi-paths.js": "36280a28b768b3a92e04d848e20884d54daeebedbd5fcb401a2e14832b62436f",
     "src/arch/armv7/uarch/multi-timing.js": "9d541a98e3fe30eacbee28a1862dbf3b53b6f7eb5f3902ca197b2c1a9d566f79",
@@ -53,7 +53,7 @@
     "src/arch/armv7/ui/multi-view.js": "3247f24cb2d614a48be5662afb4f052773e04b92e6d35931c9dab9d19dfb0c24",
     "src/arch/armv7/ui/pipe-view.js": "0964e8175d3dc524c1f80c1bef713b1055ec9fa06901b8b2b36ae4103a3d9936",
     "src/arch/armv7/ui/single-view.js": "7ec7bcb88f4008b9969c9051b85f63174e198252ee7d1ed0300b613707838bef",
-    "src/arch/contract.js": "b710eef678663bccb5142379859f87fd9522d733bc500ce99c8e9610d9d50a42",
+    "src/arch/contract.js": "f52e344677c50c136501a5a7c997181e3216cc54751fc638f8cc22fe3beb538d",
     "src/arch/gpu/engine.js": "9651b980853dfec368b49eea21843893442fccd47ac6632234b45fde4eb5e829",
     "src/arch/gpu/exports.js": "a63519ccc0f40aa87664fde8c4797893a078161e4d158ae4106bee0b4aac8208",
     "src/arch/gpu/index.js": "3faefa35c31933bda97af2fd5ea7d287940502433a6f7e86f77979623d3f811f",
@@ -66,7 +66,7 @@
     "src/arch/gpu/rvsimt/host-words.js": "afd8657c8ea0175da99d2f9685e4889e40b7253d5bf36b920b45068276518475",
     "src/arch/gpu/rvsimt/isa.js": "37a505e6b5f37348f4d6718483839768b564ff375434b8d1b0b54259b06e0a7f",
     "src/arch/gpu/rvsimt/language.js": "648408224985b376bfc03f68f8e21e976e350fce343bae81b6b2710256cf8eb1",
-    "src/arch/gpu/rvsimt/strings.js": "ca2c990a0a2fcd9721036fd695b6a107706f5160bb8a1736a79a2d21d6074e9e",
+    "src/arch/gpu/rvsimt/strings.js": "ac80f2cef7af837f6b3cbc2dca9456ffa4ccd0aaf8a49752e9a75e86a05ead59",
     "src/arch/gpu/rvsimt/threads-panel.js": "fedd793710515c307da70cd26f5ab92d32013c3e0861ee1ad86e4f7fb3581c5f",
     "src/arch/gpu/rvsimt/ui/core-view.js": "e372e6f13d0325f77c31f6d9ff342add945305ce8763b460c88f5962682a3e4f",
     "src/arch/gpu/strings.js": "6086e9b6fc9f80d45a5edd9eecf63bb0bb9f70e8d84794ed400b5d207a68755f",
@@ -96,7 +96,7 @@
     "src/arch/i8086/waveform.js": "feea764cb5f5e90b998d0eb5e0cefe321ab8d8438b4c57589a1f2380a2f54dac",
     "src/arch/pico2/audio/tap.js": "4d71d22959869f6ce01ed1b473668cef091305bca6bf24c7e361c0be5855b8c4",
     "src/arch/pico2/boot/image.js": "15c646f78281e3888f5e389741ac19772449432dd19c32785add99029e018e06",
-    "src/arch/pico2/boot/rom.js": "18e30d8f023df51572154580ff6344ea23bf7902dacf6616cebbdb23e20d79f2",
+    "src/arch/pico2/boot/rom.js": "d53dc7d91253e14234f9b446c5c88166e42f0ced38a247030fb99d502252297a",
     "src/arch/pico2/c/target.js": "cf23c3ad07e1a14f1699f842508eb707163f385f22644d5c68137e1357981665",
     "src/arch/pico2/circuit/demo.js": "bc00401810bd70b585ffc7a274cd0cff3ef0ac62bc18d7c6c6767b61ea6c47b2",
     "src/arch/pico2/circuit/edit.js": "9acd055aaad96db2469a5be3e6123375137480c7e7494bbb51785e258c950e41",
@@ -125,17 +125,24 @@
     "src/arch/pico2/exercise.js": "dcf426ad1fa8b1001f6e3d9057778152b92095be3cf732c90e1102e58646bc11",
     "src/arch/pico2/exports.js": "68f1bf73ab2412e42bbc4fd819d2b3eed0d2da3d9d6230c2443515e3a56f3623",
     "src/arch/pico2/firmware/import.js": "8fd4d7c1c4ff2973f95ce47d2cd79aef551cffda85c132c09a3d142f9698c33c",
-    "src/arch/pico2/firmware/uf2.js": "1aa916bb0640597500bd46d1b2ef2c5df2ef30350264fd8f4e5b70091d469785",
+    "src/arch/pico2/firmware/uf2.js": "ab28da3952748c9a1ddd8b15c7296f53731fad6d86c634d0eb8096501d7e93bd",
     "src/arch/pico2/firmware/validate.js": "1793e2aeaea815f25774184915fb627442734731ee21712eb09552aec2fcb071",
     "src/arch/pico2/full/assets.js": "3e8ca7f0aea3b4c614bda3203adc1756a0fe0456ce17081cf174ee7793dca7b3",
-    "src/arch/pico2/full/client.js": "33e88ab9b4386fdd123c6eb4201ed864bebaf056106feb8f1035964380ebc2c1",
+    "src/arch/pico2/full/client.js": "4935bbe8076e7905eef565599c837a94b574e524014bc3da976590d20ab698fd",
     "src/arch/pico2/full/diagnostics.js": "13d45d94eb097d92d0317d5662dd3976526d2a837d1414a9f35792c9569df217",
-    "src/arch/pico2/full/driver.js": "c517bd992d8defa7537474bcb724f338d1cf9f0df9a396f4117a1dc7454f3735",
-    "src/arch/pico2/full/host.js": "1a1d2879d69ce78c9f19e65f5d9124391c6568123819b3c3e8a9ad74eb490803",
+    "src/arch/pico2/full/driver.js": "d1ee045e3eca71fae8fa6332630ff9eaab79a1df48b968143cbbe148a99cea37",
+    "src/arch/pico2/full/host.js": "e88a74bd306697735e5fa1184325ce31133c267765084774d95cd49719c62a43",
     "src/arch/pico2/full/pack.js": "1a646b34f9ea1efbc42b89218c8107a1b24302b388f1643b3780e847f0da97da",
     "src/arch/pico2/full/wasi.js": "9b66cdefb993e85807b877bc476660a00a234e28e0b60ff2d4e5596e93326a3a",
-    "src/arch/pico2/full/worker.js": "be33b4cec6999994237549b790e5c01aae950ccc498ee082421e91dff25cbff2",
-    "src/arch/pico2/index.js": "1b06f6bc7b6e199058dc7a46df1653cfd49185e5beea6634f0e7a6f10089cabb",
+    "src/arch/pico2/full/worker.js": "ac0b5258822d387531de5a85e110840bb288cbb2f1389723c598d3689c65444d",
+    "src/arch/pico2/hw/capabilities.js": "44dc1d69b23ed237c662461db1b3969c60c0f078b47f71cb11be1a733fc3871b",
+    "src/arch/pico2/hw/errors.js": "12778ad4140f408c835eda5b1a0b9c0e03b1608caf1274a705ab37b12626f364",
+    "src/arch/pico2/hw/programmer.js": "7f676215d43145ce9aef55bf2c8a6ca851c8b794b4277ccde7f8571156236c21",
+    "src/arch/pico2/hw/records.js": "6b2023b576d0f94c00d2cf53b1ea85289c1f51a99f8fc6d815ef82e1481be2f1",
+    "src/arch/pico2/hw/serial.js": "2cb4840d51f828cba0a0fc4b6917b672ac2cd7c3f46017f9e811b474c07cbaea",
+    "src/arch/pico2/hw/session.js": "f2f577e5864de62ed684cebe391cbc17a2e46c3dc8462e3f40bf5f652cec6e47",
+    "src/arch/pico2/hw/transport.js": "d6246a96e2c423251f6a282277d4e873c30c4f60378f490b9a862a89089f3992",
+    "src/arch/pico2/index.js": "69ae8340ba854a1f7866e28488dc66bc0aef4aa63cc58886356771e9541c3b4b",
     "src/arch/pico2/language.js": "66613d60df6d27fe931d30ad12e7367181b0acfd438f5d08f8169fbe19e0fbd7",
     "src/arch/pico2/parts/kit.js": "31d075e6f8854053747a18b9bcf62e260d8e062dee8d5dfe546eb2cd6834f07d",
     "src/arch/pico2/pio/asm.js": "508f8f9ad5bc7c64ea8fe566a71db9170a1608d77aa67c94fdce4e193bf077fb",
@@ -149,7 +156,7 @@
     "src/arch/pico2/soc/dma.js": "9157a3444fe78601ed66adc913a51c24f22d0e61ad41838ca90864f6e600b397",
     "src/arch/pico2/soc/gpio.js": "d9da6495df0d357b6436c3460a70bca3ee91ac4d58d21e3f54a78e36df756998",
     "src/arch/pico2/soc/i2c.js": "21b821086c231e006bd8f53566c4a318e36dc264ef94e485d597555e21d2b247",
-    "src/arch/pico2/soc/machine.js": "68b94167a97490a20ce698643b9aa7fa9aaec32681f9302b306c9f7bbc5a156b",
+    "src/arch/pico2/soc/machine.js": "71e527adcd6330e2d4f863b85077d5050296c9699263584899474f248c010387",
     "src/arch/pico2/soc/pio.js": "8e5519f738962e8fcb7ada0d04fd6fbea6e50ea93b27168cce5b8eef63923386",
     "src/arch/pico2/soc/pwm.js": "4ee7685a88bdb64160acd0d378958936408e521477ceb7c05da0336f3d95db60",
     "src/arch/pico2/soc/regfile.js": "54e19dfca7044dc5407c45f21390bff3968751d317897bed48464ce94dbad980",
@@ -158,12 +165,12 @@
     "src/arch/pico2/soc/spi.js": "b8d3b5a295d4071c18ed40b92975c6afaa4dc534cfac5ad5eaa5c23436b51067",
     "src/arch/pico2/soc/timer.js": "8b10226c4308fc8ed7721f9430df0778f43f821e4b2c393af031df53660bbd8f",
     "src/arch/pico2/soc/uart.js": "2b7892aee7f08492fc4edbc7f9aeb5ac6269d3614918953713e5eda795d4fbba",
-    "src/arch/pico2/strings.js": "d3ec5608611398bf74754b9731f42881255c19c30ed01cb5d99671805396c514",
+    "src/arch/pico2/strings.js": "1b03ee56e0f0ee82a69adda774e3625e503e716d8d668d2cae996094a45b6fd1",
     "src/arch/pico2/uarch/session.js": "cfa2f726597b2b11d1bafb7de01e3621c0b8e60afa92c4962ab2c0d1f99ba584",
     "src/arch/pico2/uarch/stages.js": "6d8d8c0b8dfd24cc6933b3b5d187bf1f4f1ecd511fe0a772c4c9b608d397e91d",
     "src/arch/pico2/uarch/summary.js": "3000c45c170fda17d09aceb7abec86972cf0f29e70a00732487cdf393e66dd49",
     "src/arch/pico2/ui/board-geometry.js": "7169b0862a1ace7468d0f1e4373fb419cb60ec951a7235537de9333878acce55",
-    "src/arch/pico2/ui/board-model.js": "acf3949a6ba148d85fac77d6c9da568e5e0a8a5b2b71d83ae0b237ddef52164e",
+    "src/arch/pico2/ui/board-model.js": "6bdaa7671c0e1555a2292a9bfe60e5616fe786ca20a9638342763f96cc3e9f7c",
     "src/arch/pico2/ui/board-view.js": "6b6cfe8c80c76c69e7d06a8415792d4200d41d26a2e8da58d1d8a14d427b23b4",
     "src/arch/pico2/ui/circuit-editor.js": "cbf1ba33935b4070bb0333fa2ff562b3153dafb18f8168c68becd8f067c90914",
     "src/arch/pico2/ui/circuit-sheet.js": "ab405945974525185a7e11a92357b9c5d765ad86ad592088652fbf66407340d5",
@@ -171,10 +178,20 @@
     "src/arch/pico2/ui/circuit-undo.js": "33aec7dde35973f79f585f63d9283451c42cc972994a0c7755e701cd69ebb6e1",
     "src/arch/pico2/ui/devices-panel.js": "399bb2c4a6da84adc9c72019837952b89577c5eba9cf222913704b778ad5c1f8",
     "src/arch/pico2/ui/geometry.js": "b93d1d4621b0296aaed6affd2ef70481c46b6bebcc4c03e5266d159a4a092844",
+    "src/arch/pico2/ui/hardware-panel.js": "48a816c48f0899b21b7485f8d449c3ed82a80e1a70e2a8f8aa02b48567966188",
+    "src/arch/pico2/ui/hardware-view.js": "1b10e07d7701d648a37af58c25b86ea72450a04af415f9b6bf35e4b64357cfb1",
     "src/arch/pico2/ui/pins-panel.js": "32e5eaa25f1f178365fb2bfcca3e6c19bb115d6be7bbdc82aa182b3fd4ee8c20",
     "src/arch/pico2/ui/pio-panel.js": "4a3b24165003f22663500883f6f758b5aa5f02ea71eed2fff0d89cb676cf27dc",
     "src/arch/pico2/ui/pipeline-view.js": "32f592305a5e59fa3cc13f64cc649348a5f7c9dee24024603023d87dd98eb7e0",
+    "src/arch/pico2/ui/serial-panel.js": "9543a6f7954fae20453f425ea13123b781805b8c6b98837220c9100bb9157d37",
     "src/arch/pico2/ui/source-view.js": "8b10f14ae7b6267e4c6e4f20c89c21922535c4c2eb5cdb23bf75367e1778f49f",
+    "src/arch/pico2/vendor/picoflash/LICENSE": "9da0da8be4d5dda7c33e8292964fba4407e52f15bc934be6b5f6954392104e2e",
+    "src/arch/pico2/vendor/picoflash/VENDOR.json": "906cda6e340c39d0464a6acee69e48c6867a4890f25689a1f9b9e8e0677849b4",
+    "src/arch/pico2/vendor/picoflash/commands.js": "5a9bd426c1eb96868d6e2991a3f2901aed2c127fa93aacbbfd06e4057c974638",
+    "src/arch/pico2/vendor/picoflash/connection.js": "dcf45bb4ce51084e98cbaa0642906be428c078fc6104c4571fa9f031a4080e19",
+    "src/arch/pico2/vendor/picoflash/constants.js": "1d1ee093a7fb0a9a543eaa077e6eb4d8a96d748cf2f4824920e63b2d7af14b13",
+    "src/arch/pico2/vendor/picoflash/errors.js": "3132b94017d4f97d882369fdc8cc94b49f1e0a47e7f54e79192f85f954eb7617",
+    "src/arch/pico2/vendor/picoflash/target.js": "e910ef9141b5bfe0cf8856de5348ba8ebede796ff17fc0a255bfe63defbd2655",
     "src/arch/registry.js": "1371aa21090f7ed368c9653c5bbbf43ec97016875057cb8af9b95f35e3be0c1f",
     "src/arch/riscv/default-source.js": "8ecff07b0098dd95613081fca760b4cefa3d15f193994391682b75957ff52a4f",
     "src/arch/riscv/editor.js": "488b716a271edc5fd850a1aecfe6ae7e28415a7da337176495eba9b1805a7b8d",
@@ -186,7 +203,7 @@
     "src/arch/riscv/lab-rows.js": "911cd9803318c53fdcee06b80a9f02538174dc7219e74ca9bef641cb342a01e0",
     "src/arch/riscv/npu-datapath.js": "cd6649c38307ed87161f123ab1ae8df5b90bfc90b211e4f9d34bccd6326db94f",
     "src/arch/riscv/offload.js": "8439d31401dc3656442cce210b35dc76b5681499218e649488884241f0c5d4b5",
-    "src/arch/riscv/strings.js": "52d6ff14b21410b13be1c32b99da8cdefea41874d5bd8cc6b5dc4d3479b77448",
+    "src/arch/riscv/strings.js": "17d7b31e689b5e0722966b55e277f534706382e1e95616628b431a213f77acbe",
     "src/arch/riscv/ui/analysis-view.js": "c5e40ea1c35c8ac21679a0a48a88c61af76567cd3d8f4305e75c3f3bb3514a05",
     "src/arch/riscv/ui/compare-view.js": "80804effa6cfa5dec425a8cd0819f0ce10a9cc76161630b66d05b15fa2e4f75e",
     "src/arch/riscv/ui/gpu-host-view.js": "0948d5bc60706351c327d1862879aafbc23506e372a1907c0f6ea4888b875bbc",
@@ -236,7 +253,7 @@
     "src/core/profiles.js": "6b9efa63c8e8f66ca741af04b68f7fea0c7ecf06b7ea757f0c3530fc82cc145d",
     "src/core/session.js": "4bf27eff7ec112bb7e6d936e19ed983e33827095c076b277d29db02b4d507e20",
     "src/isa/encoding.js": "4cabfb9181bfa1898eb7097fd6dd1c7b63ff89d68b1e794c6a4da8e5d2d7dc06",
-    "src/main.js": "14474c1cbfc2ab05cdf2273349d55d2e086c586930b97b79faf5abd1d557df95",
+    "src/main.js": "1cb4837638be6379232891ad7aa0dec795ac43c8533cefb5ba7f407e57741df1",
     "src/mem/bus.js": "fd0d6af266303d5b5bc043fac4f117571f663b021b51a15f982dae1d3e3d4edb",
     "src/mem/cache.js": "a4b8e994fc7ee9a415005b761d0401369c01a076890af3241dfcd649a793aedc",
     "src/mem/config.js": "4f58325d2625ca445c4c6b5b516b0c26aea920360d3a5b083cbdae69a2448db2",
@@ -255,9 +272,9 @@
     "src/shell/capabilities.js": "eb50d55c4e5230acd406832d07a7b9a632062161d0d750d65881f2536dddb047",
     "src/shell/data-io.js": "385d6c613b270b944992ee605c0c0ab283ece5711e41dbc69576f50de50fc1bd",
     "src/shell/platform-archs.js": "fcb860b9fc536a7f387b52b9f9091a7991dc561760eee4e75f7e0324e83f026a",
-    "src/shell/project-session.js": "8302a8965aca13cc8329bba73e714e40ddc6938aa41314bd809e17bf4beb02b1",
+    "src/shell/project-session.js": "a63b263f3b77cfdf67306a1c9a93aa00226d62f94cf497a2a17eb522911c16c7",
     "src/shell/project-store.js": "58b596edf79c9e0df8fdd91c72e3142799328e5d20cae9936c70fb19669ff189",
-    "src/shell/project.js": "4c176092de1f6da114b7dec62c77797f6e5a33ef034f58239d6e15880956c108",
+    "src/shell/project.js": "755aec4bc862936e6619ed798ae1dd47057584352911ecc97c6321d8125fa1b9",
     "src/shell/share-schema.js": "bc3d740db0b407340279b727ea2e8c2b2ac032ff54cdf0f4a0b68664fd677569",
     "src/shell/share.js": "65634ae8dca8bcc920118670b45fd6dcdc6929ceb416301a415724b0b6ea26ed",
     "src/shell/vcd.js": "f4d018c7e87f564da50ea8bece641b08abbdbbb7b74eb4d124d30e075aaef18f",
@@ -287,12 +304,13 @@
     "src/ui/download-dialog.js": "be7a75a068cbd57abbff40a6a4ba0c2a8209e69910a8e49769b1d5586f34cc44",
     "src/ui/editor-stack.js": "51f60713ceaaaa6272db95818ef13a07c3f5bbf1649ec565472da485b192adfe",
     "src/ui/editor.js": "3eaa2645ab5d52090a7497ed77868a872e145b53d73feb3e50491920ff1aad6b",
-    "src/ui/examples-dialog.js": "dbde1771fd8e26d4188851b987a6b591740c4305b0706a77ec43892400e9e3cb",
+    "src/ui/examples-dialog.js": "d077cd186a685a88abaeaa6974d1daa0f9ef9c7fa5b0e4ec8a2cabfeed506e76",
     "src/ui/exercise-dialog.js": "d48da1ed0b36a93ae40a52c326540daafc17e201640a2419ea21f24a6cb9080b",
     "src/ui/fsm.js": "8a24b73230c381e7ce17008d71abaee609b2025fd8c0c55b993d593d757b31dc",
+    "src/ui/header-viewer.js": "1f6e83a9cbfc9961bafaf6ab6d2616ecc3d746c08aea38e499f37a79c3aa2a69",
     "src/ui/help-dialog.js": "aa70355f4bbd9e582ef5cd2a276870741ba8c50a2c3fe39ad835b6ca251a6ffb",
-    "src/ui/icons.js": "f5631216bb90aeb6679ad941e2a00c21dfc7a724cfd04c0db4a5dde9f148f0aa",
-    "src/ui/info-button.js": "dd9de96b23a02fdc6f2bf5d29b8373cdcb6cc790c1c608d7cfe126a021665e40",
+    "src/ui/icons.js": "419c777846cf615fd73e7ad86232cf5c4cf77b5fc5adb2a4ef117df8f6aafaa2",
+    "src/ui/info-button.js": "4ea4b1cbbdb6f104fa610a9b6c6581c42b4fdca6b783cd38f385d45936aeda72",
     "src/ui/listing.js": "fd7afcc48a53bbfb55d62d27893dff3a0c99e53dcfef2757d127f0740a98bf0c",
     "src/ui/mem-ui.js": "833f2aeb6ad15690aa4ded08a5c02b7486825e50423e9ae3d76ab0c07d293383",
     "src/ui/mem-viewmodel.js": "a8aa106965c6b794b9b2365f6302777f19912fd66af7830b0444846da72c2fd7",
@@ -302,13 +320,14 @@
     "src/ui/platform-figure.js": "f8dcf3ec1cda6ed527ac214764c67970244ccb03126f99741ce7c55453b2473c",
     "src/ui/platform-view.js": "0a1a2db40910cbe4eb77bd5a6b1e4947a9bb1f1871ee2a2b71b753a91aa20086",
     "src/ui/primary-action.js": "c9dbcaba3341a0655aae2f01ee426a2e616d573950f890db405ed1fc4637a47b",
-    "src/ui/project-explorer.js": "e0aa13cd98b195875eb7bedb5c58ee472df3cd1bf9de1dacef46a10886d31edd",
+    "src/ui/project-explorer.js": "10d7b654bf23c230324e4d13d95e5a4b3c3c8314443759224cb2b85e42f4c5b1",
+    "src/ui/sample-tabs.js": "8d7bec9c5316e965dc9a04f5c07302acd2153a3e328ab9e68c2f21759358f762",
     "src/ui/schematic.js": "fc3f966784612656b7f35da1d3b331721197e683889f616b40afec48ea06b894",
     "src/ui/split-math.js": "e0edce05f827d405f27fc4a13f225652b7b44ca3773a4d47c4162cf86f99054a",
     "src/ui/split.js": "28bd67dbc11d0363df04ee56cb76e647525401171990a95b96125fcb1bc906a3",
     "src/ui/state-panels.js": "2289dfa98db0b508ac67b838f11e8285c290a3e8e76e8cda396850dfb0e53cae",
-    "src/ui/strings.js": "1f3e29a63ac4b1f1fdae787cc7812e6af16b6840b064f8f4e6d77c1dec567d14",
-    "src/ui/theme.css": "8e478266febe18613fcdec9a3e2362f6b35cd5fb746313b0c6695102483607c1",
+    "src/ui/strings.js": "702c56898d3a305347a056b7ae2511ce803b6de15d9d809f8a78ffe397061b11",
+    "src/ui/theme.css": "f831bc7b6ce0190fa85bd92eeee61b9110cc86ae12be456ccfde22250e1d18ed",
     "src/ui/variant-dialog.js": "3783f1340cc369afdded3037d428c923426b624517f4093804ca1c9bec2b3758",
     "src/ui/view-mode.js": "f4f703b6888cc419a12303595941decd730fad34332b8bc0898a050a58a07b1a",
     "src/ui/waveform.js": "7fdb0ebc4f6216ba3b4e4c59655258e1e6f82bbc096a3b887c511651766673b0",
@@ -318,7 +337,7 @@
     "src/worker/audio-ring.js": "d4f867ce93728e9c8b635a3ca431d8cbd3556d5cdcec0876edddc361130f53c5",
     "src/worker/live-ring.js": "4b841a9be00d538008dfdeab4841f3c9cb4753e4a1837ab52bf3581db84379e8",
     "src/worker/realtime.js": "9cc76c35b3c0d0c6b7496e08b025aec6f7a662ebec5bddbfe879200a5a6929b1",
-    "src/worker/run.js": "3e575d131cbdc0b11b11011677c517b0586bb8899031eded510d15382c50b5d2",
+    "src/worker/run.js": "3d97da403bf76de177b2a463e3a545647959d311d965cce6920e2ae90928a26e",
     "content/armv7/data/single-delays.json": "32bf024aa47df44b3008d629c3873ee493266325c9ef5802811e7f6ec1d5cdb5",
     "content/armv7/exercises/add64.json": "0def460790652be2ea88b174e47ff697cab19aaaa4404a7e6736ae1a1f603b6b",
     "content/armv7/exercises/count-byte.json": "349e6ede1e1520675645dd59c710730acbe408d55ccee48ab922e1bfe92d765c",
@@ -336,8 +355,8 @@
     "content/armv7/geometry/pipe.json": "512229e313b4bfd93685967e830c21e2813bd5a42196ccb4df20a75824ed3517",
     "content/armv7/geometry/single-extended.json": "86691bfed0bc4b898db4e627e667137efe1653ee2e84c27d453c081bbce7f953",
     "content/armv7/geometry/single.json": "838e00624ea0d9492a8fa769f8f966597ef46f5980171c03b00712c49b6a5956",
-    "content/armv7/help/docs/index.html": "3b3c0a0255735d693f0c2c928899cddef61f67fca41e168cf6b6f813916b9953",
-    "content/armv7/help/help.json": "76f2e420f34a5a571bc7f9000284b48a31302a5da2b488eb6c3497aa3da2597a",
+    "content/armv7/help/docs/index.html": "50df60aa71dba1e17b0762a41d5a8e949a4b3310a3798f56da9f6565389ef220",
+    "content/armv7/help/help.json": "8268512a340a42088b78e03bd37c2d5f281271c237502be77ca20eb4f36081c5",
     "content/armv7/templates/base-sum.s": "47a87edbb931b4a240d29d7a7e381bc738c22043398cf90ee3ae2800fe5209aa",
     "content/armv7/templates/block-copy.s": "ab594712d970f178ad67c0fab7e6b268222a16c7b609a0c1f1005c6f603ee12d",
     "content/armv7/templates/factorial.s": "b7005ae39c1d50f22dfcb14d9aaadb3932962689458b8f775c8b508e776aec36",
@@ -443,8 +462,8 @@
     "content/geometry/ch08.json": "d47680ae5c94e8000cbf8c586bafe76d7370b44aaa942885637af4041d895fb7",
     "content/geometry/ch11-npu.json": "0f7dc9d671814f8f6b3573094c4d872b2cf607bd7657a69008d2705d9ab83c7b",
     "content/geometry/ch11a-gpu.json": "f6013352bc9f84698980f98cb448702b1fb226e513c8a0bcca3a3051c52ccaa3",
-    "content/gpu/help/docs/index.html": "521a31232439358d16eb434161db110b44f3e1868afe29d790291b9ed0354fff",
-    "content/gpu/help/help.json": "04d403d0b42f6a6ce357a75e40a58c3054239ee1f430832a787c4f3a3f7a2b70",
+    "content/gpu/help/docs/index.html": "c62053932697ad7f04e82b3c927408cf1186d311564e3d957a2be80fbe9b4834",
+    "content/gpu/help/help.json": "1493395be49d7cd9cd9ba067ae0ace4d3b50a044bbd7f366dfd563cf30d24f89",
     "content/gpu/rvsimt/exercises/gpu-clamp.json": "2a26f0c882eac607102926608560186d72a526f4c8f9916e0964f81328241ed3",
     "content/gpu/rvsimt/exercises/gpu-difference.json": "fbf79d1c212f08c76b80181d06508d30f32c823f284cbf73f92f24fd6ccd97b8",
     "content/gpu/rvsimt/exercises/gpu-sign.json": "418120e3cbec8cc1bc6758a2103decc1691d905cc7c165cb8df8c82198a792bd",
@@ -464,8 +483,8 @@
     "content/gpu/templates/nested.simt": "4f7ac856a4fbe4b2179005fd006b1159cfae8625722dcd0d2b83fedaa6189ef5",
     "content/gpu/templates/straight.simt": "3577f7143561e5c2a50d6d87748eab66630a39911cd1efd409e5fc1004a04c1b",
     "content/gpu/templates/warp8.simt": "740f189af184a961b70e07d3c558edea615ddce470307d0586e71b696c3595f1",
-    "content/help/docs/index.html": "01980056f7305dc24a4b181abe4a3f53296a7a124e86cc66bbf3a449e798de32",
-    "content/help/help.json": "e380d375a28a87ee6ecc18cc026462d4c81250dbb4f1c1b2597785785882bc70",
+    "content/help/docs/index.html": "2878dfe1f2b0df3b87694cb4e19858f465e42f9870b4adb1a3678f93d118eb32",
+    "content/help/help.json": "aab4c32ffb2ea631e2c0c88f51beb98ca86434b855d78581b3b65f81f9a91a8b",
     "content/help/narrative-ch06.json": "612026b34976e25ec309b125a1a2de5d116598fa77cceaa5dcd86805733bad6a",
     "content/help/narrative-ch07.json": "9006e11087d7edae8e4c4714a373b7e52d6da745e8f00bc82d537fb77491a933",
     "content/i8086/exercises/count-char.json": "86ac634031f7d7537ed51329e08441645a8b8e6742d55a05996e14804aee9702",
@@ -473,8 +492,8 @@
     "content/i8086/exercises/keep-registers.json": "058fe27d078146737c4c116e20d4d49a3bd4b0d0073bd5ca856633522289ca86",
     "content/i8086/exercises/largest.json": "7b6f7336ee4e72ae1fed487d60044a661e5b6ab333e8369ee163a017f2d22eec",
     "content/i8086/exercises/print-bcd.json": "d5de288d91bbd3cb654f0609098e08a89a4eae892ab10a93d2351f65bd42f6db",
-    "content/i8086/help/docs/index.html": "b5377347cecf9f314af7ea410348b68878c93c159e63f46c523ee9248d12d34d",
-    "content/i8086/help/help.json": "c372f05d5df41d5577eb2d00f8ef27aa7d73df8a42495f30ecf492ee06ff467a",
+    "content/i8086/help/docs/index.html": "6937f53d481668c964654dc078abf956ae271249e3777148f0e754f3055272dd",
+    "content/i8086/help/help.json": "2a020666153c1b2212326b4b722f5860606696d70e93184f47c6bf6ca14a471a",
     "content/i8086/templates/decimal.asm": "f370d4ebbc8d4c7cf5ec4508d6ef494c1ae5c99b9ad06e34b6587adbe8c4c4f3",
     "content/i8086/templates/flags.asm": "c41c252df7850cbb0a5e9fa6729231de9fbf2090453d3d3c9193a791984d54bb",
     "content/i8086/templates/index.json": "4b9a9fd99af9a02844c2ed6f369b7f8643666e1122d8733a54a6ecd4ecf46386",
@@ -494,8 +513,8 @@
     "content/pico2/exercises/pwm-duty.json": "7493e63d8f21f1340fdf20af2212aecc95a37af9ddded2f707a330fa019f50c7",
     "content/pico2/exercises/sum-words.json": "146570396eaf2a84c994c643e8d1854468f01fad7dbf5ee943286b5e7a5ecb98",
     "content/pico2/exercises/two-core-sum.json": "4ba8d1901b8f86e0b4091f0e7f88306886fed37f1893d2fa39ea2df184e4b381",
-    "content/pico2/help/docs/index.html": "21c0cd8aab84409ebdc3b1ec6ff455fc19b3c33a57f1b52c8e748ed86543011e",
-    "content/pico2/help/help.json": "2f4161780d8a45a5785980e96285bb846c20e0c14bcd7393bed0b5c8692c9246",
+    "content/pico2/help/docs/index.html": "d7d304a28d4bc351d551725ac44555d4fc4c87797fa19f830be0c4120c438c78",
+    "content/pico2/help/help.json": "03d6e0ab503384f98f61baf00af5c0a6089cb8756427704570ac0f6ede8889a2",
     "content/pico2/templates/adc-knob.c": "abbf95a7d66f0938a006bf075687f7e7e2ef1f452eb0ef427bf2eb45ae4ad3e7",
     "content/pico2/templates/blink.c": "4c398fe78d844f856a9f6737307560380cf2706f869e7c3bbf58c7b187012e24",
     "content/pico2/templates/blink.s": "bbf1e1a64a6bb2a8abd7436192e63058545df2ce81cf542fa4d05f399d9cf2bb",
@@ -511,7 +530,7 @@
     "content/pico2/templates/hello.c": "d68c61f23466f2b59b901ea105b5421a28ec700556dfd50ce6a4166815c21295",
     "content/pico2/templates/i2c-lcd.c": "385406793d6d140f636ce788ac7485e85e8bcb737e4d31546d9e43383069d609",
     "content/pico2/templates/i2c-mcp9808.c": "66d72123793d8e23ddb3e1278539cfd27835ebb94698048a82b98f91187cbb06",
-    "content/pico2/templates/index.json": "02a55d337a2b20cfa0c793d063cb0ea686630f568e75db201e00b25e9a5ddb97",
+    "content/pico2/templates/index.json": "2999a468a0e11f34d1fc1c025cb7fd0db305592feafb7770a7b74921b4d113b7",
     "content/pico2/templates/ldr-night-light.c": "0d34f886a9c2df63f2207b426c65c3a06b9530ba153aa7b037b6a29e50db60fb",
     "content/pico2/templates/ldr-night-light.circuit.json": "025ee5260f8331458f804eec4e767b05734b2209a7d949a6e9cd7b774c0ee937",
     "content/pico2/templates/load-use.s": "3efc450f84231f6776f8983646a4653525922524e3ae11aadb6b605bfa41a77e",
@@ -531,6 +550,23 @@
     "content/pico2/templates/pwm-tone.c": "7cc7e8c52208cb46f2989f45271ce059c72f03b5cf761a8b68dba1c3fac41067",
     "content/pico2/templates/rc-debounce.c": "65572d60af9a0ca399050304c8481f60109acec485f6961bb7c701c059035c8f",
     "content/pico2/templates/rc-debounce.circuit.json": "71c4c0cda70ff94843e2dddde3358540b30ac29447e848410e98df467ab6220c",
+    "content/pico2/templates/sdk-adc-knob.c": "e16fdd6ac5dffa9dc62d61a330ea5224c60c5cc4e050f8354a988d270d543782",
+    "content/pico2/templates/sdk-blink.c": "19b198169f3de86712d506a0270692534fec27f572f71b4361c0c60e783a072e",
+    "content/pico2/templates/sdk-button-irq.c": "f96793234bbfd7a0a3130b0f4ec131dcaa1604ee20907c1ede2ad2816689a6ed",
+    "content/pico2/templates/sdk-demo.c": "25785abb661b078a0271671bbbd87ac0d616b4a0b0df0ef8e903f9137c877a53",
+    "content/pico2/templates/sdk-dma-copy.c": "f46a313ef1aee10db151cbf51bfbc15ebc87e0bdb3ef55687df63c4636e9dd03",
+    "content/pico2/templates/sdk-hello.c": "dc315c1e670476623925a6e7858e13dbead882aefaeaf9b6a02c568d0e4ddde4",
+    "content/pico2/templates/sdk-i2c-lcd.c": "8e94df3d06862effdba3847b0172633babe7544be400daae08548d9af139ed27",
+    "content/pico2/templates/sdk-i2c-mcp9808.c": "70a2f9896334b2973a7092d591f4bb148fed95a380759060eb34d9175ca871b5",
+    "content/pico2/templates/sdk-pio-led.c": "f5a7d57c02f43d15613436b0b49032c31c30205c55f8f10868a5bcec30133c37",
+    "content/pico2/templates/sdk-pio-led.pio": "7058480746b2dfe7b73412a871c859b55c9b8983624eb06313c1f1fd9ede2551",
+    "content/pico2/templates/sdk-pwm-fade.c": "59898d250a976a02d666d5ac1bfc5ade8254a69cd06c63290de17be098d9ff05",
+    "content/pico2/templates/sdk-pwm-tone.c": "d525de7addb8006ffd926036bcc3d81ae3bfd076af0da14e78cb3ff6fb5a200f",
+    "content/pico2/templates/sdk-spi-loopback.c": "ac4644df69c346c7f6a03f0f9662cade54d8ff2768f75f8bc8ba7e24efb603ae",
+    "content/pico2/templates/sdk-temperature.c": "e94036f3d9ac862c364f27c65c882dbb621724eb43ddc9c6b67ee0c6eebb0b46",
+    "content/pico2/templates/sdk-timer.c": "0f224124c7b4a3b05587d63b4df6806407be5a556968dae7ee486f03f1b40c2e",
+    "content/pico2/templates/sdk-two-cores.c": "0540a0e2a16c312d1b74299eac613126983af980a504ce76df87605fd7129321",
+    "content/pico2/templates/sdk-uart-echo.c": "26829baa891a1e126bc990f3a43e9ea07aaeeef6da5d58dbb2696175eedcb5c3",
     "content/pico2/templates/spi-loopback.s": "00e603883daa075ed6c6a33354af0f6a5356fefac90cd5c414cc6e4879730fe4",
     "content/pico2/templates/sum-array.c": "c2d46a6fc52e49fb586b559f1980c3dba18e422a3d3ba0e9e4f249b7b5d72167",
     "content/pico2/templates/temperature.c": "4fbbc3bcba720d4c2d08f5b3e2a58c692773b1ec4c96d1761275d4662bbd6aeb",
@@ -549,8 +585,8 @@
     "content/sap-1/exercises/running-total.json": "50439eb30bf4dfccc10f8e6d882ccf1da759dd67e33aa022220792f2a35d2f95",
     "content/sap-1/exercises/sum-four.json": "77b1042b731b4eaa49eb6b0da05fccb8232f11a0be06534b5ec42a2cf182ad72",
     "content/sap-1/exercises/times-ten.json": "44f7df0465b09c6885f7d1c1b9cdf8728e49cd1828a8f6c1edc780f432013699",
-    "content/sap-1/help/docs/index.html": "80b6c49ec9ef5aea12f132bf63c8fd279c1565a00f307c3b101747e813c67e1a",
-    "content/sap-1/help/help.json": "50ed6611b427bfa526487a38cd189be302107d829d97b8f046bbad377202a45b",
+    "content/sap-1/help/docs/index.html": "d030dbd8af033bb4cb956a481934849e0c9a041ecd8bd7efe86d99df9da823e2",
+    "content/sap-1/help/help.json": "039e8ad2edc7ff2b457f14afa27ca625c3c2b3188b7ec81420996bebb4a66756",
     "content/sap-1/templates/code-is-data.asm": "f127d497700a8752b3c1d6b44ec238cfe1cfcfcce3b7b2bcc4fabe60d0fb371f",
     "content/sap-1/templates/index.json": "4a87e9e8181b55a8a8fab038db46ff1808660fe86c9f3fdc6a32f1cbfb88546b",
     "content/sap-1/templates/missing-hlt.asm": "eee1e7e1220f230fb9c39cec0ab7ae9e01b4af34987e720bbf950a8d36529b71",
@@ -564,8 +600,8 @@
     "content/sap-2/exercises/sum-to-n.json": "f632c4c56fb88ff611acd8a7bf25c958742686968fb115d241840d67022eb12e",
     "content/sap-2/exercises/swap.json": "7492ed3992bd539df45a03635592d243d68a75da7095b6199e368368799409fc",
     "content/sap-2/exercises/times-four.json": "5d4e0cb0cb0f61afe3a6b33c41edb7f1e312c647d226fa9821aaed6c7adc7691",
-    "content/sap-2/help/docs/index.html": "0f62071b1a5e96596e48c5d71ce76b56ce32e51920be4fb5b9c402cfcabbb6c6",
-    "content/sap-2/help/help.json": "6198a622e8f4b1b3cb089849cff6fef763b73e7e3ca37d0987714fb3a8f391fd",
+    "content/sap-2/help/docs/index.html": "c5586c2e02539b4f032558d58d41a7108fd846a433b25b0829258be195fc169f",
+    "content/sap-2/help/help.json": "1c68d1fd628ac3a58b6ca3f90d73db479e8c66f004c6548ea9d75a5c632ee198",
     "content/sap-2/templates/alu-next-fetch.asm": "36949e946acd60bee920cb3e0fa2b070ef6a255a22c3574933d4dcdf4d76e30f",
     "content/sap-2/templates/call-states.asm": "31995d560e4b335eaca10ba0493b1a89147751d403efc3e7e58e0ca11991f1ea",
     "content/sap-2/templates/count-down.asm": "dd2b36227e710b211d74c83a8bb26d591485fbcad339d51e1ded7b5f143555da",
@@ -619,7 +655,7 @@
    }
   },
   "corpus": {
-   "sha256": "cf500e608d28918562ed6b6f178aa1d58909df3a7d2ffe4e533ef155a1c01c31",
+   "sha256": "840eb9247ff6789018381fe5129f2e566b64dece60113acc32bbab9c01daeeef",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
     "test/arch-contract.test.mjs": "eede5e6cb2b7354d629e9fec7da43b96b3d9f3b5176ce58925754dea2ed2be8d",
@@ -648,11 +684,12 @@
     "test/branding.test.mjs": "c1776e86d1911ef529d11bebfaafb815896304bfedd2565b2f1635d8ef19bd90",
     "test/cache-anim.test.mjs": "9ac0709b15e3ba44a79c013eee240af131d7142f66cd705927a84b49ece21cd3",
     "test/callstack.test.mjs": "01c15bbc006ca53f10430a9976d7ba39eb44e4be1564e7dc5078bd5a8c335500",
-    "test/capabilities.test.mjs": "bb52702172eeb01e1a72facad85b7245e4bef44a6d4cc298c0e2987933db4af1",
+    "test/capabilities.test.mjs": "cfe0c6f12e0bc6870c067467c5420958e76d1bf2e8b889207a08ae17aa925785",
     "test/cc.test.mjs": "de3777dd752660b4faf4688c903f86b2f191fd1fb92c011db59c7c30f66acf73",
     "test/ch07-content.mjs": "17bd83ee475efd32d55748506eb848b28ea85727c51aaa6f83e517dcfaa29487",
     "test/compare-memory.test.mjs": "6b46bd74b52f98c2290ed39138ab5a7e28191d13cf11bc112a217b37a68e1e72",
     "test/contract-v10.test.mjs": "45f3cca28d8076332e55203c626a81bd2242358e029086b23ba143cb51170046",
+    "test/contract-v13.test.mjs": "133383052acacd0c06c6ee46e24084bbe2402bd306f61ce5323c72f173f6f85b",
     "test/contract-v9.test.mjs": "4c165eea1ba96ec3a972e21556673fdf135a3d6cf621c7f5710ff83bd989ac32",
     "test/cpu-gpu.test.mjs": "bb8c40a7a6452e78a421d107762111e3ab25d978039b7d3a2247e77cfacf5d4d",
     "test/data-io.test.mjs": "b92820292d425cc50b2a0859433d7283427e346d796870c849ff575bf8094268",
@@ -664,7 +701,7 @@
     "test/exports.test.mjs": "ed16579a3249e06ea7c3cc08cb6494732bd8ec09b05474ebc66702a6ed4eca39",
     "test/fields.test.mjs": "d6eabc49998748ab762e546d07f8131c30cf9acdf45b71c57f813f018a16ae88",
     "test/fixtures/arch/acc4/index.js": "d9314ecf1b7c7f9fa6fed51e32a1d54f1d08271601d81a0b84fe9f18ecd79cf3",
-    "test/fixtures/dom-snapshot.json": "c8d3ece6dbd0bf41b6fba1a8d4d82b3a10689ee50249c53576713a4f61e478b4",
+    "test/fixtures/dom-snapshot.json": "0e71c8343dc2d7f6b9e6de6c494b544546e4898cf4a9f91ddd2662f0b07b0272",
     "test/fixtures/drawing-review.json": "84458b7cd332e5455eef99a02796e9ef4e2913e65ac4ff72a30bb774af9af975",
     "test/fixtures/exercise/sum.json": "086fa0c5dc7322ce10c2c1f4c53d6919dfbd74c2cb9422a0a7c1a954b51eb363",
     "test/fixtures/gcc/README.md": "aa0fd9f856c08c2c00acc7eb94ce17b3ee3eb6cd706e6989b4bddc9ec833c1a9",
@@ -712,6 +749,8 @@
     "test/fixtures/gpu/lab/vadd_tail/prog.hex": "9eb4c56ee949600fc6947f0d93141e369c500c12a68b6e8364b471574889278c",
     "test/fixtures/gpu/lab/vadd_tail/prog.s": "9bac88df9189f010b101b5359ffb1bcf3611f236a8013adf1b4fb640c8b14b60",
     "test/fixtures/gpu/simt_tests.hex": "af47e1e69c2c458f2371e6f9daffa2bbdecb4b0632afa4eb8aaca59a445d454a",
+    "test/fixtures/mock-picoboot.mjs": "3a138f67cabf2d92754a3c56a47e3151633da50972ceb9aeea8969763f34ca8a",
+    "test/fixtures/mock-serial.mjs": "16d22846f4519b56a0e5033d6ede1e7fddf0bbac1c641857f344ea3b9be979e7",
     "test/fixtures/npu/README.md": "02d721638d9950e97137bdf714a9ca9e7c7db663fb0fe0b4cf3a8c3358b39e4e",
     "test/fixtures/npu/ch11/data/v1/data.hex": "98730230c57381b60cb8939bf941d696287e0a51f8f31ff4da971eec4132d3fb",
     "test/fixtures/npu/ch11/data/v16/data.hex": "1e8a40769cb6130950c4b9e90ba0a0e128b8b8e9afee285a463e493e64c95c96",
@@ -730,6 +769,7 @@
     "test/fixtures/npu/mac_vectors.hex": "86221ccaee9f11473754c5489c9f36d86de495834da2c792010281e653c4d3ed",
     "test/fixtures/pico2-circuit-compat.json": "061e408cf2f4891e737fa8f0768753e81ff2c6e41ee39f76616646a567aa1886",
     "test/fixtures/pico2-decode-golden.jsonl": "d3be0afcd549ed933fc9a1073d01fcadda1ce37d36cac5556860956908a6ad0d",
+    "test/fixtures/pico2-images.mjs": "46929dc6d86d60fcc097df01e2a797585b16314f71accf258d06122f172a5f0c",
     "test/fixtures/pico2-sum.elf": "aefce7c9182efd45395ca80a76156e959284f6d5b137a82c527d24b4299c21de",
     "test/fixtures/pico2-timing.mjs": "b8c149ae6855292daae9b979575a6fba6ac6ce258cc57aa8607c8830b18bdf31",
     "test/fixtures/priv/bad-handler.s": "1cb8b9289a11cc3544728e6a5c6bbedf0e934d7b1040482c315afa3ba4c62e55",
@@ -761,7 +801,7 @@
     "test/i8086-templates.test.mjs": "864d3ba3f73a45f7e5d51cca27913346873b41cb6546e3f9c93ddf58496226bc",
     "test/i8086-timeline.test.mjs": "cd59e317b3e0a5de7012eb31fff9f5ff4027c5a7f2c3214d0520574bdf8bc26b",
     "test/i8086-timing.test.mjs": "59366618fb5f3e34e455acff0de8e74dba1c078ddcb078c76174af6a13b1050c",
-    "test/layout.test.mjs": "ed13e30a4af564e795047935bb1d3f4b57771bc760e1f48583c32e9ff7ca1740",
+    "test/layout.test.mjs": "ce53c5dde2283418dfe36b5c2b744c52928e7ccdb48016f41c52714896687ccd",
     "test/mavilera-brand.test.mjs": "a74a504072e55a37175a7a92f82ab57411afd371993f404c50209246f1976c4a",
     "test/mem-cache-models.test.mjs": "3efb168b22027827cb7f97cc3da847228d03e6b416e4db32a61ac2d1c60b57db",
     "test/mem-cache.test.mjs": "655181962be77ccf15a9979905ac820a0829046a2be8dccfe1adec927ee47efb",
@@ -769,7 +809,7 @@
     "test/mem-system.test.mjs": "d8ae97bbb4a52c5791502ec4fc484bffbeb8a31dcd7cb0ee24d1d705e19c4300",
     "test/mem-timing.test.mjs": "effd79be70c13655e73f5bcf6178d164d43b808a6c891effc294efd5c68fe9fd",
     "test/mem-viewmodel.test.mjs": "38e3ae395d1bc0a4857f98e0d0e9dc5235ca4143443c7123e70e10f00e76a120",
-    "test/minify.test.mjs": "50c808af5fdb637e29196c2b6455fded7d0ba603a0f3cd38e1dbed1a38fe05db",
+    "test/minify.test.mjs": "a9055818da5b41df2c5a659d84ba5fb1a085f10a99e7202cf0526274d67cd45e",
     "test/multi-paths.test.mjs": "721cd0eb19583a1e0a3637529cad71a742256adcd0e1a257f7b5d59fb2525cb7",
     "test/multi.test.mjs": "ee176bd4b4f4b7ea70910ba483f76d2f2c2d040d878aa2967fa6f08d063d3a39",
     "test/npu-array.test.mjs": "01b813ad46e8672e85a7920216cfc452f161bdf0636df789a111ed9ec66d501f",
@@ -785,7 +825,7 @@
     "test/pico2-act-regressions.test.mjs": "062a614ee358ee11410ebe09f945bfe3b6fe685e27e985535cb8f98242d9956c",
     "test/pico2-asm.test.mjs": "f2b99eb9f64ef19c19345054de9e77d7b4d8129ea0eccfb4c54c420051d385c6",
     "test/pico2-audio.test.mjs": "ce6398097b1419e740f9d6adf88309d0d7575c4e67d6bc0046af32c630e8d59e",
-    "test/pico2-board.test.mjs": "ae5ac9c1d0cca886230a1b3719313f67f8fba400f31660172401b10aab13872e",
+    "test/pico2-board.test.mjs": "ee129ba2659527e06dd947cefdc8e6de0f0a4549eb020f79b42b3fee0eb75a28",
     "test/pico2-buses.test.mjs": "36c96cb9239291b315062263ed0d927d45251053b95d3ad5aab7f82d17c10fe3",
     "test/pico2-cc.test.mjs": "0d918977446e059023559a20ab2c68c5286a8980ccf2cd3af8fdbcbc6ae8d052",
     "test/pico2-circuit-compat.test.mjs": "2d155e48f6536c56f4f5f2aee64e986ec87c1cd1c7d4ca8efad9f4a4d65c87d0",
@@ -803,21 +843,26 @@
     "test/pico2-elf.test.mjs": "61c6fb44d80ac3edf2e85b35ce951c5db43fa9721990addab86da1e8b671cfbf",
     "test/pico2-engine.test.mjs": "401aaa7e1a1498016259b99af906b79f9b361181012bf6c9707afc08e71c34d4",
     "test/pico2-full-assets.test.mjs": "d46e698289bd87960c010f970d5428fd59455e091d5e9ed42b8ae6697839b9b8",
-    "test/pico2-full.test.mjs": "4cc674de3ad6e4353781d799c833c37f425d06d05dfe7b111078d94b6cd81b0e",
+    "test/pico2-full.test.mjs": "b10f09ca9a1d43a03ff75a4cc94983babf64e900f39708b4b19ad456278b4c1f",
+    "test/pico2-hardware-tab.test.mjs": "579b418d34a6bd6df39064ae360cdf00aac4cc55609a8b47162b1a44ffc24891",
     "test/pico2-hart.test.mjs": "ad7ccdf412bef0c3d66920e9ae3b730dc2fbe092aeede20b5284baa1fcad7b39",
+    "test/pico2-headers.test.mjs": "514117315662de03c91af98cbd9a10d673b24c5337cbb3cfb4dbe0381ea1f2a3",
     "test/pico2-history.test.mjs": "3a31f0546300b91f649b5a37557952665bce4b5cbc5bc79ce7b15f47a1a129f4",
+    "test/pico2-hw-session.test.mjs": "bac74dbed6130f92950d1d6b61d31375defcc58970161d42ca6814bc3513e007",
+    "test/pico2-hw.test.mjs": "d42fd9b54f8bb31f6a7c2bd99453dab67c3c187a0cc7d67f3711273f2f28a024",
     "test/pico2-import.test.mjs": "43092ae3a91b8dcdf7e6d4db2923251080d22d159efe5090e07276ce7fdfcfb0",
     "test/pico2-irqctrl.test.mjs": "14d881a7bd1244fc7bcf0b73120a2a642b0d1dc23ec45e8c9fa452dbb69db9a0",
     "test/pico2-lite.test.mjs": "8c52934d1af79c1a4ab52a9c95c1558f8b47cfa7c1938cd62af8e0ccd65c3236",
     "test/pico2-multicore.test.mjs": "0f0cba1709b0c324ef8b4ab2a2ec30edc779b63feb232db688c0f0314206b1c6",
     "test/pico2-pio.test.mjs": "fcc6934057c936562b7f0ae5d11382a93200bea59c1ce1b61005a569efc5a06d",
     "test/pico2-pipeline-session.test.mjs": "50b896d93d619340de730e1cd478ad4b20d110785b46cb123043664feb6d28aa",
-    "test/pico2-platform.test.mjs": "e6cda882a2e10021fd75a87405cf2e0c7ffda8844db01846259a2410fea3e212",
+    "test/pico2-platform.test.mjs": "09029918ba6664dd3ef785aab33b8c5cf3e9979292e278d1d5c529a38e06ebd1",
     "test/pico2-pmp.test.mjs": "1511cfbce5a77096a21182f839ed5a5f257db35b65cbb85825663b92d9d6b595",
     "test/pico2-pwm.test.mjs": "8749896273f9e98509e5d349b4c79e2ab8c03b1f52c179e1a114ca4b44119c8f",
     "test/pico2-realtime.test.mjs": "f2d25aefab88edd26996737ca2a04a0566e736b3311afb6c817f1da8770c8cf4",
+    "test/pico2-sdk-samples.test.mjs": "609bac2ced0673ced5e148bce37a396a8eb607e9103bce1d2961f4cd7ecac63d",
     "test/pico2-stages.test.mjs": "5489fcdfd24250dcd2a7a8858c1ce6bfcdcd2a1b1ca19cac3411c824899e4ae7",
-    "test/pico2-templates.test.mjs": "1489013005933c5a0b95ba381ad20e655bfc36590476589ba71db8ba4c1db2e6",
+    "test/pico2-templates.test.mjs": "de9f68ed25e59db1aab4fb47d303343597d42714bbf14111b22fccb642bfc8b2",
     "test/pico2-timing.test.mjs": "b3193ca60e731e7ac1513f21c92539e34610c43b4206002f7f576ed8b404677b",
     "test/pico2-triggers.test.mjs": "efd1e75999978f8d2c30d7ecf0bd6b207fb43051de80c8a1fa988a947d8f1b90",
     "test/pico2-uf2.test.mjs": "63c545c91d18d3235bbcc5dfe4cf8df50d4b31c028668580f9e2217a17c8ef06",
@@ -830,11 +875,12 @@
     "test/programs-c.mjs": "f5ab275bbe961047290328b035e3dd3f8b5a07b0f789768b6c981a380c7fde3c",
     "test/programs-ch07.mjs": "8097aea6ff045e855920d70f9b4150b08b41e7b7b9fdfd2a7c067132855d6d17",
     "test/programs-ch08.mjs": "ac2e1c4ab8be0dbcee804e26f107e1c8488a0513d76f7dd9996f720b247bff8d",
-    "test/project-session.test.mjs": "550d105d191891d5264061df286c804f557956c3aa964fc382a6a22f15c8955b",
+    "test/project-session.test.mjs": "10d05f56c0be8640d27027b604a953690bc2007269938220e695859095b0c576",
     "test/project.test.mjs": "6a56ff7f625541be2650a7382c3f6c8de9a92adc48d68538d30d2dd07198313a",
     "test/random.test.mjs": "f4c2506d4c73ec9b028993e06efeb9608b99e1dc8552021d111efdf8fe0bc59e",
     "test/realtime-pacing.test.mjs": "cf40d04f1766f0537138e5e9d36bfed0a61502f510f007d47230854444f430b7",
     "test/release.test.mjs": "b5bc6d9ec56d8b96ebd0441d575db00db01c025a81cc260aa50bb158e9c1e5b7",
+    "test/sample-tabs.test.mjs": "6a34b424ccfd13bd163a116c6240eedd67d53cc1f631f32b65d5fc74bfa7db83",
     "test/sap1-bus-model.test.mjs": "1913ce4c7182278de219f52d06c958f68eed155fe7f433de9fd849df8417b841",
     "test/sap1-engine.test.mjs": "11d8227fda92d105613f0a2c05679b14aa18a4b113b4709c92f1c31292f71eaa",
     "test/sap1-extras.test.mjs": "8b0e7cbdab16c97c8d073fb72cb0a398d00f961cebce4d5f8755014cd76c9a20",
@@ -870,7 +916,7 @@
    }
   },
   "tools": {
-   "sha256": "20208d5054c79ccfe3a5409654e2a285d40999c7c3da76d4327ebbd79c4073c9",
+   "sha256": "574ba7d5394b289a260452663dd23c012093865ff13479052ca6fe68703bde7a",
    "files": {
     "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
     "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
@@ -892,10 +938,10 @@
     "tools/armv7/preview-single.mjs": "ee92e3577f35afd87e8af647a71064cb9dd06b41402c780f8da5d67428d330dc",
     "tools/armv7/single-smoke.mjs": "5b25e4c9a04ecc83d6e56d8123042bf0a12ade6f4709bc82f544704f8eadafb1",
     "tools/browser-smoke.mjs": "b42e8b1d5ed9c457af5c931cd3bf953eb18563453cda4ba9997aa5b53aab2305",
-    "tools/browser.mjs": "7b3c5ba968f0c6c286567b7b6d632d63a19db546d59f2f7f0549c797413f0ebd",
+    "tools/browser.mjs": "782582c32275b8e4d98c34f852ceca503a39ea8dcb13dd1cbf731c383899b6d9",
     "tools/cpu-gpu-smoke.mjs": "f98c49bebee35acf459506dff73b783ac948bf789290e7755fb13e4a6cc270a2",
     "tools/dock-smoke.mjs": "284e1d6da94633addcb394f5c46dae2420f8a861887b675ef96a7b537c914bb7",
-    "tools/firefox-bidi.mjs": "3eca8347769505cf9b4c74b5177621c9026c93c369bf23012912c71ff28a638f",
+    "tools/firefox-bidi.mjs": "c8dd53ec9363f5e2f6cc477f095558d07ec181775373683a985c57c142b4dce8",
     "tools/gen-pico2-regs.mjs": "bf7485268f7cbaae2220f525e85e845d83ee84b9d8e5ba40a2826c512b9cc6f5",
     "tools/gpu/host-templates.mjs": "b289b183fab05e761b6f24b968ef9b40d9a54398ee30e0bb09e05ab0b49fbb35",
     "tools/gpu/lab-templates.mjs": "f266a9ef4bd02489e0730f16531ad5e211ac0f2aed5a68ec4b91c4ef67b8f98e",
@@ -928,57 +974,56 @@
     "tools/make-mavilera-brand.mjs": "44ea76f77c1e46a0d7fa89d271f927c0198660f312ddf31901d6d81adc95de19",
     "tools/make-sap1-exercises.mjs": "e8c754b46ecf83398bf030f48b2ba2f40a34dee52d03e40fdf49ba19845d57bc",
     "tools/make-sap2-exercises.mjs": "b25aa4d90efcbf7ebe72cac3fc277653619fb8205213f3b22784afeda471d401",
-    "tools/minify.mjs": "d4d8ce86001274c36ca7f0ecfbb605a433fe8ba0c56774149b6473efecf09ca2",
+    "tools/minify.mjs": "9b6a915bc0b0d170d44b26c344647a8b5c650e202961bb70ca17e660aa474397",
     "tools/mobile-smoke.mjs": "fdfc238c5059141782f3adbc1afafdc46cc47d14216f4a070efa9db4644893a4",
     "tools/models-smoke.mjs": "9a7c3de8edda5ab3dec559130a8b09e41820ae77db0f601c6bca416617d1469d",
-    "tools/modest-laptop/CHECKLIST.md": "77b3a38a201343fc26b531ef1892cdcbfc491718a2cb94317b3deb2aa0a0fddd",
-    "tools/modest-laptop/bench-serve.mjs": "5ea6ae78e7788145bac610c69071d547b7f54e8c5238d41ee86aa56f3dad69d4",
-    "tools/modest-laptop/make-kit.ps1": "9a5d4ae9b9fe2a5f0593c275b7cd5fcadd7920321e7c1d3892c36bd466f72e00",
-    "tools/modest-laptop/run.ps1": "10f4c8c233bdb7e9da1707a98cf1e02c8a9ba44534dc1787dc7879e7b9d00842",
-    "tools/module-smoke.mjs": "155547fb0806e403c3966284a527a1505ec9313a18574019be8458caeeed62f6",
+    "tools/module-smoke.mjs": "9ff6b4632fa267a4e57dcd2b6c6c05355cc0a00858e8dffa967c78fcbf6f9c40",
     "tools/node-test-repro.mjs": "c2d328ffe8077938dd52e4c2cf0b9198f2cba288ad63c3d60822e1f337069c58",
     "tools/npu-smoke.mjs": "919d7b70a1844b9af0c087c4185f28e82b2eac09a37161717a73be96e543e7e5",
     "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
     "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
-    "tools/pico-full/README.md": "33cb0cd41573fd0f595ad6a1eb30627629e72fd5bab918a60f12cd706a748d9c",
+    "tools/pico-full/README.md": "7b0cc82adc0bd4cee45c4c877d9e7f493c0e2c37981c745f8690a0cf4df0d7a8",
     "tools/pico-full/build-ccd.ps1": "c88be7c3d86739c65988341971123e4d2aef004289dea655b139786cc5b16ef1",
-    "tools/pico-full/build-check.ps1": "06b56700985489cadde3b5ae3f5b283649471515483652c7ae94e55680c0ef3e",
+    "tools/pico-full/build-check.ps1": "c8376bd36011ca5e7003ecb23dbaf7f0a59cae9f3f7fca0f851a7b34c5d0fe19",
     "tools/pico-full/build-llvm.ps1": "b28815bbd92b6e30a468f410a050b9a829de295bbcb5cc8dd9ae97d5247fb586",
-    "tools/pico-full/build-pack.mjs": "92e0b070ebdac95accf216b356be4d73119c8fefc3b63d1512e259f3e51d6afb",
-    "tools/pico-full/build-profile.ps1": "e279eb52e3b456d6fa562152a78a25d68a500cb622b7306c2799a83032cb493c",
+    "tools/pico-full/build-pack.mjs": "313118fd2cb6c26336e9ad547800910924356eab6c7d5412092f62d00acd5b8e",
+    "tools/pico-full/build-profile.ps1": "f862fb16c7942ef8b1a08112e599e308b8a79c7b00560429ef5111b54cd1c866",
     "tools/pico-full/build-runtimes.ps1": "ad93b9b204bbcd66f8f1baa760524a26b62ac82433f4df8dfd37a7689b15adbd",
     "tools/pico-full/ccd/ccd-client.mjs": "40587b23227ebd6613434cc52da424a0b1ba4aa0bf12563bb4b46e0debee9310",
     "tools/pico-full/ccd/ccd-server.mjs": "1c9711a34510932c1b9fe43e9f38a064269436b9340965163add3a11ed74e110",
     "tools/pico-full/ccd/ccwrap.c": "f04e964b8f3956e638664ea7a88fcbece370b735c3f791647d0f9e8484302bc0",
-    "tools/pico-full/check-pack.mjs": "837e936b52f2005f0d47e8d94f6eefbe539a32c694c705223ba07de54e5088f6",
-    "tools/pico-full/check/CMakeLists.txt": "c0ee384b2f346358f794bd8918ee861ee263da762f922872d49b112b73feeaaa",
+    "tools/pico-full/check-pack.mjs": "fb571cac558a971ec1fca672d64e02af8d063a2d157417a32b1ed6e1db1cb464",
+    "tools/pico-full/check/CMakeLists.txt": "dac8f2b1fdb9e1289cd759761d700adf11ec063b105cdde9f812c8ba90b343e1",
     "tools/pico-full/cmake/TC-picolibc-rv32.cmake": "42b804c80c0de188874d5bba49b3d65c520a3a4d6d2f7059f1412eba9b05ac1a",
     "tools/pico-full/cmake/Toolchain-RV32-wasmclang.cmake": "3d2564d6955ecdba5d49fc1cfb7cd5950ec8030a20cde972782ab33194b25baf",
     "tools/pico-full/cmake/Toolchain-WASI-LLVM.cmake": "f75cc60faba4d6a198f31b6fdc5278b3fc99a1343fa42f0d9ee9ddbde1a80c51",
+    "tools/pico-full/cmake/build-date.cmake": "7755524bff8f328cd28b389cb53a0f74413dffe27bf4356ae33aba146f7ed8b0",
     "tools/pico-full/cmake/cxx-shim/cassert": "e63b3328a2ff575bafde3cf6d00ebd6b0801b8f5e09db8d36c08cae5073cadac",
     "tools/pico-full/cmake/pico_riscv_wasmclang.cmake": "b43b6021fc2ec41695f70a2b1534b2d5c251b3e8f27969bc14cc17ddca681a1d",
-    "tools/pico-full/env.ps1": "7335648015129047072115cf387ea0a312af4a12aa05473f807c0a964c6ed056",
-    "tools/pico-full/excluded.json": "39798a870582faad355331082636baf01d93d9456c23ca14980c5637be208070",
-    "tools/pico-full/fetch.ps1": "1d2a1a7a284bc8e5c536a8a86fa9bad1304aabb16c0793cd4a139d3475402dec",
+    "tools/pico-full/cmdline.mjs": "09a11519d36c27619f79c13c9cd934b63a23a0a4afd214acb65a02f38cf08b4a",
+    "tools/pico-full/env.ps1": "43b011f46155601f99d36921c37a6e8bac764bbd272da780389da5db8bad4db9",
+    "tools/pico-full/excluded.json": "d12d757d17a6f6338b1e4e8cbc91e403be0fb7a43e9b4cbcaf340c9d4463e6a9",
+    "tools/pico-full/fetch.ps1": "2233a3fc10eb03f1f835e01af929b6735d8787e72c07215084a1de2a09131797",
     "tools/pico-full/llvm-23.1.5-wasi.patch": "c2d5fdf88a2dbe9aa3054a56afe2d172f6035b782664f5038365b59099e0c08a",
-    "tools/pico-full/pins.json": "65f3f86da11e3dc6712fea9bbdfd550db36d3bad99f80ab29cb231f817cdac92",
-    "tools/pico-full/profile/CMakeLists.txt": "c5a3d2590278fda26c84926af93ab083e06801e8bbfb5d865f0a7e8a6e88b999",
+    "tools/pico-full/pins.json": "4de8ad9c3f290eacd89ebf691092ed2a82082862eff1003aa5b1cebb706eb167",
+    "tools/pico-full/profile/CMakeLists.txt": "ab8afb3414eed74d42ce4c716dfd98ea8a81592b3e7957d09075549d54b259e3",
     "tools/pico-full/profile/main.c": "3085bf04a4877d9155e08d9f8d10dd64f7c9b47cbcfc328b529031152be14990",
-    "tools/pico-full/stage.mjs": "031207f5eaf7335ebbe00562a5e43da9dcb655c0e1d607f12a6bd9d77109dfbc",
+    "tools/pico-full/stage.mjs": "35c412a152644c820b7e0ab7c1800ee6cebb6b9c4b00bd8973c1c4b38f0285ea",
     "tools/pico-full/start-ccd.ps1": "965ed9f9d12a8a35b340062b2b1cdcc6393ae18ec15cc2babd31cc850fa02e44",
     "tools/pico2-act-run.mjs": "b564ebf04ecb82b3b41ce0e448a8308f4a31bf8691e00fa5937a5171938209da",
     "tools/pico2-act/make-config.py": "4b5575b7ff03879b240206474576a61aed9616f95e634169cc98540febb65ea9",
-    "tools/pico2-audio-smoke.mjs": "1e4c6af722ab4ce74e5b708696dbd0f3c2b78a15b1b29368f09329d07bdec274",
+    "tools/pico2-audio-smoke.mjs": "33c426ba642a5d5913253f876f1670043a547c81b65ff134637798acda0744cb",
     "tools/pico2-board-smoke.mjs": "8576f67e8ad5dabf8c1d87b153d2dbd72e8eb4ee53139af93972c8dc54d60217",
     "tools/pico2-buses-smoke.mjs": "9ac55a430a5f9256995ad2013c71c7e95b021525418e973e4996f4a59a0e6e9e",
     "tools/pico2-c-smoke.mjs": "097b5d7c44e58d15e33cb411bcfab0b1c8a1e583e9ab918f4d1c812a767b6399",
     "tools/pico2-circuit-smoke.mjs": "795cd9e3ddfdd6d12ab7000dde5eb1a1ff33f0ebba1eaccfa8492cdbcd6731ad",
     "tools/pico2-cores-smoke.mjs": "8fb1f329994e760fa851ce4170fce81b9a6d2deeb29761b1e42fda4b01ee5dcb",
     "tools/pico2-decode-oracle.mjs": "abaf6c244cef199a592be0ac730d0edabf369916c69c78e2ce412cd623e74d89",
-    "tools/pico2-full-accept.mjs": "3c624cbfd6ebc7e6449cc7a25c9931b5d4595a0a1f8cf2422a0ea4694e9faa36",
+    "tools/pico2-full-accept.mjs": "75735b8e5a87d3187dfb50e70a0236cd328d1e2bb908683da80ecacd15b72da2",
     "tools/pico2-full-shell-smoke.mjs": "399d67bde02e216cffe0e0334f3c51dc5ce937000a5247a83941910b123af682",
     "tools/pico2-full-smoke.mjs": "eef1225a966fb2a1a2ed63b65d25b8e3dce1c3eff861680ad4bed3b168804a3a",
+    "tools/pico2-hardware-smoke.mjs": "255dbf5402ab806e01d704ad3b4768b7c4720ba7faa29fadf285d2cfcddecbae",
     "tools/pico2-import-smoke.mjs": "6249bd80510464f7cc99245279fe837ec5590f3ea4bd48c6372ca1b95bd8eabb",
     "tools/pico2-lite-smoke.mjs": "a9988c4144add87dfe66c2de373efc55dda68f24b619eb13f2d5d64106f6bed8",
     "tools/pico2-pio-smoke.mjs": "c4594c4635aab585927f25c58dfff4ce2bb9fe5facb64f273d9ac9532a4171ce",
@@ -987,16 +1032,16 @@
     "tools/pico2-realtime-smoke.mjs": "6eebff6057681f7883b5af2fc8dc71ff3483c4c92e43372a8b03df243adfafba",
     "tools/pico2/make-exercises.mjs": "d7800dfe521687624f46bea8a7d22e02f143270722b8ff5d6baa5546437b9205",
     "tools/pico2/make-template-circuits.mjs": "b69f374eae6307dd97eb87c62103ddb430faf52a42d1a188bc583cb8ee7fad2d",
-    "tools/pico2/record-circuit-compat.mjs": "76676e07acf045b9d96473c4244e86676814e1f24dd8823442219a914c1ae9b5",
+    "tools/pico2/record-circuit-compat.mjs": "2bcadc90acc4074457f3679ed73387c0fe6d82e97a36d8cdbffb35d1983ee2bd",
     "tools/release-zips.mjs": "1561fe8cd612e9f505acdb881d0fc3046a3b6c229e4be328e08357b3a576f78e",
-    "tools/release.mjs": "58e9a5dbc6d1cd02d7fb52873b91f2ab514d043881de45719c0e49281e0d7455",
+    "tools/release.mjs": "2ab79ebab7630de6bb608e87a9d61f439af5f30172a1e7137306bb2e1fb747bb",
     "tools/risc-vista-run.mjs": "41044aa7ba2cc3a7c67c513d497856142901397248f296ecf2cef26d2a5197f3",
     "tools/screenshots.mjs": "41a0012f6641177cb26dbc3dc2bfeec26ed9c1d607b8115a4bedb47caf1a98aa",
     "tools/serve.mjs": "af6feecf0aa7efaa7de1f09780e38d56979c12a2ffca9864f1b97a067ec31aa1",
-    "tools/site-files.mjs": "2d9e368ac41435f801d6622a635b762571d5bbc3597107a93e6690a9edb8b000",
+    "tools/site-files.mjs": "e15e994e30b85b0bf9c3b8899ba25a53a187d6607a80939511578f085dcbff08",
     "tools/view-mode-smoke.mjs": "90f72bc0e92b337ea622d7f82a7f67f1a338892e228ed617571e84aac10377d3",
     "tools/zip.mjs": "ead8c71f183e52385ce4dd42a4b921731a435bcb19b6c6d84ce3e4fec4dc09d4",
-    "(not published: scripts that read the private book repository, and the publication scripts)": "19 files, sha256 bdfd2993b9ef269f5d265ce1124079d1ed2e7557a948e6193ff47b167c2694a6"
+    "(not published: scripts that read the private book repository, and the publication scripts)": "23 files, sha256 22d732a7521eccef3796d65eb55e08df8e4dc68066e458027633fab421e473b0"
    }
   }
  },
@@ -1042,7 +1087,7 @@
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1840,\"pass\":1840,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1436,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1911,\"pass\":1911,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1544,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -3291,6 +3336,21 @@
    "ok": true
   },
   {
+   "file": "test/contract-v13.test.mjs",
+   "name": "v13 (approved 2026-11-15, research D60), now 14 (D62): capability hardware is listed",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v13.test.mjs",
+   "name": "v13: projectOptions belong to an image language, with a default among two or more short values",
+   "ok": true
+  },
+  {
+   "file": "test/contract-v13.test.mjs",
+   "name": "v13: the pico2 descriptor with projectOptions is valid",
+   "ok": true
+  },
+  {
    "file": "test/contract-v9.test.mjs",
    "name": "v9: a descriptor with variants validates, in its own variant and in the other",
    "ok": true
@@ -5051,6 +5111,11 @@
    "ok": true
   },
   {
+   "file": "test/layout.test.mjs",
+   "name": "vendored third-party code is unchanged, licensed and listed",
+   "ok": true
+  },
+  {
    "file": "test/mavilera-brand.test.mjs",
    "name": "every SVG is self-contained, licensed and uses only theme colours (or black/white)",
    "ok": true
@@ -6462,7 +6527,7 @@
   },
   {
    "file": "test/pico2-board.test.mjs",
-   "name": "pico2 board: the descriptor's Board view is a page view, last, and the contract accepts it (v11, approved D50)",
+   "name": "pico2 board: the descriptor's Board view is a page view, the last simulator view, and the contract accepts it (v11, approved D50)",
    "ok": true
   },
   {
@@ -7252,6 +7317,11 @@
   },
   {
    "file": "test/pico2-full.test.mjs",
+   "name": "driver: the object set follows the stdio option and an include of pico/multicore.h; comments do not count",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
    "name": "driver: the precompiled header is used only when the first directive includes its header",
    "ok": true
   },
@@ -7262,7 +7332,77 @@
   },
   {
    "file": "test/pico2-full.test.mjs",
+   "name": "pack builder: Windows command lines split as the C runtime does (quotes inside an argument, escaped quotes)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
    "name": "pack: write then read gives the meta and every file; other bytes are refused",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "sets: a project including pico/multicore.h builds with uart_mc and both cores print",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "sets: pico_status_led links from the pack (its pioasm-generated header included)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "sets: the option \"UART and USB\" builds with TinyUSB; on the model the UART output equals the UART-only build's",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-full.test.mjs",
+   "name": "sets: the pack's fixed build date is in binary info",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "Compare with the simulator: agreeing lines, the first difference, nothing to compare",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "contract v14 View.capability: a known capability only, never on the instruction view; the shell hides the view where it is off",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "Probe board reports what Load would refuse rather than refusing: an unknown ROM, a partition table",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "Probe board: chip, ROM version, serial and boot partition, with read-only commands only",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "readFlash refuses ranges outside the flash or not sector-aligned before any USB",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "Run the board's program: one REBOOT2 of type normal, nothing written",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "Sample projects: thirteen topic groups in embedded-systems order; every sample in a group, each group used",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "Save the board's flash: the program's sectors (or all 4 MiB), read only, the bytes the board holds",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "the monitor counts lines and bytes and hands each chunk to the hex view; Clear resets them",
    "ok": true
   },
   {
@@ -7356,6 +7496,26 @@
    "ok": true
   },
   {
+   "file": "test/pico2-headers.test.mjs",
+   "name": "contract v14: Pico SDK C words the headers list; it is only for image languages",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-headers.test.mjs",
+   "name": "includeNames: \"...\" and <...>, in order, once each; commented ones are not includes",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-headers.test.mjs",
+   "name": "search order: -iquote only for \"...\", then -I, -isystem and the toolchain's, whatever the command line's order",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-headers.test.mjs",
+   "name": "with the SDK pack: each sample's includes resolve to the SDK or the C library; a project's own files and .pio.h are not listed",
+   "ok": true
+  },
+  {
    "file": "test/pico2-history.test.mjs",
    "name": "a device write (the bus has no peek) is recorded but not restored",
    "ok": true
@@ -7393,6 +7553,121 @@
   {
    "file": "test/pico2-history.test.mjs",
    "name": "Zcmp: a push and a pop with a long register list are one step each, undone in one step",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "badge: text states from the record (none, same, other, foreign)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "capabilities: feature tests only (WebUSB, Web Serial, secure context, folder picker)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "Forget this board (S13): its record and the browser's permission",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "Q6: build n counts distinct builds per project; an unchanged rebuild keeps n; Q7: the badge follows; Check reads back",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "Q9 B: a RAM-only image loads (no erase); a program without an artifact is not bootable and nothing reaches the board",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "serial: after an unplug the monitor waits and reopens the same port when it comes back; a busy port is named; two candidates: it asks",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "serial: lines end at CRLF, LF or a lone CR, also split across chunks; invalid UTF-8 shows U+FFFD",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "serial: opens 8N1 at 115200 with DTR on, never at 1200; receives lines (multibyte split across chunks); sends with CR by default",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "serial: the kept text is capped as the console; Clear empties it",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "the chooser comes first (the click's activation), filtered to 2E8A:000F; closing it is \"denied\" with nothing built (U-03)",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "U-02/Q4/Q5: a granted board loads without the chooser; the build runs after it is chosen; the confirmation names board and build n",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "U-14: two granted boards: the student is asked; the chosen one is written",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "unplugged during the write: \"disconnected\", no record of a load; Stop before the confirmation cancels with nothing written",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw-session.test.mjs",
+   "name": "without WebUSB the answer is the download; outside a secure context nothing is tried; a failed build stops before USB",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "Q9 B: a RAM-only image is written to SRAM without erasing, read back, then REBOOT2 RAM_IMAGE with its base and size",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-01: the PICOBOOT interface is found by class 0xff/0/0 and its bulk endpoints, not by number",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-05/U-06: a flash image: preflight, confirmation, exclusive access, erase/write/read per sector with 0x10000000 last, REBOOT2 FLASH_UPDATE; progress monotonic to 100 % once",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-07: an artifact that is not a whole, aligned RP2350 image is refused before any USB traffic",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-08: cancelling before the first erase writes nothing; stopping afterwards finishes the sector, leaves BOOTSEL, no reboot",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-10: failures become named errors: unplugged mid-write, a hung transfer, a busy or inaccessible interface, partition tables, wrong chips, NOT_PERMITTED",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-11: after success, failure and disconnect the interface is released and the device closed",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-12: of all 256 command ids only the allow-list reaches the device; OTP_WRITE, PC_SP and EXEC cannot be sent",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hw.test.mjs",
+   "name": "U-13: a corrupted read-back is a verify failure naming the sector; nothing is rebooted; Check reads back without writing",
    "ok": true
   },
   {
@@ -7682,6 +7957,11 @@
   },
   {
    "file": "test/pico2-platform.test.mjs",
+   "name": "ROM: get_sys_info(SYS_INFO_CHIP_INFO) writes 4 words (flags, package, chip id) and returns 4; a small buffer gives -13",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-platform.test.mjs",
    "name": "ROM: rom_table_lookup_entry finds BOOTROM_STATE_RESET, which returns; an unmodelled ROM function stops with a message",
    "ok": true
   },
@@ -7853,6 +8133,91 @@
   {
    "file": "test/pico2-realtime.test.mjs",
    "name": "the clock option (D36 Q2): the assembler predefines its symbols; a program's own .equ wins; the device templates run at 1, 4 and 12 MHz",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample projects in Pico SDK C: listed in topic groups, shown only in Full, each with a check here",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-adc-knob (sdk-adc-knob.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-blink (sdk-blink.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-button-irq (sdk-button-irq.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-demo (sdk-demo.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-dma-copy (sdk-dma-copy.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-hello (sdk-hello.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-i2c-lcd (sdk-i2c-lcd.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-i2c-mcp9808 (sdk-i2c-mcp9808.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-pio-led (sdk-pio-led.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-pwm-fade (sdk-pwm-fade.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-pwm-tone (sdk-pwm-tone.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-spi-loopback (sdk-spi-loopback.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-temperature (sdk-temperature.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-timer (sdk-timer.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-two-cores (sdk-two-cores.c): builds with the Pico SDK and shows what its comment says on the model",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-sdk-samples.test.mjs",
+   "name": "Full sample sdk-uart-echo (sdk-uart-echo.c): builds with the Pico SDK and shows what its comment says on the model",
    "ok": true
   },
   {
@@ -8537,6 +8902,11 @@
   },
   {
    "file": "test/project-session.test.mjs",
+   "name": "project options (v13, pico2 P1-R4): set, cleared, kept in storage and through a .zip; malformed ones dropped",
+   "ok": true
+  },
+  {
+   "file": "test/project-session.test.mjs",
    "name": "projects: new, list, open, rename, delete (the open one: the newest other opens, or a fallback)",
    "ok": true
   },
@@ -8853,6 +9223,21 @@
   {
    "file": "test/rtl.test.mjs",
    "name": "WS-V-021: chapter06/rtype, every signal of every cycle equals the reference RTL",
+   "ok": true
+  },
+  {
+   "file": "test/sample-tabs.test.mjs",
+   "name": "families: no language and asm are Assembly; every C compiler is C; another language is its own",
+   "ok": true
+  },
+  {
+   "file": "test/sample-tabs.test.mjs",
+   "name": "tabs: none for one family; C, Assembly, MicroPython in that order; others after them",
+   "ok": true
+  },
+  {
+   "file": "test/sample-tabs.test.mjs",
+   "name": "today: RISC-V and the Pico 2 get C and Assembly tabs; the assembly-only modules get none",
    "ok": true
   },
   {
@@ -10979,7 +11364,7 @@
    "realtime": {
     "exitStatus": 0,
     "tail": [
-     "  ok   replay is bit-exact: a fresh engine with the run's inputs reaches the same machine state at the same step; the inputs survive a reload — 3 inputs, 8900158 steps, hash 23a8c662 = 23a8c662; after the reload \"3 inputs given (pins and UART), each at its clock cycle.\"",
+     "  ok   replay is bit-exact: a fresh engine with the run's inputs reaches the same machine state at the same step; the inputs survive a reload — 3 inputs, 9199336 steps, hash 4af8a40f = 4af8a40f; after the reload \"3 inputs given (pins and UART), each at its clock cycle.\"",
      "  ok   the pipeline view: Real time says it runs at full speed there — noted",
      "all checks passed"
     ]
@@ -10987,7 +11372,7 @@
    "audio": {
     "exitStatus": 0,
     "tail": [
-     "  ok   the PWM tab lists slice 7 on GP14; the DMA tab channel 0 paced by PWM wrap 7 — PWM \"7yesfree-running19918 (21)02140.000 kHz21.0 %0.0 %GP14\"; DMA \"0busyyes0x200401a40x400a80981 / 1endless4+1 / fixed256 B (read)—PWM wrap 7raised—\"",
+     "  ok   the PWM tab lists slice 7 on GP14; the DMA tab channel 0 paced by PWM wrap 7 — PWM \"7yesfree-running19982 (85)08540.000 kHz85.0 %0.0 %GP14\"; DMA \"0busyyes0x200401640x400a80981 / 1endless4+1 / fixed256 B (read)—PWM wrap 7raised—\"",
      "  ok   Render and play: 2 s at full speed, then played — ℹ Playing 2.0 s of rendered sound.",
      "all checks passed"
     ]
@@ -10995,8 +11380,8 @@
    "cores": {
     "exitStatus": 0,
     "tail": [
-     "  ok   the template \"Two cores, two LEDs\" builds; Real time runs both cores to the end: exit code 1 — ✔ Opened the template \"Two cores, two LEDs\". Its first lines say what to try.The text that was in the editor is kept: File ▸ Restore previous text. | ✔ Halted at pc = 0x2000010c.",
-     "  ok   the registers panel has the Core 1 group; Step moves core 0 by one instruction while core 1 runs alongside; Back returns — core 1 running; step fe8eeeb8 → c4d1d877, back fe8eeeb8",
+     "  ok   the template \"Two cores, two LEDs\" builds; Real time runs both cores to the end: exit code 1 — ✔ Opened the sample project \"Two cores, two LEDs\". Its first lines say what to try.The text that was in the editor is kept: File ▸ Restore previous text. | ✔ Halted at pc = 0x2000010c.",
+     "  ok   the registers panel has the Core 1 group; Step moves core 0 by one instruction while core 1 runs alongside; Back returns — core 1 running; step 336e71ac → 24eed193, back 336e71ac",
      "all checks passed"
     ]
    },
@@ -11020,7 +11405,7 @@
     "exitStatus": 0,
     "tail": [
      "  ok   axe-core: nothing found on the Board tab (dark theme)",
-     "  ok   Pico Full: the Board tab is offered — [\"Instructions\",\"Core\",\"Board\"]",
+     "  ok   Pico Full: the Board tab is offered — [\"Instructions\",\"Core\",\"Board\",\"Hardware\"]",
      "all checks passed"
     ]
    }

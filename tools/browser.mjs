@@ -167,6 +167,8 @@ async function openPage(cdp, { width = 1366, height = 768, colorScheme = null, r
     async screenshot(format = 'png', quality = undefined) {
       return Buffer.from((await send('Page.captureScreenshot', { format, quality })).data, 'base64');
     },
+    /** A script run in every document of this page before its own scripts (pico2 P1-F3: the mock WebUSB and Web Serial). */
+    async preload(source) { await send('Page.addScriptToEvaluateOnNewDocument', { source }); },
     async close() { await cdp.send('Target.closeTarget', { targetId }); },
   };
   return page;

@@ -43,6 +43,7 @@ test('every code and content file carries the copyright line and its rights clas
   for (const path of FILES) {
     const ext = extname(path).toLowerCase();
     const text = () => readFileSync(join(ROOT, path), 'utf8');
+    if (/^src\/(?:arch\/[\w-]+\/)?vendor\//.test(path)) continue; // third-party code, checked below (pico2 P1-F3)
     if (COMMENTED.has(ext)) {
       const t = text();
       const cls = rightsClass(path);
@@ -52,6 +53,29 @@ test('every code and content file carries the copyright line and its rights clas
       const copyright = JSON.parse(text())._copyright ?? '';
       if (!COPYRIGHT.test(copyright)) bad.push(`${path}: no "_copyright" field`);
     }
+  }
+  assert.deepEqual(bad, []);
+});
+
+// pico2 P1-F3 (research D20, ADR-0010 option A): third-party code vendored into the shipped site lives in a module's own
+// src/arch/<id>/vendor/<name>/ (W-D29; or src/vendor/<name>/ for the shell) with its LICENSE and a VENDOR.json naming the pinned commit and each file's SHA-256; every file is byte-identical to that list (no
+// local changes), and THIRD_PARTY.md (the commit) and NOTICE (the name) list the component
+test('vendored third-party code is unchanged, licensed and listed', async () => {
+  const { createHash } = await import('node:crypto');
+  const bad = [];
+  const dirs = [...new Set(FILES.map((p) => /^(src\/(?:arch\/[\w-]+\/)?vendor\/[^/]+)\//.exec(p)?.[1]).filter(Boolean))];
+  const third = readFileSync(join(ROOT, 'THIRD_PARTY.md'), 'utf8'), notice = readFileSync(join(ROOT, 'NOTICE'), 'utf8');
+  for (const d of dirs) {
+    const base = d;
+    if (!existsSync(join(ROOT, base, 'VENDOR.json')) || !existsSync(join(ROOT, base, 'LICENSE'))) { bad.push(`${base}: VENDOR.json and LICENSE needed`); continue; }
+    const v = JSON.parse(readFileSync(join(ROOT, base, 'VENDOR.json'), 'utf8'));
+    for (const p of FILES.filter((x) => x.startsWith(`${base}/`) && x !== `${base}/VENDOR.json`)) {
+      const name = p.slice(base.length + 1);
+      const h = createHash('sha256').update(readFileSync(join(ROOT, p))).digest('hex');
+      if (v.files?.[name] !== h) bad.push(`${p}: not the pinned bytes`);
+    }
+    for (const name of Object.keys(v.files ?? {})) if (!existsSync(join(ROOT, base, name))) bad.push(`${base}/${name}: missing`);
+    if (!third.includes(v.commit) || !notice.includes(base)) bad.push(`${base}: THIRD_PARTY.md (commit) and NOTICE must name it`);
   }
   assert.deepEqual(bad, []);
 });

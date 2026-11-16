@@ -201,6 +201,9 @@ export function stripCss(src) {
 
 /** The release copy of a file: minified JavaScript, CSS and JSON; anything else as it is. */
 export function minify(path, text) {
+  // pico2 P1-F3: vendored third-party code ships byte for byte as pinned (its own licence header, its SHA-256 in VENDOR.json)
+  // (either separator: checkSuite passes Windows paths; 2026-11-15, it minified the vendored files there)
+  if (/(^|[\\/])vendor[\\/]/.test(path)) return text;
   if (/\.m?js$/.test(path)) return stripJs(text);
   if (/\.css$/.test(path)) return stripCss(text);
   if (/\.json$/.test(path)) return `${JSON.stringify(JSON.parse(text))}\n`;

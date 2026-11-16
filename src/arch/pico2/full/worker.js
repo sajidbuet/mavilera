@@ -1,7 +1,8 @@
 // worker.js -- the Pico Full compiler Worker (pico2 P1-F2, research D33): downloads or reads from the cache the compiler
 // and the SDK pack (assets.js), keeps them, and builds projects (host.js), so the page never waits on the compiler.
 //
-// Messages in:  {id, type: 'probe', base} | {id, type: 'load', base} | {id, type: 'build', files} | {id, type: 'forget'}
+// Messages in:  {id, type: 'probe', base} | {id, type: 'load', base} | {id, type: 'build', files, options?} | {id, type: 'forget'}
+//               | {id, type: 'headers', files, options?} (the SDK and C-library headers the project includes, host.headers)
 // Messages out: {id, type: 'progress', file: 'compiler'|'pack', loaded, total, done, fromCache?}
 //               {id, type: 'result', value} (an ELF is transferred) | {id, type: 'error', code, message}
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
@@ -28,7 +29,7 @@ async function load(id, base) {
   return { version: m.version, times: { download: Math.round(t1 - t0), pch: Math.round(pch.ms) }, pch: pch.ok, fromCache: m.toDownload === 0 };
 }
 
-self.onmessage = async ({ data: { id, type, base, files } }) => {
+self.onmessage = async ({ data: { id, type, base, files, options } }) => {
   try {
     if (type === 'probe') { postMessage({ id, type: 'result', value: await probe(base) }); return; }
     if (type === 'load') {
@@ -38,8 +39,14 @@ self.onmessage = async ({ data: { id, type, base, files } }) => {
     }
     if (type === 'build') {
       if (!host) throw Object.assign(new Error('the compiler is not loaded'), { code: 'notLoaded' });
-      const r = await host.build(files);
+      const r = await host.build(files, options ?? {}); // P1-R4: {stdio} picks the object set
       postMessage({ id, type: 'result', value: r }, r.elf ? [r.elf.buffer] : []);
+      return;
+    }
+    // the headers a project includes from the SDK and the C library, as the build finds them (read-only in the explorer)
+    if (type === 'headers') {
+      if (!host) throw Object.assign(new Error('the compiler is not loaded'), { code: 'notLoaded' });
+      postMessage({ id, type: 'result', value: host.headers(files, options ?? {}) });
       return;
     }
     if (type === 'forget') { host = null; postMessage({ id, type: 'result', value: await forget() }); return; }

@@ -52,13 +52,92 @@ export async function runJob(module, fs, argv) {
   return { code, stdout: wasi.text('stdout'), stderr: wasi.text('stderr'), ms: performance.now() - t0 };
 }
 
+// ---- object sets (P1-R4, research D58; docs/architecture/pico2-p1r4-pack.md) ----
+// The pack holds four sets of prebuilt SDK objects with their own compile and link templates: stdio over UART only or over
+// UART and USB (the project option, P1-F3 Q3 A), each without or with pico_multicore. LIB_PICO_MULTICORE and
+// LIB_PICO_STDIO_USB change shared SDK code (malloc's mutex, thread-safe statics, pico_flash, stdio), so one set of
+// objects could not serve every program as CMake would build it.
+export const PACK_SETS = Object.freeze(['uart', 'uart_mc', 'usb', 'usb_mc']);
+export const DEFAULT_SET = 'uart';
+export const STDIO_CHOICES = Object.freeze(['uart', 'usb']);
+const MULTICORE_HEADER = 'pico/multicore.h';
+
+/** Text without C comments (string literals are left alone: an include inside one is not a directive anyway). */
+const uncomment = (text) => text.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' ')).replace(/\/\/[^\n]*/g, '');
+
+/** True when `text` has a directive including `header` (<...> or "..."), anywhere in the file. */
+export function includesHeader(text, header) {
+  const h = header.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+  return new RegExp(`^[ \\t]*#[ \\t]*include[ \\t]*[<"]${h}[>"]`, 'm').test(uncomment(text));
+}
+
 /**
- * Builds the precompiled header from its source in the pack (once per loaded pack: it is not shipped, 3.8 MB raw).
- * Returns the job result with `ok`.
+ * The object set for a build: stdio from the project option (`uart` | `usb`), multicore when a C, header or assembly
+ * file of the project includes "pico/multicore.h" (as a CMake project would link pico_multicore). Returns
+ * {id, stdio, multicore}; `id` is null when the pack has no such set (a pack from before P1-R4 has only uart).
  */
-export async function preparePch(module, fs, meta) {
-  if (!meta.pch || !meta.templates.pch) return { ok: false, code: -1, stdout: '', stderr: 'the pack has no precompiled header', ms: 0 };
-  const r = await runJob(module, fs, meta.templates.pch);
+export function chooseSet(meta, files, { stdio = 'uart' } = {}) {
+  const io = STDIO_CHOICES.includes(stdio) ? stdio : 'uart';
+  const multicore = files.some((f) => /\.(c|h|S)$/.test(f.name) && includesHeader(f.text, MULTICORE_HEADER));
+  const id = `${io}${multicore ? '_mc' : ''}`;
+  const have = meta.sets ? id in meta.sets : id === DEFAULT_SET;
+  return { id: have ? id : null, stdio: io, multicore };
+}
+
+/** {templates, pch} of a set; a pack from before P1-R4 has the default set's fields only. */
+export function setOf(meta, set = DEFAULT_SET) {
+  if (meta.sets) {
+    const s = meta.sets[set];
+    if (!s) throw new Error(`the SDK pack has no object set ${set}`);
+    return s;
+  }
+  if (set !== DEFAULT_SET) throw new Error(`the SDK pack has no object set ${set}`);
+  return { templates: meta.templates, pch: meta.pch };
+}
+
+/** The #include directives of a C, header or assembly text, in order without repeats: [{name, quoted}] (comments skipped). */
+export function includeNames(text) {
+  const out = [], seen = new Set();
+  for (const m of uncomment(text).matchAll(/^[ \t]*#[ \t]*include[ \t]*(?:"([^"\n]+)"|<([^>\n]+)>)/gm)) {
+    const name = (m[1] ?? m[2]).trim(), quoted = m[1] !== undefined;
+    if (!seen.has(name)) { seen.add(name); out.push({ name, quoted }); }
+  }
+  return out;
+}
+
+// clang's search order whatever the command line's: "..." first in -iquote dirs, then -I, then -isystem, then the
+// toolchain's own (-internal-isystem, -internal-externc-isystem), each group in command-line order
+const SEARCH_GROUP = Object.freeze({ '-iquote': 'quote', '-I': 'user', '-isystem': 'system', '-internal-isystem': 'internal', '-internal-externc-isystem': 'internal' });
+/** The include search directories of a compile template: {quote, user, system, internal}, each in command-line order. */
+export function includeSearchDirs(args) {
+  const d = { quote: [], user: [], system: [], internal: [] };
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (SEARCH_GROUP[a] && i + 1 < args.length) { d[SEARCH_GROUP[a]].push(args[++i]); continue; }
+    const m = /^(-iquote|-isystem|-I)(.+)$/.exec(a);
+    if (m) d[SEARCH_GROUP[m[1]]].push(m[2]);
+  }
+  return d;
+}
+
+/** Where the compiler finds `name` (an include outside the project): the pack path, or null. `has(path)` tests the pack. */
+export function resolveInclude(has, dirs, name, quoted) {
+  if (name.startsWith('/') || name.split('/').includes('..')) return null; // the samples never need these; never leave the dirs
+  for (const dir of [...(quoted ? dirs.quote : []), ...dirs.user, ...dirs.system, ...dirs.internal]) {
+    const p = `${dir.replace(/\/+$/, '')}/${name}`;
+    if (has(p)) return p;
+  }
+  return null;
+}
+
+/**
+ * Builds a set's precompiled header from its source in the pack (once per loaded pack and set: it is not shipped,
+ * 3.8 MB raw). Returns the job result with `ok`.
+ */
+export async function preparePch(module, fs, meta, set = DEFAULT_SET) {
+  const s = setOf(meta, set);
+  if (!s.pch || !s.templates.pch) return { ok: false, code: -1, stdout: '', stderr: 'the pack has no precompiled header', ms: 0 };
+  const r = await runJob(module, fs, s.templates.pch);
   return { ok: r.code === 0, ...r };
 }
 
@@ -77,8 +156,9 @@ export function startsWithPchHeader(text, header) {
  * linked. Returns {ok, elf?, objects, jobs: [{file, step, code, stderr, ms}]}. Stops at the first failing step but
  * compiles every file first, so that all compile errors are reported together.
  */
-export async function buildProject({ module, fs, meta, files, usePch = true }) {
-  const t = meta.templates;
+export async function buildProject({ module, fs, meta, files, usePch = true, set = DEFAULT_SET }) {
+  const s = setOf(meta, set);
+  const t = s.templates;
   const enc = new TextEncoder();
   const jobs = [], objects = [];
   for (const f of files) fs.write(`${PROJECT_DIR}/${f.name}`, enc.encode(f.text));
@@ -87,7 +167,7 @@ export async function buildProject({ module, fs, meta, files, usePch = true }) {
     if (!C_FILE.test(f.name) && !ASM_FILE.test(f.name)) continue;
     const src = `${PROJECT_DIR}/${f.name}`, obj = `${OBJ_DIR}/${stem(f.name)}.${C_FILE.test(f.name) ? 'c' : 'S'}.o`;
     if (C_FILE.test(f.name)) {
-      const pch = usePch && meta.pch && fs.stat(meta.pch.path) && startsWithPchHeader(f.text, meta.pch.header);
+      const pch = usePch && s.pch && fs.stat(s.pch.path) && startsWithPchHeader(f.text, s.pch.header);
       const argv = expand(pch ? t.cPch : t.c, { src, obj, name: f.name });
       const r = await runJob(module, fs, argv);
       jobs.push({ file: f.name, step: pch ? 'compile (precompiled header)' : 'compile', ...r });

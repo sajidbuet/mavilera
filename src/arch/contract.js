@@ -18,7 +18,11 @@
 // 2026-11-09 (research D35; advance counts clock cycles); version 11 (page views: View.engine 'page', ViewContext.engine/input/option,
 // ViewInstance.live, for pico2's Board view, §28) approved by the author on 2026-11-12 (research D50); version 12 (opened
 // 2026-11-12 for pico2's user circuits, research D51 Q2 A, §29: Language.companions, ViewContext.companion/setCompanion,
-// holdRun, link inputs adc/env/part) approved by the author on 2026-11-13 and frozen with release 1.6.0 (research D53, D57). A change raises
+// holdRun, link inputs adc/env/part) approved by the author on 2026-11-13 and frozen with release 1.6.0 (research D53, D57); version 13
+// (pico2 P1-R4 and P1-F3, §30: ExtraLanguage.projectOptions and Project.options, capability hardware with Descriptor.hardware
+// and the shell's Load button, Panel.capability) approved by the author on 2026-11-15 (research D60); version 14 (pico2's Hardware
+// tab and the read-only SDK headers, §31: View.capability, ExtraLanguage.headersText and the loaded part's headers) approved by
+// the author on 2026-11-15 (research D62). A change raises
 // CONTRACT_VERSION and is recorded in docs/architecture/arch-contract.md.
 //
 // Decisions of 2026-10-28 that the shell implements on this contract:
@@ -30,7 +34,7 @@
 // Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 // Rights class: code.
 
-export const CONTRACT_VERSION = 12;
+export const CONTRACT_VERSION = 14;
 
 /**
  * The output an engine keeps (author, 2026-10-29): when its output passes twice this many characters, the oldest are
@@ -89,6 +93,7 @@ export const CAPABILITIES = Object.freeze([
   'realtime', // v10: a paced real-time run in a Worker with devices present (needs Descriptor.realtime, Engine.advance)
   'audio', // v10: audio output through an AudioWorklet (needs Descriptor.audio, Engine.drainAudio)
   'projects', // v10 (draft, added 2026-11-08, pico2 P1-F1, research D31): several files per program, file explorer, tabs, IndexedDB store, zip, share links v2
+  'hardware', // v13 (DRAFT, pico2 P1-F3, research D20 Q5, D58 Q10 A): the module can program a physical board (needs Descriptor.hardware)
 ]);
 
 /** v10 (draft). The image files the shell can pass to Language.loadImage, by extension; the default of Language.imageKinds is the first two. */
@@ -142,6 +147,29 @@ export const VIEW_KINDS = Object.freeze(['isa', 'datapath', 'bus', 'compare']);
  * @property {Edition[]} [editions]       v10 draft (pico2 P1-L1, research D34): the module's editions (pico2: Lite and
  *           Full), the first the default; resolved when the page starts (withEdition), changed by reloading the page
  * @property {string | null} [activeEdition]  v10 draft: set by withEdition on the merged descriptor (null: no editions)
+ * @property {{load: () => Promise<{create: (ctx: HardwareContext) => HardwareInstance}>}} [hardware]  v13 (capability
+ *           hardware; pico2 P1-F3): programming a physical board. The shell loads it when the page starts where the capability is
+ *           on, creates one instance, and shows a Load button after Build and Run whose click calls `instance.load()` at once
+ *           (a browser's device chooser needs the click's user activation, which lasts about 5 s)
+ */
+
+/**
+ * v13 (pico2 P1-F3, research D58 Q10 A). The shell's side of board programming.
+ *
+ * @typedef {object} HardwareContext
+ * @property {Record<string, any>} strings
+ * @property {(text: string, kind?: string) => void} message
+ * @property {() => {id: string, name: string} | null} project
+ * @property {() => Program | null} program   the program loaded now (its `debug.artifact` is a validated image, if any)
+ * @property {() => Promise<Program | null>} build  builds the project when its sources changed since the last build (as
+ *           Build does, messages in the console) and resolves to the program, or null when it did not build
+ * @property {() => {kind: string, bytes: Uint8Array, name: string} | null} image  the current program's file (built or imported)
+ * @property {(name: string, bytes: Uint8Array, type?: string) => void} download
+ *
+ * @typedef {object} HardwareInstance
+ * @property {(program: Program | null) => {ok: boolean, reason?: string}} canLoad
+ * @property {() => Promise<{ok: boolean}>} load   the whole flow, started from the click (chooser first)
+ * @property {string} label  the Load button's name;  @property {string} [title]  its tooltip
  */
 
 /**
@@ -241,6 +269,8 @@ export async function withVariant(d, variant) {
  * @typedef {object} Panel
  * @property {string} id
  * @property {string} label                the tab's name
+ * @property {string} [capability]         v13 (pico2 P1-F3): shown only where this capability is on (pico2: the Board and
+ *           Serial panels with `hardware`, so Pico Lite has neither)
  * @property {() => Promise<{create: (ctx: PanelContext) => PanelInstance}>} load
  *
  * @typedef {object} PanelContext
@@ -356,6 +386,17 @@ export async function withVariant(d, variant) {
  * @property {{extension: string, convert: (image: Uint8Array) => Uint8Array | Promise<Uint8Array>}[]} [saveAs]  v10 draft,
  *           image languages: formats the built image can be saved in besides itself (pico2: '.uf2'); the shell's File menu
  *           offers them
+ * @property {{id: string, label: string, title?: string, values: {id: string, label: string}[], default: string,
+ *             changed?: (value: string) => string}[]} [projectOptions]  v13 (pico2 P1-R4, research D58), image languages:
+ *           build options kept in each project (`Project.options`, also in its .zip), chosen in the Project menu and passed
+ *           as the second argument of `build(files, options)` with each default filled in; `changed` words the message
+ *           after a choice (pico2 Full: Output, UART or UART and USB)
+ * @property {{head: string, title: string, kinds: Record<string, string>, notLoaded: string, missing: string, none: string,
+ *             viewer: (name: string) => string, from: (kind: string, path: string) => string}} [headersText]  v14
+ *           (pico2 Full; approved 2026-11-15, D62), image languages: the explorer lists, read-only under the project's files, the headers
+ *           the project includes from outside it, from `headers(files, options) => Promise<{name, path: string | null, kind?,
+ *           text?}[] | null>` of the language's loaded part (null: not available yet, e.g. the compiler not loaded; the shell
+ *           never downloads for it); this is that list's wording. A header opens in a read-only viewer
  */
 
 /**
@@ -532,6 +573,9 @@ export async function withVariant(d, variant) {
  *           program as in the instruction view (its step, back and state are not called; it keeps the engine's state when the
  *           view changes between it and the instruction view), lays the page out as for a drawing view, calls `render()` after
  *           every refresh and `live(state)` with each live state of a real-time run
+ * @property {string} [capability]            v14 (pico2 Hardware tab, design pico2-hardware-tab.md §9; approved 2026-11-15, D62): the view
+ *           is shown only where this capability is on (as Panel.capability); a link or stored view naming it falls back to the
+ *           first view where it is off
  *
  * @typedef {object} ViewContext
  * @property {Record<string, any>} strings
@@ -684,6 +728,21 @@ export function validateDescriptor(d) {
     for (const o of x.options ?? []) {
       need(Array.isArray(o.values) && o.values.some((v) => v.id === o.default), `extra language ${x.id}: option ${o.id}: default among values`);
     }
+    // v13 (pico2 P1-R4, research D58): build options kept per project, for an image language only
+    if (x.projectOptions !== undefined) {
+      need(x.image === true && Array.isArray(x.projectOptions) && x.projectOptions.length <= 8, `extra language ${x.id}: projectOptions (at most 8) belong to an image language`);
+      for (const o of x.projectOptions ?? []) {
+        need(/^[a-z][A-Za-z0-9]{0,31}$/.test(o?.id ?? '') && typeof o.label === 'string' && Array.isArray(o.values) && o.values.length >= 2
+          && o.values.every((v) => /^[a-z][a-z0-9_-]{0,31}$/.test(v?.id ?? '') && typeof v.label === 'string') && o.values.some((v) => v.id === o.default)
+          && (o.changed === undefined || isFn(o.changed)), `extra language ${x.id}: project option ${o?.id}: id, label, two or more values, default among them`);
+      }
+    }
+    // v14 (pico2 Full, 2026-11-15): the wording of the read-only headers' list, for an image language only
+    if (x.headersText !== undefined) {
+      const h = x.headersText;
+      need(x.image === true && ['head', 'title', 'notLoaded', 'missing', 'none'].every((k) => typeof h?.[k] === 'string')
+        && h.kinds && typeof h.kinds === 'object' && isFn(h.viewer) && isFn(h.from), `extra language ${x.id}: headersText (image languages; head, title, kinds, notLoaded, missing, none, viewer, from)`);
+    }
   }
 
   const R = d.registers ?? {};
@@ -751,6 +810,12 @@ export function validateDescriptor(d) {
       need(relative(a?.processor) && a.processor.endsWith('.js'), 'audio.processor: a relative path ending .js');
     }
     need((d.capabilities?.audio === true) === (d.audio !== undefined), 'capability audio true needs Descriptor.audio, and the reverse');
+    // v13 (pico2 P1-F3): capability hardware true needs Descriptor.hardware; Descriptor.hardware needs the capability to be
+    // declared (an edition may turn it off: pico2 Lite)
+    if (d.hardware !== undefined) need(d.hardware && typeof d.hardware.load === 'function', 'hardware: {load}');
+    need(d.capabilities?.hardware !== true || d.hardware !== undefined, 'capability hardware true needs Descriptor.hardware');
+    need(d.hardware === undefined || d.capabilities?.hardware !== undefined, 'Descriptor.hardware needs capability hardware (true, or off with a reason)');
+    for (const p of Array.isArray(d.panels) ? d.panels : []) if (p?.capability !== undefined) need(CAPABILITIES.includes(p.capability), `panel ${p.id}: capability ${p.capability} is not in CAPABILITIES`);
     if (d.assets !== undefined) {
       need(d.assets && typeof d.assets === 'object' && !Array.isArray(d.assets), 'assets: an object');
       const w = d.assets?.wasm;
@@ -812,6 +877,10 @@ export function validateDescriptor(d) {
     if (v.profile !== undefined && profiles.has(v.profile)) need(variantOf(d, v.profile) === active, `view ${v.id}: profile ${v.profile} is of another variant`); // v9
     if (v.names !== undefined) need(L.disassembly?.names?.includes(v.names), `view ${v.id}: names ${v.names} not in language.disassembly.names`);
     if (v.engine !== undefined) need(v.engine === 'page' && v.kind === 'datapath', `view ${v.id}: engine 'page' is for datapath views`); // v11 (draft)
+    if (v.capability !== undefined) { // v14 (pico2 Hardware tab)
+      need(CAPABILITIES.includes(v.capability), `view ${v.id}: capability ${v.capability} is not in CAPABILITIES`);
+      need(v.kind !== 'isa', `view ${v.id}: the instruction view cannot be hidden by a capability`);
+    }
     if (v.layout !== undefined) { // v10 (draft)
       const { drawing, editor, ...rest } = v.layout ?? {};
       need(v.kind === 'datapath', `view ${v.id}: layout is for datapath views`);

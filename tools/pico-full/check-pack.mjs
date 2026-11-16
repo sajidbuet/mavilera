@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { readPack } from '../../src/arch/pico2/full/pack.js';
-import { packFS, buildProject, preparePch } from '../../src/arch/pico2/full/driver.js';
+import { packFS, buildProject, preparePch, chooseSet } from '../../src/arch/pico2/full/driver.js';
 
 const W = process.env.PICO_FULL_WORK, EX = process.env.PICO_EXAMPLES_SRC;
 if (!W || !EX) { console.error('set PICO_FULL_WORK and PICO_EXAMPLES_SRC'); process.exit(2); }
@@ -21,6 +21,9 @@ const PROGRAMS = [
   ['timer_lowlevel', 'timer/timer_lowlevel/timer_lowlevel.c', true], ['hello_gpio_irq', 'gpio/hello_gpio_irq/hello_gpio_irq.c', true],
   ['hello_timer', 'timer/hello_timer/hello_timer.c', true], ['hello_watchdog', 'watchdog/hello_watchdog/hello_watchdog.c', true],
   ['hello_pwm', 'pwm/hello_pwm/hello_pwm.c', false], ['hello_adc', 'adc/hello_adc/hello_adc.c', false],
+  // P1-R4: the object sets uart_mc and usb (whole-linked, so identical to CMake) and pico_status_led (lazily linked)
+  ['hello_multicore', 'multicore/hello_multicore/multicore.c', true], ['multicore_fifo_irqs', 'multicore/multicore_fifo_irqs/multicore_fifo_irqs.c', true],
+  ['hello_usb', 'hello_world/usb/hello_usb.c', true, 'usb'], ['status_blink', 'status_led/status_blink/status_blink.c', false],
 ];
 
 function loadable(b) {
@@ -42,17 +45,19 @@ const { meta, files } = readPack(readFileSync(packFile));
 const module = await WebAssembly.compile(readFileSync(join(W, 'build', 'llvm.wasm')));
 const results = [];
 for (const usePch of [false, true]) {
-  for (const [name, src, stdlibOnly] of PROGRAMS) {
+  for (const [name, src, stdlibOnly, stdio = 'uart'] of PROGRAMS) {
     const fs = packFS(files);
-    if (usePch) { const p = await preparePch(module, fs, meta); if (!p.ok) throw new Error(p.stderr); }
     const text = readFileSync(join(EX, src), 'utf8');
-    const r = await buildProject({ module, fs, meta, files: [{ name: basename(src), text }], usePch });
+    const set = chooseSet(meta, [{ name: basename(src), text }], { stdio }).id;
+    if (!set) throw new Error(`the pack has no object set for ${name}`);
+    if (usePch) { const p = await preparePch(module, fs, meta, set); if (!p.ok) throw new Error(p.stderr); }
+    const r = await buildProject({ module, fs, meta, files: [{ name: basename(src), text }], usePch, set });
     const ref = new Uint8Array(readFileSync(join(W, 'build', 'check', `${name}.elf`)));
-    const row = { name, usePch, ok: r.ok, ms: Math.round(r.jobs.reduce((s, j) => s + j.ms, 0)), steps: r.jobs.map((j) => j.step) };
+    const row = { name, set, usePch, ok: r.ok, ms: Math.round(r.jobs.reduce((s, j) => s + j.ms, 0)), steps: r.jobs.map((j) => j.step) };
     if (r.ok) Object.assign(row, { identical: same(r.elf, ref), packImage: size(r.elf), cmakeImage: size(ref), stdlibOnly });
     else row.error = r.jobs.filter((j) => j.code !== 0).map((j) => j.stderr).join('\n').slice(0, 600);
     results.push(row);
-    console.log(`${usePch ? 'pch ' : '    '}${name.padEnd(16)} ${r.ok ? `built ${row.ms} ms; image ${row.packImage} B (CMake ${row.cmakeImage} B); identical: ${row.identical}` : `FAILED ${row.error}`}`);
+    console.log(`${usePch ? 'pch ' : '    '}${name.padEnd(20)} ${set.padEnd(7)} ${r.ok ? `built ${row.ms} ms; image ${row.packImage} B (CMake ${row.cmakeImage} B); identical: ${row.identical}` : `FAILED ${row.error}`}`);
   }
 }
 const bad = results.filter((r) => !r.ok || (r.stdlibOnly && !r.identical));

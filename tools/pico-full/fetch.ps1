@@ -35,3 +35,16 @@ if (-not (Test-Path $WASI_SDK)) {
   if ($LASTEXITCODE) { throw 'wasi-sdk extraction failed' }
 }
 "wasi-sdk at $WASI_SDK"
+
+# P1-R4 (research D58): TinyUSB, the pico-sdk's submodule lib/tinyusb at the commit the pinned SDK names (MIT), for the
+# USB object sets; fetched as one commit into the SDK checkout given by PICO_SDK_PATH (nothing in it is run)
+if ($env:PICO_SDK_PATH) {
+  $tu = Join-Path $env:PICO_SDK_PATH 'lib\tinyusb'
+  $pin = (git -C $env:PICO_SDK_PATH ls-tree HEAD lib/tinyusb) -split '\s+' | Select-Object -Index 2
+  if ($pin -ne $PINS.tinyusb.commit) { throw "the SDK names TinyUSB $pin, pins.json $($PINS.tinyusb.commit)" }
+  if ((git -C $tu rev-parse HEAD 2>$null) -ne $pin) {
+    git -C $tu init -q; git -C $tu fetch -q --depth 1 $PINS.tinyusb.url $pin; git -C $tu checkout -q FETCH_HEAD
+    if ($LASTEXITCODE) { throw 'TinyUSB fetch failed' }
+  }
+  "TinyUSB at $(git -C $tu rev-parse HEAD)"
+}

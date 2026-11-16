@@ -51,7 +51,7 @@ function checkLimits(p) {
  * A new project. `files`: [{name, text}] (at least one); `entry` defaults to the first file. `module` is the
  * architecture id; `extensions` (optional) restricts the file names.
  */
-export function createProject({ id, module, name = 'Project', files, entry, extensions, compiler, now = Date.now() }) {
+export function createProject({ id, module, name = 'Project', files, entry, extensions, compiler, options, now = Date.now() }) {
   if (!Array.isArray(files) || files.length === 0) throw new ProjectError('missing', 'a project needs at least one file');
   const seen = new Set();
   const list = files.map((f) => {
@@ -66,7 +66,42 @@ export function createProject({ id, module, name = 'Project', files, entry, exte
   return checkLimits({
     v: PROJECT_VERSION, id: id ?? newId(), module, name: projectName(name), files: list, entry: e,
     open: [e], active: e, created: now, modified: now, ...(COMPILER.test(compiler ?? '') ? { compiler } : {}),
+    ...(cleanOptions(options) ? { options: cleanOptions(options) } : {}),
   });
+}
+
+// v13 (pico2 P1-R4, research D58): the project's build options ({id: value}, e.g. {stdio: 'usb'}), chosen in the
+// Project menu from the compiler's `projectOptions` and passed to its build; ids and values are short words. Unknown or
+// malformed entries are dropped (a project from a link or a .zip is never trusted beyond that); none: no field.
+const OPTION_ID = /^[a-z][A-Za-z0-9]{0,31}$/, OPTION_VALUE = /^[a-z][a-z0-9_-]{0,31}$/;
+export const MAX_OPTIONS = 8;
+function cleanOptions(o) {
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return null;
+  const e = Object.entries(o).filter(([k, v]) => OPTION_ID.test(k) && typeof v === 'string' && OPTION_VALUE.test(v)).slice(0, MAX_OPTIONS);
+  return e.length ? Object.fromEntries(e) : null;
+}
+
+/** The project with build option `id` set to `value` (null: back to the compiler's default, the entry removed). */
+export function setOption(p, id, value, now) {
+  if (!OPTION_ID.test(id)) throw new ProjectError('name', `not an option id: ${id}`);
+  if (value !== null && !OPTION_VALUE.test(value)) throw new ProjectError('name', `not an option value: ${value}`);
+  const { options: old, ...rest } = p;
+  const cur = { ...(old ?? {}) };
+  if (value === null) delete cur[id];
+  else {
+    if (!(id in cur) && Object.keys(cur).length >= MAX_OPTIONS) throw new ProjectError('limit', `more than ${MAX_OPTIONS} options`, { limit: 'options' });
+    cur[id] = value;
+  }
+  const next = cleanOptions(cur);
+  return touch(next ? { ...rest, options: next } : rest, {}, now);
+}
+
+/** The project's build options with each `projectOptions` entry's default where the project has none: {id: value}. */
+export function optionValues(p, projectOptions = []) {
+  return Object.fromEntries(projectOptions.map((o) => {
+    const v = p?.options?.[o.id];
+    return [o.id, o.values.some((x) => x.id === v) ? v : o.default];
+  }));
 }
 
 // the id of the extra language that compiles the project's C (contract ExtraLanguage.id; pico2 P1-F2, research D33 Q5);
@@ -194,7 +229,7 @@ export function fromSingle({ module, name, text, projectTitle, now }) {
  */
 export function readProject(obj, { extensions } = {}) {
   if (!obj || obj.v !== PROJECT_VERSION || !Array.isArray(obj.files)) throw new ProjectError('format', 'not a project of this version');
-  const p = createProject({ id: obj.id, module: obj.module, name: obj.name, files: obj.files, entry: obj.entry, extensions, compiler: obj.compiler, now: obj.created ?? Date.now() });
+  const p = createProject({ id: obj.id, module: obj.module, name: obj.name, files: obj.files, entry: obj.entry, extensions, compiler: obj.compiler, options: obj.options, now: obj.created ?? Date.now() });
   const open = (Array.isArray(obj.open) ? obj.open : []).filter((n) => has(p, n));
   return { ...p, open: open.length ? open : [p.entry], active: has(p, obj.active) && open.includes(obj.active) ? obj.active : (open[0] ?? p.entry), modified: obj.modified ?? p.created };
 }

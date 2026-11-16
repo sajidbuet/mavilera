@@ -4,7 +4,9 @@
 // the build times, for the research repository's P1-M2 harness (experiments/p1m2-oracle: run-pico2.mjs --via import, then
 // compare.mjs against the GCC builds of the same programs).
 //
-//   node tools/pico2-full-accept.mjs --out <dir> [--browser chrome|edge|firefox]   (env: PICO_FULL_SITE, PICO_EXAMPLES_SRC)
+//   node tools/pico2-full-accept.mjs --out <dir> [--browser chrome|edge|firefox] [--programs p1m2|p1r4]   (env: PICO_FULL_SITE, PICO_EXAMPLES_SRC)
+// --programs p1r4 (pico2 P1-R4, research D58): the P1-M6 gate's multicore examples (the pack's uart_mc object set) and hello_usb
+// built with the project option Output = UART and USB (the usb set), each with the stdio option it needs.
 // Firefox (Pico Full release gate, research D45 Q1): through tools/firefox-bidi.mjs, headless, a fresh profile.
 //
 // Writes <dir>/<browser>/<program>.elf and <dir>/<browser>/builds.json. Development only.
@@ -22,8 +24,12 @@ const opt = (k) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : nu
 const OUT = opt('--out'), SITE = process.env.PICO_FULL_SITE, EX = process.env.PICO_EXAMPLES_SRC;
 if (!OUT || !SITE || !EX) { console.error('needs --out, PICO_FULL_SITE and PICO_EXAMPLES_SRC'); process.exit(2); }
 const BROWSERS = opt('--browser') ? [opt('--browser')] : ['chrome', 'edge'];
-const PROGRAMS = { hello_uart: 'uart/hello_uart/hello_uart.c', blink: 'blink/blink.c', timer_lowlevel: 'timer/timer_lowlevel/timer_lowlevel.c',
+const P1M2 = { hello_uart: 'uart/hello_uart/hello_uart.c', blink: 'blink/blink.c', timer_lowlevel: 'timer/timer_lowlevel/timer_lowlevel.c',
   hello_gpio_irq: 'gpio/hello_gpio_irq/hello_gpio_irq.c', hello_timer: 'timer/hello_timer/hello_timer.c' };
+const P1R4 = { hello_multicore: 'multicore/hello_multicore/multicore.c', multicore_runner: 'multicore/multicore_runner/multicore_runner.c',
+  multicore_runner_queue: 'multicore/multicore_runner_queue/multicore_runner_queue.c', multicore_doorbell: 'multicore/multicore_doorbell/multicore_doorbell.c',
+  hello_usb: ['hello_world/usb/hello_usb.c', { stdio: 'usb' }] };
+const PROGRAMS = opt('--programs') === 'p1r4' ? P1R4 : P1M2;
 const J = JSON.stringify;
 
 for (const name of BROWSERS) {
@@ -40,15 +46,16 @@ for (const name of BROWSERS) {
     const dir = join(OUT, name);
     mkdirSync(dir, { recursive: true });
     const builds = { browser: b.version, when: new Date().toISOString(), loadFromEmptyCacheMs: ready, load, programs: {} };
-    for (const [prog, src] of Object.entries(PROGRAMS)) {
+    for (const [prog, entry] of Object.entries(PROGRAMS)) {
+      const [src, options] = Array.isArray(entry) ? entry : [entry, {}];
       const text = readFileSync(join(EX, src), 'utf8');
-      const files = J([{ name: basename(src), text }]);
-      const r = await p.eval(`__fc.build(${files}).then((r) => ({ ok: r.ok, times: r.times, elf: r.elf ? Array.from(r.elf) : null, d: r.diagnostics }))`);
+      const files = `${J([{ name: basename(src), text }])}, ${J(options)}`;
+      const r = await p.eval(`__fc.build(${files}).then((r) => ({ ok: r.ok, times: r.times, set: r.set, elf: r.elf ? Array.from(r.elf) : null, d: r.diagnostics }))`);
       if (!r.ok) throw new Error(`${prog}: ${J(r.d)}`);
       const warm = await p.eval(`__fc.build(${files}).then((r) => r.times)`);
       writeFileSync(join(dir, `${prog}.elf`), Uint8Array.from(r.elf));
-      builds.programs[prog] = { elfBytes: r.elf.length, first: r.times, warm };
-      console.log(`${name} ${prog}: ${r.elf.length} B ELF; first ${r.times.total} ms, warm ${warm.total} ms (compile ${warm.compile}, link ${warm.link})`);
+      builds.programs[prog] = { elfBytes: r.elf.length, set: r.set ?? null, first: r.times, warm };
+      console.log(`${name} ${prog}: ${r.elf.length} B ELF (set ${r.set?.id ?? 'uart'}); first ${r.times.total} ms, warm ${warm.total} ms (compile ${warm.compile}, link ${warm.link})`);
     }
     writeFileSync(join(dir, 'builds.json'), JSON.stringify(builds, null, 2));
     console.log(`${name}: ready from an empty cache in ${ready} ms (local server); ELFs in ${dir}`);

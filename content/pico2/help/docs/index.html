@@ -104,10 +104,11 @@
         <li><a href="#cores">Two cores</a></li>
         <li><a href="#speed">Real time, speed and replay</a></li>
         <li><a href="#circuits">Circuits on the Board</a></li>
-        <li><a href="#templates">Templates</a></li>
+        <li><a href="#templates">Sample projects</a></li>
         <li><a href="#exercises">Exercises</a></li>
         <li><a href="#files">Files and sharing</a></li>
         <li><a href="#editions">Lite and Full</a></li>
+        <li><a href="#hardware">A real Pico 2: the Hardware tab (beta)</a></li>
         <li><a href="#offline">Offline use and privacy</a></li>
         <li><a href="#checks">How the models were checked</a></li>
         <li><a href="#limits">Limits of the model</a></li>
@@ -136,7 +137,7 @@
 
       <h2 id="start">Getting started</h2>
       <ol>
-        <li>Open a template from <strong>Templates</strong> in the toolbar, for example <em>Hello over UART</em>. Its first
+        <li>Open a sample project from <strong>Sample projects</strong> in the toolbar, for example <em>Hello over UART</em>. Its first
           lines say what it shows and what to try.</li>
         <li>Choose <strong>Assemble</strong> (<strong>Compile</strong> for C), or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.
           Errors are underlined in the editor and listed in the console.</li>
@@ -158,7 +159,7 @@
           <tr><td>Registers</td><td>x0 to x31 and the machine CSRs; a register the last step changed is marked. Tick a register to stop when it is written. With two cores running, the Core 1 registers too.</td></tr>
           <tr><td>Bottom pane</td><td>Tabs: Memory, Pins, and one per device (PWM, DMA, ADC, SPI, I2C, PIO).</td></tr>
           <tr><td>Console</td><td>What the program sends on UART0, messages of the laboratory, and Send to UART0.</td></tr>
-          <tr><td>Toolbar</td><td>Templates, Assemble or Compile, Run, Step, Step back, Reset, the Speed menu, the Sound button and clk_sys.</td></tr>
+          <tr><td>Toolbar</td><td>Sample projects, Assemble or Compile, Run, Step, Step back, Reset, the Speed menu, the Sound button and clk_sys.</td></tr>
         </tbody>
       </table></div>
       <p>Panes can be resized, folded and opened from their dividers; <strong>View</strong> in the header has Focus, Full
@@ -328,47 +329,64 @@
       <p><strong>Light and temperature</strong> for the light sensor and the thermistor are the Pins panel's Environment values
         (Light in lux, Temperature in °C), inputs of the run that Replay repeats.</p>
 
-      <h2 id="templates">Templates</h2>
-      <p>Each template begins with what it shows and what to try. The laboratory's tests run every one of them and check
-        what its comment says.</p>
+      <h2 id="templates">Sample projects</h2>
+      <p>Sample projects, in the toolbar, are grouped by topic. Each begins with what it shows and what to try. Pico Lite
+        lists the samples in assembly and MAVILERA C; Pico Full lists those in assembly and in Pico SDK C, which also run on a
+        real Pico 2 (the Hardware tab). The laboratory's tests run every one of them and check what its comment says.</p>
       <div class="wrap-table"><table>
-        <thead><tr><th>Group</th><th>Template</th><th>Language</th></tr></thead>
+        <thead><tr><th>Group</th><th>Sample project</th><th>Language</th></tr></thead>
         <tbody>
-          <tr><td>Assembly language</td><td>A tour of Hazard3's extensions</td><td>Assembly</td></tr>
-          <tr><td>Assembly: the chip's devices</td><td>Hello over UART</td><td>Assembly</td></tr>
-          <tr><td>Assembly: the chip's devices</td><td>Echo over UART in capitals</td><td>Assembly</td></tr>
-          <tr><td>Assembly: the chip's devices</td><td>Blink GP25 with the SIO and TIMER0</td><td>Assembly</td></tr>
-          <tr><td>Assembly: the chip's devices</td><td>A timer alarm interrupt (Xh3irq)</td><td>Assembly</td></tr>
-          <tr><td>Hazard3's pipeline</td><td>Load-use stalls and branch costs</td><td>Assembly</td></tr>
-          <tr><td>Hazard3's pipeline</td><td>A function with cm.push and cm.popret</td><td>Assembly</td></tr>
-          <tr><td>MAVILERA C</td><td>Blink in C</td><td>MAVILERA C</td></tr>
-          <tr><td>MAVILERA C</td><td>Hello in C</td><td>MAVILERA C</td></tr>
-          <tr><td>MAVILERA C</td><td>Sum of an array</td><td>MAVILERA C</td></tr>
-          <tr><td>MAVILERA C</td><td>Measuring time with time_us</td><td>MAVILERA C</td></tr>
-          <tr><td>MAVILERA C</td><td>A button on GP15 counts presses</td><td>MAVILERA C</td></tr>
-          <tr><td>PWM, DMA and sound</td><td>Fade the LED with PWM</td><td>Assembly</td></tr>
-          <tr><td>PWM, DMA and sound</td><td>A tone from PWM</td><td>MAVILERA C</td></tr>
-          <tr><td>PWM, DMA and sound</td><td>A sine from DMA and PWM</td><td>MAVILERA C</td></tr>
-          <tr><td>PWM, DMA and sound</td><td>Twinkle, Twinkle, Little Star (in a loop)</td><td>MAVILERA C</td></tr>
-          <tr><td>PWM, DMA and sound</td><td>Copy memory with DMA</td><td>Assembly</td></tr>
-          <tr><td>Two cores</td><td>Two cores, two LEDs</td><td>MAVILERA C</td></tr>
-          <tr><td>Two cores</td><td>A message through the FIFO</td><td>Assembly</td></tr>
-          <tr><td>ADC, I2C and SPI</td><td>Read a knob with the ADC</td><td>MAVILERA C</td></tr>
-          <tr><td>ADC, I2C and SPI</td><td>The chip's temperature sensor</td><td>MAVILERA C</td></tr>
-          <tr><td>ADC, I2C and SPI</td><td>An I2C temperature sensor (MCP9808)</td><td>MAVILERA C</td></tr>
-          <tr><td>ADC, I2C and SPI</td><td>Text on an I2C LCD</td><td>MAVILERA C</td></tr>
-          <tr><td>ADC, I2C and SPI</td><td>SPI in loopback</td><td>Assembly</td></tr>
+          <tr><td>Getting started</td><td>Hello in C</td><td>MAVILERA C</td></tr>
+          <tr><td>Getting started</td><td>Blink in C</td><td>MAVILERA C</td></tr>
+          <tr><td>Getting started</td><td>Blink GP25 with the SIO and TIMER0</td><td>Assembly</td></tr>
+          <tr><td>Getting started</td><td>Hello with printf (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>Getting started</td><td>Blink the LED (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>A complete project</td><td>SOS in Morse code, with meters on the LCD and a button (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>Digital input and output</td><td>A button on GP15 counts presses</td><td>MAVILERA C</td></tr>
+          <tr><td>Digital input and output</td><td>An LED and its resistor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Digital input and output</td><td>A traffic light</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Digital input and output</td><td>A transistor switches an LED</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Digital input and output</td><td>A bouncing button and a capacitor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Digital input and output</td><td>A button by interrupt (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>Timers and interrupts</td><td>Measuring time with time_us</td><td>MAVILERA C</td></tr>
+          <tr><td>Timers and interrupts</td><td>A timer alarm interrupt (Xh3irq)</td><td>Assembly</td></tr>
+          <tr><td>Timers and interrupts</td><td>A repeating timer (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>Serial: UART</td><td>Hello over UART</td><td>Assembly</td></tr>
+          <tr><td>Serial: UART</td><td>Echo over UART in capitals</td><td>Assembly</td></tr>
+          <tr><td>Serial: UART</td><td>Echo in capitals (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>Analogue input: ADC</td><td>Read a knob with the ADC</td><td>MAVILERA C</td></tr>
+          <tr><td>Analogue input: ADC</td><td>The chip's temperature sensor</td><td>MAVILERA C</td></tr>
+          <tr><td>Analogue input: ADC</td><td>A voltage divider into the ADC</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Analogue input: ADC</td><td>A night light with a light sensor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Analogue input: ADC</td><td>A thermometer with a thermistor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>Analogue input: ADC</td><td>Read a knob with the ADC (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>Analogue input: ADC</td><td>The chip's temperature sensor (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>PWM and sound</td><td>Fade the LED with PWM</td><td>Assembly</td></tr>
+          <tr><td>PWM and sound</td><td>A voltage from PWM and an RC filter</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>PWM and sound</td><td>A tone from PWM</td><td>MAVILERA C</td></tr>
+          <tr><td>PWM and sound</td><td>Twinkle, Twinkle, Little Star (in a loop)</td><td>MAVILERA C</td></tr>
+          <tr><td>PWM and sound</td><td>Fade the LED with PWM (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>PWM and sound</td><td>A tone from PWM (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>I2C</td><td>An I2C temperature sensor (MCP9808)</td><td>MAVILERA C</td></tr>
+          <tr><td>I2C</td><td>Text on an I2C LCD</td><td>MAVILERA C</td></tr>
+          <tr><td>I2C</td><td>An I2C temperature sensor (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>I2C</td><td>Text on an I2C LCD (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>SPI</td><td>SPI in loopback</td><td>Assembly</td></tr>
+          <tr><td>SPI</td><td>SPI in loopback (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>DMA</td><td>Copy memory with DMA</td><td>Assembly</td></tr>
+          <tr><td>DMA</td><td>A sine from DMA and PWM</td><td>MAVILERA C</td></tr>
+          <tr><td>DMA</td><td>Copy memory with DMA (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
           <tr><td>PIO</td><td>PIO blinks the LED</td><td>Assembly + .pio</td></tr>
           <tr><td>PIO</td><td>A square wave from PIO with side-set</td><td>Assembly + .pio</td></tr>
           <tr><td>PIO</td><td>PIO counts the 1 bits of a word</td><td>MAVILERA C + .pio</td></tr>
-          <tr><td>Circuits on the Board</td><td>An LED and its resistor</td><td>MAVILERA C + circuit</td></tr>
-          <tr><td>Circuits on the Board</td><td>A traffic light</td><td>MAVILERA C + circuit</td></tr>
-          <tr><td>Circuits on the Board</td><td>A voltage divider into the ADC</td><td>MAVILERA C + circuit</td></tr>
-          <tr><td>Circuits on the Board</td><td>A transistor switches an LED</td><td>MAVILERA C + circuit</td></tr>
-          <tr><td>Circuits on the Board</td><td>A bouncing button and a capacitor</td><td>MAVILERA C + circuit</td></tr>
-          <tr><td>Circuits on the Board</td><td>A voltage from PWM and an RC filter</td><td>MAVILERA C + circuit</td></tr>
-          <tr><td>Circuits on the Board</td><td>A night light with a light sensor</td><td>MAVILERA C + circuit</td></tr>
-          <tr><td>Circuits on the Board</td><td>A thermometer with a thermistor</td><td>MAVILERA C + circuit</td></tr>
+          <tr><td>PIO</td><td>PIO drives the LED (Pico SDK)</td><td>Pico SDK C (Full) + .pio</td></tr>
+          <tr><td>Two cores</td><td>Two cores, two LEDs</td><td>MAVILERA C</td></tr>
+          <tr><td>Two cores</td><td>A message through the FIFO</td><td>Assembly</td></tr>
+          <tr><td>Two cores</td><td>Two cores share the work (Pico SDK)</td><td>Pico SDK C (Full)</td></tr>
+          <tr><td>Inside Hazard3</td><td>A tour of Hazard3's extensions</td><td>Assembly</td></tr>
+          <tr><td>Inside Hazard3</td><td>Sum of an array</td><td>MAVILERA C</td></tr>
+          <tr><td>Inside Hazard3</td><td>Load-use stalls and branch costs</td><td>Assembly</td></tr>
+          <tr><td>Inside Hazard3</td><td>A function with cm.push and cm.popret</td><td>Assembly</td></tr>
         </tbody>
       </table></div>
 
@@ -405,9 +423,56 @@
       </ul>
 
       <h2 id="editions">Lite and Full</h2>
-      <p>The published laboratory holds one program in assembly language or in MAVILERA C (Pico Lite). A second edition, Pico
-        Full, with projects of several files, C built with the Pico SDK in the browser and the import of SDK-built UF2 and ELF
-        files, is still in development and is not part of the published laboratory.</p>
+      <p>The stable laboratory holds one program in assembly language or in MAVILERA C (<strong>Pico Lite</strong>). A second
+        edition, <strong>Pico Full</strong>, has projects of several files, C written for the Raspberry Pi Pico SDK and built in
+        the browser by the SDK's own compiler (a download of about 25 MB, asked for at the first build and then kept), the import
+        of SDK-built UF2 and ELF files, and loading onto a real Pico 2. Pico Full is offered in the <strong>beta release</strong>
+        (MAVILERA 1.7.0-beta.1, at <code>sajidlab.org/mavilera/beta/</code>) and is not yet part of the stable release. Where it is
+        offered, the switch beside the laboratory's name changes the edition; each edition keeps its own program.</p>
+      <ul>
+        <li><strong>Sample projects</strong> in Pico Full are the assembly ones and those marked <em>(Pico SDK)</em>; the tabs C
+          and Assembly sort them. The last, <em>SOS in Morse code, with meters on the LCD and a button</em>, uses the GPIOs, a timer
+          interrupt, PWM sound, the ADC, the lab kit's I2C LCD, UART and a button together.</li>
+        <li><strong>SDK headers.</strong> Under the project's files, <em>Pico SDK headers (read-only)</em> lists each header your
+          files include from the SDK or the C library (<code>pico/stdlib.h</code>, <code>hardware/adc.h</code>,
+          <code>stdio.h</code>…), found where the build finds it. Open one to read it; they come with the compiler, not with the
+          project.</li>
+        <li><strong>Output</strong>, in the Project menu: UART (the default), or UART and USB, so that a program on a real board
+          also prints over its USB cable.</li>
+      </ul>
+
+      <h2 id="hardware">A real Pico 2: the Hardware tab (beta)</h2>
+      <p class="note"><strong>Status, MAVILERA 1.7.0-beta.1:</strong> loading onto a board has been tested with simulated USB
+        devices only, not yet with a real Pico 2. If a load fails, <em>Download .uf2</em> and copying the file to the RP2350 drive
+        always works. Please report what happened on GitHub.</p>
+      <p>In Pico Full the <strong>Hardware</strong> tab at the top holds everything about a real board, apart from the simulator
+        (which keeps running). It needs Chrome or Edge on a computer (WebUSB); the UART monitor also works in Firefox 151 or
+        later (Web Serial). Each card has a <strong>?</strong> button with its explanation.</p>
+      <div class="wrap-table"><table>
+        <thead><tr><th>Card</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Board</td><td>Probe board reads what a Pico 2 in BOOTSEL mode reports: chip, ROM version, USB serial number, boot
+            partition. The line under it says which build this browser last wrote to the board.</td></tr>
+          <tr><td>Program</td><td>Load to Pico (also in the toolbar) builds the project if it changed, asks you to confirm the board
+            and the build, then erases, writes and reads back each sector and restarts the board. Steps and a progress bar show how
+            far it is. Check reads the board back and compares; Download .uf2 and Copy to the Pico's drive give the file.</td></tr>
+          <tr><td>Debug (without a probe)</td><td>Run restarts a board in BOOTSEL mode so that it runs its flash; Save flash reads
+            the flash into a .bin file. Neither writes. Stepping and breakpoints on the board itself need a Raspberry Pi Debug
+            Probe: planned.</td></tr>
+          <tr><td>UART monitor</td><td>The board's serial output over its USB cable (Pico 2 USB…) or a 3.3 V USB-UART adapter on GP0,
+            GP1 and GND (Port…), 115200 bit/s by default; Send, Time, Hex, Read aloud; Compare checks the board's lines against
+            the simulated console's.</td></tr>
+        </tbody>
+      </table></div>
+      <ol>
+        <li>Hold BOOTSEL on the Pico 2 while you plug its USB cable in, then let go: a drive named RP2350 appears.</li>
+        <li>Press Load to Pico and choose <em>RP2350 Boot</em> in the browser's list.</li>
+        <li>Check the question (it names the board's serial number and the build) and press Enter.</li>
+        <li>After the restart, connect the UART monitor to see the program's output.</li>
+      </ol>
+      <p>A load that stops leaves the board in BOOTSEL mode: the part that marks the program as runnable is written last. The
+        laboratory never changes the board's one-time-programmable memory or a partition table. On Linux the browser needs a udev
+        rule for the USB IDs 2e8a:000f and 2e8a:0009.</p>
 
       <h2 id="offline">Offline use and privacy</h2>
       <p>Every computation runs in your browser. MAVILERA has no account, sends no telemetry and uploads nothing. After a

@@ -22,14 +22,15 @@ function place(button, pop) {
 }
 
 /**
- * An information button. `paragraphs`: the text, one string per paragraph; `label`: the button's name ("About ...").
- * Returns the element to place (the button and its pop-up).
+ * An information button. `paragraphs`: the text, one string per paragraph; `label`: the button's name ("About ...");
+ * `glyph`: what the button shows ('i' by default; pico2's Hardware tab uses '?', 2026-11-15). Returns the element to place
+ * (the button and its pop-up).
  */
-export function infoButton(paragraphs, label) {
+export function infoButton(paragraphs, label, { glyph = 'i' } = {}) {
   const id = `info-pop-${++seq}`;
   const text = paragraphs.join('\n\n');
   const pop = el('div.info-pop', { id, popover: 'auto', role: 'note', 'aria-label': label }, paragraphs.map((p) => el('p', { text: p })));
-  const button = el('button.info-btn', { type: 'button', title: text, 'aria-label': label, 'aria-expanded': 'false', 'aria-controls': id, popovertarget: id }, 'i');
+  const button = el(`button.info-btn${glyph === '?' ? '.info-q' : ''}`, { type: 'button', title: text, 'aria-label': label, 'aria-expanded': 'false', 'aria-controls': id, popovertarget: id }, glyph);
   if (!('popover' in pop)) { // a browser without popovers: the press toggles the text in place
     pop.removeAttribute('popover');
     pop.hidden = true;

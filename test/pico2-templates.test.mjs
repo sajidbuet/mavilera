@@ -177,6 +177,9 @@ const TIMED = {
 const TEST_INPUTS = { 'adc-knob': [{ kind: 'adc', channel: 0, volts: 1.65 }], 'i2c-mcp9808': [{ kind: 'env', key: 'temp', value: 21.5 }],
   'ntc-thermometer': [{ kind: 'env', key: 'temp', value: 40 }] };
 
+// Pico Full's samples in Pico SDK C (2026-11-15) are built by the SDK compiler: test/pico2-sdk-samples.test.mjs
+index.templates = index.templates.filter((t) => t.lang !== 'sdk-c');
+
 test('pico2 templates: the sixteen of the approved lists (D34 Q8, D39 Q10) and of P1-M6 (design Q8), in views and languages of Pico Lite', () => {
   assert.equal(index.templates.length, 35); // and Twinkle, Twinkle (the author's request, 2026-11-10); P1-M7's five (design Q6); P1-M8's three (design Q7); P1-M9's two (research D45 Q3); P1-B2's eight circuits (research D54 Q6 A)
   for (const t of index.templates) if (t.circuit) assert.ok(readFileSync(new URL(t.circuit, dir), 'utf8').includes('"mavilera-pico2-circuit"'), `${t.id}: circuit ${t.circuit}`);

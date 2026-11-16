@@ -189,6 +189,35 @@ test('ROM: rom_table_lookup_entry finds BOOTROM_STATE_RESET, which returns; an u
   assert.notEqual(e.state().registers.x8, 0);
 });
 
+// P1-R4: pico_unique_id (linked by the USB object set) asks get_sys_info for the chip id in a constructor
+test('ROM: get_sys_info(SYS_INFO_CHIP_INFO) writes 4 words (flags, package, chip id) and returns 4; a small buffer gives -13', () => {
+  const e = engine(`li t1, 0x7dfa
+      lhu t0, 0(t1)
+      li a0, 0x5347           # 'G' | 'S' << 8: get_sys_info
+      li a1, 1
+      jalr t0
+      mv s0, a0
+      li s1, 0x20001000
+      sw zero, 0(s1)
+      mv a0, s1
+      li a1, 9
+      li a2, 1                # SYS_INFO_CHIP_INFO
+      jalr s0
+      mv s2, a0
+      mv a0, s1
+      li a1, 2
+      li a2, 1
+      jalr s0
+      mv s3, a0
+      ebreak\n`);
+  runAll(e);
+  const r = e.state().registers;
+  assert.equal(r.x18, 4, 'four words');
+  assert.equal(r.x19 | 0, -13, 'BOOTROM_ERROR_BUFFER_TOO_SMALL');
+  const m = e.machine, w = (a) => m.bus.read32(a) >>> 0;
+  assert.deepEqual([w(0x20001000), w(0x20001004), w(0x20001008), w(0x2000100c)], [1, 0, 0x4d415649, 0x4c455241]);
+});
+
 test('UF2 and IMAGE_DEF: the rp2350-riscv blocks are the image (the E10 absolute block is left out); ENTRY_POINT gives pc and sp', () => {
   const block = (addr, payload, fam, n, total, flags = 0x2000) => {
     const b = new Uint8Array(512), d = new DataView(b.buffer);

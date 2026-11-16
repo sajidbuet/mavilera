@@ -145,7 +145,7 @@ export const ARMV7_STRINGS = Object.freeze({
     status: (cycle, pc, text, halted, error) => `cycle ${cycle} · ${pc} ${text}${error ? ' · error' : halted ? ' · ended' : ''}`,
     preset: (name) => `Class path: ${name} (all of its connections; values are this cycle's)`,
     noProgram: 'No program: assemble one that uses only ADD, SUB, AND, ORR, LDR, STR and B, or open the template '
-      + '"Base instructions only: the sum 1 to 10" (Templates). For MOV, CMP, BL and the other exercise extensions, choose '
+      + '"Base instructions only: the sum 1 to 10" (Sample projects). For MOV, CMP, BL and the other exercise extensions, choose '
       + '"Extended datapath" in the instruction-set menu.',
     cycleLabel: 'Cycle',
     failedMark: 'CondEx = 0', // above the gates when the condition fails (roadmap §7, A3-Q8)
@@ -250,7 +250,7 @@ export const ARMV7_STRINGS = Object.freeze({
     status: (cycle, state, next, pc, text, halted, error) => `cycle ${cycle} · ${state}${next ? ` → ${next}` : ''} · ${pc} ${text}`
       + `${error ? ' · error' : halted ? ' · ended' : ''}`,
     noProgram: 'No program: assemble one that uses only ADD, SUB, AND, ORR, LDR, STR and B, or open the template '
-      + '"Base instructions only: the sum 1 to 10 (Multicycle view)" (Templates).',
+      + '"Base instructions only: the sum 1 to 10 (Multicycle view)" (Sample projects).',
     fixedNote: 'One step is one clock cycle, one state of the Main FSM. The connections the state uses are highlighted and the state is '
       + 'named on the control unit. Every signal is the value before the clock edge: the edge then writes the registers between the steps, '
       + 'and, where enabled, the register file, the memory, the flags and the PC.',
@@ -378,7 +378,7 @@ export const ARMV7_STRINGS = Object.freeze({
     info: 'Pipeline details',
     diagramTitle: 'ARM pipelined processor with full hazard handling (after Harris and Harris, Fig. 7.58)',
     noProgram: 'No program: assemble one that uses only ADD, SUB, AND, ORR, LDR, STR and B, or open the template '
-      + '"Base instructions only: the sum 1 to 10 (Pipelined view)" (Templates).',
+      + '"Base instructions only: the sum 1 to 10 (Pipelined view)" (Sample projects).',
     status: (cycle, pc, halted, error) => `cycle ${cycle} · fetch ${pc}${error ? ' · error' : halted ? ' · ended' : ''}`,
     stages: Object.freeze({ IF: 'IF', ID: 'ID', EX: 'EX', MEM: 'MEM', WB: 'WB' }),
     stripLabel: 'The instruction in each stage',

@@ -30,7 +30,7 @@ import { Pio } from './pio.js';
 import { Circuit } from './circuit.js';
 import { moduleKit, ENV_DEFAULTS, envClamp } from '../parts/kit.js';
 import { SVD_BLOCKS } from './regs.generated.js';
-import { buildRom, romLookup, romCodeName } from '../boot/rom.js';
+import { buildRom, romLookup, romCodeName, romGetSysInfo } from '../boot/rom.js';
 
 /** Host inputs applied at given cycles (a device of the scheduler). */
 class Inputs {
@@ -226,8 +226,15 @@ export class Machine {
       if (r.data) this.diag('romData', romCodeName(h.x[10]));
       result = r.value;
     } else if (slot.kind === 'entry' || !slot.implemented) return { kind: slot.kind, slot, ra: h.x[1] >>> 0 };
+    let writes = null;
+    if (slot.tag === 'GS') ({ result, writes } = romGetSysInfo(h.x[10] >>> 0, h.x[11] >>> 0, h.x[12] >>> 0));
     const hist = h.hist;
     if (hist) hist.begin(pc, h.tState(), h.btb);
+    for (const [a, v] of writes ?? []) { // the output buffer, recorded for step back as a store is
+      const b = h.bus;
+      if (hist) { const old = b.peek ? b.peek(a, 4) : undefined; hist.mem(a, 4, old ?? 0, old === undefined); }
+      b.fault = false; b.write32(a, v >>> 0); b.fault = false;
+    }
     if (result !== null) h.wr(10, result | 0);
     h.pc = h.x[1] & ~1;
     // one cycle (the ROM's own timing is not modelled), then a return to ra: no load result pending, the frontend restarts

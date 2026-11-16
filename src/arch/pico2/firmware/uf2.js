@@ -29,6 +29,20 @@ function block(out, i, { flags, address, payload, blockNo, numBlocks, family, ex
 }
 
 /**
+ * The UF2 file of a validated artifact (pico2 P1-F3: Download .uf2 and the copy-to-drive helper for an imported .bin, whose bytes
+ * are not a UF2 or an ELF): its pages, sector fill included, with the E10 block first for a flash image (as elfToUf2).
+ */
+export function artifactToUf2(artifact, { e10 = null } = {}) {
+  e10 ??= artifact.kind === 'flash';
+  const pages = artifact.pages;
+  const out = new Uint8Array((pages.length + (e10 ? 1 : 0)) * 512);
+  let i = 0;
+  if (e10) block(out, i++, { flags: FAMILY_PRESENT | EXTENSIONS, address: E10_ADDRESS, payload: new Uint8Array(PAGE).fill(0xef), blockNo: 0, numBlocks: 2, family: FAMILY.ABSOLUTE, extension: IGNORE_TAG });
+  pages.forEach((p, n) => block(out, i++, { flags: FAMILY_PRESENT, address: p.address, payload: p.bytes, blockNo: n, numBlocks: pages.length, family: FAMILY.RP2350_RISCV }));
+  return out;
+}
+
+/**
  * The UF2 file of an ELF (Uint8Array). Throws an Error with the validator's message if the ELF is not a program for the
  * RP2350's RISC-V cores. `e10`: write the E10 workaround block first (default: for a flash image, as picotool --abs-block).
  */

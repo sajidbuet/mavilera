@@ -22,7 +22,7 @@
       "blocks": [
         { "p": "Nothing is installed and nothing is uploaded: the laboratory runs entirely in your browser." },
         { "ol": [
-          "Type a program in the editor, or open one from Templates: the laboratory programs, from a kernel without divergence to two warps meeting at a barrier, and two that fault on purpose.",
+          "Type a program in the editor, or open one from Sample projects: the laboratory programs, from a kernel without divergence to two warps meeting at a barrier, and two that fault on purpose.",
           "Assemble it (Ctrl+Enter). Errors are listed in the console with their line.",
           "Step (F10) or run (F5). Each step is one cycle, in which one warp issues one instruction. Step back (Shift+F10) undoes a step.",
           "Watch the warps, their masks and stacks, and the threads' registers in the Threads tab of the memory pane; the counters give cycles, issued instructions, active lane-slots and the SIMT efficiency.",

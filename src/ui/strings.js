@@ -33,16 +33,30 @@ export const STRINGS = {
   aboutRightsRelease: '© 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0. '
     + 'The name and logo are not licensed as trademarks.',
   aboutClose: 'Close',
-  // teaching templates (content/templates/)
+  // teaching templates (content/templates/), shown as "Sample projects" in every module (author, 2026-11-15; pico2
+  // design pico2-hardware-tab.md §10.1); the internal names (content folders, the descriptor's `templates`) are unchanged
   templates: Object.freeze({
-    menu: 'Templates',
-    menuTitle: 'Teaching templates: short programs that each show one idea, grouped by view; each opens in its view with its settings',
-    loading: 'Loading the templates…',
-    failed: (why) => `The templates could not be loaded: ${why}`,
-    opened: (title) => `Opened the template "${title}". Its first lines say what to try.`,
+    menu: 'Sample projects',
+    menuTitle: 'Sample projects: short programs that each show one idea, grouped by topic; each opens in its view with its settings',
+    loading: 'Loading the sample projects…',
+    failed: (why) => `The sample projects could not be loaded: ${why}`,
+    opened: (title) => `Opened the sample project "${title}". Its first lines say what to try.`,
     more: 'More examples…',
-    heading: 'Templates',
+    heading: 'Sample projects',
+    // the language tabs of the list (author, 2026-11-15), shown where the samples are in more than one language
+    tabs: Object.freeze({ c: 'C', asm: 'Assembly', micropython: 'MicroPython' }),
+    tabsLabel: 'Language of the sample projects',
     note: 'Short programs that each show one idea; the first lines of each say what to try.',
+  }),
+  // a beta release (1.7.0-beta.1, author 2026-11-15): the badge beside the name and its tooltip
+  beta: Object.freeze({
+    badge: 'Beta',
+    title: (v) => `MAVILERA ${v}: a beta. New: Pico Full with loading onto a real Pico 2 (the Hardware tab), not yet tested on a real board. For teaching, use the stable release.`,
+  }),
+  // a header included from outside the project, shown read-only (contract v14; pico2 Full, 2026-11-15)
+  headerViewer: Object.freeze({
+    copy: 'Copy',
+    copied: 'Copied',
   }),
   // the workspace kept across a reload or a closed tab
   workspace: Object.freeze({
@@ -201,7 +215,6 @@ export const STRINGS = {
     seconds: 'Seconds to render',
     secondsTitle: 'How many seconds of simulated time Render and play runs (1 to 60).',
     unavailable: 'This browser cannot play the simulator\'s sound (no Web Audio).',
-    nextRun: 'The change of Sound applies from the next run.',
     noSpeaker: 'No speaker pin is chosen: choose one in the Pins panel to hear a pin.',
     soundOff: 'Sound is off: turn Sound on (the speaker button) to hear the rendered sound.',
     rendering: (fraction, seconds) => `Rendering ${Math.round(Math.min(1, Math.max(0, fraction)) * 100)} % of ${seconds} s…`,
@@ -956,7 +969,7 @@ export const STRINGS = {
       group: 'Theme',
       title: 'The colours of the whole interface, the drawings included; kept in this browser for every module',
       names: { '': 'As the system', light: 'Light', dark: 'Dark', dim: 'Dim', black: 'Black', sepia: 'Sepia',
-        'hc-light': 'High contrast light', 'hc-dark': 'High contrast dark' },
+        green: 'Green', buet: 'BUET maroon', 'hc-light': 'High contrast light', 'hc-dark': 'High contrast dark' },
     },
     noBreakLine: 'No instruction on that line to stop at.',
   }),
@@ -967,7 +980,7 @@ export const STRINGS = {
     saveSettings: 'Save program and settings…',
     saveSettingsTitle: 'A .json file with the program, the view and its settings; open it with File ▸ Open',
     restore: 'Restore previous text',
-    restoreTitle: 'Put back the editor text that the last opened template, example, link or settings file replaced',
+    restoreTitle: 'Put back the editor text that the last opened sample project, example, link or settings file replaced',
     copied: (n) => `Share link copied (${n.toLocaleString('en-GB')} characters). It holds the program, the view and its settings; nothing is stored on a server.`,
     copyFailed: 'The browser did not allow copying. Select the link below and copy it yourself:',
     tooLong: (n, limit) => `The program is too long for a link (${n.toLocaleString('en-GB')} characters; the limit is ${limit.toLocaleString('en-GB')}). Share it as a file with File ▸ ${'Save program and settings…'}.`,

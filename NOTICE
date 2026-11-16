@@ -13,3 +13,7 @@ author reserves the copyright in Pip's design and drawings (content/pip/).
 This project is independent of, and not endorsed by, RISC-V International,
 Arm, Intel or any other owner of an architecture name mentioned in it.
 Third-party components are listed in THIRD_PARTY.md.
+
+This product includes picoflash (src/arch/pico2/vendor/picoflash/, the PICOBOOT library
+pkg/ of https://github.com/piersfinlayson/picoflash), Copyright (c) 2025-2026
+Piers Finlayson, under the MIT License (src/arch/pico2/vendor/picoflash/LICENSE).

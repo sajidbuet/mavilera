@@ -127,6 +127,37 @@ try {
         return `${st.frames} frames in ${wall.toFixed(1)} s, 0 underruns, ${st.calls} render calls, machine ${(pace * 100).toFixed(2)} % of wall time, buffer up to ${st.maxFill} frames (${transport}); "${s}"`;
       });
 
+      // 2026-11-15 (author's report): Sound off and on again during a run left the run silent until the next one (and off could
+      // stall machine time paced by a sink that no longer played). Now the run is linked again at once.
+      await check('Sound off and on during a run: machine time goes on while muted; the sound comes back without a restart', async () => {
+        const machineS = `(() => { const m = /Real time · ([0-9.]+) s/.exec(${status}); return m ? Number(m[1]) : null; })()`;
+        await p.eval(click);
+        await p.waitFor(`/^Pause/.test(${primary})`, 10000);
+        await sleep(2000);
+        await p.eval(`document.querySelector('.tool-sound').click(); true`); // off
+        await p.waitFor(`document.querySelector('.tool-sound')?.getAttribute('aria-pressed') === 'false'`, 5000);
+        const a0 = await p.eval(machineS), w0 = Date.now();
+        await sleep(3000);
+        const a1 = await p.eval(machineS), mutedPace = (a1 - a0) / ((Date.now() - w0) / 1000);
+        const linkOff = await p.eval(`document.querySelector('.run-status').dataset.audio ?? ''`);
+        await p.eval(`document.querySelector('.tool-sound').click(); true`); // on again
+        await p.waitFor(`document.querySelector('.tool-sound')?.getAttribute('aria-pressed') === 'true'`, 10000);
+        await p.waitFor(`Boolean(document.querySelector('.run-status').dataset.audio)`, 5000).catch(() => {});
+        const linkOn = await p.eval(`document.querySelector('.run-status').dataset.audio ?? ''`);
+        await sleep(1500); // the new link fills its buffer
+        await p.eval(`globalThis.__mavileraTest.audioResetStats(); true`);
+        const t0 = Date.now();
+        await sleep(5000);
+        const st = await p.eval(`globalThis.__mavileraTest.audioStats()`);
+        const wall = (Date.now() - t0) / 1000;
+        await pause();
+        if (!(mutedPace > 0.9)) throw new Error(`while muted machine time ran at ${(mutedPace * 100).toFixed(1)} % of wall time`);
+        if (linkOff) throw new Error(`still linked while muted (${linkOff})`);
+        if (!linkOn) throw new Error('no audio link after Sound on');
+        if (!st || !(st.frames > 0.9 * wall * 48000) || st.underrunCalls !== 0) throw new Error(`after Sound on: ${J(st)} in ${wall.toFixed(1)} s`);
+        return `muted: machine ${(mutedPace * 100).toFixed(1)} % of wall time, no link; on again (${linkOn}): ${st.frames} frames in ${wall.toFixed(1)} s, 0 underruns`;
+      });
+
       await check('the PWM tab lists slice 7 on GP14; the DMA tab channel 0 paced by PWM wrap 7', async () => {
         await p.eval(openMemTab('PWM'));
         await sleep(300);

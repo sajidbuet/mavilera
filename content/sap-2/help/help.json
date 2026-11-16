@@ -22,7 +22,7 @@
       "blocks": [
         { "p": "The MAVILERA SAP-2 Laboratory runs SAP-2 programs in your browser and shows how the computer executes them on its bus. Nothing is installed and nothing is uploaded." },
         { "ol": [
-          "Type a program in the editor, or open one from Templates in the toolbar: short programs that each show one idea, with a note at the top on what to try.",
+          "Type a program in the editor, or open one from Sample projects in the toolbar: short programs that each show one idea, with a note at the top on what to try.",
           "Press Assemble (Ctrl+Enter). Errors are marked in the editor and explained in the console.",
           "Step through the program with Step (F10) and Step back (Shift+F10), or run it with Run (F5).",
           "Watch the registers A, B and C, the flags S and Z, the program counter, the ports and the memory. Each OUT 03H also writes a line in the console.",

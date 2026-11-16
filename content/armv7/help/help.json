@@ -21,7 +21,7 @@
    "blocks": [
     { "p": "Nothing is installed and nothing is uploaded: the laboratory runs entirely in your browser." },
     { "ol": [
-      "Type a program in the editor, or open one from Templates.",
+      "Type a program in the editor, or open one from Sample projects.",
       "Assemble it (Ctrl+Enter). Errors are listed in the console with their line.",
       "Step (F10) or run (F5). Step back (Shift+F10) undoes a step.",
       "Choose the Single-cycle, Multicycle or Pipelined view to watch a processor run the same program, one clock cycle per step."

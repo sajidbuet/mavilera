@@ -139,8 +139,14 @@ int main(void) {
 
 const sdkLanguage = {
   id: 'sdk-c', label: S.full.label, extension: '.c', image: true, example: SDK_EXAMPLE, // P1-L1: a new .c file in Full starts with it
+  // contract v14: the wording of the read-only list of headers the project includes (the loaded part's `headers`)
+  headersText: S.full.headersLabel,
   // the built ELF as a UF2 file for the board's BOOTSEL drive (firmware/uf2.js: as picotool writes it)
   saveAs: [{ extension: '.uf2', convert: async (elf) => (await import('./firmware/uf2.js')).elfToUf2(elf) }],
+  // P1-R4 (research D58; P1-F3 Q3 A; contract v13 ExtraLanguage.projectOptions): where printf goes, kept per project and
+  // passed to build; "UART and USB" builds with the pack's USB object set (TinyUSB, pico_stdio_usb, pico_usb_reset)
+  projectOptions: [{ id: 'stdio', label: S.full.stdio.label, title: S.full.stdio.title, default: 'uart',
+    values: [{ id: 'uart', label: S.full.stdio.uart }, { id: 'usb', label: S.full.stdio.usb }], changed: S.full.stdio.set }],
   load: async () => {
     const { FullCompiler } = await import('./full/client.js');
     const fc = new FullCompiler();
@@ -158,20 +164,26 @@ const sdkLanguage = {
         forget: () => fc.forget(),
         persist: () => FullCompiler.persist(),
       },
-      build: async (files) => {
+      // contract v14 (ExtraLanguageInstance.headers): the headers a project includes from outside it, shown read-only in
+      // the file explorer; null until the compiler is loaded (it holds the SDK; nothing is downloaded for this)
+      headers: async (files, options = {}) => (fc.ready ? fc.headers(files, { stdio: options.stdio ?? 'uart' }) : null),
+      build: async (files, options = {}) => {
         // P1-M8 (design Q5): each .pio file is assembled (pio/asm.js) into <file>.pio.h for the C files, as pico_generate_pio_header
         if (files.some((x) => /\.pio$/i.test(x.name))) {
           const pr = (await import('./pio/asm.js')).withPioHeaders(files);
           if (!pr.ok) return { ok: false, image: null, times: {}, log: '', diagnostics: pr.diagnostics };
           files = pr.files;
         }
-        const r = await fc.build(files);
+        const r = await fc.build(files, { stdio: options.stdio ?? 'uart' });
+        if (r.reason === 'set') return { ok: false, image: null, times: r.times, log: [], diagnostics: [{ severity: 'error', message: S.full.noSet(r.set) }] };
         // notes only where they point into the project; SDK headers named in the message (the editor cannot open them)
         const diagnostics = r.diagnostics.filter((d) => d.severity !== 'note' || d.file).map((d) => ({
           severity: d.severity === 'note' ? 'warning' : d.severity,
           message: d.file || !d.path ? d.message : `${d.path}${d.line ? `:${d.line}` : ''}: ${d.message}`,
           ...(d.file ? { file: d.file, line: d.line ?? 1, column: d.col ?? 1 } : {}) }));
-        return { ok: r.ok, image: r.elf ? { kind: 'elf', bytes: r.elf } : null, times: r.times, log: r.log, diagnostics };
+        // P1-R4: which object set was linked, as a few words after "built" (nothing for the default set)
+        return { ok: r.ok, image: r.elf ? { kind: 'elf', bytes: r.elf } : null, times: r.times, log: r.log, diagnostics,
+          ...(r.set && (r.set.stdio !== 'uart' || r.set.multicore) ? { note: S.full.builtWith(r.set) } : {}) };
       },
     };
   },
@@ -193,6 +205,7 @@ export const descriptor = {
     realtime: true,    // P1-M4 (research D36): paced real-time runs in the Worker (Engine.advance, clock, live)
     audio: true,       // P1-M5 (research D39): the speaker pin as sound (Engine.drainAudio, the shell's AudioWorklet)
     exercises: true,   // P1-M9 (research D45 Q4): practice exercises and exercise files (exercise.js)
+    hardware: true,    // P1-F3 (research D58 Q10 A; contract v13): Load to Pico over WebUSB, the Board and Serial (board) panels; off in Lite
     ...Object.fromEntries(['stepOver', 'callStack', 'scratch', 'gccImport', 'dataIO', 'uninitCheck',
       'exportGolden', 'exportImage'].map((k) => [k, off('laterMilestone')])),
     ...Object.fromEntries(['memoryModel', 'cache', 'devices', 'traps'].map((k) => [k, off('noDevices')])),
@@ -231,7 +244,7 @@ export const descriptor = {
   // Build/Run/Pause button) and Pico Full (projects in Pico SDK C and assembly; built and imported programs)
   editions: [
     { id: 'lite', label: S.editions.lite, title: S.editions.liteTitle, languages: ['c'], primary: true,
-      capabilities: { projects: off('fullEdition'), imageImport: off('fullEdition') } },
+      capabilities: { projects: off('fullEdition'), imageImport: off('fullEdition'), hardware: off('fullEdition') } }, // P1-F3 Q12 A: no hardware control in Lite
     // P1-M9 (research D45 Q1): Pico Full stays on the development page until its gates pass (the modest-laptop run D29, the
     // compiler's rebuild, the licence review and hosting of its pack, D9/D33): a release page and the offline file offer Lite only
     { id: 'full', label: S.editions.full, title: S.editions.fullTitle, compiler: 'sdk-c', development: true },
@@ -255,6 +268,24 @@ export const descriptor = {
   { id: 'i2c', label: S.devices.i2cTab, load: async () => { const { I2cPanel } = await import('./ui/devices-panel.js'); return { create: () => new I2cPanel() }; } },
   // P1-M8 (design Q6): the PIO blocks, their programs and state machines
   { id: 'pio', label: S.pio.tab, load: async () => { const { PioPanel } = await import('./ui/pio-panel.js'); return { create: () => new PioPanel() }; } }],
+  // the real board's Board (USB) and Serial (board) panels of P1-F3 moved into the Hardware tab (design pico2-hardware-tab.md,
+  // 2026-11-15; supersedes pico2-p1f3-board.md §9.2 item 1)
+  // P1-F3 (research D58; contract v13 Descriptor.hardware): Load to Pico. Loaded when the page starts where the capability is
+  // on (Pico Full), so that the button's click reaches the browser's device chooser while its user activation lasts
+  hardware: { load: async () => {
+    const { hardwareSession, canLoad } = await import('./hw/session.js');
+    const { loadDialog, HardwareSections } = await import('./ui/hardware-panel.js');
+    return { create: (ctx) => {
+      const s = hardwareSession().attach(ctx);
+      // the confirmation (S1, Q5 A) is there from the start: the toolbar's first Load may run before the Hardware tab is drawn
+      s.confirmUi = (summary) => loadDialog().ask(summary);
+      // results of a load started before the Hardware tab exists go to the console (the tab's sections report their own)
+      let quiet = null;
+      const reporter = () => (quiet ??= new HardwareSections({ message: ctx.message }));
+      return { label: S.hw.load, title: S.hw.loadTitle, caps: s.caps, canLoad, session: s,
+        load: () => reporter().load(), download: () => reporter().download() };
+    } };
+  } },
   console: { input: { kind: 'uart', uart: 0, lineEnd: [13], label: S.uartType.label, placeholder: S.uartType.placeholder, title: S.uartType.title } },
   // P1-F2: the Pico SDK compiler and pack, downloaded on demand and cached; outside the module's 2 MB budget (ADR-0012)
   assets: { optional: [{ id: 'pico-full', label: S.full.assetLabel, base: 'pico-full/' }] },
@@ -300,6 +331,12 @@ export const descriptor = {
     { id: 'board', label: S.viewBoard, icon: 'board', kind: 'datapath', engine: 'page', profile: 'hazard3', layout: { drawing: 0.72, editor: 0.19 }, load: async () => {
       const { BoardView, boardInstance } = await import('./ui/board-view.js');
       return { create: (ctx) => boardInstance(new BoardView(ctx), ctx) };
+    } },
+    // the Hardware tab (design pico2-hardware-tab.md, author 2026-11-15): a real Pico 2 on USB (probe, load, debug without a
+    // probe, UART monitor); a page view, so the simulator keeps running; Pico Full only (contract v14 View.capability)
+    { id: 'hardware', label: S.viewHardware, icon: 'usb', kind: 'datapath', engine: 'page', profile: 'hazard3', capability: 'hardware', layout: { drawing: 0.88, editor: 0.15 }, load: async () => {
+      const { HardwareView, hardwareInstance } = await import('./ui/hardware-view.js');
+      return { create: (ctx) => hardwareInstance(new HardwareView(ctx)) };
     } },
   ],
   exports: { trace: (program, { cap }) => trace(program, { cap }), traceJsonLines, traceCsv },

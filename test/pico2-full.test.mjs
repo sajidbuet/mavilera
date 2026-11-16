@@ -12,7 +12,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { writePack, readPack, PackError } from '../src/arch/pico2/full/pack.js';
-import { expand, startsWithPchHeader } from '../src/arch/pico2/full/driver.js';
+import { expand, startsWithPchHeader, chooseSet, setOf, includesHeader, PACK_SETS } from '../src/arch/pico2/full/driver.js';
 import { parseDiagnostics, locate } from '../src/arch/pico2/full/diagnostics.js';
 import { MemFS, normalise } from '../src/arch/pico2/full/wasi.js';
 import { CompilerHost } from '../src/arch/pico2/full/host.js';
@@ -48,6 +48,38 @@ test('driver: the precompiled header is used only when the first directive inclu
   assert.ok(!startsWithPchHeader('#include <stdio.h>\n#include "pico/stdlib.h"\n', H), 'another include first');
   assert.ok(!startsWithPchHeader('#define LED 25\n#include "pico/stdlib.h"\n', H), 'a define first changes the header');
   assert.ok(!startsWithPchHeader('int x;\n', H));
+});
+
+// P1-R4 (research D58): the object set follows the project option (stdio) and whether a project file includes pico/multicore.h
+test('driver: the object set follows the stdio option and an include of pico/multicore.h; comments do not count', () => {
+  const meta = { sets: Object.fromEntries(PACK_SETS.map((s) => [s, { templates: { c: [s] }, pch: null }])) };
+  const f = (text, name = 'main.c') => [{ name, text }];
+  assert.deepEqual(chooseSet(meta, f('#include "pico/stdlib.h"\n')), { id: 'uart', stdio: 'uart', multicore: false });
+  assert.deepEqual(chooseSet(meta, f('#include "pico/stdlib.h"\n'), { stdio: 'usb' }), { id: 'usb', stdio: 'usb', multicore: false });
+  assert.equal(chooseSet(meta, f('#include "pico/multicore.h"\n')).id, 'uart_mc');
+  assert.equal(chooseSet(meta, f('  #  include <pico/multicore.h>\n'), { stdio: 'usb' }).id, 'usb_mc');
+  assert.equal(chooseSet(meta, [{ name: 'main.c', text: 'int main(void){}' }, { name: 'cores.h', text: '#include "pico/multicore.h"\n' }]).id, 'uart_mc', 'a project header counts');
+  assert.equal(chooseSet(meta, f('// #include "pico/multicore.h"\n/* #include "pico/multicore.h" */\n')).id, 'uart', 'commented out');
+  assert.equal(chooseSet(meta, f('#include "pico/multicore.h"\n', 'notes.txt')).id, 'uart', 'not a source file');
+  assert.equal(chooseSet(meta, f('#include "pico/multicore_extra.h"\n')).id, 'uart');
+  assert.equal(chooseSet(meta, f(''), { stdio: 'radio' }).stdio, 'uart', 'an unknown option falls back to UART');
+  // a pack from before P1-R4: only the default set
+  const old = { templates: { c: ['old'] }, pch: { path: '/p' } };
+  assert.equal(chooseSet(old, f('')).id, 'uart');
+  assert.equal(chooseSet(old, f(''), { stdio: 'usb' }).id, null);
+  assert.equal(chooseSet(old, f('#include "pico/multicore.h"\n')).id, null);
+  assert.deepEqual(setOf(old).templates.c, ['old']);
+  assert.throws(() => setOf(old, 'usb'), /no object set usb/);
+  assert.deepEqual(setOf(meta, 'usb_mc').templates.c, ['usb_mc']);
+  assert.ok(includesHeader('#include "pico/multicore.h"', 'pico/multicore.h'));
+  assert.ok(!includesHeader('x = "#include \\"pico/multicore.h\\"";', 'pico/multicore.h'), 'not at the start of a line');
+});
+
+test('pack builder: Windows command lines split as the C runtime does (quotes inside an argument, escaped quotes)', async () => {
+  const { tok } = await import('../tools/pico-full/cmdline.mjs');
+  assert.deepEqual(tok('clang.exe -DPICO_BOARD=\\"pico2\\" -DPICO_PROGRAM_BUILD_DATE="\\"Nov 15 2026\\"" -I C:\\a\\b  "C:\\x y\\z.c"'),
+    ['clang.exe', '-DPICO_BOARD="pico2"', '-DPICO_PROGRAM_BUILD_DATE="Nov 15 2026"', '-I', 'C:\\a\\b', 'C:\\x y\\z.c']);
+  assert.deepEqual(tok('a\\\\\\"b c\\\\"d e" ""'), ['a\\"b', 'c\\d e', '']);
 });
 
 test('diagnostics: clang errors in project files and SDK headers, notes, lld undefined symbols', () => {
@@ -183,4 +215,60 @@ test('build: a rebuild does not see the previous build\'s files', { skip: SKIP }
   assert.equal(r.ok, false);
   assert.ok(!h.fs.stat('/build/extra.c.o'), 'old object removed');
   assert.ok(!h.fs.stat('/project/extra.c'), 'old source removed');
+});
+
+// ---- P1-R4 (research D58): the object sets (need a pack with sets) ----
+const SETS_SKIP = SKIP || (!manifest?.sets ? 'needs an SDK pack with object sets (P1-R4)' : false);
+/** Runs a built ELF on the model for `ms` of simulated time; returns {text: UART0's output, engine}. */
+async function runElf(elf, ms) {
+  const { descriptor } = await import('../src/arch/pico2/index.js');
+  const e = descriptor.engine.create(descriptor.language.loadImage(elf, 'elf', 'main.elf'), { runLimit: Infinity });
+  // stops when the engine stops (an error such as a ROM function it does not model) instead of waiting for time that never comes
+  for (let last = -1; e.clock().timeNs < ms * 1e6 && e.clock().timeNs !== last;) { last = e.clock().timeNs; e.advance({ cycles: 500_000 }); }
+  assert.equal(e.state().error ?? null, null, 'the program runs without an engine error');
+  return { text: e.machine.uart[0].text(), engine: e };
+}
+const TICKS = '#include <stdio.h>\n#include "pico/stdlib.h"\nint main(void) {\n    stdio_init_all();\n    for (int i = 0; i < 3; i++) { printf("tick %d\\n", i); sleep_ms(5); }\n    puts("done");\n    for (;;) tight_loop_contents();\n}\n';
+
+test('sets: a project including pico/multicore.h builds with uart_mc and both cores print', { skip: SETS_SKIP }, async () => {
+  const h = await getHost();
+  const src = '#include <stdio.h>\n#include "pico/stdlib.h"\n#include "pico/multicore.h"\nvoid core1(void) { printf("core 1 says %d\\n", (int)multicore_fifo_pop_blocking()); for (;;) tight_loop_contents(); }\n'
+    + 'int main(void) {\n    stdio_init_all();\n    multicore_launch_core1(core1);\n    multicore_fifo_push_blocking(42);\n    sleep_ms(5);\n    puts("core 0 done");\n    for (;;) tight_loop_contents();\n}\n';
+  const r = await h.build([{ name: 'main.c', text: src }]);
+  assert.ok(r.ok, JSON.stringify(r.diagnostics) + r.log.map((j) => j.stderr).join(''));
+  assert.deepEqual(r.set, { id: 'uart_mc', stdio: 'uart', multicore: true });
+  const { text } = await runElf(r.elf, 20);
+  assert.match(text, /core 1 says 42/);
+  assert.match(text, /core 0 done/);
+});
+
+test('sets: the option "UART and USB" builds with TinyUSB; on the model the UART output equals the UART-only build\'s', { skip: SETS_SKIP }, async () => {
+  const h = await getHost();
+  const uart = await h.build([{ name: 'main.c', text: TICKS }]);
+  const usb = await h.build([{ name: 'main.c', text: TICKS }], { stdio: 'usb' });
+  assert.ok(uart.ok && usb.ok, JSON.stringify(usb.diagnostics) + usb.log.map((j) => j.stderr).join(''));
+  assert.equal(uart.set.id, 'uart');
+  assert.equal(usb.set.id, 'usb');
+  assert.ok(usb.elf.length > uart.elf.length, 'TinyUSB and the USB stdio driver are linked');
+  const a = await runElf(uart.elf, 40), b = await runElf(usb.elf, 40);
+  assert.equal(a.text, 'tick 0\r\ntick 1\r\ntick 2\r\ndone\r\n');
+  assert.equal(b.text, a.text, 'TinyUSB does not hang the program or change its UART output');
+});
+
+test('sets: pico_status_led links from the pack (its pioasm-generated header included)', { skip: SETS_SKIP }, async () => {
+  const h = await getHost();
+  const r = await h.build([{ name: 'main.c', text: '#include "pico/stdlib.h"\n#include "pico/status_led.h"\nint main(void) {\n    status_led_init();\n    for (int i = 0; i < 4; i++) { status_led_set_state(i & 1); sleep_ms(1); }\n    for (;;) tight_loop_contents();\n}\n' }]);
+  assert.ok(r.ok, JSON.stringify(r.diagnostics) + r.log.map((j) => j.stderr).join(''));
+  const { engine } = await runElf(r.elf, 10);
+  const l = engine.machine.pins.log;
+  let n = 0;
+  for (let i = 0; i < l.pins.length; i++) if (l.pins[i] === 25 && l.states[i] <= 1) n++;
+  assert.ok(n >= 3, `GP25 changed ${n} times`);
+});
+
+test('sets: the pack\'s fixed build date is in binary info', { skip: SETS_SKIP }, async () => {
+  const h = await getHost();
+  const r = await h.build([{ name: 'main.c', text: HELLO }]);
+  assert.ok(manifest.buildDate && /^[A-Z][a-z]{2} [ 123]\d \d{4}$/.test(manifest.buildDate), manifest.buildDate);
+  assert.ok(Buffer.from(r.elf).includes(Buffer.from(`${manifest.buildDate}\0`)), 'the date string is in the image');
 });

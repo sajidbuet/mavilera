@@ -100,6 +100,8 @@ export async function launchFirefox({ headless = true, extraPrefs = [] } = {}) {
             await sleep(50);
           }
         },
+        /** A script run in every document of this tab before its own scripts (pico2 P1-F3; BiDi script.addPreloadScript). */
+        async preload(source) { await send('script.addPreloadScript', { functionDeclaration: `() => { ${source}\n}`, contexts: [context] }); },
         async close() { await send('browsingContext.close', { context }).catch(() => {}); },
       };
       return page;

@@ -8,13 +8,13 @@
         { "brand": true },
         { "p": "This laboratory simulates a Raspberry Pi Pico 2 in the browser: you write a program, build it, and watch it run on the simulated chip. Nothing is installed and nothing is uploaded; your program is kept in this browser." },
         { "ol": [
-          "Write a program in the editor on the left, or open one from Templates in the toolbar. The first lines of a template say what to try.",
+          "Write a program in the editor on the left, or open one from Sample projects in the toolbar: the tabs C and Assembly sort them by language, the groups by topic. The first lines of each say what to try.",
           "Choose Assemble (Compile for a C program), or press Ctrl+Enter. The Listing shows each instruction with its address; errors are underlined in the editor and listed in the console.",
           "Choose Step (F10) to run one instruction. The marked row of the Listing and the marked line of the editor are the instruction that runs next. Step back (Shift+F10) undoes a step.",
           "Choose Run (F5) to run on; the same button pauses. Run on a changed program builds it first. After the program has ended the button reads Run again: it resets the chip and runs from the start.",
           "Reset puts the registers, the memory and the counters back to their values at the start."
         ] },
-        { "p": "A path through the templates: A tour of Hazard3's extensions; Hello over UART and Blink GP25 (the chip's devices from assembly); Blink in C and Hello in C; A button on GP15 and Echo over UART (inputs); then the groups on the pipeline, sound, two cores, the buses and PIO. File, then Exercise…, has practice exercises with tests." }
+        { "p": "A path through the sample projects: A tour of Hazard3's extensions; Hello over UART and Blink GP25 (the chip's devices from assembly); Blink in C and Hello in C; A button on GP15 and Echo over UART (inputs); then the groups on the pipeline, sound, two cores, the buses and PIO. File, then Exercise…, has practice exercises with tests." }
       ]
     },
     {
@@ -50,7 +50,9 @@
           ["The clock", "clk_sys in the toolbar chooses the clock the program runs the core at: 1, 4 or 12 MHz from the 12 MHz crystal. An assembly program sets the clocks itself with the symbols CLK_SYS_DIV, CLK_SYS_HZ, UART_IBRD, UART_FBRD and TICK_CYCLES, as the device templates do (§8.1, §8.5)."],
           ["MAVILERA C", "A teaching subset of C, compiled in the page into assembly that you can step through. Its start-up sets the clock and UART0 for you; main's return value is the program's exit code. In the editor, Step line and Back line run one C line."],
           ["<rp2350.h>", "Register names and addresses, and helpers: pin_output, pin_input, pin_write, pin_read; delay_us, delay_ms, sleep_ms, time_us; pwm_start, pwm_level; dma_copy; adc_read; i2c_setup, i2c_write, i2c_read; spi_setup, spi_select, spi_transfer; core1_start, fifo_push, fifo_pop, core_id; pio_load; and CLK_SYS_HZ. putchar sends a character to UART0."],
-          ["A .pio file", "File, then Add PIO file, puts a .pio file in a second tab. Build assembles it with the program: in assembly its words are at <name>_program, in C the header \"<file>.pio.h\" gives them."]
+          ["A .pio file", "File, then Add PIO file, puts a .pio file in a second tab. Build assembles it with the program: in assembly its words are at <name>_program, in C the header \"<file>.pio.h\" gives them."],
+          ["Pico SDK C (Pico Full)", "Projects of several files in C written for the Raspberry Pi Pico SDK, built in the browser by the SDK's own compiler (a download of about 25 MB, asked for at the first build). The sample projects marked (Pico SDK) are written this way; the last of them, SOS in Morse code, uses the GPIOs, a timer interrupt, PWM sound, the ADC, the I2C LCD of the lab kit, UART and a button together."],
+          ["SDK headers", "Under the project's files, Pico SDK headers (read-only) lists each header your files include from the SDK or the C library, such as pico/stdlib.h, hardware/adc.h or stdio.h, found where the build finds it. Open one to read it. They come with the compiler, not with the project, so they cannot be edited."]
         ], "sources": ["RP-001 §3.8, §8.1, §8.5"] }
       ]
     },
@@ -159,7 +161,27 @@
       "title": "Lite and Full",
       "blocks": [
         { "p": "This laboratory holds one program in assembly language or in MAVILERA C (Pico Lite). The Language menu above the editor switches between them; each language keeps its own program." },
-        { "p": "A second edition, Pico Full, with projects of several files and C built with the Pico SDK in the browser, is still in development and is not part of the published laboratory. On a page where it is offered, the switch beside the laboratory's name changes the edition, and each edition keeps its own program." }
+        { "p": "A second edition, Pico Full, has projects of several files, C built with the Pico SDK in the browser, the import of SDK-built UF2 and ELF files, and loading onto a real Pico 2 (the Hardware tab). It is offered in the beta release (MAVILERA 1.7.0-beta.1, sajidlab.org/mavilera/beta/) and is not yet part of the stable release. Where it is offered, the switch beside the laboratory's name changes the edition, and each edition keeps its own program." },
+        { "p": "To load a program onto a real Pico 2, use Pico Full: a MAVILERA program in assembly or MAVILERA C runs in the simulator only." }
+      ]
+    },
+    {
+      "id": "board-load",
+      "title": "Load to a Pico 2",
+      "blocks": [
+        { "notice": "Beta (MAVILERA 1.7.0-beta.1): loading onto a board has been tested with simulated USB devices only, not yet with a real Pico 2. If a load fails, Download .uf2 and copying the file to the RP2350 drive always works; please report what happened." },
+        { "p": "Pico Full can write a project's program to a real Pico 2 or Pico 2 W connected to the computer by USB, from Chrome or Edge on a computer. Everything about the real board is in the Hardware tab at the top of the page, apart from the simulator; Load to Pico in the toolbar opens it. The program is the one the simulator runs: a project built with Pico SDK C, or a UF2, ELF or .bin file built with the Pico SDK. A MAVILERA program (assembly or MAVILERA C) cannot run on a board by itself.", "sources": ["RP-001"] },
+        { "ol": [
+          "Hold the BOOTSEL button on the Pico 2 while you plug its USB cable in, then let go. The Pico 2 starts in BOOTSEL mode and a drive named RP2350 appears.",
+          "Press Load to Pico. The first time, the browser lists the boards it can use: choose \"RP2350 Boot\". If the project changed since its last build, it is built first.",
+          "Check the question: it names the board by its serial number and the build by its number. Press Enter or Load.",
+          "The program is written sector by sector, each sector read back and compared. The Pico 2 then restarts and runs the program."
+        ] },
+        { "p": "Build numbers count the different programs a project has given in this browser: building unchanged code gives the same number. The Board section of the Hardware tab says which build the board last received from here; Probe board shows what a board in BOOTSEL mode reports (chip, ROM version, serial number, boot partition); Check reads the board back, in BOOTSEL mode, and compares it with the current build. Forget this board removes this browser's record and its permission to use the board." },
+        { "p": "printf on a Pico 2 goes to UART0 (GP0 and GP1) at 115200 bit/s. To see it, connect a 3.3 V USB-UART adapter to GP0, GP1 and GND, or choose Output: UART and USB in the Project menu and load again, so that the program also prints over the USB cable. Then, in the UART monitor of the Hardware tab, press Port… (an adapter) or Pico 2 USB…. The monitor shows the real board; the Console shows the simulator. Compare checks the board's lines against the simulated console's, and Hex shows the bytes as they arrive.", "sources": ["RP-020"] },
+        { "p": "Without Chrome or Edge (Firefox, Safari), or when the computer does not give the browser access to the board, use Download .uf2 and copy the file to the RP2350 drive: the Pico 2 checks and takes it by itself. In Chrome and Edge, Copy to the Pico's drive writes the file to the drive you choose. On Linux the browser needs permission to use the board: a udev rule for the USB IDs 2e8a:000f (BOOTSEL) and 2e8a:0009 (a program with USB output)." },
+        { "p": "Debug (without a probe), for a Pico 2 in BOOTSEL mode: Run restarts it so that it runs what its flash holds; Save flash reads the flash back into a .bin file. Neither writes anything. Stepping and breakpoints on the board itself need a Raspberry Pi Debug Probe: planned, not available yet." },
+        { "p": "If a load stops (the cable was pulled, the board stopped answering), the Pico 2 stays in BOOTSEL mode: the part of the program that marks it as runnable is written last. Hold BOOTSEL, plug it in again and load again. This laboratory never changes the board's one-time-programmable memory or a partition table." }
       ]
     },
     {

@@ -4,6 +4,7 @@
 # Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
 . "$PSScriptRoot\env.ps1"
 Need $env:PICO_SDK_PATH 'PICO_SDK_PATH'; Need "$CCD\clang.exe" 'ccd stand-ins'; Need "$SYSROOT\lib\libc.a" 'runtimes'
+NeedEpoch; HostTools; NeedTinyUsb   # P1-R4: build date, pioasm, the USB object sets
 $sdkHead = git -C $env:PICO_SDK_PATH rev-parse HEAD
 if ($sdkHead -ne $PINS.picoSdk.commit) { throw "pico-sdk is at $sdkHead, pinned $($PINS.picoSdk.commit)" }
 $pb = Join-Path $B 'profile'

@@ -60,6 +60,8 @@ if (LIC && SDK && existsSync(LIC) && existsSync(SDK)) {
     ['wasi-libc/LICENSE-MIT', 'wasi-libc: MIT'], ['wasi-libc/musl-COPYRIGHT', 'musl (in wasi-libc): MIT'],
     ['wasi-libc/cloudlibc-LICENSE', 'cloudlibc (in wasi-libc): BSD-2-Clause'], ['wasi-libc/musl-fts-COPYING', 'musl-fts (in wasi-libc): BSD-3-Clause'],
     ['wasi-libc/dlmalloc-notice.txt', 'dlmalloc (in wasi-libc): CC0'],
+    // P1-R4 (research D58): the USB object sets (output over UART and USB) contain TinyUSB 86ad6e5, the SDK's submodule
+    ['tinyusb/LICENSE', 'TinyUSB (USB device stack in the SDK pack\'s USB object sets; in programs built with output over USB): MIT'],
   ];
   const index = [];
   for (const [rel, what] of take) {
@@ -90,6 +92,44 @@ if (LIC && SDK && existsSync(LIC) && existsSync(SDK)) {
   writeFileSync(join(ld, 'pico-sdk-other-notices.txt'), ['Pico SDK files in this download with copyright holders besides Raspberry Pi. Each is under',
     'BSD-3-Clause: the terms of pico-sdk-LICENSE.TXT, with the holders below in place of Raspberry Pi.', '', ...other, ''].join('\n'));
   index.push('pico-sdk-other-notices.txt\n    Pico SDK files by further copyright holders (pico_i2c_slave, picotls.h, stdatomic.h, board headers): BSD-3-Clause');
+  // P1-R4: TinyUSB in the pack: its headers (pack paths /pico/sdk/lib/tinyusb/...) and the sources of its objects
+  // (/pico/lib/o/tinyusb-<file>-<sha>.o). Each must carry the MIT text or no licence text (then the repository's MIT LICENSE
+  // applies); anything else stops the staging (2026-11-15: a Microchip header with use-only-with-Microchip terms had been
+  // walked into the pack). The notice lists each distinct copyright line with its files.
+  const tu = join(SDK, 'lib', 'tinyusb', 'src');
+  if (!existsSync(tu)) throw new Error(`TinyUSB not found: ${tu} (fetch.ps1)`);
+  const { readPack } = await import('../../src/arch/pico2/full/pack.js');
+  const packFiles = [...readPack(packBytes).files.keys()];
+  const tuSources = new Map();
+  const walkTu = (d) => { for (const n of readdirSync(d, { withFileTypes: true })) { const p = join(d, n.name); if (n.isDirectory()) walkTu(p); else if (n.name.endsWith('.c')) tuSources.set(n.name, p); } };
+  walkTu(tu);
+  const shipped = [
+    ...packFiles.filter((p) => p.startsWith('/pico/sdk/lib/tinyusb/')).map((p) => join(SDK, ...p.slice('/pico/sdk/'.length).split('/'))),
+    ...packFiles.filter((p) => p.startsWith('/pico/lib/o/tinyusb-')).map((p) => {
+      const file = p.split('/').pop().replace(/^tinyusb-/, '').replace(/-[0-9a-f]{8}\.o$/, '');
+      if (!tuSources.has(file)) throw new Error(`TinyUSB object without its source: ${p}`);
+      return tuSources.get(file);
+    })];
+  const holders = new Map(), bad = [];
+  for (const f of [...new Set(shipped)].sort()) {
+    const text = readFileSync(f, 'utf8');
+    const head = text.slice(0, 6000);
+    const mit = /Permission is hereby granted, free of charge/.test(head) || /SPDX-License-Identifier:\s*MIT\b/.test(head);
+    const other = /Redistribution and use in source and binary forms|Apache License|Subject to your compliance with these terms|GNU General Public/.test(head);
+    if (!mit && other) bad.push(f);
+    const rel = f.slice(tu.length + 1).replace(/\\/g, '/');
+    const lines = head.split(/\r?\n/).map((l) => l.match(/Copyright\s*\(c\).*$/i)?.[0]).filter(Boolean);
+    for (const k of (lines.length ? lines : ['(no copyright line; the repository\'s LICENSE: Copyright (c) 2018, hathach (tinyusb.org))']).map((x) => x.replace(/\s+/g, ' ').trim())) {
+      if (!holders.has(k)) holders.set(k, []);
+      holders.get(k).push(rel);
+    }
+  }
+  if (bad.length) throw new Error(`TinyUSB files in the pack with a licence other than MIT: ${bad.join(', ')}`);
+  writeFileSync(join(ld, 'tinyusb-notices.txt'), [`TinyUSB ${'86ad6e56c1700e85f1c5678607a762cfe3aa2f47'} (lib/tinyusb of the Pico SDK): the ${new Set(shipped).size} files of it`,
+    'in this download (headers, and the sources of the prebuilt objects), each under the MIT terms of tinyusb-LICENSE;',
+    'their copyright lines:', '',
+    ...[...holders].sort(([a], [b]) => a.localeCompare(b)).map(([k, fs]) => `${k}\n    ${fs.join(', ')}`), ''].join('\n'));
+  index.push('tinyusb-notices.txt\n    The copyright lines of the TinyUSB files in this download (MIT)');
   const patch = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'llvm-23.1.5-wasi.patch'), 'utf8');
   writeFileSync(join(ld, 'llvm-23.1.5-wasi.patch'), patch);
   // the patch keeps its pinned bytes (pins.json sha256); its notice of changes (Apache-2.0 §4(b), G7) is a file beside it
@@ -101,7 +141,8 @@ if (LIC && SDK && existsSync(LIC) && existsSync(SDK)) {
   writeFileSync(join(ld, 'LICENCES.txt'), [
     `Pico SDK compiler and files for MAVILERA's Pico 2 Laboratory, version ${version}.`,
     'This download contains third-party software under the licences below. Programs you build with it contain Pico SDK,',
-    'picolibc and pico_printf code under their BSD and MIT terms, as with the official GCC toolchain.', '',
+    'picolibc and pico_printf code under their BSD and MIT terms, as with the official GCC toolchain; with output over USB',
+    'also TinyUSB code (MIT).', '',
     // acknowledgements some picolibc licences ask for in documentation (G4; COPYING.picolibc UCB-1/-2, Other-16, Other-22)
     'Acknowledgements (picolibc, the C library in the SDK pack):',
     '    This product includes software developed by the University of California, Berkeley and its contributors.',

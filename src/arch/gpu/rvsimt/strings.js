@@ -176,7 +176,7 @@ export const RVSIMT_STRINGS = Object.freeze({
     heading: 'The GPU on the bus of a RISC-V processor',
     paragraphs: Object.freeze([
       'Here the SIMT core runs on its own. In the CPU + GPU system it is a device of the RISC-V Laboratory\'s single-cycle processor, at 0x5000_1000: the host program copies a kernel and its data into the GPU, starts it, polls STATUS while the GPU issues one warp-instruction per clock cycle, and reads the results back.',
-      'The page shows the processor\'s datapath with the GPU on its data bus, and the GPU with its warps, masks and stack as the host program steps. A template, the host running the absolute-value kernel, opens there from Templates.',
+      'The page shows the processor\'s datapath with the GPU on its data bus, and the GPU with its warps, masks and stack as the host program steps. A template, the host running the absolute-value kernel, opens there from Sample projects.',
     ]),
     open: 'Open the CPU + GPU system',
     mapCaption: 'The GPU\'s registers (MAVILERA\'s design)',

@@ -36,7 +36,7 @@
       "blocks": [
         { "p": "The MAVILERA RISC-V Laboratory runs RISC-V programs in your browser and shows how a processor executes them. Nothing is installed and nothing is uploaded." },
         { "ol": [
-          "Type a program in the editor, or open one from Templates in the toolbar: short programs that each show one idea, with a note at the top on what to try.",
+          "Type a program in the editor, or open one from Sample projects in the toolbar: short programs that each show one idea, with a note at the top on what to try.",
           "Press Assemble (Ctrl+Enter). Errors are marked in the editor and explained in the console, with a hint.",
           "Step through the program with Step (F10) and Step back (Shift+F10), or run it with Run (F5).",
           "Watch the registers, memory and counters change. The last register written is marked ◆.",
@@ -114,7 +114,7 @@
         { "p": "The Memory button chooses the memory model: ideal memory, main memory without a cache, or main memory with an instruction cache (L1I) and a data cache (L1D). For a cache you choose the size, block size, number of ways, replacement and write policy. The settings are illustrative designs for teaching, not those of any real processor. Any change restarts the program." },
         { "p": "The Cache tab of the Memory and cache panel shows the last access of each cache, how the address finds its line, the lines as sets and ways (valid, dirty, tag, words), and the counters of hits and misses. In the instruction-level view the caches show their state at the current instruction (the run is replayed from the start); the button on the tab counts the whole run at once." },
         { "p": "Under the last access the animation shows the access step by step. Replay plays it again, Next step goes one step at a time and Show all steps shows them together; with reduced motion switched on in the system, all the steps are shown at once." },
-        { "p": "The group Caches and memory in Templates opens short programs that each show one idea; each sets the memory model it needs." }
+        { "p": "The group Caches and memory in Sample projects opens short programs that each show one idea; each sets the memory model it needs." }
       ]
     },
     {
@@ -127,7 +127,7 @@
           ["Programs", "In this profile ecall is a trap: compiled C programs and the exit and write calls of the plain ISA profile are not available. Use the UART to print."],
           ["In the processor views", "Switch on Platform devices on the bus in the Memory setting and the single-cycle, multicycle and pipelined views get the same devices and board, polled with lw and sw; traps and interrupts exist only in the profile with traps."],
           ["Timing", "One cycle per instruction and 3 to take a trap; the UART takes 4 cycles per byte. These are the model's own numbers, not measurements of any real core."],
-          ["Templates", "The group Devices and traps opens short programs: a running light, switches and a button by polling, a button interrupt, the timer, a system call as a trap, and a serial port."]
+          ["Sample projects", "The group Devices and traps opens short programs: a running light, switches and a button by polling, a button interrupt, the timer, a system call as a trap, and a serial port."]
         ] }
       ]
     },

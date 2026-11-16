@@ -11,11 +11,12 @@ import { STRINGS } from './strings.js';
 export class ExamplesDialog {
   /**
    * @param {{index: URL | null, onOpen: (example, text) => void, templates?: () => Promise<object>,
-   *   onTemplate?: (t) => void, templateItems?: (index, make) => Element[]}} hooks; index, the examples' index (the architecture's
-   *   content.examples), or null: templates only
+   *   onTemplate?: (t) => void, templateList?: (index, make, wrap) => Element[]}} hooks; index, the examples' index (the
+   *   architecture's content.examples), or null: templates only. templateList (2026-11-15): the samples with their language
+   *   tabs where the list needs them; `wrap(nodes)` gives the nodes of one tab (here: a list)
    */
-  constructor({ index, onOpen, templates = null, onTemplate = null, templateItems = null }) {
-    Object.assign(this, { indexUrl: index, onOpen, templates, onTemplate, templateItems });
+  constructor({ index, onOpen, templates = null, onTemplate = null, templateList = null }) {
+    Object.assign(this, { indexUrl: index, onOpen, templates, onTemplate, templateList });
     this.index = null;
     const E = STRINGS.examples;
     this.list = el('div.ex-list', {}, el('p.note', { text: E.loading }));
@@ -46,8 +47,8 @@ export class ExamplesDialog {
       el('span.ex-title', { text: title }), el('span.ex-file.mono', { text: file })));
     const templates = tpl?.templates.length ? el('section.ex-group.ex-templates', {}, el('h3', { text: STRINGS.templates.heading }),
       el('p.note', { text: STRINGS.templates.note }),
-      el('ul', {}, this.templateItems(tpl, (t) => item(t.title, t.file, () => { this.root.close(); this.onTemplate(t); }))
-        .map((n) => (n.tagName === 'P' ? el('li.ex-sub', {}, n) : n)))) : null;
+      ...this.templateList(tpl, (t) => item(t.title, t.file, () => { this.root.close(); this.onTemplate(t); }),
+        (nodes) => [el('ul', {}, nodes.map((n) => (n.tagName === 'P' ? el('li.ex-sub', {}, n) : n)))])) : null;
     // the topics in the order of the architecture's strings (examples.topics), then any other of the index
     const topics = [...new Set([...Object.keys(E.topics), ...this.index.examples.map((x) => x.topic)])];
     if (!templates && !this.index.examples.length) { this.list.replaceChildren(el('p.note', { text: E.none })); return; }

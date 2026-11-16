@@ -22,6 +22,20 @@ const ICONS = {
   clock: [['M12 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16z', 'M12 8v4l3 2']],
   // a small board with pins down both sides and a connector on top (pico2's Board view, P1-B1)
   board: [['M7 4.5h10v16H7z', 'M10 4.5V2.8h4v1.7', 'M4 8h3M4 11.5h3M4 15h3M4 18.5h3M17 8h3M17 11.5h3M17 15h3M17 18.5h3', 'M10 11h4v4h-4z']],
+  // a USB trident with its round and square ends (pico2's Hardware tab, 2026-11-15)
+  usb: [['M12 19V4.5', 'M9.6 7 12 4.2 14.4 7', 'M12 15.2 7.5 12.4V10.2', 'M12 13 16.5 10.6V8.6', 'M15.4 6.4h2.2v2.2h-2.2z', 'M6.4 9.2a1.1 1.1 0 1 0 2.2 0a1.1 1.1 0 1 0-2.2 0'], ['M12 18.8a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z']],
+  // the Hardware tab's actions (pico2, 2026-11-15): write to the board (an arrow up into a chip's edge), connect and
+  // disconnect a cable (a plug, and a plug with a gap), send (a paper plane), copy (two sheets), debug (a beetle), search (a
+  // lens), stop (a rounded square), restart (an arrow round a dot)
+  upload: [['M12 15.5V4.5', 'M7.5 9 12 4.5 16.5 9', 'M5 15.5v3a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-3']],
+  plug: [['M9 3.5v4M15 3.5v4', 'M6.5 7.5h11v3a5.5 5.5 0 0 1-11 0z', 'M12 16v4.5']],
+  unplug: [['M9 3.5v4M15 3.5v4', 'M6.5 7.5h11v3a5.5 5.5 0 0 1-11 0z', 'M12 16v1.2M12 19.3v1.2', 'M4 4l16 16']],
+  send: [['M4 11.5 20 4l-6.5 16-2.6-6.9z', 'M10.9 13.1 20 4']],
+  copy: [['M8.5 8.5h10v11h-10z', 'M5.5 15.5V5a1 1 0 0 1 1-1h9']],
+  bug: [['M8.5 9.5a3.5 3.5 0 0 1 7 0v5a3.5 3.5 0 0 1-7 0z', 'M12 9.5v8.5', 'M9.5 6.5 7.5 4.5M14.5 6.5l2-2', 'M8.5 12H4.5M19.5 12h-4M8.5 16l-3 2M15.5 16l3 2M8.5 9.5l-3-1.5M15.5 9.5l3-1.5']],
+  search: [['M10.5 4.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12z', 'M15 15l5 5']],
+  stop: [[], ['M7 6h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z']],
+  restart: [['M5.5 12a6.5 6.5 0 1 0 1.9-4.6', 'M5 4v4h4'], ['M12 10.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z']],
   // the circuit editor's tools (pico2 P1-B2 stage B2-3): select (an arrow pointer), wire (a wire between two connection nodes,
   // with a bend), delete a part (a part's box crossed out), delete a wire (a wire crossed out), turn, mirror, undo, redo
   select: [['M5.5 3.5 18 13.2l-5.6.8 3.4 6.4-2.4 1.2-3.4-6.4-4.5 3.4z']],

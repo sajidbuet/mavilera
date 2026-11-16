@@ -61,6 +61,7 @@ export const SHARED = Object.freeze({
  *  the verification script and the publication scripts. The validation record lists them as one group. */
 export const PRIVATE_ONLY = (p) => /^tools\/[\w.-]+\.py$/.test(p) || p === 'tools/gpu/model_batch.py' || /^tools\/(verify|export-public|make-brand-proposals)\.mjs$/.test(p)
   || p === 'tools/i8086/crosscheck.mjs' // runs z8086 outside the repository (8086-B8 review §3)
+  || p.startsWith('tools/modest-laptop/') // builds a kit from the author's private research material (left out of 1.6.1 by hand)
   || p.startsWith('test/fixtures/exercise-solutions/') || /^test\/(rtl|rtl-multi|rtl-pipe|rtl-npu|conformance|priv-conformance|practice-exercises|sap[12]-exercises|armv7-exercises|gpu-exercises|i8086-exercises|pico2-exercises)\.test\.mjs$/.test(p);
 
 /** The application files of a release. */
