@@ -1,0 +1,9 @@
+; straight.simt -- SIMT core, four lanes: straight-line code, no divergence, no idle lane-slots
+; Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+; Rights class: content (Apache-2.0).
+; (test 2 of the Chapter 11 laboratory's simt_tests.hex, written as source)
+;
+        .din  1, -2, 3, -4
+        ADD   r2, r1, r1      ; r2 <- 2 * din
+        ADD   r2, r2, r0      ; r2 <- r2 + lane index
+        HALT                  ; dout = 2, -3, 8, -5 after 3 cycles, 0 idle lane-slots

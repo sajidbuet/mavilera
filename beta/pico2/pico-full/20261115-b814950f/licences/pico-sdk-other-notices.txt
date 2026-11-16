@@ -1,0 +1,35 @@
+Pico SDK files in this download with copyright holders besides Raspberry Pi. Each is under
+BSD-3-Clause: the terms of pico-sdk-LICENSE.TXT, with the holders below in place of Raspberry Pi.
+
+src/rp2_common/pico_i2c_slave/i2c_slave.c
+    Copyright (c) 2021 Valentin Milea <valentin.milea@gmail.com>
+    Copyright (c) 2023 Raspberry Pi (Trading) Ltd.
+    SPDX-License-Identifier: BSD-3-Clause
+src/rp2_common/pico_i2c_slave/include/pico/i2c_slave.h
+    Copyright (c) 2021 Valentin Milea <valentin.milea@gmail.com>
+    Copyright (c) 2023 Raspberry Pi (Trading) Ltd.
+    SPDX-License-Identifier: BSD-3-Clause
+src/rp2_common/pico_thread_local/include/picotls.h
+    SPDX-License-Identifier: BSD-3-Clause
+    Copyright (c) 2019 Keith Packard
+    Copyright (c) 2026 Raspberry Pi (Trading) Ltd.
+src/rp2_common/pico_atomic/include/stdatomic.h
+    Copyright (c) 2024 Raspberry Pi (Trading) Ltd.
+    Copyright (c) 2024 Stephen Street (stephen@redrocketcomputing.com).
+    SPDX-License-Identifier: BSD-3-Clause
+src/boards/include/boards/adafruit_feather_rp2350.h
+    Copyright (c) 2024 Scott Shawcroft for Adafruit Industries
+    SPDX-License-Identifier: BSD-3-Clause
+src/boards/include/boards/adafruit_fruit_jam.h
+    Copyright (c) 2025 Dan Halbert for Adafruit Industries
+    SPDX-License-Identifier: BSD-3-Clause
+src/boards/include/boards/adafruit_metro_rp2350.h
+    Copyright (c) 2026 Darrian
+    Copyright (c) 2024 Scott Shawcroft for Adafruit Industries
+    SPDX-License-Identifier: BSD-3-Clause
+src/boards/include/boards/rp2350_bellsnwhistles.h
+    Copyright (c) 2026 Rik te Winkel for https://justanotherelectronicsblog.com/
+    SPDX-License-Identifier: BSD-3-Clause
+src/boards/include/boards/uugear_wittypi5_hat_plus.h
+    Copyright (c) 2025 Dun Cat B.V.(UUGear)
+    SPDX-License-Identifier: BSD-3-Clause

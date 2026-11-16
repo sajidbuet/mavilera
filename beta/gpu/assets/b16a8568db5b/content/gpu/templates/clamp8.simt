@@ -1,0 +1,19 @@
+; clamp8.simt -- SIMT core, eight lanes: clamp each lane's input to the range 0 to 9
+; Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+; Rights class: content (Apache-2.0).
+; (written for the application; choose the 8-lane profile)
+;
+        .din  -9, -2, 0, 3, 5, 8, 12, 20
+        LDI   r3, 0
+        IFLT  r1, r3          ; lanes with a negative input
+        LDI   r2, 0           ;   r2 <- 0
+        ELSE                  ; lanes with 0 <= input
+        LDI   r3, 9
+        IFLT  r3, r1          ;   nested: lanes with 9 < input
+        LDI   r2, 9           ;     r2 <- 9
+        ELSE                  ;   lanes with 0 <= input <= 9
+        SUB   r3, r3, r3      ;     r3 <- 0
+        ADD   r2, r1, r3      ;     r2 <- input
+        ENDIF
+        ENDIF                 ; all eight lanes active again
+        HALT                  ; dout = 0, 0, 0, 3, 5, 8, 9, 9 after 13 cycles, 22 idle lane-slots

@@ -1,0 +1,21 @@
+{
+  "version": "20261115-b814950f",
+  "created": "2026-11-15T00:00:00.000Z",
+  "compiler": {
+    "file": "llvm-61747c6c05e8.wasm.gz",
+    "bytes": 77046446,
+    "sha256": "61747c6c05e8e208ea028e82967d5b67482cab11e07c5e96d91629bf10d634c3",
+    "encoding": "gzip",
+    "transferBytes": 22647563
+  },
+  "pack": {
+    "file": "sdk-pack-757fef3ae7b5.bin.gz",
+    "bytes": 16086708,
+    "sha256": "757fef3ae7b58d9ac39acccc42fd99ee700d33996dd7831ccee75677d8e661b8",
+    "encoding": "gzip",
+    "transferBytes": 2625267
+  },
+  "total": 93133154,
+  "transfer": 25272830,
+  "licences": "licences/LICENCES.txt"
+}

@@ -1,0 +1,20 @@
+; sdk-pio-led.pio -- a state machine that sets one pin to the lowest bit of each word the core sends.
+; Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+; Rights class: content (a MAVILERA sample project, written for the application).
+
+.program led_follow
+.wrap_target
+    pull block          ; wait for a word from the TX FIFO into the OSR
+    out pins, 1         ; its lowest bit to the pin
+.wrap
+
+% c-sdk {
+static inline void led_follow_init(PIO pio, uint sm, uint offset, uint pin) {
+    pio_sm_config c = led_follow_program_get_default_config(offset);
+    sm_config_set_out_pins(&c, pin, 1);
+    pio_gpio_init(pio, pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}

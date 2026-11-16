@@ -1,0 +1,58 @@
+TinyUSB 86ad6e56c1700e85f1c5678607a762cfe3aa2f47 (lib/tinyusb of the Pico SDK): the 76 files of it
+in this download (headers, and the sources of the prebuilt objects), each under the MIT terms of tinyusb-LICENSE;
+their copyright lines:
+
+(no copyright line; the repository's LICENSE: Copyright (c) 2018, hathach (tinyusb.org))
+    portable/raspberrypi/rp2040/rp2040_usb.h
+Copyright (c) 2019 Ha Thach (tinyusb.org)
+    class/audio/audio.h, class/cdc/cdc.h, class/cdc/cdc_device.c, class/cdc/cdc_device.h, class/cdc/cdc_host.h, class/cdc/cdc_rndis.h, class/cdc/cdc_rndis_host.h, class/hid/hid.h, class/hid/hid_device.c, class/hid/hid_device.h, class/hid/hid_host.h, class/midi/midi.h, class/midi/midi_device.c, class/midi/midi_device.h, class/msc/msc.h, class/msc/msc_device.c, class/msc/msc_device.h, class/msc/msc_host.h, class/net/ecm_rndis_device.c, class/net/ncm_device.c, class/net/net_device.h, class/vendor/vendor_device.c, class/vendor/vendor_device.h, class/vendor/vendor_host.h, class/video/video_device.c, class/video/video_device.h, common/tusb_common.h, common/tusb_compiler.h, common/tusb_fifo.c, common/tusb_fifo.h, common/tusb_types.h, common/tusb_verify.h, device/dcd.h, device/usbd.c, device/usbd.h, device/usbd_control.c, device/usbd_pvt.h, host/hcd.h, host/hub.h, host/usbh.h, osal/osal.h, osal/osal_freertos.h, osal/osal_mynewt.h, osal/osal_none.h, osal/osal_rtx4.h, tusb.c, tusb.h, tusb_option.h
+Copyright (c) 2019 N Conrad
+    class/usbtmc/usbtmc.h, class/usbtmc/usbtmc_device.h
+Copyright (c) 2019 Nathan Conrad
+    class/usbtmc/usbtmc_device.c
+Copyright (c) 2019 Sylvain Munaut <tnt@246tNt.com>
+    class/dfu/dfu_rt_device.c, class/dfu/dfu_rt_device.h
+Copyright (c) 2020 Ha Thach (tinyusb.org)
+    class/audio/audio_device.h
+Copyright (c) 2020 Jacob Berg Potter
+    class/net/ncm_device.c
+Copyright (c) 2020 Jerzy Kasenberg
+    class/bth/bth_device.h
+Copyright (c) 2020 Peter Lawrence
+    class/net/ecm_rndis_device.c, class/net/ncm_device.c, class/net/net_device.h
+Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
+    osal/osal_pico.h, portable/raspberrypi/rp2040/dcd_rp2040.c, portable/raspberrypi/rp2040/rp2040_usb.c
+Copyright (c) 2020 Reinhard Panhuber
+    class/audio/audio.h, class/audio/audio_device.h
+Copyright (c) 2020 Reinhard Panhuber - rework to unmasked pointers
+    common/tusb_fifo.c, common/tusb_fifo.h
+Copyright (c) 2020 Reinhard Panhuber, Jerzy Kasenberg
+    class/audio/audio_device.c
+Copyright (c) 2020 tfx2001 (2479727366@qq.com)
+    osal/osal_rtthread.h
+Copyright (c) 2020 yekai (2857693944@qq.com)
+    osal/osal_rtthread.h
+Copyright (c) 2021 Ha Thach (tinyusb.org) for Double Buffered
+    portable/raspberrypi/rp2040/rp2040_usb.c
+Copyright (c) 2021 Koji KITAYAMA
+    class/video/video.h, class/video/video_device.c, class/video/video_device.h
+Copyright (c) 2021 Tian Yunhao (t123yh)
+    osal/osal_rtx4.h
+Copyright (c) 2021 XMOS LIMITED
+    class/dfu/dfu.h, class/dfu/dfu_device.c, class/dfu/dfu_device.h
+Copyright (c) 2021, Ha Thach (tinyusb.org)
+    class/net/ncm.h, common/tusb_mcu.h, host/usbh_pvt.h
+Copyright (c) 2022, Ha Thach (tinyusb.org)
+    common/tusb_debug.h, common/tusb_private.h
+Copyright (c) 2023 Ha Thach (thach@tinyusb.org) for Adafruit Industries
+    class/cdc/serial/cp210x.h, class/cdc/serial/ftdi_sio.h, typec/tcd.h
+Copyright (c) 2023 Ha Thach (tinyusb.org)
+    typec/pd_types.h, typec/usbc.h
+Copyright (c) 2023 Heiko Kuester
+    class/cdc/serial/ch34x.h
+Copyright (c) 2023 HiFiPhile
+    class/audio/audio_device.c, class/audio/audio_device.h
+Copyright (c) 2024 Hardy Griech
+    class/net/ncm_device.c
+Copyright (c) 2024, Hardy Griech
+    class/net/ncm.h

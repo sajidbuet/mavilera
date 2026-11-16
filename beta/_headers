@@ -1,0 +1,46 @@
+/riscv/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/riscv/sw.js
+  Cache-Control: no-cache
+/riscv/index.html
+  Cache-Control: no-cache
+/sap-1/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/sap-1/sw.js
+  Cache-Control: no-cache
+/sap-1/index.html
+  Cache-Control: no-cache
+/sap-2/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/sap-2/sw.js
+  Cache-Control: no-cache
+/sap-2/index.html
+  Cache-Control: no-cache
+/armv7/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/armv7/sw.js
+  Cache-Control: no-cache
+/armv7/index.html
+  Cache-Control: no-cache
+/i8086/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/i8086/sw.js
+  Cache-Control: no-cache
+/i8086/index.html
+  Cache-Control: no-cache
+/pico2/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/pico2/sw.js
+  Cache-Control: no-cache
+/pico2/index.html
+  Cache-Control: no-cache
+/pico2/pico-full/20261115-b814950f/*
+  Cache-Control: public, max-age=31556952, immutable
+/pico2/pico-full/current.json
+  Cache-Control: no-cache
+/gpu/assets/*
+  Cache-Control: public, max-age=31556952, immutable
+/gpu/sw.js
+  Cache-Control: no-cache
+/gpu/index.html
+  Cache-Control: no-cache

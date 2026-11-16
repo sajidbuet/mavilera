@@ -1,0 +1,19 @@
+; pio-blink.pio -- the PIO program of "PIO blinks the LED" (pio-blink.s), in the Pico SDK's PIO assembly.
+; Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.
+; Rights class: content (a MAVILERA template, written for the application).
+;
+; Build assembles this file with pio-blink.s: its six words are at blink_program, and blink_length,
+; blink_wrap_target and blink_wrap are the numbers the program needs to load and start it.
+; Try: change the two set instructions to set pins, 0 and set pins, 1: the blink starts dark.
+
+.program blink
+    pull block              ; the count, once
+    out y, 32               ; kept in Y
+.wrap_target
+    mov x, y
+    set pins, 1             ; LED on
+on: jmp x-- on              ; X + 1 cycles
+    mov x, y
+    set pins, 0             ; LED off
+off: jmp x-- off
+.wrap
