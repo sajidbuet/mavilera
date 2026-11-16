@@ -145,3 +145,35 @@ test('Sample projects: thirteen topic groups in embedded-systems order; every sa
   const seq = ix.templates.map((t) => order.indexOf(t.group));
   assert.deepEqual(seq, [...seq].sort((a, b) => a - b));
 });
+
+
+test('Copy report: version, features, masked serial, the last states and error codes, the log; no user agent', async () => {
+  const { boardReport } = await import('../src/arch/pico2/hw/report.js');
+  const w = world({ faults: { unplugAt: { cmd: 'write', n: 2 } } });
+  const probe = await w.s.probe();
+  assert.equal(probe.ok, true);
+  const r = await w.s.load();
+  assert.equal(r.ok, false);
+  const text = boardReport({ version: '1.7.0-beta.1', caps: w.s.caps, facts: w.s.facts, state: w.s.state, history: w.s.history, log: ['Probe: serial BOARD0 ROM 4', 'left BOOTSEL'] });
+  assert.match(text, /^MAVILERA Pico 2 board test report\nVersion: 1\.7\.0-beta\.1/);
+  assert.match(text, /WebUSB yes/);
+  assert.match(text, /serial …ARD0 /);
+  assert.doesNotMatch(text, /BOARD0/);
+  assert.match(text, /ROM version 4 \(known\)/);
+  assert.match(text, /error disconnected/);
+  assert.match(text, /probing/); assert.match(text, /choosing/);
+  assert.match(text, /Probe: serial …ARD0 ROM 4/);
+  assert.doesNotMatch(text, /Mozilla|Chrome\/|userAgent/);
+  assert.ok(w.s.history.length <= 30);
+  // nothing probed, nothing happened
+  const empty = boardReport({});
+  assert.match(empty, /not probed in this session/); assert.match(empty, /Session now: not started/); assert.match(empty, /development \(no release tag\)/);
+});
+
+test('the Board test report issue template exists, asks for what the report needs, and the public export carries it', async () => {
+  const yml = readFileSync(new URL('../.github/ISSUE_TEMPLATE/board-test-report.yml', import.meta.url), 'utf8');
+  for (const id of ['version', 'browser', 'os', 'board', 'pressed', 'happened', 'report']) assert.match(yml, new RegExp(`id: ${id}\\n`), id);
+  for (const b of ['Pico 2\\n', 'Pico 2 W']) assert.match(yml, new RegExp(`- ${b}`));
+  const exp = readFileSync(new URL('../tools/export-public.mjs', import.meta.url), 'utf8');
+  assert.match(exp, /\.github\/ISSUE_TEMPLATE\/board-test-report\.yml/);
+});

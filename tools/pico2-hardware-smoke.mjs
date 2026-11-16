@@ -250,6 +250,20 @@ await check('axe-core: the Hardware tab and the toolbar with Load to Pico, light
   must(!v.length, v.join('; '));
   return 'no violations';
 });
+await check('Hardware tab, Log: Copy report puts the report on the clipboard only (stubbed here); the serial number is cut to four characters', async () => {
+  await p.eval(tab('Hardware'));
+  await p.eval(tab('Log'));
+  await p.eval(`(() => { window.__copied = null; const w = (t) => { window.__copied = t; return Promise.resolve(); };
+    try { Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: w } }); } catch { navigator.clipboard.writeText = w; } return true; })()`);
+  await p.eval(`(() => { document.querySelector('.hw-report-copy').click(); return true; })()`);
+  await p.waitFor(`window.__copied !== null`, 5000);
+  const r = await p.eval(`window.__copied`);
+  must(/^MAVILERA Pico 2 board test report/.test(r) && /WebUSB (yes|no)/.test(r) && /Last session states:/.test(r), r);
+  must(!/Mozilla|Chrome\/|Gecko/.test(r), 'the report carries a user agent');
+  if (!firefox) must(/…OBE1/.test(r) && !/PROBE1/.test(r) && /ROM version 4/.test(r), r);
+  else must(/not probed/.test(r) && /WebUSB no/.test(r), r);
+  return r.split('\n').slice(0, 4).join(' | ');
+});
 if (firefox) {
   await check('Firefox (no WebUSB): the button is Download .uf2 and the Board panel says why', async () => {
     const label = await p.eval(`document.querySelector('.tool-load')?.getAttribute('aria-label') ?? ''`);

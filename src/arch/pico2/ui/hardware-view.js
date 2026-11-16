@@ -14,6 +14,7 @@ import { PICO2_STRINGS } from '../strings.js';
 import { HardwareSections } from './hardware-panel.js';
 import { SerialPanel } from './serial-panel.js';
 import { infoButton } from '../../../ui/info-button.js';
+import { boardReport } from '../hw/report.js';
 
 const H = PICO2_STRINGS.hw, V = H.view;
 const LOG_MAX = 500;
@@ -35,7 +36,8 @@ export class HardwareView {
     this.boxes = {
       help: el('div.hw-help', {}, ...V.helpText.map((t) => el('p', { text: t })), el('p.note', { text: V.helpMore })),
       log: el('div.hw-log', {}, this.logEmpty, this.logList,
-        el('button.hw-log-copy', { type: 'button', text: V.logCopy, onclick: () => this.copyLog() })),
+        el('div.hw-log-acts', {}, el('button.hw-log-copy', { type: 'button', text: V.logCopy, onclick: () => this.copyLog() }), ' ',
+          el('button.hw-report-copy', { type: 'button', text: V.reportCopy, title: V.reportCopyTitle, onclick: () => this.copyReport() }))),
     };
   }
 
@@ -48,6 +50,22 @@ export class HardwareView {
   async copyLog() {
     const text = [...this.logList.children].map((li) => li.textContent).join('\n');
     try { await navigator.clipboard.writeText(text); this.ctx.message?.(PICO2_STRINGS.serial.copied, 'ok'); } catch (e) { this.ctx.message?.(String(e?.message ?? e), 'error'); }
+  }
+
+  /** The text of the report (hw/report.js): the page's own facts; the version is the release page's meta tag. */
+  async reportText() {
+    const s = this.sections.s;
+    let badge = null;
+    try { badge = await s.badge(); } catch { /* no records yet */ }
+    return boardReport({
+      version: globalThis.document?.querySelector?.('meta[name="risc-vista-version"]')?.content ?? '',
+      caps: s.caps, facts: s.facts ?? null, badge, state: s.state, history: s.history, log: [...this.logList.children].map((li) => li.textContent),
+    });
+  }
+
+  /** Copy report: to the clipboard only (nothing is sent anywhere). */
+  async copyReport() {
+    try { await navigator.clipboard.writeText(await this.reportText()); this.ctx.message?.(V.reportCopied, 'ok'); } catch (e) { this.ctx.message?.(String(e?.message ?? e), 'error'); }
   }
 
   /** The toolbar's Load to Pico (design §8): the load starts inside the click; this view shows its state. */

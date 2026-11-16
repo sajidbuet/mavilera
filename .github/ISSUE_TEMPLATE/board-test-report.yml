@@ -1,0 +1,68 @@
+name: Board test report
+description: Report what happened when you loaded a program onto a real Pico 2 or Pico 2 W (MAVILERA beta)
+title: "Board test report: "
+labels: ["board-test"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing. The beta has been tried with simulated USB devices only, never with a real board, so every report helps, including "it worked".
+        Nothing in MAVILERA sends data anywhere: the report below is text you copy and paste yourself. Please read it before you post it.
+  - type: input
+    id: version
+    attributes:
+      label: MAVILERA version
+      description: As shown in the page header (for example 1.7.0-beta.1).
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and its version
+      description: For example Chrome 130, Edge 130, Firefox 151.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: For example Windows 11, macOS 15, Ubuntu 24.04, ChromeOS.
+    validations:
+      required: true
+  - type: dropdown
+    id: board
+    attributes:
+      label: Board
+      options:
+        - Pico 2
+        - Pico 2 W
+        - Another RP2350 board (name it below)
+    validations:
+      required: true
+  - type: textarea
+    id: pressed
+    attributes:
+      label: What you pressed
+      description: In order, from plugging the board in. For example "held BOOTSEL, plugged in, Probe board, Load to Pico, Enter in the confirmation".
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+      description: What you saw on the page and on the board (the LED, the RP2350 drive, whether the program ran). What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Copied report
+      description: In the Hardware tab, open Log and press Copy report, then paste here. It holds the version, what the browser supports, the board's facts (serial number cut to four characters), the last steps and errors, and the log.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      description: A USB hub or cable, another program using the port, a screenshot. Optional.

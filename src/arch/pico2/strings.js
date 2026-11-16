@@ -803,6 +803,9 @@ int main(void)
       tabLog: 'Log',
       logEmpty: 'No hardware action yet.',
       logCopy: 'Copy the log',
+      reportCopy: 'Copy report',
+      reportCopyTitle: 'Copy a report for the Board test report issue: version, what this browser can do, the board\'s facts, the last steps and errors, and this log. It goes to your clipboard only; nothing is sent.',
+      reportCopied: 'Report copied. Paste it into the Board test report issue.',
       helpText: [
         'Load to Pico: hold BOOTSEL while you plug the Pico 2 in, then press Load to Pico. The program is written sector by sector, each sector is read back, and the Pico 2 restarts with it.',
         'UART monitor: connect the Pico 2\'s USB serial port (a program built with Output = UART and USB) or a USB-UART adapter on GP0, GP1 and GND, at the speed the program uses (115200 by default).',
