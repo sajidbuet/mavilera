@@ -2,15 +2,15 @@
  "_copyright": "Copyright (c) 2026 Sajid Muhaimin Choudhury. Licensed under the Apache License, Version 2.0.",
  "record": "web-sim-validation.json (spec WS-V-040)",
  "tool": "tools/verify.mjs",
- "date": "2026-11-16T06:06:45.778Z",
- "version": "1.7.0-beta.1",
+ "date": "2026-11-16T14:33:39.174Z",
+ "version": "1.7.0-beta.2",
  "pass": true,
  "summary": {
-  "checks": 1901,
-  "passed": 1901,
+  "checks": 1903,
+  "passed": 1903,
   "failed": 0,
   "skipped": 0,
-  "seconds": 3481,
+  "seconds": 3896,
   "smoke": "pass"
  },
  "environment": {
@@ -22,10 +22,10 @@
  },
  "simulator": {
   "repository": "pips-riscv-lab",
-  "commit": "187af5cba1987bc38e7212c46cb99967cab7c91d",
-  "uncommitted": 19,
+  "commit": "87f5e60fc58f906c994dbc6c4b1d1957bd8a1e86",
+  "uncommitted": 0,
   "sources": {
-   "sha256": "6b327e609da66e76487ec5f5da91729b7b2257482e111a5dcfbf002ece1924b1",
+   "sha256": "0bcedae33c897ef455b1a0d721d8888d581c1717871b4c826ed5d6b3db9ed25c",
    "files": {
     "index.html": "176bb7d2d0c4bcf346961d11c20ad2ede932d6300473d525e18e187f3f52be8f",
     "manifest.webmanifest": "49f35917d9965838cf152ce095d527d89aaa5c052c52efa6074a969765981b29",
@@ -139,8 +139,9 @@
     "src/arch/pico2/hw/errors.js": "12778ad4140f408c835eda5b1a0b9c0e03b1608caf1274a705ab37b12626f364",
     "src/arch/pico2/hw/programmer.js": "7f676215d43145ce9aef55bf2c8a6ca851c8b794b4277ccde7f8571156236c21",
     "src/arch/pico2/hw/records.js": "6b2023b576d0f94c00d2cf53b1ea85289c1f51a99f8fc6d815ef82e1481be2f1",
+    "src/arch/pico2/hw/report.js": "16b735c74f60ff53d2ae50eaabf5d7fa7e431c52199e7b535c3a00bebbb160e1",
     "src/arch/pico2/hw/serial.js": "2cb4840d51f828cba0a0fc4b6917b672ac2cd7c3f46017f9e811b474c07cbaea",
-    "src/arch/pico2/hw/session.js": "f2f577e5864de62ed684cebe391cbc17a2e46c3dc8462e3f40bf5f652cec6e47",
+    "src/arch/pico2/hw/session.js": "dd2196a4d2d5d867a1b677bc03bf608301ec223978ec2ee8118a0df45ff5e9c7",
     "src/arch/pico2/hw/transport.js": "d6246a96e2c423251f6a282277d4e873c30c4f60378f490b9a862a89089f3992",
     "src/arch/pico2/index.js": "69ae8340ba854a1f7866e28488dc66bc0aef4aa63cc58886356771e9541c3b4b",
     "src/arch/pico2/language.js": "66613d60df6d27fe931d30ad12e7367181b0acfd438f5d08f8169fbe19e0fbd7",
@@ -165,7 +166,7 @@
     "src/arch/pico2/soc/spi.js": "b8d3b5a295d4071c18ed40b92975c6afaa4dc534cfac5ad5eaa5c23436b51067",
     "src/arch/pico2/soc/timer.js": "8b10226c4308fc8ed7721f9430df0778f43f821e4b2c393af031df53660bbd8f",
     "src/arch/pico2/soc/uart.js": "2b7892aee7f08492fc4edbc7f9aeb5ac6269d3614918953713e5eda795d4fbba",
-    "src/arch/pico2/strings.js": "1b03ee56e0f0ee82a69adda774e3625e503e716d8d668d2cae996094a45b6fd1",
+    "src/arch/pico2/strings.js": "81d1c2fc3d1c931d521706a3e28c31c93a582367ba2d57da5c02d658162beffe",
     "src/arch/pico2/uarch/session.js": "cfa2f726597b2b11d1bafb7de01e3621c0b8e60afa92c4962ab2c0d1f99ba584",
     "src/arch/pico2/uarch/stages.js": "6d8d8c0b8dfd24cc6933b3b5d187bf1f4f1ecd511fe0a772c4c9b608d397e91d",
     "src/arch/pico2/uarch/summary.js": "3000c45c170fda17d09aceb7abec86972cf0f29e70a00732487cdf393e66dd49",
@@ -179,7 +180,7 @@
     "src/arch/pico2/ui/devices-panel.js": "399bb2c4a6da84adc9c72019837952b89577c5eba9cf222913704b778ad5c1f8",
     "src/arch/pico2/ui/geometry.js": "b93d1d4621b0296aaed6affd2ef70481c46b6bebcc4c03e5266d159a4a092844",
     "src/arch/pico2/ui/hardware-panel.js": "48a816c48f0899b21b7485f8d449c3ed82a80e1a70e2a8f8aa02b48567966188",
-    "src/arch/pico2/ui/hardware-view.js": "1b10e07d7701d648a37af58c25b86ea72450a04af415f9b6bf35e4b64357cfb1",
+    "src/arch/pico2/ui/hardware-view.js": "4e3a9fec89ef0301d41c9abd478f2f66013cefee2547a8a6696a800315be076a",
     "src/arch/pico2/ui/pins-panel.js": "32e5eaa25f1f178365fb2bfcca3e6c19bb115d6be7bbdc82aa182b3fd4ee8c20",
     "src/arch/pico2/ui/pio-panel.js": "4a3b24165003f22663500883f6f758b5aa5f02ea71eed2fff0d89cb676cf27dc",
     "src/arch/pico2/ui/pipeline-view.js": "32f592305a5e59fa3cc13f64cc649348a5f7c9dee24024603023d87dd98eb7e0",
@@ -513,8 +514,8 @@
     "content/pico2/exercises/pwm-duty.json": "7493e63d8f21f1340fdf20af2212aecc95a37af9ddded2f707a330fa019f50c7",
     "content/pico2/exercises/sum-words.json": "146570396eaf2a84c994c643e8d1854468f01fad7dbf5ee943286b5e7a5ecb98",
     "content/pico2/exercises/two-core-sum.json": "4ba8d1901b8f86e0b4091f0e7f88306886fed37f1893d2fa39ea2df184e4b381",
-    "content/pico2/help/docs/index.html": "d7d304a28d4bc351d551725ac44555d4fc4c87797fa19f830be0c4120c438c78",
-    "content/pico2/help/help.json": "03d6e0ab503384f98f61baf00af5c0a6089cb8756427704570ac0f6ede8889a2",
+    "content/pico2/help/docs/index.html": "1fd1f20b8646039e48cbeb4bcf219bd5e364d3a1097f00a45cd3f2472bbcb836",
+    "content/pico2/help/help.json": "6585d71f148aff9e266caa5da74fa9672a3358875ce1f4136a489f38f62b2ef8",
     "content/pico2/templates/adc-knob.c": "abbf95a7d66f0938a006bf075687f7e7e2ef1f452eb0ef427bf2eb45ae4ad3e7",
     "content/pico2/templates/blink.c": "4c398fe78d844f856a9f6737307560380cf2706f869e7c3bbf58c7b187012e24",
     "content/pico2/templates/blink.s": "bbf1e1a64a6bb2a8abd7436192e63058545df2ce81cf542fa4d05f399d9cf2bb",
@@ -655,7 +656,7 @@
    }
   },
   "corpus": {
-   "sha256": "840eb9247ff6789018381fe5129f2e566b64dece60113acc32bbab9c01daeeef",
+   "sha256": "148509b08d80366b60d5ba71964bdc6bddb9e61629805efdb16dc611cee9d490",
    "files": {
     "test/a11y.test.mjs": "95157a3872e9dd0a4c1327f7fe105919e034d2a810ed592668de3f34583990b3",
     "test/arch-contract.test.mjs": "eede5e6cb2b7354d629e9fec7da43b96b3d9f3b5176ce58925754dea2ed2be8d",
@@ -844,7 +845,7 @@
     "test/pico2-engine.test.mjs": "401aaa7e1a1498016259b99af906b79f9b361181012bf6c9707afc08e71c34d4",
     "test/pico2-full-assets.test.mjs": "d46e698289bd87960c010f970d5428fd59455e091d5e9ed42b8ae6697839b9b8",
     "test/pico2-full.test.mjs": "b10f09ca9a1d43a03ff75a4cc94983babf64e900f39708b4b19ad456278b4c1f",
-    "test/pico2-hardware-tab.test.mjs": "579b418d34a6bd6df39064ae360cdf00aac4cc55609a8b47162b1a44ffc24891",
+    "test/pico2-hardware-tab.test.mjs": "bed42edc716299669d540576e461b8a506744c0469dccd311217ded159db849c",
     "test/pico2-hart.test.mjs": "ad7ccdf412bef0c3d66920e9ae3b730dc2fbe092aeede20b5284baa1fcad7b39",
     "test/pico2-headers.test.mjs": "514117315662de03c91af98cbd9a10d673b24c5337cbb3cfb4dbe0381ea1f2a3",
     "test/pico2-history.test.mjs": "3a31f0546300b91f649b5a37557952665bce4b5cbc5bc79ce7b15f47a1a129f4",
@@ -916,7 +917,7 @@
    }
   },
   "tools": {
-   "sha256": "574ba7d5394b289a260452663dd23c012093865ff13479052ca6fe68703bde7a",
+   "sha256": "031223886c04bd93ede26d7b37142e3c9aab92af62f43b32e7c279bda21be378",
    "files": {
     "tools/README.md": "d3d20b7fc984206e01dd12a09760578df97eb0429a734da295ed285bc070353b",
     "tools/analysis-smoke.mjs": "adcda8fc37a7c5b517a56b3da10784ebfd4341dc7090dbbe88c834e2e0f2dee1",
@@ -983,7 +984,7 @@
     "tools/npu/ch11-tables.mjs": "265cc45f67eadb5505da60580e3ed6f2d4a9c242663c02a56c352228812bd689",
     "tools/npu/lab-templates.mjs": "e776405495ef8b6570bd3d7bf19a685665faf9cc2132da509a2d51c3e6d816c5",
     "tools/offline.mjs": "0fe0e6020f3799c421566cb89ae7a2f5492dfd9faf31e8e0f2d917739ac5c3a6",
-    "tools/pico-full/README.md": "7b0cc82adc0bd4cee45c4c877d9e7f493c0e2c37981c745f8690a0cf4df0d7a8",
+    "tools/pico-full/README.md": "3e594e231c882b6b68716e8a42dc307e07c186fc0c440cafd40341b5690a61c9",
     "tools/pico-full/build-ccd.ps1": "c88be7c3d86739c65988341971123e4d2aef004289dea655b139786cc5b16ef1",
     "tools/pico-full/build-check.ps1": "c8376bd36011ca5e7003ecb23dbaf7f0a59cae9f3f7fca0f851a7b34c5d0fe19",
     "tools/pico-full/build-llvm.ps1": "b28815bbd92b6e30a468f410a050b9a829de295bbcb5cc8dd9ae97d5247fb586",
@@ -1002,7 +1003,7 @@
     "tools/pico-full/cmake/cxx-shim/cassert": "e63b3328a2ff575bafde3cf6d00ebd6b0801b8f5e09db8d36c08cae5073cadac",
     "tools/pico-full/cmake/pico_riscv_wasmclang.cmake": "b43b6021fc2ec41695f70a2b1534b2d5c251b3e8f27969bc14cc17ddca681a1d",
     "tools/pico-full/cmdline.mjs": "09a11519d36c27619f79c13c9cd934b63a23a0a4afd214acb65a02f38cf08b4a",
-    "tools/pico-full/env.ps1": "43b011f46155601f99d36921c37a6e8bac764bbd272da780389da5db8bad4db9",
+    "tools/pico-full/env.ps1": "146b87c83b8f7cfa2b62922f44637988da7de9542ab446d8b1edc325f460c0fd",
     "tools/pico-full/excluded.json": "d12d757d17a6f6338b1e4e8cbc91e403be0fb7a43e9b4cbcaf340c9d4463e6a9",
     "tools/pico-full/fetch.ps1": "2233a3fc10eb03f1f835e01af929b6735d8787e72c07215084a1de2a09131797",
     "tools/pico-full/llvm-23.1.5-wasi.patch": "c2d5fdf88a2dbe9aa3054a56afe2d172f6035b782664f5038365b59099e0c08a",
@@ -1023,7 +1024,7 @@
     "tools/pico2-full-accept.mjs": "75735b8e5a87d3187dfb50e70a0236cd328d1e2bb908683da80ecacd15b72da2",
     "tools/pico2-full-shell-smoke.mjs": "399d67bde02e216cffe0e0334f3c51dc5ce937000a5247a83941910b123af682",
     "tools/pico2-full-smoke.mjs": "eef1225a966fb2a1a2ed63b65d25b8e3dce1c3eff861680ad4bed3b168804a3a",
-    "tools/pico2-hardware-smoke.mjs": "255dbf5402ab806e01d704ad3b4768b7c4720ba7faa29fadf285d2cfcddecbae",
+    "tools/pico2-hardware-smoke.mjs": "20e6f826d82798a0dcd0a0b756dcf26ae84a9d1c72377a4ce55d876a39e0f302",
     "tools/pico2-import-smoke.mjs": "6249bd80510464f7cc99245279fe837ec5590f3ea4bd48c6372ca1b95bd8eabb",
     "tools/pico2-lite-smoke.mjs": "a9988c4144add87dfe66c2de373efc55dda68f24b619eb13f2d5d64106f6bed8",
     "tools/pico2-pio-smoke.mjs": "c4594c4635aab585927f25c58dfff4ce2bb9fe5facb64f273d9ac9532a4171ce",
@@ -1041,7 +1042,7 @@
     "tools/site-files.mjs": "e15e994e30b85b0bf9c3b8899ba25a53a187d6607a80939511578f085dcbff08",
     "tools/view-mode-smoke.mjs": "90f72bc0e92b337ea622d7f82a7f67f1a338892e228ed617571e84aac10377d3",
     "tools/zip.mjs": "ead8c71f183e52385ce4dd42a4b921731a435bcb19b6c6d84ce3e4fec4dc09d4",
-    "(not published: scripts that read the private book repository, and the publication scripts)": "23 files, sha256 22d732a7521eccef3796d65eb55e08df8e4dc68066e458027633fab421e473b0"
+    "(not published: scripts that read the private book repository, and the publication scripts)": "23 files, sha256 3979fe964463a916afcd38f56a258c8081813fe5d5afe7d67269e4bcdc6f0593"
    }
   }
  },
@@ -1087,7 +1088,7 @@
  "checks": [
   {
    "file": "/tools/minify.mjs",
-   "name": "the test suites pass on the release copy of the sources ({\"tests\":1911,\"pass\":1911,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1544,\"differ\":0,\"first\":null}})",
+   "name": "the test suites pass on the release copy of the sources ({\"tests\":1913,\"pass\":1913,\"fail\":0,\"skipped\":0,\"failed\":[],\"css\":{\"rules\":1544,\"differ\":0,\"first\":null}})",
    "ok": true
   },
   {
@@ -7372,6 +7373,11 @@
   },
   {
    "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "Copy report: version, features, masked serial, the last states and error codes, the log; no user agent",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
    "name": "Probe board reports what Load would refuse rather than refusing: an unknown ROM, a partition table",
    "ok": true
   },
@@ -7398,6 +7404,11 @@
   {
    "file": "test/pico2-hardware-tab.test.mjs",
    "name": "Save the board's flash: the program's sectors (or all 4 MiB), read only, the bytes the board holds",
+   "ok": true
+  },
+  {
+   "file": "test/pico2-hardware-tab.test.mjs",
+   "name": "the Board test report issue template exists, asks for what the report needs, and the public export carries it",
    "ok": true
   },
   {
@@ -11364,7 +11375,7 @@
    "realtime": {
     "exitStatus": 0,
     "tail": [
-     "  ok   replay is bit-exact: a fresh engine with the run's inputs reaches the same machine state at the same step; the inputs survive a reload — 3 inputs, 9199336 steps, hash 4af8a40f = 4af8a40f; after the reload \"3 inputs given (pins and UART), each at its clock cycle.\"",
+     "  ok   replay is bit-exact: a fresh engine with the run's inputs reaches the same machine state at the same step; the inputs survive a reload — 3 inputs, 9065232 steps, hash 090d38d8 = 090d38d8; after the reload \"3 inputs given (pins and UART), each at its clock cycle.\"",
      "  ok   the pipeline view: Real time says it runs at full speed there — noted",
      "all checks passed"
     ]
@@ -11381,7 +11392,7 @@
     "exitStatus": 0,
     "tail": [
      "  ok   the template \"Two cores, two LEDs\" builds; Real time runs both cores to the end: exit code 1 — ✔ Opened the sample project \"Two cores, two LEDs\". Its first lines say what to try.The text that was in the editor is kept: File ▸ Restore previous text. | ✔ Halted at pc = 0x2000010c.",
-     "  ok   the registers panel has the Core 1 group; Step moves core 0 by one instruction while core 1 runs alongside; Back returns — core 1 running; step 336e71ac → 24eed193, back 336e71ac",
+     "  ok   the registers panel has the Core 1 group; Step moves core 0 by one instruction while core 1 runs alongside; Back returns — core 1 running; step 3780ef72 → a140bc17, back 3780ef72",
      "all checks passed"
     ]
    },

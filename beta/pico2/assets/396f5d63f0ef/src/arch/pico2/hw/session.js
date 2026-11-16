@@ -6,6 +6,7 @@ import { PicobootTransport, PICO_VID, PID_BOOTSEL, DEFAULT_TIMEOUTS, REBOOT2 } f
 import { writeArtifact, readBack, checkArtifact, probeBoard, readFlash, flashRangeOf } from './programmer.js';
 import { Records, openStore, badgeOf } from './records.js';
 export const PHASES = Object.freeze(['idle', 'choosing', 'building', 'preflight', 'confirm', 'writing', 'rebooting', 'done', 'checking', 'probing', 'starting', 'reading', 'failed', 'cancelled']);
+const HISTORY_MAX = 30;
 const BOOTSEL_FILTER = Object.freeze({ vendorId: PICO_VID, productId: PID_BOOTSEL });
 export function canLoad(program) {
  const a = program?.debug?.artifact;
@@ -23,6 +24,7 @@ export class HardwareSession {
  this.listeners = new Map();
  this.state = { phase: 'idle', progress: null, error: null, serial: null, n: null };
  this.busy = false;
+ this.history = [];
  this.abort = null;
  this.confirmUi = async () => true;
  this.usb = g.navigator?.usb ?? null;
@@ -33,7 +35,16 @@ export class HardwareSession {
  get caps() { return hwCapabilities(this.g); }
  on(ev, fn) { if (!this.listeners.has(ev)) this.listeners.set(ev, new Set()); this.listeners.get(ev).add(fn); return () => this.listeners.get(ev).delete(fn); }
  emit(ev, data) { for (const fn of this.listeners.get(ev) ?? []) { try { fn(data); } catch { } } }
- set(patch) { this.state = { ...this.state, ...patch }; this.emit('state', this.state); }
+ set(patch) {
+ const before = this.state;
+ this.state = { ...this.state, ...patch };
+ if (this.state.phase !== before.phase || this.state.error !== before.error) {
+ const e = this.state.error;
+ this.history.push({ at: new Date().toISOString().slice(11, 19), phase: this.state.phase, ...(e ? { code: e.code, during: e.data?.during } : {}) });
+ if (this.history.length > HISTORY_MAX) this.history.shift();
+ }
+ this.emit('state', this.state);
+ }
  async chooseBoard() {
  const granted = (await this.usb.getDevices()).filter((d) => d.vendorId === PICO_VID && d.productId === PID_BOOTSEL);
  if (granted.length === 1) return granted[0];
