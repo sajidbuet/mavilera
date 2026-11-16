@@ -19,6 +19,9 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.24237545
     description: Version 1.6.1
+  - type: doi
+    value: 10.5281/zenodo.24271504
+    description: Version 1.7.0-beta.1 (beta)
 version: 1.7.0-beta.1
 date-released: 2026-11-15
 license: Apache-2.0
